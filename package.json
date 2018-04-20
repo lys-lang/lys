@@ -1,0 +1,44 @@
+{
+  "name": "aureum",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "bin": "dist/bin.js",
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "test-travis": "npm run lint && npm run build && npm run coverage && npm run test",
+    "preversion": "npm run build && npm test",
+    "coverage": "(`npm bin`/istanbul cover `npm bin`/_mocha || true)",
+    "lint": "tslint -t msbuild src/**/*.ts",
+    "build": "rm -rf dist && tsc -p tsconfig.json && tsc -p tsconfig.test.json && chmod +x dist/bin.js",
+    "watch": "npm run build && chmod +x dist/bin.js && (tsc -p tsconfig.json --watch & tsc -p tsconfig.test.json --watch)"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/menduz/aureum.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/menduz/aureum/issues"
+  },
+  "homepage": "https://github.com/menduz/aureum#readme",
+  "prettier": {
+    "semi": true,
+    "singleQuote": true,
+    "printWidth": 120
+  },
+  "dependencies": {
+    "ebnf": "^1.6.2"
+  },
+  "devDependencies": {
+    "@types/expect": "^1.20.3",
+    "expect": "^22.4.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^5.1.1",
+    "tslint": "^5.9.1",
+    "typescript": "^2.8.3"
+  }
+}

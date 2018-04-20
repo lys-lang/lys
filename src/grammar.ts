@@ -1,0 +1,138 @@
+import { Parser, Grammars, IRule } from 'ebnf';
+
+export const grammar = `
+{ws=explicit}
+
+Document          ::= Directives EOF? {ws=implicit}
+Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
+Directive         ::= FunctionDirective | ValDirective | VarDirective | StructDirective {fragment=true}
+
+FunctionDirective ::= ExportModifier? FUN_KEYWORD NameIdentifier FunctionParamsList OfType? WS* AssignExpression {pin=2}
+ValDirective      ::= ExportModifier? VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
+VarDirective      ::= ExportModifier? VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
+StructDirective   ::= ExportModifier? STRUCT_KEYWORD NameIdentifier {pin=2}
+
+ExportModifier    ::= EXPORT_KEYWORD
+
+AssignExpression  ::= '=' WS* Expression {pin=2,fragment=true}
+OfType            ::= COLON WS* Type WS* {pin=2,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
+
+FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=CLOSE_PAREN}
+ParameterList     ::= Parameter NthParameter* {fragment=true}
+NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
+Parameter         ::= NameIdentifier WS* OfType {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
+
+Type              ::= WS* NameIdentifier IsPointer* IsArray?
+IsPointer         ::= '*'
+IsArray           ::= '[]'
+
+Expression        ::= OrExpression (WS* (MatchExpression | BinaryExpression))* {simplifyWhenOneChildren=true}
+
+MatchExpression   ::= MATCH_KEYWORD WS* MatchBody WS* {pin=1}
+BinaryExpression  ::= NameIdentifier WS* OrExpression WS* {pin=1}
+
+OrExpression      ::= AndExpression (WS+ 'or' WS+ AndExpression)? {simplifyWhenOneChildren=true}
+AndExpression     ::= EqExpression (WS+ 'and' WS+ EqExpression)? {simplifyWhenOneChildren=true}
+EqExpression      ::= RelExpression (WS* ('==' | '!=') WS* RelExpression)? {simplifyWhenOneChildren=true}
+RelExpression     ::= ShiftExpression (WS* ('>=' | '<=' | '>' | '<') WS* ShiftExpression)? {simplifyWhenOneChildren=true}
+ShiftExpression   ::= AddExpression (WS* ('>>' | '<<' | '>>>') WS* AddExpression)? {simplifyWhenOneChildren=true}
+AddExpression     ::= MulExpression (WS* ('+' | '-') WS* MulExpression)? {simplifyWhenOneChildren=true}
+MulExpression     ::= UnaryExpression (WS* ('*' | '/' | '%') WS* UnaryExpression)? {simplifyWhenOneChildren=true}
+UnaryExpression   ::= NegExpression | UnaryMinus | IfExpression | FunctionCallExpression  {simplifyWhenOneChildren=true}
+
+NegExpression     ::= '!' OrExpression {pin=1}
+UnaryMinus        ::= !NumberLiteral '-' OrExpression {pin=2}
+
+RefPointerOperator::= '*' | '&'
+RefExpression     ::= RefPointerOperator VariableReference
+
+FunctionCallExpression
+                  ::= Value (WS* &'(' CallArguments)? {simplifyWhenOneChildren=true}
+
+Value             ::= Literal | RefExpression | VariableReference | ParenExpression {fragment=true}
+ParenExpression   ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN}
+
+IfExpression      ::= '%%if%%'
+
+/* Pattern matching */
+MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
+
+MatchElements     ::= (CaseCondition | CaseLiteral | CaseElse) WS*  {fragment=true}
+
+CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression '->' WS* Expression {pin=5}
+CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
+CaseElse          ::= ELSE_KEYWORD WS* '->' WS* Expression {pin=3}
+
+/* Function call */
+CallArguments     ::= OPEN_PAREN Arguments? CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
+Arguments         ::= WS* Expression WS* NthArgument* {fragment=true}
+NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
+
+
+VariableReference ::= NameIdentifier
+
+BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
+NullLiteral       ::= NULL_KEYWORD
+NumberLiteral     ::= "-"? ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=2}
+StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"'
+Literal           ::= ( StringLiteral
+                      | NumberLiteral
+                      | BooleanLiteral
+                      | NullLiteral
+                      ) {fragment=true}
+
+NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
+
+/* Keywords */
+
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MATCH_KEYWORD | RESERVED_WORDS
+
+FUN_KEYWORD       ::= 'fun'    WS+
+VAL_KEYWORD       ::= 'val'    WS+
+VAR_KEYWORD       ::= 'var'    WS+
+STRUCT_KEYWORD    ::= 'struct' WS+
+EXPORT_KEYWORD    ::= 'export' WS+
+
+RESERVED_WORDS    ::= ( 'async' | 'await' | 'defer'
+                      | 'package' | 'declare'
+                      | 'using'
+                      | 'delete'
+                      | 'break' | 'continue'
+                      | 'let' | 'const' | 'void'
+                      | 'class' | 'private' | 'public' | 'protected' | 'extends'
+                      | 'import' | 'from' | 'abstract'
+                      | 'finally' | 'new' | 'native' | 'enum' | 'type'
+                      | 'yield' | 'for' | 'do' | 'while' | 'try'
+                      ) WS+
+
+TRUE_KEYWORD      ::= 'true'   ![A-Za-z0-9_]
+FALSE_KEYWORD     ::= 'false'  ![A-Za-z0-9_]
+NULL_KEYWORD      ::= 'null'   ![A-Za-z0-9_]
+IF_KEYWORD        ::= 'if'     ![A-Za-z0-9_]
+ELSE_KEYWORD      ::= 'else'   ![A-Za-z0-9_]
+CASE_KEYWORD      ::= 'case'   ![A-Za-z0-9_]
+MATCH_KEYWORD     ::= 'match'  ![A-Za-z0-9_]
+
+/* Tokens */
+
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | RESERVED_WORDS)
+NEXT_ARG_RECOVERY ::= &(',' | ')')
+PAREN_RECOVERY    ::= &(')')
+MATCH_RECOVERY    ::= &('}' | 'case' | 'else')
+OPEN_PAREN        ::= '('
+CLOSE_PAREN       ::= ')'
+COLON             ::= ':'
+OPEN_DOC_COMMENT  ::= '/*'
+CLOSE_DOC_COMMENT ::= '*/'
+DOC_COMMENT       ::= !CLOSE_DOC_COMMENT [#x00-#xFFFF]
+
+Comment           ::= '//' (![#x0A#x0D] [#x00-#xFFFF])* EOL
+MultiLineComment  ::= OPEN_DOC_COMMENT DOC_COMMENT* CLOSE_DOC_COMMENT {pin=1}
+WS                ::= Comment | MultiLineComment | [#x20#x09#x0A#x0D]+ {fragment=true}
+EOL               ::= [#x0A#x0D]+|EOF
+
+`;
+
+export const RULES: IRule[] = Grammars.Custom.getRules(grammar);
+
+export const parser = new Parser(RULES, {});
