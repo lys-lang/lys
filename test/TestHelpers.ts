@@ -20,7 +20,12 @@ export function testParseToken(
     (doc: IToken) => {
       if (doc.errors.length) throw doc.errors[0];
 
-      if ('rest' in doc && doc.rest.length != 0) throw new Error('Got rest: ' + doc.rest);
+      const astNode = doc['astNode'];
+
+      if (astNode) {
+        if (astNode.errors.length) throw astNode.errors[0];
+        if (astNode.rest.length != 0) throw new Error('Got rest: ' + astNode.rest);
+      }
 
       customTest && customTest(doc);
     },
@@ -45,6 +50,10 @@ export function testParseTokenFailsafe(
 
       if (!result) throw new Error('Did not resolve');
 
+      if (target && result.type != target) throw new Error("Type doesn't match. Got: " + result.type);
+
+      if (result.text.length == 0) throw new Error('Empty text result');
+
       if (phases && phases.length) {
         console.log(`      Phase ${0}:`);
         result = phases.reduce(($, reducer, i) => {
@@ -53,10 +62,6 @@ export function testParseTokenFailsafe(
           return reducer($);
         }, result);
         if (!result) throw new Error('Did not resolve');
-      } else {
-        if (target && result.type != target) throw new Error("Type doesn't match. Got: " + result.type);
-
-        if (result.text.length == 0) throw new Error('Empty text result');
       }
 
       if (customTest) customTest(result);
@@ -79,9 +84,7 @@ export function testParseTokenFailsafe(
 }
 
 function printAST(token: IToken, level = 0) {
-  console.log(
-    '         ' + '  '.repeat(level) + `|-${token.type}${token.children.length == 0 ? '=' + token.text : ''}`
-  );
+  console.log('         ' + '  '.repeat(level) + `|-${token.type}${token.text ? '=' + token.text : ''}`);
   token.children &&
     token.children.forEach(c => {
       printAST(c, level + 1);

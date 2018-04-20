@@ -33,5 +33,43 @@ describe.only('Canonical', function() {
     var c = null
     fun x() = a
   `;
+  test`
+    fun x(a: Number, b: Number): Int = 1
+    export fun y(a: Number, b: Number): Int = 1
+  `;
   test`var a: Double* = null`;
+
+  test`
+    export fun y(a: Float, b: Float): Float = a + b
+  `;
+
+  test`
+    export fun y(a: Float, b: Float): Float = a + b - 1 * 2 / 3 % 10 << 3 >> 1 >>> 0
+  `;
+  test`
+    export fun gte(a: Float, b: Float) = a >= b and b < a or a > b or 1 <= 3 == 1111 != 3333
+  `;
+  test`
+    export fun gte(a: Float, b: Float) = a or b or c or d
+  `;
+
+  test`
+    export fun gte(a: Float, b: Float) = a XX b XX c XX d
+  `;
+
+  test`
+    export fun fn() = a match {else -> 1}
+  `;
+
+  test`
+    export fun fn() = a match {case 1 -> 2 else -> 1}
+  `;
+
+  test`
+    export fun fn() = a match {
+      case 1 -> 2
+      case a if a < 3 -> 3.1
+      else -> 1
+    }
+  `;
 });

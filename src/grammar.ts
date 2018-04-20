@@ -28,16 +28,16 @@ IsArray           ::= '[]'
 
 Expression        ::= OrExpression (WS* (MatchExpression | BinaryExpression))* {simplifyWhenOneChildren=true}
 
-MatchExpression   ::= MATCH_KEYWORD WS* MatchBody WS* {pin=1}
-BinaryExpression  ::= NameIdentifier WS* OrExpression WS* {pin=1}
+MatchExpression   ::= MatchKeyword WS* MatchBody WS* {pin=1,fragment=true}
+BinaryExpression  ::= NameIdentifier WS* OrExpression WS* {pin=1,fragment=true}
 
-OrExpression      ::= AndExpression (WS+ 'or' WS+ AndExpression)? {simplifyWhenOneChildren=true}
-AndExpression     ::= EqExpression (WS+ 'and' WS+ EqExpression)? {simplifyWhenOneChildren=true}
-EqExpression      ::= RelExpression (WS* ('==' | '!=') WS* RelExpression)? {simplifyWhenOneChildren=true}
-RelExpression     ::= ShiftExpression (WS* ('>=' | '<=' | '>' | '<') WS* ShiftExpression)? {simplifyWhenOneChildren=true}
-ShiftExpression   ::= AddExpression (WS* ('>>' | '<<' | '>>>') WS* AddExpression)? {simplifyWhenOneChildren=true}
-AddExpression     ::= MulExpression (WS* ('+' | '-') WS* MulExpression)? {simplifyWhenOneChildren=true}
-MulExpression     ::= UnaryExpression (WS* ('*' | '/' | '%') WS* UnaryExpression)? {simplifyWhenOneChildren=true}
+OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
+AndExpression     ::= EqExpression (WS+ AndKeyword WS+ EqExpression)* {simplifyWhenOneChildren=true}
+EqExpression      ::= RelExpression (WS* EqOperator WS* RelExpression)* {simplifyWhenOneChildren=true}
+RelExpression     ::= ShiftExpression (WS* RelOperator WS* ShiftExpression)* {simplifyWhenOneChildren=true}
+ShiftExpression   ::= AddExpression (WS* ShiftOperator WS* AddExpression)* {simplifyWhenOneChildren=true}
+AddExpression     ::= MulExpression (WS* AddOperator WS* MulExpression)* {simplifyWhenOneChildren=true}
+MulExpression     ::= UnaryExpression (WS* MulOperator WS* UnaryExpression)* {simplifyWhenOneChildren=true}
 UnaryExpression   ::= NegExpression | UnaryMinus | IfExpression | FunctionCallExpression  {simplifyWhenOneChildren=true}
 
 NegExpression     ::= '!' OrExpression {pin=1}
@@ -59,7 +59,7 @@ MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOV
 
 MatchElements     ::= (CaseCondition | CaseLiteral | CaseElse) WS*  {fragment=true}
 
-CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression '->' WS* Expression {pin=5}
+CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression WS* '->' WS* Expression {pin=5}
 CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
 CaseElse          ::= ELSE_KEYWORD WS* '->' WS* Expression {pin=3}
 
@@ -70,6 +70,12 @@ NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=N
 
 
 VariableReference ::= NameIdentifier
+
+MulOperator       ::= '*' | '/' | '%'
+AddOperator       ::= '+' | '-'
+ShiftOperator     ::= '>>>' | '>>' | '<<'
+RelOperator       ::= '>=' | '<=' | '>' | '<'
+EqOperator        ::= '==' | '!='
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NullLiteral       ::= NULL_KEYWORD
@@ -85,7 +91,7 @@ NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MATCH_KEYWORD | RESERVED_WORDS
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
 
 FUN_KEYWORD       ::= 'fun'    WS+
 VAL_KEYWORD       ::= 'val'    WS+
@@ -111,7 +117,9 @@ NULL_KEYWORD      ::= 'null'   ![A-Za-z0-9_]
 IF_KEYWORD        ::= 'if'     ![A-Za-z0-9_]
 ELSE_KEYWORD      ::= 'else'   ![A-Za-z0-9_]
 CASE_KEYWORD      ::= 'case'   ![A-Za-z0-9_]
-MATCH_KEYWORD     ::= 'match'  ![A-Za-z0-9_]
+MatchKeyword     ::= 'match'  ![A-Za-z0-9_]
+AndKeyword       ::= 'and'    ![A-Za-z0-9_]
+OrKeyword        ::= 'or'     ![A-Za-z0-9_]
 
 /* Tokens */
 

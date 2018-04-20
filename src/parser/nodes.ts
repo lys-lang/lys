@@ -26,7 +26,7 @@ export abstract class Node {
   }
 
   get text() {
-    return 'value' in this ? this['value'] : this.astNode && this.astNode.text;
+    return '';
   }
 }
 
@@ -34,6 +34,9 @@ export class ExpressionNode extends Node {}
 
 export class NameIdentifierNode extends Node {
   name: string;
+  get text() {
+    return JSON.stringify(this.name);
+  }
 }
 
 export class TypeReferenceNode extends NameIdentifierNode {
@@ -80,6 +83,9 @@ export class ValDirectiveNode extends VarDirectiveNode {
 
 export abstract class LiteralNode<T> extends ExpressionNode {
   value: T;
+  get text() {
+    return JSON.stringify(this.value);
+  }
 }
 
 export class FloatLiteral extends LiteralNode<number> {
@@ -123,11 +129,20 @@ export class BinaryExpressionNode extends ExpressionNode {
   lhs: ExpressionNode;
   rhs: ExpressionNode;
   operator: string;
+
+  get text() {
+    if (!this.operator) throw new Error('BinaryExpressionNode w/o operator');
+    return JSON.stringify(this.operator);
+  }
 }
 
 export class UnaryExpressionNode extends ExpressionNode {
   lhs: ExpressionNode;
   operator: string;
+
+  get text() {
+    return JSON.stringify(this.operator);
+  }
 }
 
 export class BooleanNegNode extends ExpressionNode {
@@ -142,7 +157,7 @@ export abstract class MatcherNode extends ExpressionNode {}
 
 export class MatchConditionNode extends ExpressionNode {
   declaredName: NameIdentifierNode;
-  expression: ExpressionNode;
+  condition: ExpressionNode;
   rhs: ExpressionNode;
 }
 

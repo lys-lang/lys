@@ -1,6 +1,20 @@
 import { IToken, TokenError } from 'ebnf';
 import * as Nodes from '../nodes';
 
+function binaryOpVisitor(astNode: IToken) {
+  let ret = visit(astNode.children[0]);
+
+  for (let i = 1; i < astNode.children.length; i += 2) {
+    const oldRet = ret;
+    ret = new Nodes.BinaryExpressionNode(astNode);
+    ret.lhs = oldRet;
+    ret.operator = astNode.children[i].text;
+    ret.rhs = visit(astNode.children[i + 1]);
+  }
+
+  return ret;
+}
+
 const visitor = {
   VarDirective(astNode: IToken) {
     const ret = new Nodes.VarDirectiveNode(astNode);
@@ -28,7 +42,50 @@ const visitor = {
     ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
     ret.functionName = visit(findChildrenType(astNode, 'NameIdentifier'));
     ret.functionReturnType = visit(findChildrenType(astNode, 'Type'));
+
+    const params = findChildrenType(astNode, 'FunctionParamsList');
+
+    if (!params) {
+      throw new TokenError('Missing param list in token', astNode);
+    }
+
+    ret.parameters = params.children.map($ => visit($));
+
     ret.value = visitLastChild(astNode);
+
+    return ret;
+  },
+  Parameter(astNode: IToken) {
+    const ret = new Nodes.ParameterNode(astNode);
+    ret.parameterName = visit(findChildrenType(astNode, 'NameIdentifier'));
+    ret.parameterType = visit(findChildrenType(astNode, 'Type'));
+    return ret;
+  },
+  AddExpression: binaryOpVisitor,
+  OrExpression: binaryOpVisitor,
+  AndExpression: binaryOpVisitor,
+  RelExpression: binaryOpVisitor,
+  EqExpression: binaryOpVisitor,
+  ShiftExpression: binaryOpVisitor,
+  MulExpression: binaryOpVisitor,
+  Expression(astNode: IToken) {
+    let ret = visit(astNode.children[0]);
+
+    for (let i = 1; i < astNode.children.length; i += 2) {
+      const oldRet = ret;
+      if (astNode.children[i].type !== 'MatchKeyword') {
+        const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
+        x.isInfix = true;
+        const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
+        vrn.variable = new Nodes.NameIdentifierNode(astNode.children[i]);
+        vrn.variable.name = astNode.children[i].text;
+        x.argumentsNode = [oldRet, visit(astNode.children[i + 1])];
+      } else {
+        const match = (ret = new Nodes.MatchNode(astNode.children[i]));
+        match.lhs = oldRet;
+        match.matchingSet = visit(astNode.children[i + 1]);
+      }
+    }
 
     return ret;
   },
@@ -47,6 +104,27 @@ const visitor = {
     ret.name = findChildrenType(astNode, 'NameIdentifier').text.trim();
     ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
     ret.isArray = !!findChildrenType(astNode, 'IsArray');
+    return ret;
+  },
+  MatchBody(x: IToken) {
+    return x.children.map($ => visit($));
+  },
+  CaseLiteral(x: IToken) {
+    const ret = new Nodes.MatchLiteralNode(x);
+    ret.literal = visit(x.children[0]);
+    ret.rhs = visit(x.children[1]);
+    return ret;
+  },
+  CaseCondition(x: IToken) {
+    const ret = new Nodes.MatchConditionNode(x);
+    ret.declaredName = visit(x.children[0]);
+    ret.condition = visit(x.children[1]);
+    ret.rhs = visit(x.children[2]);
+    return ret;
+  },
+  CaseElse(x: IToken) {
+    const ret = new Nodes.MatchDefaultNode(x);
+    ret.rhs = visit(x.children[0]);
     return ret;
   },
   NumberLiteral(x: IToken) {
