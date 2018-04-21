@@ -9,7 +9,7 @@ import { findAllErrors } from '../dist/parser/phases/findAllErrors';
 
 let inspect = require('util').inspect;
 
-describe.only('Canonical', function() {
+describe('Canonical', function() {
   function test(literals, ...placeholders) {
     let result = '';
 

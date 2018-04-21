@@ -6,7 +6,7 @@ const process = walker((token: Nodes.Node, doc: Nodes.DocumentNode) => {
     doc.errors.push(...token.astNode.errors);
   }
   if (token.errors && token.errors.length) {
-    doc.errors.push(...token.errors);
+    doc.errors.push(...(token.errors as any));
   }
 });
 

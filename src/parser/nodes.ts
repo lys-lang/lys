@@ -1,8 +1,11 @@
 import { IToken, TokenError } from 'ebnf';
+import { Closure, Context, ITapeElement } from './closure';
+import { Type } from './types';
 
 export abstract class Node {
   hasParentheses: boolean = false;
-  errors: any[];
+  errors: Error[] = [];
+  closure: Closure;
 
   constructor(public astNode?: IToken) {}
 
@@ -42,10 +45,12 @@ export class NameIdentifierNode extends Node {
 export class TypeReferenceNode extends NameIdentifierNode {
   isPointer: number = 0;
   isArray: boolean = false;
+  resolvedTapeElement: ITapeElement;
 }
 
 export class VariableReferenceNode extends ExpressionNode {
   variable: NameIdentifierNode;
+  resolvedTapeElement: ITapeElement;
 }
 
 export abstract class DirectiveNode extends Node {
@@ -55,6 +60,7 @@ export abstract class DirectiveNode extends Node {
 export class DocumentNode extends Node {
   directives: DirectiveNode[];
   errors: TokenError[] = [];
+  context: Context;
 }
 
 export class ParameterNode extends Node {
@@ -63,11 +69,33 @@ export class ParameterNode extends Node {
   defaultValue: ExpressionNode;
 }
 
-export class FunDirectiveNode extends DirectiveNode {
+export class FunctionNode extends ExpressionNode {
+  injected: boolean = false;
   functionName: NameIdentifierNode;
   functionReturnType: TypeReferenceNode;
   parameters: ParameterNode[] = [];
   value: ExpressionNode;
+}
+
+export class ContextAwareFunction extends FunctionNode {
+  constructor(public baseFunction: FunctionNode, public closure: Closure) {
+    super(baseFunction.astNode);
+    this.injected = true;
+    this.functionName = baseFunction.functionName;
+    this.functionReturnType = baseFunction.functionReturnType;
+    this.parameters = baseFunction.parameters;
+    this.value = baseFunction.value;
+  }
+}
+
+export class FunDirectiveNode extends DirectiveNode {
+  functionNode: FunctionNode;
+}
+
+export class OverloadedFunctionNode extends DirectiveNode {
+  injected = true;
+  name: string;
+  functions: FunDirectiveNode[] = [];
 }
 
 export class VarDirectiveNode extends DirectiveNode {
@@ -75,6 +103,16 @@ export class VarDirectiveNode extends DirectiveNode {
   variableName: NameIdentifierNode;
   variableType: TypeReferenceNode;
   value: ExpressionNode;
+}
+
+export class TypeDirectiveNode extends DirectiveNode {
+  variableName: NameIdentifierNode;
+  valueType: TypeNode;
+  resolvedType: Type;
+}
+
+export class TypeNode extends Node {
+  nativeType: Type;
 }
 
 export class ValDirectiveNode extends VarDirectiveNode {

@@ -25,7 +25,59 @@ describe('Parser', () => {
       testParseToken(parser, result);
     }
 
+    describe('Types', () => {
+      test`
+        // 8 bit
+        type byte = ???
+
+        // 16 bit
+        type short = ???
+        type ushort = ???
+
+        // 32 bit
+        type int32 = ???
+        type float = ???
+        type uint32 = ???
+
+        // 64 bit
+        type int64 = ???
+        type double = ???
+        type uint64 = ???
+      `;
+      test`
+        // 8 bit
+        type byte = ???
+
+        // 16 bit
+        type short = ???
+        type ushort = ???
+
+        // 32 bit
+        export type int32 = ???
+        type float = ???
+        export type uint32 = ???
+
+        // 64 bit
+        type int64 = ???
+        type double = ???
+        type uint64 = ???
+      `;
+    });
+
+    describe('Literals', () => {
+      test`
+        var a = 1
+        var b = 2.0
+        var c = true
+        var d = false
+        var e = null
+        var f = "a string 'single' quote"
+        var g = 'a string "double" quote'
+      `;
+    });
+
     test`fun test() = 1`;
+    test`fun test() = ???`;
 
     test`fun test(  a: MBER,      b   : NumBer) = 1`;
 

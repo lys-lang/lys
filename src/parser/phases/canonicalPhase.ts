@@ -36,24 +36,38 @@ const visitor = {
 
     return ret;
   },
+  TypeDirective(astNode: IToken) {
+    const ret = new Nodes.TypeDirectiveNode(astNode);
+
+    ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
+    ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
+    ret.valueType = visitLastChild(astNode);
+
+    return ret;
+  },
   FunctionDirective(astNode: IToken) {
     const ret = new Nodes.FunDirectiveNode(astNode);
 
     ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
-    ret.functionName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.functionReturnType = visit(findChildrenType(astNode, 'Type'));
+
+    const fun = (ret.functionNode = new Nodes.FunctionNode(astNode));
+
+    fun.functionName = visit(findChildrenType(astNode, 'NameIdentifier'));
+    fun.functionReturnType = visit(findChildrenType(astNode, 'Type'));
 
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
     if (!params) {
-      throw new TokenError('Missing param list in token', astNode);
+      throw new TokenError('Missing param list in function declaration', astNode);
     }
 
-    ret.parameters = params.children.map($ => visit($));
-
-    ret.value = visitLastChild(astNode);
+    fun.parameters = params.children.map($ => visit($));
+    fun.value = visitLastChild(astNode);
 
     return ret;
+  },
+  UnknownExpression() {
+    return null;
   },
   Parameter(astNode: IToken) {
     const ret = new Nodes.ParameterNode(astNode);

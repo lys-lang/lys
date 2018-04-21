@@ -11,7 +11,8 @@ export function testParseToken(
   txt: string,
   target?: string,
   customTest?: (document: IToken) => void,
-  phases?: ((a: any) => any)[]
+  phases?: ((a: any) => any)[],
+  debug?: boolean
 ) {
   testParseTokenFailsafe(
     parser,
@@ -23,13 +24,17 @@ export function testParseToken(
       const astNode = doc['astNode'];
 
       if (astNode) {
-        if (astNode.errors.length) throw astNode.errors[0];
+        if (astNode.errors.length) {
+          console.dir(astNode.errors);
+          throw astNode.errors[0];
+        }
         if (astNode.rest.length != 0) throw new Error('Got rest: ' + astNode.rest);
       }
 
       customTest && customTest(doc);
     },
-    phases
+    phases,
+    debug
   );
 }
 
@@ -38,10 +43,11 @@ export function testParseTokenFailsafe(
   txt: string,
   target?: string,
   customTest?: (document: IToken) => void,
-  phases?: ((a: any) => any)[]
+  phases?: ((a: any) => any)[],
+  debug?: boolean
 ) {
   it(inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), () => {
-    console.log('      ---------------------------------------------------');
+    debug && console.log('      ---------------------------------------------------');
 
     let result;
 
@@ -55,10 +61,10 @@ export function testParseTokenFailsafe(
       if (result.text.length == 0) throw new Error('Empty text result');
 
       if (phases && phases.length) {
-        console.log(`      Phase ${0}:`);
+        debug && console.log(`      Phase ${0}:`);
         result = phases.reduce(($, reducer, i) => {
-          describeTree($);
-          console.log(`      Phase ${i + 1}:`);
+          debug && describeTree($);
+          debug && console.log(`      Phase ${i + 1}:`);
           return reducer($);
         }, result);
         if (!result) throw new Error('Did not resolve');
@@ -79,7 +85,7 @@ export function testParseTokenFailsafe(
       throw e;
     }
 
-    describeTree(result);
+    debug && describeTree(result);
   });
 }
 

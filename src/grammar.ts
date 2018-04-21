@@ -5,24 +5,27 @@ export const grammar = `
 
 Document          ::= Directives EOF? {ws=implicit}
 Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
-Directive         ::= FunctionDirective | ValDirective | VarDirective | StructDirective {fragment=true}
+Directive         ::= FunctionDirective | ValDirective | VarDirective | StructDirective | TypeDirective {fragment=true}
 
-FunctionDirective ::= ExportModifier? FUN_KEYWORD NameIdentifier FunctionParamsList OfType? WS* AssignExpression {pin=2}
+FunctionDirective ::= ExportModifier? FUN_KEYWORD NameIdentifier FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
 ValDirective      ::= ExportModifier? VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
 VarDirective      ::= ExportModifier? VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
+TypeDirective     ::= ExportModifier? TYPE_KEYWORD NameIdentifier WS* '=' WS* (UnknownExpression | Type) {pin=2}
 StructDirective   ::= ExportModifier? STRUCT_KEYWORD NameIdentifier {pin=2}
 
 ExportModifier    ::= EXPORT_KEYWORD
 
-AssignExpression  ::= '=' WS* Expression {pin=2,fragment=true}
-OfType            ::= COLON WS* Type WS* {pin=2,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
+UnknownExpression ::= '???'
+
+AssignExpression  ::= '=' WS* Expression {pin=1,fragment=true}
+OfType            ::= COLON WS* Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=CLOSE_PAREN}
 ParameterList     ::= Parameter NthParameter* {fragment=true}
 NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 Parameter         ::= NameIdentifier WS* OfType {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
-Type              ::= WS* NameIdentifier IsPointer* IsArray?
+Type              ::= NameIdentifier IsPointer* IsArray?
 IsPointer         ::= '*'
 IsArray           ::= '[]'
 
@@ -80,7 +83,7 @@ EqOperator        ::= '==' | '!='
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NullLiteral       ::= NULL_KEYWORD
 NumberLiteral     ::= "-"? ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=2}
-StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"'
+StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
 Literal           ::= ( StringLiteral
                       | NumberLiteral
                       | BooleanLiteral
@@ -91,11 +94,12 @@ NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
 
 FUN_KEYWORD       ::= 'fun'    WS+
 VAL_KEYWORD       ::= 'val'    WS+
 VAR_KEYWORD       ::= 'var'    WS+
+TYPE_KEYWORD      ::= 'type'   WS+
 STRUCT_KEYWORD    ::= 'struct' WS+
 EXPORT_KEYWORD    ::= 'export' WS+
 
