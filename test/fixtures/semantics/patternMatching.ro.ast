@@ -1,0 +1,22 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="int"
+  |-TypeDirectiveNode type=boolean
+    |-NameIdentifierNode="boolean"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="int"
+        |-NameIdentifierNode="test"
+        |-TypeReferenceNode="boolean"
+        |-MatchNode
+          |-VariableReferenceNode
+            |-NameIdentifierNode="a"
+          |-MatchLiteralNode
+            |-IntegerLiteral=1
+            |-BooleanLiteral=true
+          |-MatchDefaultNode
+            |-BooleanLiteral=false

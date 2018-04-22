@@ -5,10 +5,10 @@ export const grammar = `
 
 Document          ::= Directives EOF? {ws=implicit}
 Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
-Directive         ::= FunctionDirective | ValDirective | VarDirective | StructDirective | TypeDirective {fragment=true}
+Directive         ::= FunctionDirective | ConstDirective | VarDirective | StructDirective | TypeDirective {fragment=true}
 
 FunctionDirective ::= ExportModifier? FUN_KEYWORD NameIdentifier FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
-ValDirective      ::= ExportModifier? VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
+ConstDirective      ::= ExportModifier? CONST_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
 VarDirective      ::= ExportModifier? VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
 TypeDirective     ::= ExportModifier? TYPE_KEYWORD NameIdentifier WS* '=' WS* (UnknownExpression | Type) {pin=2}
 StructDirective   ::= ExportModifier? STRUCT_KEYWORD NameIdentifier {pin=2}
@@ -74,7 +74,7 @@ NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=N
 
 VariableReference ::= NameIdentifier
 
-MulOperator       ::= '*' | '/' | '%'
+MulOperator       ::= '**' | '*' | '/' | '%'
 AddOperator       ::= '+' | '-'
 ShiftOperator     ::= '>>>' | '>>' | '<<'
 RelOperator       ::= '>=' | '<=' | '>' | '<'
@@ -94,10 +94,10 @@ NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | CONST_KEYWORD | TYPE_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
 
 FUN_KEYWORD       ::= 'fun'    WS+
-VAL_KEYWORD       ::= 'val'    WS+
+CONST_KEYWORD     ::= 'const'  WS+
 VAR_KEYWORD       ::= 'var'    WS+
 TYPE_KEYWORD      ::= 'type'   WS+
 STRUCT_KEYWORD    ::= 'struct' WS+
@@ -127,7 +127,7 @@ OrKeyword        ::= 'or'     ![A-Za-z0-9_]
 
 /* Tokens */
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | CONST_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

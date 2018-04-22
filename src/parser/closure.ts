@@ -33,6 +33,8 @@ export interface ITapeElement {
 export class Context {}
 
 export class Closure {
+  localsMap: Map<Nodes.Node, number> = new Map();
+
   localScopeDeclares: Set<string> = new Set();
   nameMappings: IDictionary<ITapeElement> = {};
   localUsages: IDictionary<number> = {};
@@ -79,6 +81,10 @@ export class Closure {
     return this.nameMappings[localName];
   }
 
+  canResolveName(localName: string) {
+    return localName in this.nameMappings;
+  }
+
   get(localName: string): ITapeElement {
     if (localName in this.nameMappings) {
       return this.nameMappings[localName];
@@ -97,7 +103,7 @@ export class Closure {
     throw new Error(`Variable "${localName}" is not a type`);
   }
 
-  getVariable(name: string): any {
+  getVariable(name: string) {
     let ret = this.get(name);
 
     return ret;

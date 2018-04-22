@@ -1,18 +1,21 @@
-export enum NativeTypes {
-  i32 = 1,
-  i64 = 1 << 1,
-  f32 = 1 << 2,
-  f64 = 1 << 3,
-  anyfunc = 1 << 4,
-  func = 1 << 5,
-  block_type = 1 << 6,
+import binaryen = require('binaryen');
 
-  i8 = 1 << 7,
-  u8 = 1 << 8,
-  i16 = 1 << 9,
-  u16 = 1 << 10,
-  u32 = 1 << 11,
-  u64 = 1 << 12
+export enum NativeTypes {
+  i32 = 'i32',
+  i64 = 'i64',
+  f32 = 'f32',
+  f64 = 'f64',
+  anyfunc = 'anyfunc',
+  func = 'func',
+  block_type = 'block_type',
+
+  boolean = 'boolean',
+  i8 = 'i8',
+  u8 = 'u8',
+  i16 = 'i16',
+  u16 = 'u16',
+  u32 = 'u32',
+  u64 = 'u64'
 }
 
 // In _bytes_
@@ -26,6 +29,7 @@ export enum sizeOf {
   u64 = word * 2,
   u32 = word,
   u16 = word >> 1,
+  boolean = word >> 2,
   u8 = word >> 2,
   i8 = word >> 2,
   i16 = word >> 1,
@@ -35,85 +39,106 @@ export enum sizeOf {
 }
 
 export abstract class Type {
-  abstract getSize(): number;
+  nativeType: NativeTypes;
+  getSize(): number {
+    return sizeOf[this.nativeType];
+  }
+  get binaryenType() {
+    switch (this.nativeType) {
+      case NativeTypes.i32:
+        return binaryen.i32;
+      case NativeTypes.u32:
+        return binaryen.i32;
+      case NativeTypes.f32:
+        return binaryen.f32;
+      case NativeTypes.f64:
+        return binaryen.f64;
+
+      case NativeTypes.boolean:
+      case NativeTypes.u8:
+      case NativeTypes.i8:
+      case NativeTypes.u16:
+      case NativeTypes.i16:
+      case NativeTypes.func:
+        return binaryen.i32;
+    }
+  }
+  equals(_otherType: Type) {
+    return _otherType && this.nativeType == _otherType.nativeType;
+  }
 }
 
 export abstract class NativeType extends Type {
   constructor(public nativeType: NativeTypes) {
     super();
   }
-}
-
-export namespace InjectableTypes {
-  export class byte extends NativeType {
-    constructor() {
-      super(NativeTypes.u8);
-    }
-    getSize() {
-      return sizeOf.u8;
-    }
-  }
-
-  export class int extends NativeType {
-    constructor() {
-      super(NativeTypes.i32);
-    }
-    getSize() {
-      return sizeOf.i32;
-    }
-  }
-
-  export class uint extends NativeType {
-    constructor() {
-      super(NativeTypes.u32);
-    }
-    getSize() {
-      return sizeOf.u32;
-    }
-  }
-
-  export class short extends NativeType {
-    constructor() {
-      super(NativeTypes.i16);
-    }
-    getSize() {
-      return sizeOf.i16;
-    }
-  }
-
-  export class ushort extends NativeType {
-    constructor() {
-      super(NativeTypes.u16);
-    }
-    getSize() {
-      return sizeOf.u16;
-    }
-  }
-
-  export class float extends NativeType {
-    constructor() {
-      super(NativeTypes.f32);
-    }
-    getSize() {
-      return sizeOf.f32;
-    }
-  }
-
-  export class double extends NativeType {
-    constructor() {
-      super(NativeTypes.f64);
-    }
-    getSize() {
-      return sizeOf.f64;
-    }
-  }
-
-  export class pointer extends NativeType {
-    constructor() {
-      super(NativeTypes.anyfunc);
-    }
-    getSize() {
-      return sizeOf.anyfunc;
-    }
+  toString() {
+    return NativeTypes[this.nativeType];
   }
 }
+
+export class byte extends NativeType {
+  constructor() {
+    super(NativeTypes.u8);
+  }
+}
+
+export class bool extends NativeType {
+  constructor() {
+    super(NativeTypes.boolean);
+  }
+}
+
+export class int extends NativeType {
+  constructor() {
+    super(NativeTypes.i32);
+  }
+}
+
+export class uint extends NativeType {
+  constructor() {
+    super(NativeTypes.u32);
+  }
+}
+
+export class short extends NativeType {
+  constructor() {
+    super(NativeTypes.i16);
+  }
+}
+
+export class ushort extends NativeType {
+  constructor() {
+    super(NativeTypes.u16);
+  }
+}
+
+export class float extends NativeType {
+  constructor() {
+    super(NativeTypes.f32);
+  }
+}
+
+export class double extends NativeType {
+  constructor() {
+    super(NativeTypes.f64);
+  }
+}
+
+export class pointer extends NativeType {
+  constructor() {
+    super(NativeTypes.anyfunc);
+  }
+}
+
+export const InjectableTypes = {
+  byte,
+  boolean: bool,
+  int,
+  uint,
+  short,
+  ushort,
+  float,
+  double,
+  pointer
+};

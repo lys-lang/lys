@@ -1,13 +1,20 @@
 declare var describe, it, require, console;
 
 import { Grammars, Parser, IToken } from 'ebnf';
-import { testParseToken, describeTree, printBNF, testParseTokenFailsafe } from './TestHelpers';
+import { testParseToken, printAST, printBNF, testParseTokenFailsafe, folderBasedTest } from './TestHelpers';
 import { parser } from '../dist/grammar';
 import * as expect from 'expect';
 import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
 import { findAllErrors } from '../dist/parser/phases/findAllErrors';
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 
 let inspect = require('util').inspect;
+
+const phases = [canonicalPhase, findAllErrors];
+
+describe('FileBasedCanonical', () => {
+  folderBasedTest('test/fixtures/parser/*.ro', phases, (result: any) => printAST(result), '.ast');
+});
 
 describe('Canonical', function() {
   function test(literals, ...placeholders) {
@@ -21,7 +28,7 @@ describe('Canonical', function() {
 
     // add the last literal
     result += literals[literals.length - 1];
-    testParseToken(parser, result, 'Document', null, [canonicalPhase, findAllErrors]);
+    testParseToken(parser, result, 'Document', null, phases);
   }
 
   test`var a = 1`;

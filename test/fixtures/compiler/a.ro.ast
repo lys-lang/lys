@@ -1,0 +1,77 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="int"
+  |-TypeDirectiveNode type=f32
+    |-NameIdentifierNode="float"
+  |-TypeDirectiveNode type=f64
+    |-NameIdentifierNode="double"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="test"
+        |-TypeReferenceNode="int" type=i32
+        |-IntegerLiteral=1 type=i32
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="test0"
+        |-TypeReferenceNode="int" type=i32
+        |-IntegerLiteral=1 type=i32
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="int" type=i32
+        |-NameIdentifierNode="testa"
+        |-TypeReferenceNode="int" type=i32
+        |-VariableReferenceNode type=i32
+          |-NameIdentifierNode="a"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="float" type=f32
+        |-ParameterNode type=f64
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="double" type=f64
+        |-NameIdentifierNode="floatingPoints"
+        |-TypeReferenceNode="float" type=f32
+        |-VariableReferenceNode type=f32
+          |-NameIdentifierNode="a"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="float" type=f32
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="float" type=f32
+        |-NameIdentifierNode="addFloat"
+        |-TypeReferenceNode="float" type=f32
+        |-BinaryExpressionNode="+" type=f32
+          |-VariableReferenceNode type=f32
+            |-NameIdentifierNode="a"
+          |-VariableReferenceNode type=f32
+            |-NameIdentifierNode="b"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="width"
+          |-TypeReferenceNode="float" type=f32
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="height"
+          |-TypeReferenceNode="float" type=f32
+        |-NameIdentifierNode="x"
+        |-TypeReferenceNode="float" type=f32
+        |-BinaryExpressionNode="*" type=f32
+          |-BinaryExpressionNode="+" type=f32
+            |-VariableReferenceNode type=f32
+              |-NameIdentifierNode="width"
+            |-FloatLiteral=1 type=f32
+          |-VariableReferenceNode type=f32
+            |-NameIdentifierNode="height"

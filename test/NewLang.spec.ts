@@ -87,22 +87,22 @@ describe('Parser', () => {
     test`var test = 1`;
     test`export var test = 1`;
 
-    test`val test: Number = 1`;
-    test`val test = 1`;
+    test`const test: Number = 1`;
+    test`const test = 1`;
 
-    test`val test = 1 * 1 - 2 / 4 and 1 == 3 or 4 <= 4`;
+    test`const test = 1 * 1 - 2 / 4 and 1 == 3 or 4 <= 4`;
 
-    test`val test = 1`;
+    test`const test = 1`;
 
-    test`val test = 1 mul 4`;
+    test`const test = 1 mul 4`;
 
-    test`val floatingNumber: Number = 1.0`;
-    test`val floatingNumber: Number = 0.0`;
+    test`const floatingNumber: Number = 1.0`;
+    test`const floatingNumber: Number = 0.0`;
 
-    test`export val test = 1`;
-    test`val test = true`;
-    test`val test = false`;
-    test`val test = null`;
+    test`export const test = 1`;
+    test`const test = true`;
+    test`const test = false`;
+    test`const test = null`;
 
     test`fun test(): Number = 1`;
 
@@ -112,13 +112,13 @@ describe('Parser', () => {
     test`export fun test(a: Number) = 2`;
     test`export fun test(a: Number, b: Type) = 2`;
 
-    test`val test = 1 + (4 + 1)`;
-    test`val test = (1 + 4) + 1`;
+    test`const test = 1 + (4 + 1)`;
+    test`const test = (1 + 4) + 1`;
 
     test`
       export var test = 1
       var test2 = 1
-      val test2 = 1
+      const test2 = 1
     `;
 
     test`
@@ -147,33 +147,33 @@ describe('Parser', () => {
     // export fun getTest() = test
     // `;
 
-    test`val test = 1 match {}`;
-    test`val test = 1 match { else -> 1 }`;
+    test`const test = 1 match {}`;
+    test`const test = 1 match { else -> 1 }`;
     test`
-      val test = 1 match {
+      const test = 1 match {
         case 2 -> true
         else -> false
       }
     `;
 
-    test`val test = 1 match { case 2 -> true else -> false }`;
+    test`const test = 1 match { case 2 -> true else -> false }`;
 
     test`
-      val test = 1 match {
+      const test = 1 match {
         case 2->true
         else->false
       }
     `;
 
     test`
-      val test = 1 match {
+      const test = 1 match {
         case 2 -> true
         else -> false
       }
     `;
 
     test`
-      val test = 1 match {
+      const test = 1 match {
         case x if true -> true
         case x if x < 1 and x < 10 -> true
         case 2 -> true
@@ -181,7 +181,7 @@ describe('Parser', () => {
       }
     `;
 
-    test`val test = 1 match { case x if x < 1 and x < 10 -> true }`;
+    test`const test = 1 match { case x if x < 1 and x < 10 -> true }`;
     test`var a = x match { else -> 1 } map 1 * 2`;
 
     test`var a = !x()`;
@@ -191,14 +191,14 @@ describe('Parser', () => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual(') = 2');
     });
-    testParseTokenFailsafe(parser, `export struct Entity asd val x = 1`, null, doc => {
+    testParseTokenFailsafe(parser, `export struct Entity asd const x = 1`, null, doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('asd ');
     });
     testParseTokenFailsafe(parser, `export struct Entity asd`, null, doc => {
       expect(doc.errors[0].message).toEqual('Unexpected end of input: \nasd');
     });
-    testParseTokenFailsafe(parser, `struct Entity asd val x = 1`, null, doc => {
+    testParseTokenFailsafe(parser, `struct Entity asd const x = 1`, null, doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('asd ');
     });
@@ -247,11 +247,11 @@ describe('Parser', () => {
       expect(doc.errors[0].token.text).toEqual('match');
     });
 
-    test`val test = 1 map 1 map 2 map 3`;
-    test`val test = x(1)`;
-    test`val test = x(1,2)`;
-    test`val test = (x)(1,2)`;
-    test`val test = (x())(1,2)`;
-    test`val test = x( 1 , 2 /* sdgf */)`;
+    test`const test = 1 map 1 map 2 map 3`;
+    test`const test = x(1)`;
+    test`const test = x(1,2)`;
+    test`const test = (x)(1,2)`;
+    test`const test = (x())(1,2)`;
+    test`const test = x( 1 , 2 /* sdgf */)`;
   });
 });

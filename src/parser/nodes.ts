@@ -1,15 +1,21 @@
 import { IToken, TokenError } from 'ebnf';
-import { Closure, Context, ITapeElement } from './closure';
+import { Closure, Context } from './closure';
 import { Type } from './types';
+import { BinaryOperation } from '../compiler/languageOperations';
 
-export abstract class Node {
+export interface TypePhaseNode {
+  ofType: Type;
+}
+
+export abstract class Node implements TypePhaseNode {
+  ofType: Type;
   hasParentheses: boolean = false;
   errors: Error[] = [];
   closure: Closure;
 
   constructor(public astNode?: IToken) {}
 
-  get type(): string {
+  get nodeName(): string {
     return this.constructor.name;
   }
 
@@ -45,12 +51,10 @@ export class NameIdentifierNode extends Node {
 export class TypeReferenceNode extends NameIdentifierNode {
   isPointer: number = 0;
   isArray: boolean = false;
-  resolvedTapeElement: ITapeElement;
 }
 
 export class VariableReferenceNode extends ExpressionNode {
   variable: NameIdentifierNode;
-  resolvedTapeElement: ITapeElement;
 }
 
 export abstract class DirectiveNode extends Node {
@@ -61,6 +65,8 @@ export class DocumentNode extends Node {
   directives: DirectiveNode[];
   errors: TokenError[] = [];
   context: Context;
+  file?: string;
+  textContent: string;
 }
 
 export class ParameterNode extends Node {
@@ -108,14 +114,13 @@ export class VarDirectiveNode extends DirectiveNode {
 export class TypeDirectiveNode extends DirectiveNode {
   variableName: NameIdentifierNode;
   valueType: TypeNode;
-  resolvedType: Type;
 }
 
 export class TypeNode extends Node {
   nativeType: Type;
 }
 
-export class ValDirectiveNode extends VarDirectiveNode {
+export class ConstDirectiveNode extends VarDirectiveNode {
   mutable = false;
 }
 
@@ -167,6 +172,7 @@ export class BinaryExpressionNode extends ExpressionNode {
   lhs: ExpressionNode;
   rhs: ExpressionNode;
   operator: string;
+  binaryOperation: BinaryOperation;
 
   get text() {
     if (!this.operator) throw new Error('BinaryExpressionNode w/o operator');
@@ -175,7 +181,7 @@ export class BinaryExpressionNode extends ExpressionNode {
 }
 
 export class UnaryExpressionNode extends ExpressionNode {
-  lhs: ExpressionNode;
+  rhs: ExpressionNode;
   operator: string;
 
   get text() {
@@ -211,4 +217,10 @@ export class MatchDefaultNode extends ExpressionNode {
 export class MatchNode extends ExpressionNode {
   lhs: ExpressionNode;
   matchingSet: MatcherNode[];
+}
+
+export function findNodesByType<T>(astRoot: any, type: { new (...args): T }, list: T[] = []): T[] {
+  if (astRoot instanceof type) list.push(astRoot);
+  astRoot.children.forEach($ => findNodesByType($, type, list));
+  return list;
 }

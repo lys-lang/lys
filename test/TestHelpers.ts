@@ -1,8 +1,15 @@
 import { IToken, Parser, Grammars } from 'ebnf';
+import { parser } from '../dist/grammar';
+import { printErrors } from '../dist/parser/printer';
 
+import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
-
+import * as expect from 'expect';
+import glob = require('glob');
+import { Node } from '../dist/parser/nodes';
 export const printBNF = (parser: Parser) => console.log(parser.emitSource());
+
+const writeToFile = process.env.UPDATE_AST === 'true';
 
 let inspect = require('util').inspect;
 
@@ -12,7 +19,8 @@ export function testParseToken(
   target?: string,
   customTest?: (document: IToken) => void,
   phases?: ((a: any) => any)[],
-  debug?: boolean
+  debug?: boolean,
+  itName?: string
 ) {
   testParseTokenFailsafe(
     parser,
@@ -34,7 +42,8 @@ export function testParseToken(
       customTest && customTest(doc);
     },
     phases,
-    debug
+    debug,
+    itName
   );
 }
 
@@ -44,9 +53,10 @@ export function testParseTokenFailsafe(
   target?: string,
   customTest?: (document: IToken) => void,
   phases?: ((a: any) => any)[],
-  debug?: boolean
+  debug?: boolean,
+  itName?: string
 ) {
-  it(inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), () => {
+  it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), () => {
     debug && console.log('      ---------------------------------------------------');
 
     let result;
@@ -81,6 +91,7 @@ export function testParseTokenFailsafe(
       //   console.(ee);
       // }
       // parser.debug = false;
+      printErrors(result);
       result && describeTree(result);
       throw e;
     }
@@ -89,14 +100,53 @@ export function testParseTokenFailsafe(
   });
 }
 
-function printAST(token: IToken, level = 0) {
-  console.log('         ' + '  '.repeat(level) + `|-${token.type}${token.text ? '=' + token.text : ''}`);
-  token.children &&
-    token.children.forEach(c => {
-      printAST(c, level + 1);
-    });
+export function printAST(token: IToken | Node, level = 0) {
+  if (token instanceof Node) {
+    return (
+      '\n' +
+      '  '.repeat(level) +
+      `|-${token.nodeName}${token.text ? '=' + token.text : ''}${
+        token.ofType ? ' type=' + token.ofType.toString() : ''
+      }` +
+      (token.children || []).map(c => printAST(c, level + 1)).join('')
+    );
+  }
+
+  return (
+    '\n' +
+    '  '.repeat(level) +
+    `|-${token.type}${token.text ? '=' + token.text : ''}` +
+    (token.children || []).map(c => printAST(c, level + 1)).join('')
+  );
 }
 
 export function describeTree(token: IToken) {
-  printAST(token);
+  console.log(printAST(token));
+}
+
+export function folderBasedTest(grep: string, phases: any[], fn: (x) => string, extension = '.wast') {
+  function testFile(file: string) {
+    const content = readFileSync(file).toString();
+    testParseToken(
+      parser,
+      content,
+      'Document',
+      (x: any) => {
+        const result = fn(x);
+
+        const compareToFileName = file + extension;
+        const compareFileExists = existsSync(compareToFileName);
+        const compareTo = compareFileExists ? readFileSync(compareToFileName).toString() : '';
+        if (writeToFile || !compareFileExists) {
+          writeFileSync(compareToFileName, result);
+        }
+        expect(result).toEqual(compareTo);
+      },
+      phases,
+      false,
+      file
+    );
+  }
+
+  glob.sync(grep).map(testFile);
 }

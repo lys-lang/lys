@@ -26,8 +26,8 @@ const visitor = {
 
     return ret;
   },
-  ValDirective(astNode: IToken) {
-    const ret = new Nodes.ValDirectiveNode(astNode);
+  ConstDirective(astNode: IToken) {
+    const ret = new Nodes.ConstDirectiveNode(astNode);
 
     ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
     ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
@@ -82,6 +82,11 @@ const visitor = {
   EqExpression: binaryOpVisitor,
   ShiftExpression: binaryOpVisitor,
   MulExpression: binaryOpVisitor,
+  ParenExpression(astNode: IToken) {
+    const ret = visitLastChild(astNode);
+    ret.hasParentheses = true;
+    return ret;
+  },
   Expression(astNode: IToken) {
     let ret = visit(astNode.children[0]);
 
@@ -156,7 +161,7 @@ const visitor = {
   },
   Document(astNode: IToken) {
     const doc = new Nodes.DocumentNode(astNode);
-
+    doc.textContent = astNode.text;
     doc.directives = astNode.children.map($ => visit($));
 
     return doc;

@@ -1,16 +1,30 @@
 declare var describe, it, require, console;
 
 import { Grammars, Parser, IToken } from 'ebnf';
-import { testParseToken, describeTree, printBNF, testParseTokenFailsafe } from './TestHelpers';
+import {
+  testParseToken,
+  describeTree,
+  printBNF,
+  testParseTokenFailsafe,
+  folderBasedTest,
+  printAST
+} from './TestHelpers';
 import { parser } from '../dist/grammar';
+import * as Nodes from '../dist/parser/nodes';
 import * as expect from 'expect';
 import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
 import { semanticPhase } from '../dist/parser/phases/semanticPhase';
 import { findAllErrors } from '../dist/parser/phases/findAllErrors';
+import { scopePhase } from '../dist/parser/phases/scopePhase';
 
 let inspect = require('util').inspect;
 
 describe('Semantic', function() {
+  const phases = [canonicalPhase, semanticPhase, scopePhase, findAllErrors];
+  describe('Files', () => {
+    folderBasedTest('test/fixtures/semantics/*.ro', phases, (result: any) => printAST(result), '.ast');
+  });
+
   function test(literals, ...placeholders) {
     let result = '';
 
@@ -22,7 +36,15 @@ describe('Semantic', function() {
 
     // add the last literal
     result += literals[literals.length - 1];
-    testParseToken(parser, result, 'Document', null, [canonicalPhase, semanticPhase, findAllErrors]);
+    testParseToken(
+      parser,
+      result,
+      'Document',
+      document => {
+        expect(document.errors.length).toEqual(0);
+      },
+      phases
+    );
   }
 
   function testToFail(literals, ...placeholders) {
@@ -43,7 +65,9 @@ describe('Semantic', function() {
       document => {
         expect(document.errors.length).toBeGreaterThan(0);
       },
-      [canonicalPhase, semanticPhase, findAllErrors]
+      phases,
+      false,
+      result + ' must fail'
     );
   }
   describe('Duplicated parameters', () => {
@@ -74,14 +98,51 @@ describe('Semantic', function() {
       fun test(a: int) = a match { else -> 1 }
     `;
   });
+
+  describe('scope resolution', () => {
+    testParseToken(
+      parser,
+      `type int = ??? var a = 1 fun x(a: int) = a`,
+      'Document',
+      x => {
+        const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
+        const resolved = refs[0].closure.get(refs[0].variable.name);
+        expect(resolved.node.astNode.type).toBe('Parameter');
+      },
+      phases
+    );
+    testParseToken(
+      parser,
+      `const c = 1 var a = c`,
+      'Document',
+      x => {
+        const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
+        const resolved = refs[0].closure.get(refs[0].variable.name);
+        expect(resolved.node.astNode.type).toBe('ConstDirective');
+      },
+      phases
+    );
+    testParseToken(
+      parser,
+      `type int = ??? var a = 1 fun x(b: int) = a`,
+      'Document',
+      x => {
+        const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
+        const resolved = refs[0].closure.get(refs[0].variable.name);
+        expect(resolved.node.astNode.type).toBe('VarDirective');
+      },
+      phases
+    );
+  });
+
   describe('Closures', () => {
     test`
-      val a = true
+      const a = true
       fun test() = a
     `;
 
     test`
-      val a = true
+      const a = true
       fun test() = a
     `;
 

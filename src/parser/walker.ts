@@ -1,4 +1,4 @@
-import { IToken, TokenError } from 'ebnf';
+import { IToken } from 'ebnf';
 
 export function walker<T extends { errors: any[]; children: any[] } = IToken, D = any>(
   cb: (node: T, document: D, parent: T) => void | T
@@ -9,7 +9,7 @@ export function walker<T extends { errors: any[]; children: any[] } = IToken, D 
       try {
         res = cb.call(this, node, document, parent);
       } catch (e) {
-        node.errors.push(new TokenError(e.message, node as any));
+        node.errors.push(e);
       }
 
       if (node.children) {
