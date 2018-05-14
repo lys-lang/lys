@@ -64,7 +64,8 @@ export abstract class Type {
     }
   }
   equals(_otherType: Type) {
-    return _otherType && this.nativeType == _otherType.nativeType;
+    if (!_otherType) return false;
+    return _otherType && this.nativeType == _otherType.nativeType && this.binaryenType == _otherType.binaryenType;
   }
   canAssign(_otherType: Type) {
     return this.equals(_otherType);
@@ -80,6 +81,11 @@ export class FunctionType extends Type {
 
   parameterTypes: Type[];
   returnType: Type;
+
+  acceptsTypes(types: Type[]) {
+    if (this.parameterTypes.length !== types.length) return false;
+    return types.every(($, $$) => this.parameterTypes[$$].equals($));
+  }
 
   toString() {
     return NativeTypes[this.nativeType];

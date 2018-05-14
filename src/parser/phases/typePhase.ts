@@ -92,17 +92,26 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
 
     node.argumentsNode.forEach($ => resolveType($));
 
+    const argumentTypes = node.argumentsNode.map($ => $.ofType);
+
     let fnType = node.functionNode.ofType;
 
-    if (fnType instanceof FunctionType) {
-      node.functionNode.ofType = fnType;
-    } else if (fnType instanceof IntersectionType) {
-      // find matching overload
-      node.functionNode.ofType = fnType.of[0] as FunctionType;
+    let overloadFunctions: FunctionType[] = [];
 
-      // findOverloadFunction(node.argumentsNode, node.functionNode.closure.getVariable(node.functionNode.text).node);
+    if (fnType instanceof FunctionType) {
+      overloadFunctions = [fnType];
+    } else if (fnType instanceof IntersectionType) {
+      overloadFunctions = fnType.of as FunctionType[];
     } else {
       throw new Error(`Expression is not a function`);
+    }
+
+    // find matching overload
+    node.functionNode.ofType = overloadFunctions.find(($: FunctionType) => $.acceptsTypes(argumentTypes));
+
+    if (!node.functionNode.ofType) {
+      const overloads = overloadFunctions.map(($: FunctionType) => '  (' + $.parameterTypes.join(',') + ')').join('\n');
+      throw new Error(`No overload found for arguments\n  (${argumentTypes.join(',')})\ngot:\n${overloads}`);
     }
 
     node.ofType = (node.functionNode.ofType as FunctionType).returnType;

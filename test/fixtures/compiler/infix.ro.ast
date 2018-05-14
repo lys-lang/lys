@@ -1,0 +1,55 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="int"
+  |-TypeDirectiveNode type=f32
+    |-NameIdentifierNode="float"
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="float" type=f32
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="float" type=f32
+        |-NameIdentifierNode="sum"
+        |-TypeReferenceNode="float" type=f32
+        |-BinaryExpressionNode="+" type=f32
+          |-VariableReferenceNode type=f32
+            |-NameIdentifierNode="a"
+          |-VariableReferenceNode type=f32
+            |-NameIdentifierNode="b"
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="int" type=i32
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="int" type=i32
+        |-NameIdentifierNode="sum"
+        |-TypeReferenceNode="int" type=i32
+        |-BinaryExpressionNode="+" type=i32
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="a"
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="b"
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="int" type=i32
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="int" type=i32
+        |-NameIdentifierNode="test"
+        |-TypeReferenceNode="int" type=i32
+        |-FunctionCallNode type=i32
+          |-VariableReferenceNode type=func
+            |-NameIdentifierNode="sum"
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="a"
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="b"
