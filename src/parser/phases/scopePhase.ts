@@ -23,6 +23,8 @@ const createClosures = walker((node: Nodes.Node, _: Nodes.DocumentNode, parent: 
         throw new Error('Function has no value');
       }
 
+      node.internalIdentifier = node.closure.getInternalIdentifier(node);
+
       node.closure = node.closure.newChildClosure();
 
       node.parameters.forEach($ => {
@@ -51,6 +53,7 @@ const resolveVariables = walker((node: Nodes.Node) => {
     if (!node.closure.canResolveName(node.variable.name)) {
       throw new Error(`Cannot resolve variable "${node.variable.name}"`);
     }
+    node.closure.incrementUsage(node.variable.name);
   }
   if (node instanceof Nodes.TypeReferenceNode) {
     if (!node.closure.canResolveName(node.name)) {

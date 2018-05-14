@@ -1,5 +1,6 @@
 import * as Nodes from '../parser/nodes';
 import binaryen = require('binaryen');
+import { FunctionType } from '../parser/types';
 
 function getTypeForFunction(fn: Nodes.FunctionNode, module: binaryen.Module) {
   const retType = fn.functionReturnType.ofType;
@@ -30,20 +31,29 @@ function emitFunction(fn: Nodes.FunctionNode, module: binaryen.Module, document:
   });
 
   const moduleFun = module.addFunction(
-    fn.functionName.name,
+    fn.internalIdentifier,
     fnType.type,
     [],
     module.return(emit(fn.value, module, document))
   );
+
   return moduleFun;
 }
 
 function emit(node: Nodes.Node, module: binaryen.Module, document: Nodes.DocumentNode): any {
   try {
-    if (node instanceof Nodes.IntegerLiteral) {
+    if (node instanceof Nodes.FunctionCallNode) {
+      const ofType = node.functionNode.ofType as FunctionType;
+
+      return module.call(
+        ofType.internalName,
+        node.argumentsNode.map($ => emit($, module, document)),
+        ofType.returnType.binaryenType
+      );
+    } else if (node instanceof Nodes.IntegerLiteral) {
       return module.i32.const(node.value);
     } else if (node instanceof Nodes.FloatLiteral) {
-      return module.f64.const(node.value);
+      return module.f32.const(node.value);
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       return node.binaryOperation.generateCode(
         emit(node.lhs, module, document),
@@ -73,15 +83,18 @@ export function compile(document: Nodes.DocumentNode) {
   const createdFunctions = [];
 
   functions.forEach($ => {
-    if ($.functions.length > 1) {
-      $.functions.forEach($ => $.errors.push(new Error('You can only export non-overloaded functions')));
-    } else {
-      const fun = $.functions[0];
+    const canBeExported = $.functions.length === 1;
+
+    $.functions.forEach(fun => {
       createdFunctions.push(emitFunction(fun.functionNode, module, document));
       if (fun.isExported) {
-        module.addFunctionExport(fun.functionNode.functionName.name, fun.functionNode.functionName.name);
+        if (canBeExported) {
+          module.addFunctionExport(fun.functionNode.internalIdentifier, fun.functionNode.functionName.name);
+        } else {
+          throw new Error('You cannot export overloaded functions');
+        }
       }
-    }
+    });
   });
 
   module.setFunctionTable(createdFunctions);

@@ -39,9 +39,29 @@ export class Closure {
   nameMappings: IDictionary<ITapeElement> = {};
   localUsages: IDictionary<number> = {};
 
+  programTakenNames = new Set<string>();
+
   constructor(public executionContext: Context, public parent: Closure = null) {
     if (parent) {
       Object.assign(this.nameMappings, parent.nameMappings);
+    }
+  }
+
+  getInternalIdentifier(node: Nodes.Node) {
+    let prefix = 'identifier_';
+
+    if (node instanceof Nodes.FunctionNode) {
+      prefix = node.functionName.name || 'anonFun';
+    }
+
+    let i = 0;
+    while (true) {
+      const newName = i ? `${prefix}${i}` : prefix;
+      if (!this.programTakenNames.has(newName)) {
+        this.programTakenNames.add(newName);
+        return newName;
+      }
+      i++;
     }
   }
 
@@ -121,6 +141,8 @@ export class Closure {
   }
 
   newChildClosure(): Closure {
-    return new Closure(this.executionContext, this);
+    const child = new Closure(this.executionContext, this);
+    child.programTakenNames = this.programTakenNames;
+    return child;
   }
 }

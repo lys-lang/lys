@@ -6,21 +6,21 @@
     |-NameIdentifierNode="float"
   |-TypeDirectiveNode type=f64
     |-NameIdentifierNode="double"
-  |-OverloadedFunctionNode
-    |-FunDirectiveNode
-      |-FunctionNode
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
         |-NameIdentifierNode="test"
         |-TypeReferenceNode="int" type=i32
         |-IntegerLiteral=1 type=i32
-  |-OverloadedFunctionNode
-    |-FunDirectiveNode
-      |-FunctionNode
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
         |-NameIdentifierNode="test0"
         |-TypeReferenceNode="int" type=i32
         |-IntegerLiteral=1 type=i32
-  |-OverloadedFunctionNode
-    |-FunDirectiveNode
-      |-FunctionNode
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="int" type=i32
@@ -28,9 +28,9 @@
         |-TypeReferenceNode="int" type=i32
         |-VariableReferenceNode type=i32
           |-NameIdentifierNode="a"
-  |-OverloadedFunctionNode
-    |-FunDirectiveNode
-      |-FunctionNode
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
         |-ParameterNode type=f32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="float" type=f32
@@ -41,9 +41,9 @@
         |-TypeReferenceNode="float" type=f32
         |-VariableReferenceNode type=f32
           |-NameIdentifierNode="a"
-  |-OverloadedFunctionNode
-    |-FunDirectiveNode
-      |-FunctionNode
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
         |-ParameterNode type=f32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="float" type=f32
@@ -57,9 +57,25 @@
             |-NameIdentifierNode="a"
           |-VariableReferenceNode type=f32
             |-NameIdentifierNode="b"
-  |-OverloadedFunctionNode
-    |-FunDirectiveNode
-      |-FunctionNode
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="int" type=i32
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="int" type=i32
+        |-NameIdentifierNode="addInts"
+        |-TypeReferenceNode="int" type=i32
+        |-BinaryExpressionNode="+" type=i32
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="a"
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="b"
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
         |-ParameterNode type=f32
           |-NameIdentifierNode="width"
           |-TypeReferenceNode="float" type=f32

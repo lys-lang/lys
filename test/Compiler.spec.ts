@@ -24,9 +24,9 @@ import { scopePhase } from '../dist/parser/phases/scopePhase';
 let inspect = require('util').inspect;
 
 const writeToFile = process.env.UPDATE_AST === 'true';
+const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, findAllErrors];
 
 describe('Compiler', function() {
-  const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, findAllErrors];
   describe('AST', () => {
     folderBasedTest('**/compiler/*.ro', phases, (result: any) => printAST(result), '.ast');
   });
@@ -35,5 +35,21 @@ describe('Compiler', function() {
       const module = comp.compile(result);
       return module.emitText();
     });
+  });
+  describe('Compiler-errors', () => {
+    folderBasedTest(
+      '**/type-error/*.ro',
+      [canonicalPhase, semanticPhase, scopePhase],
+      result => {
+        const typeResult = findAllErrors(typePhase(result));
+
+        if (typeResult.errors.length == 0) {
+          throw new Error('Test did not fail');
+        }
+
+        return JSON.stringify(typeResult.errors.map($ => $.message));
+      },
+      '.json'
+    );
   });
 });

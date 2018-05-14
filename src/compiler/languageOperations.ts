@@ -1,4 +1,4 @@
-import { Type, float } from '../parser/types';
+import { Type, float, int } from '../parser/types';
 import binaryen = require('binaryen');
 
 export interface BinaryOperation {
@@ -10,6 +10,7 @@ export interface BinaryOperation {
 }
 
 const floatType = new float();
+const intType = new int();
 
 export const binaryOperations: BinaryOperation[] = [
   {
@@ -18,6 +19,13 @@ export const binaryOperations: BinaryOperation[] = [
     outputType: floatType,
     operator: '+',
     generateCode: (lhs, rhs, module) => module.f32.add(lhs, rhs)
+  },
+  {
+    lhsType: intType,
+    rhsType: intType,
+    outputType: intType,
+    operator: '+',
+    generateCode: (lhs, rhs, module) => module.i32.add(lhs, rhs)
   },
   {
     lhsType: floatType,

@@ -81,6 +81,8 @@ export class FunctionNode extends ExpressionNode {
   functionReturnType: TypeReferenceNode;
   parameters: ParameterNode[] = [];
   value: ExpressionNode;
+
+  internalIdentifier: string;
 }
 
 export class ContextAwareFunction extends FunctionNode {

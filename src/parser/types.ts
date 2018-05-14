@@ -66,6 +66,38 @@ export abstract class Type {
   equals(_otherType: Type) {
     return _otherType && this.nativeType == _otherType.nativeType;
   }
+  canAssign(_otherType: Type) {
+    return this.equals(_otherType);
+  }
+}
+
+export class FunctionType extends Type {
+  nativeType: NativeTypes = NativeTypes.func;
+
+  constructor(public internalName: string) {
+    super();
+  }
+
+  parameterTypes: Type[];
+  returnType: Type;
+
+  toString() {
+    return NativeTypes[this.nativeType];
+  }
+}
+
+export class IntersectionType extends Type {
+  nativeType: NativeTypes = NativeTypes.anyfunc;
+
+  constructor() {
+    super();
+  }
+
+  of: Type[] = [];
+
+  toString() {
+    return NativeTypes[this.nativeType];
+  }
 }
 
 export abstract class NativeType extends Type {

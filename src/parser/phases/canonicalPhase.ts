@@ -66,6 +66,13 @@ const visitor = {
 
     return ret;
   },
+  FunctionCallExpression(astNode: IToken) {
+    const ret = new Nodes.FunctionCallNode(astNode);
+    ret.functionNode = visit(astNode.children[0]);
+    ret.argumentsNode = astNode.children[1].children.map($ => visit($));
+
+    return ret;
+  },
   UnknownExpression() {
     return null;
   },

@@ -17,7 +17,7 @@ export function testParseToken(
   parser: Parser,
   txt: string,
   target?: string,
-  customTest?: (document: IToken) => void,
+  customTest?: (document: IToken, error?: Error) => void,
   phases?: ((a: any) => any)[],
   debug?: boolean,
   itName?: string
@@ -51,7 +51,7 @@ export function testParseTokenFailsafe(
   parser: Parser,
   txt: string,
   target?: string,
-  customTest?: (document: IToken) => void,
+  customTest?: (document: IToken, error?: Error) => void,
   phases?: ((a: any) => any)[],
   debug?: boolean,
   itName?: string
@@ -72,12 +72,16 @@ export function testParseTokenFailsafe(
 
       if (phases && phases.length) {
         debug && console.log(`      Phase ${0}:`);
-        result = phases.reduce(($, reducer, i) => {
-          debug && describeTree($);
-          debug && console.log(`      Phase ${i + 1}:`);
-          return reducer($);
-        }, result);
-        if (!result) throw new Error('Did not resolve');
+        try {
+          result = phases.reduce(($, reducer, i) => {
+            debug && describeTree($);
+            debug && console.log(`      Phase ${i + 1}:`);
+            return reducer($);
+          }, result);
+        } catch (e) {
+          customTest(null, e);
+          return;
+        }
       }
 
       if (customTest) customTest(result);
@@ -124,15 +128,25 @@ export function describeTree(token: IToken) {
   console.log(printAST(token));
 }
 
-export function folderBasedTest(grep: string, phases: any[], fn: (x) => string, extension = '.wast') {
+export function folderBasedTest(
+  grep: string,
+  phases: any[],
+  fn: (x, err?) => string,
+  extension = '.wast',
+  shouldFail = false
+) {
   function testFile(file: string) {
     const content = readFileSync(file).toString();
     testParseToken(
       parser,
       content,
       'Document',
-      (x: any) => {
-        const result = fn(x);
+      (resultNode: any, err) => {
+        if (shouldFail) {
+          if (!err) throw new Error('Test did not fail');
+        }
+
+        let result = fn(resultNode, err);
 
         const compareToFileName = file + extension;
         const compareFileExists = existsSync(compareToFileName);

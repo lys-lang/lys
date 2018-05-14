@@ -15,6 +15,12 @@ function collectErrors(root: Nodes.Node) {
   return errorNodes;
 }
 
+function mapSet<T, V>(set: Set<T>, fn: (T) => V): V[] {
+  const out = [];
+  set.forEach($ => out.push(fn($)));
+  return out;
+}
+
 export function printErrors(root: Nodes.DocumentNode) {
   let source = root.textContent;
 
@@ -25,8 +31,8 @@ export function printErrors(root: Nodes.DocumentNode) {
 
   let lines = source.split(/\r\n|\r|\n/g);
 
-  let errorOnLines: (Error & { start: ITextPosition; end: ITextPosition })[][] = new Array(lines.length + 1).map(
-    () => []
+  let errorOnLines: Set<Error & { start: ITextPosition; end: ITextPosition }>[] = new Array(lines.length + 1).map(
+    () => new Set()
   );
 
   let errors = root.errors;
@@ -36,16 +42,12 @@ export function printErrors(root: Nodes.DocumentNode) {
       const token = node.astNode;
       const start = lineMapper.position(token.start);
       const end = lineMapper.position(token.end);
-      console.log({ a: token.start, b: token.end, start, end, text: token.text });
+      // console.log({ a: token.start, b: token.end, start, end, text: token.text });
       node.errors.forEach(err => {
-        if (start.line >= 0 && end.line >= 0 && start.line < end.line) {
-          for (let i = start.line; i < end.line; i++) {
-            errorOnLines[i - 1] = errorOnLines[i - 1] || [];
-            errorOnLines[i - 1].push(Object.assign(err, { start, end }));
-          }
-        } else if (start.line >= 0) {
-          errorOnLines[start.line - 1] = errorOnLines[start.line - 1] || [];
-          errorOnLines[start.line - 1].push(Object.assign(err, { start, end }));
+        Object.assign(err, { start, end });
+        if (start.line >= 0) {
+          errorOnLines[start.line] = errorOnLines[start.line] || new Set();
+          errorOnLines[start.line].add(err as any);
         }
       });
     }
@@ -60,7 +62,7 @@ export function printErrors(root: Nodes.DocumentNode) {
   const linesAbove = 10;
 
   errorOnLines.forEach((x, line) => {
-    if (x && x.length) {
+    if (x && x.size) {
       for (let i = 0; i < linesAbove; i++) {
         printableLines[Math.max(line - i, 0)] = true;
         printableLines[Math.min(line + i, lines.length)] = true;
@@ -92,30 +94,28 @@ export function printErrors(root: Nodes.DocumentNode) {
 
     lastLine = i + 1;
 
-    if (typeof line == 'string' && errorOnLines[i] && errorOnLines[i].length) {
+    if (typeof line == 'string' && errorOnLines[i] && errorOnLines[i].size) {
       printLines.push(
         ln(i) +
           colors.bgRed(line) +
-          errorOnLines[i]
-            .map(x => {
-              let message = '';
+          mapSet(errorOnLines[i], x => {
+            let message = '';
 
-              if (i == x.end.line - 1 || x.end.line == x.start.line) {
-                message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
+            if (i == x.end.line - 1 || x.end.line == x.start.line) {
+              message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
 
-                if (x.start.column <= x.end.column && x.end.line == x.start.line)
-                  message = message + ' ' + new Array(x.end.column + 1 - x.start.column).join('^') + ' ';
-                else message = message + ' ^ ';
+              if (x.start.column <= x.end.column && x.end.line == x.start.line)
+                message = message + ' ' + new Array(x.end.column + 1 - x.start.column).join('^') + ' ';
+              else message = message + ' ^ ';
 
-                message = message + (printedErrors.size + 1).toString() + ') ' + x.message;
-                message = colors.red(message);
+              message = message + (printedErrors.size + 1).toString() + ') ' + x.message;
+              message = colors.red(message);
 
-                printedErrors.add(x);
-              }
+              printedErrors.add(x);
+            }
 
-              return message;
-            })
-            .join('')
+            return message;
+          }).join('')
       );
     } else if (typeof line == 'string') {
       printLines.push(ln(i) + line);

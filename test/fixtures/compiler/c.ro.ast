@@ -1,0 +1,34 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="int"
+  |-TypeDirectiveNode type=f32
+    |-NameIdentifierNode="float"
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="x"
+          |-TypeReferenceNode="int" type=i32
+        |-NameIdentifierNode="x"
+        |-TypeReferenceNode="int" type=i32
+        |-VariableReferenceNode type=i32
+          |-NameIdentifierNode="x"
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=f32
+          |-NameIdentifierNode="x"
+          |-TypeReferenceNode="float" type=f32
+        |-NameIdentifierNode="x"
+        |-TypeReferenceNode="float" type=f32
+        |-VariableReferenceNode type=f32
+          |-NameIdentifierNode="x"
+  |-OverloadedFunctionNode type=anyfunc
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-NameIdentifierNode="outer"
+        |-TypeReferenceNode="int" type=i32
+        |-FunctionCallNode type=i32
+          |-VariableReferenceNode type=func
+            |-NameIdentifierNode="x"
+          |-IntegerLiteral=1 type=i32
