@@ -7,24 +7,13 @@
  (func $test (; 0 ;) (type $f_boolean_i32) (param $0 i32) (result i32)
   (local $1 i32)
   (return
-   (block $B (result i32)
-    (set_local $1
-     (get_local $0)
-    )
-    (block $B0
-     (block $B1
-      (br_if $B0
-       (i32.eq
-        (i32.const 1)
-        (get_local $1)
-       )
-      )
-     )
-     (i32.const 0)
-     (br $B)
+   (if (result i32)
+    (i32.eq
+     (i32.const 1)
+     (get_local $1)
     )
     (i32.const -1)
-    (br $B)
+    (i32.const 0)
    )
   )
  )

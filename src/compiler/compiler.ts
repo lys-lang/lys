@@ -71,6 +71,13 @@ function emitMatchingNode(match: Nodes.MatchNode, module: binaryen.Module, docum
     })
     .filter($ => !!$);
 
+  // if has shape condition/else then replace by if else
+  if (ixDefaultBranch !== -1 && blocks.length === 2) {
+    const ifNode = blocks.find($ => $.condition);
+    const elseNode = blocks.find($ => !$.condition);
+    return module.if(ifNode.condition, ifNode.body, elseNode.body);
+  }
+
   const breaks = blocks.filter($ => !!$.condition).map(($, $$) => module.br_if(`B${$$}`, $.condition));
 
   const ret = blocks.reduceRight((prev, curr, ix) => {
