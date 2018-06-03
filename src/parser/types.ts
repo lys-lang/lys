@@ -102,7 +102,38 @@ export class IntersectionType extends Type {
   of: Type[] = [];
 
   toString() {
-    return NativeTypes[this.nativeType];
+    return this.of.map($ => $.toString()).join(' & ');
+  }
+}
+
+export class UnionType extends Type {
+  nativeType: NativeTypes = NativeTypes.anyfunc;
+
+  constructor() {
+    super();
+  }
+
+  of: Type[] = [];
+
+  toString() {
+    return this.of.map($ => $.toString()).join(' | ');
+  }
+
+  simplify() {
+    const newTypes: Type[] = [];
+    this.of.forEach($ => {
+      if (!newTypes.some($1 => $1.equals($))) {
+        newTypes.push($);
+      }
+    });
+
+    if (newTypes.length === 1) {
+      return newTypes[0];
+    } else {
+      const newType = new UnionType();
+      newType.of = newTypes;
+      return newType;
+    }
   }
 }
 
@@ -115,7 +146,7 @@ export abstract class NativeType extends Type {
   }
 }
 
-export class byte extends NativeType {
+export class u8 extends NativeType {
   constructor() {
     super(NativeTypes.u8);
   }
@@ -127,37 +158,37 @@ export class bool extends NativeType {
   }
 }
 
-export class int extends NativeType {
+export class i32 extends NativeType {
   constructor() {
     super(NativeTypes.i32);
   }
 }
 
-export class uint extends NativeType {
+export class u32 extends NativeType {
   constructor() {
     super(NativeTypes.u32);
   }
 }
 
-export class short extends NativeType {
+export class i16 extends NativeType {
   constructor() {
     super(NativeTypes.i16);
   }
 }
 
-export class ushort extends NativeType {
+export class u16 extends NativeType {
   constructor() {
     super(NativeTypes.u16);
   }
 }
 
-export class float extends NativeType {
+export class f32 extends NativeType {
   constructor() {
     super(NativeTypes.f32);
   }
 }
 
-export class double extends NativeType {
+export class f64 extends NativeType {
   constructor() {
     super(NativeTypes.f64);
   }
@@ -170,13 +201,13 @@ export class pointer extends NativeType {
 }
 
 export const InjectableTypes = {
-  byte,
+  u8,
   boolean: bool,
-  int,
-  uint,
-  short,
-  ushort,
-  float,
-  double,
+  i32,
+  u32,
+  i16,
+  u16,
+  f32,
+  f64,
   pointer
 };

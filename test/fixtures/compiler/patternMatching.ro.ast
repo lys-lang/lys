@@ -1,0 +1,62 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="i32"
+  |-TypeDirectiveNode type=boolean
+    |-NameIdentifierNode="boolean"
+  |-OverloadedFunctionNode type=func
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="i32" type=i32
+        |-NameIdentifierNode="test"
+        |-TypeReferenceNode="boolean" type=boolean
+        |-MatchNode type=boolean
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="a"
+          |-MatchLiteralNode type=boolean
+            |-IntegerLiteral=1 type=i32
+            |-BooleanLiteral=true type=boolean
+          |-MatchDefaultNode type=boolean
+            |-BooleanLiteral=false type=boolean
+  |-OverloadedFunctionNode type=func
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="i32" type=i32
+        |-NameIdentifierNode="test2"
+        |-TypeReferenceNode="i32" type=i32
+        |-MatchNode type=i32
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="a"
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=10 type=i32
+            |-IntegerLiteral=1 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=20 type=i32
+            |-IntegerLiteral=2 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=30 type=i32
+            |-IntegerLiteral=3 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=40 type=i32
+            |-IntegerLiteral=4 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=50 type=i32
+            |-IntegerLiteral=5 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=60 type=i32
+            |-IntegerLiteral=6 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=70 type=i32
+            |-IntegerLiteral=7 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=80 type=i32
+            |-IntegerLiteral=8 type=i32
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=90 type=i32
+            |-IntegerLiteral=9 type=i32
+          |-MatchDefaultNode type=i32
+            |-IntegerLiteral=0 type=i32

@@ -1,12 +1,12 @@
 import * as Nodes from '../nodes';
-import { walker } from '../walker';
+import { walkPreOrder } from '../walker';
 import { TokenError } from 'ebnf';
 import { Context, Closure } from '../closure';
 
 const overloadFunctions = function(document: Nodes.DocumentNode) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
 
-  const process = walker((node: Nodes.Node, _: Nodes.DocumentNode) => {
+  const process = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode) => {
     if (node instanceof Nodes.FunDirectiveNode) {
       const name = node.functionNode.functionName.name;
       const x = overloadedFunctions.get(name);
@@ -39,7 +39,7 @@ const overloadFunctions = function(document: Nodes.DocumentNode) {
   return document;
 };
 
-const checkDuplicatedNames = walker((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
+const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
     let used = [];
     node.parameters.forEach(param => {
@@ -69,6 +69,7 @@ const checkDuplicatedNames = walker((node: Nodes.Node, _: Nodes.DocumentNode, pa
 export function semanticPhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
   node.context = new Context();
   node.closure = new Closure(node.context);
+
   overloadFunctions(node);
   checkDuplicatedNames(node, node);
 

@@ -1,9 +1,9 @@
 import * as Nodes from '../nodes';
-import { walker } from '../walker';
+import { walkPreOrder } from '../walker';
 import { EStoredName } from '../closure';
 import { InjectableTypes } from '../types';
 
-const createClosures = walker((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
+const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
   if (parent) {
     if (!node.closure) {
       node.closure = parent.closure;
@@ -48,7 +48,7 @@ const createClosures = walker((node: Nodes.Node, _: Nodes.DocumentNode, parent: 
   }
 });
 
-const resolveVariables = walker((node: Nodes.Node) => {
+const resolveVariables = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (!node.closure.canResolveName(node.variable.name)) {
       throw new Error(`Cannot resolve variable "${node.variable.name}"`);

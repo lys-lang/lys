@@ -72,37 +72,37 @@ describe('Semantic', function() {
   }
   describe('Duplicated parameters', () => {
     test`
-      type int = ???
-      fun test(a: int, b: int) = 1
+      type i32 = ???
+      fun test(a: i32, b: i32) = 1
     `;
     testToFail`
-      type int = ???
-      fun test(a: int, a: int) = 1
+      type i32 = ???
+      fun test(a: i32, a: i32) = 1
     `;
   });
 
   describe('Pattern matching', () => {
     test`
-      type int = ???
-      fun test(a: int) = a match {
+      type i32 = ???
+      fun test(a: i32) = a match {
         case 1 -> true
         else -> false
       }
     `;
     testToFail`
-      type int = ???
-      fun test(a: int) = a match { }
+      type i32 = ???
+      fun test(a: i32) = a match { }
     `;
     testToFail`
-      type int = ???
-      fun test(a: int) = a match { else -> 1 }
+      type i32 = ???
+      fun test(a: i32) = a match { else -> 1 }
     `;
   });
 
   describe('scope resolution', () => {
     testParseToken(
       parser,
-      `type int = ??? var a = 1 fun x(a: int) = a`,
+      `type i32 = ??? var a = 1 fun x(a: i32) = a`,
       'Document',
       x => {
         const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
@@ -124,7 +124,7 @@ describe('Semantic', function() {
     );
     testParseToken(
       parser,
-      `type int = ??? var a = 1 fun x(b: int) = a`,
+      `type i32 = ??? var a = 1 fun x(b: i32) = a`,
       'Document',
       x => {
         const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
@@ -150,25 +150,25 @@ describe('Semantic', function() {
       fun test() = test
     `;
     test`
-      type int = ???
+      type i32 = ???
       var a = 1
-      fun test(a: int) = a
+      fun test(a: i32) = a
     `;
     testToFail`var a = a`;
 
-    test`type int = ??? var a: int = 1`;
+    test`type i32 = ??? var a: i32 = 1`;
 
-    testToFail`var a: int = 1`;
+    testToFail`var a: i32 = 1`;
 
     testToFail`var b = 1 var a: b = 1`;
-    test`var int = 1`;
-    testToFail`type int = ??? var int = 1`;
+    test`var i32 = 1`;
+    testToFail`type i32 = ??? var i32 = 1`;
 
     test`var a = 1 var b = a`;
 
     testToFail`
-      type int = ???
-      fun test(a: int) = b
+      type i32 = ???
+      fun test(a: i32) = b
     `;
   });
 });

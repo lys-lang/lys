@@ -1,7 +1,7 @@
 import * as Nodes from '../nodes';
-import { walker } from '../walker';
-import { Type, IntersectionType, FunctionType } from '../types';
-import { binaryOperations } from '../../compiler/languageOperations';
+import { walkPostOrder } from '../walker';
+import { Type, IntersectionType, FunctionType, UnionType } from '../types';
+import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
 import { Closure } from '../closure';
 
 function resolveTypeByName(node: Nodes.Node, name: string) {
@@ -14,14 +14,7 @@ function resolveTypeByName(node: Nodes.Node, name: string) {
 }
 
 function resolveBinaryOpType(node: Nodes.BinaryExpressionNode): Type {
-  const lhsType = node.lhs.ofType;
-  const rhsType = node.rhs.ofType;
-
-  const subset = binaryOperations.filter($ => $.operator == node.operator);
-
-  node.binaryOperation = subset.find($ => lhsType.equals($.lhsType) && rhsType.equals($.rhsType));
-
-  if (!node.binaryOperation) throw new Error(`Cannot resolve type of ${lhsType} "${node.operator}" ${rhsType}`);
+  node.binaryOperation = findBuiltInTypedBinaryOperation(node.operator, node.lhs.ofType, node.rhs.ofType);
 
   return (node.ofType = node.binaryOperation.outputType);
 }
@@ -55,11 +48,21 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
   }
 
   if (node instanceof Nodes.FloatLiteral) {
-    node.ofType = resolveTypeByName(node, 'float');
+    node.ofType = resolveTypeByName(node, 'f32');
   }
 
   if (node instanceof Nodes.IntegerLiteral) {
-    node.ofType = resolveTypeByName(node, 'int');
+    node.ofType = resolveTypeByName(node, 'i32');
+  }
+
+  if (node instanceof Nodes.MatcherNode) {
+    node.ofType = node.rhs.ofType;
+  }
+
+  if (node instanceof Nodes.MatchNode) {
+    const union = new UnionType();
+    union.of = node.matchingSet.map($ => $.ofType);
+    node.ofType = union.simplify();
   }
 
   if (node instanceof Nodes.VariableReferenceNode) {
@@ -122,7 +125,7 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
   }
 }
 
-const resolveDeclarations = walker((node: Nodes.Node) => {
+const resolveDeclarations = walkPostOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.TypeDirectiveNode) {
     resolveType(node);
   }
@@ -137,20 +140,20 @@ const resolveDeclarations = walker((node: Nodes.Node) => {
   }
 });
 
-const resolveOverloads = walker((node: Nodes.Node) => {
+const resolveOverloads = walkPostOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.OverloadedFunctionNode) {
     const ofType: IntersectionType = node.ofType as any;
     ofType.of = node.functions.map($ => $.ofType);
   }
 });
 
-const resolveVariables = walker((node: Nodes.Node) => {
+const resolveVariables = walkPostOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VarDirectiveNode || node instanceof Nodes.ParameterNode) {
     resolveType(node);
   }
 });
 
-const checkTypes = walker((node: Nodes.Node) => {
+const checkTypes = walkPostOrder((node: Nodes.Node) => {
   resolveType(node, false);
   if (node instanceof Nodes.FunctionNode) {
     if (!node.functionReturnType) {
@@ -159,9 +162,11 @@ const checkTypes = walker((node: Nodes.Node) => {
   }
 });
 
-const ensureReturnTypes = walker((node: Nodes.Node) => {
+const ensureReturnTypes = walkPostOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
-    if (node.functionReturnType) {
+    if (!node.value.ofType) {
+      throw new Error('Cannot infer function return type');
+    } else if (node.functionReturnType) {
       if (!node.functionReturnType.ofType.canAssign(node.value.ofType)) {
         throw new Error(`Type "${node.value.ofType}" cannot be assigned to "${node.functionReturnType.ofType}"`);
       }

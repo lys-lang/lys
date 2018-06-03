@@ -15,16 +15,17 @@ import * as Nodes from '../dist/parser/nodes';
 import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
 import { semanticPhase } from '../dist/parser/phases/semanticPhase';
 import { findAllErrors } from '../dist/parser/phases/findAllErrors';
+import { scopePhase } from '../dist/parser/phases/scopePhase';
 import { typePhase } from '../dist/parser/phases/typePhase';
+import { compilationPhase } from '../dist/parser/phases/compilationPhase';
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import * as comp from '../dist/compiler/compiler';
-import { scopePhase } from '../dist/parser/phases/scopePhase';
 
 let inspect = require('util').inspect;
 
 const writeToFile = process.env.UPDATE_AST === 'true';
-const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, findAllErrors];
+const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, compilationPhase, findAllErrors];
 
 describe('Compiler', function() {
   describe('AST', () => {

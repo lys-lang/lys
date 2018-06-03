@@ -1,7 +1,7 @@
 import * as Nodes from '../nodes';
-import { walker } from '../walker';
+import { walkPreOrder } from '../walker';
 
-const process = walker((token: Nodes.Node, doc: Nodes.DocumentNode) => {
+const process = walkPreOrder((token: Nodes.Node, doc: Nodes.DocumentNode) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
     doc.errors.push(...token.astNode.errors);
   }

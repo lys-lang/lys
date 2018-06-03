@@ -1,9 +1,9 @@
-type int = ???
+type i32 = ???
 
-fun innerFunctionArgs(a: int): int = a
-fun innerFunction(): int = innerFunctionArgs(3)
+fun innerFunctionArgs(a: i32): i32 = a
+fun innerFunction(): i32 = innerFunctionArgs(3)
 
-fun over(): int = 1
-fun over(a: int): int = a
+fun over(): i32 = 1
+fun over(a: i32): i32 = a
 
-export fun outerFunction(): int = innerFunction() + over()
+export fun outerFunction(): i32 = innerFunction() + over()

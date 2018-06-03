@@ -12,6 +12,7 @@ export abstract class Node implements TypePhaseNode {
   hasParentheses: boolean = false;
   errors: Error[] = [];
   closure: Closure;
+  parent: Node;
 
   constructor(public astNode?: IToken) {}
 
@@ -23,6 +24,7 @@ export abstract class Node implements TypePhaseNode {
     let accumulator: Node[] = [];
 
     Object.keys(this).forEach($ => {
+      if ($ == 'parent') return;
       if (this[$] && this[$] instanceof Node) {
         accumulator.push(this[$]);
       }
@@ -83,6 +85,8 @@ export class FunctionNode extends ExpressionNode {
   value: ExpressionNode;
 
   internalIdentifier: string;
+
+  locals: Type[] = [];
 }
 
 export class ContextAwareFunction extends FunctionNode {
@@ -199,26 +203,27 @@ export class NumberNegNode extends ExpressionNode {
   lhs: ExpressionNode;
 }
 
-export abstract class MatcherNode extends ExpressionNode {}
+export abstract class MatcherNode extends ExpressionNode {
+  rhs: ExpressionNode;
+}
 
-export class MatchConditionNode extends ExpressionNode {
+export class MatchConditionNode extends MatcherNode {
   declaredName: NameIdentifierNode;
   condition: ExpressionNode;
-  rhs: ExpressionNode;
 }
 
-export class MatchLiteralNode extends ExpressionNode {
+export class MatchLiteralNode extends MatcherNode {
   literal: LiteralNode<any>;
-  rhs: ExpressionNode;
 }
 
-export class MatchDefaultNode extends ExpressionNode {
-  rhs: ExpressionNode;
-}
+export class MatchDefaultNode extends MatcherNode {}
 
 export class MatchNode extends ExpressionNode {
   lhs: ExpressionNode;
   matchingSet: MatcherNode[];
+
+  /** local index in the function's scope */
+  localIndex: number;
 }
 
 export function findNodesByType<T>(astRoot: any, type: { new (...args): T }, list: T[] = []): T[] {

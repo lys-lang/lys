@@ -2,11 +2,11 @@ import Nodes = require('./nodes');
 declare var require, console;
 const colors = require('colors/safe');
 import { LineMapper, ITextPosition } from './LineMapper';
-import { walker } from './walker';
+import { walkPreOrder } from './walker';
 
 function collectErrors(root: Nodes.Node) {
   const errorNodes = new Set<Nodes.Node>();
-  const collector = walker((node: Nodes.Node) => {
+  const collector = walkPreOrder((node: Nodes.Node) => {
     if (node.errors.length) {
       errorNodes.add(node);
     }

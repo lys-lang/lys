@@ -1,13 +1,12 @@
 import { IToken } from 'ebnf';
 
-export function walker<T extends { errors: any[]; children: any[] } = IToken, D = any>(
-  cb: (node: T, document: D, parent: T) => void | T
+export function walkPreOrder<T extends { errors: any[]; children: any[] } = IToken, D = any>(
+  cb: (node: T, document: D, parent: T) => void
 ) {
-  const leFn = function(node: T, document?: D, parent?: T) {
+  const leFn = function(node: T, document?: D, parent: T = null) {
     if (node) {
-      let res = null;
       try {
-        res = cb.call(this, node, document, parent);
+        cb.call(this, node, document, parent);
       } catch (e) {
         node.errors.push(e);
       }
@@ -15,13 +14,34 @@ export function walker<T extends { errors: any[]; children: any[] } = IToken, D 
       if (node.children) {
         for (let i = 0; i < node.children.length; i++) {
           if (node.children[i]) {
-            let res1 = leFn.call(this, node.children[i], document, node);
-            node.children[i] = res1;
+            leFn.call(this, node.children[i], document, node);
+          }
+        }
+      }
+    }
+  };
+
+  return leFn;
+}
+
+export function walkPostOrder<T extends { errors: any[]; children: any[] } = IToken, D = any>(
+  cb: (node: T, document: D, parent: T) => void
+) {
+  const leFn = function(node: T, document?: D, parent: T = null) {
+    if (node) {
+      if (node.children) {
+        for (let i = 0; i < node.children.length; i++) {
+          if (node.children[i]) {
+            leFn.call(this, node.children[i], document, node);
           }
         }
       }
 
-      return res;
+      try {
+        cb.call(this, node, document, parent);
+      } catch (e) {
+        node.errors.push(e);
+      }
     }
   };
 

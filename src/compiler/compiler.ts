@@ -1,6 +1,15 @@
 import * as Nodes from '../parser/nodes';
 import binaryen = require('binaryen');
 import { FunctionType } from '../parser/types';
+import { findBuiltInTypedBinaryOperation } from './languageOperations';
+
+const moduleCounter = new Map<binaryen.Module, number>();
+
+function getId(module: binaryen.Module): number {
+  const num = (moduleCounter.get(module) || 0) + 1;
+  moduleCounter.set(module, num);
+  return num;
+}
 
 function getTypeForFunction(fn: Nodes.FunctionNode, module: binaryen.Module) {
   const retType = fn.functionReturnType.ofType;
@@ -33,11 +42,50 @@ function emitFunction(fn: Nodes.FunctionNode, module: binaryen.Module, document:
   const moduleFun = module.addFunction(
     fn.internalIdentifier,
     fnType.type,
-    [],
+    fn.locals.map($ => $.binaryenType),
     module.return(emit(fn.value, module, document))
   );
 
   return moduleFun;
+}
+
+function emitMatchingNode(match: Nodes.MatchNode, module: binaryen.Module, document: Nodes.DocumentNode) {
+  const matchers = match.matchingSet.slice(0);
+  const ixDefaultBranch = matchers.findIndex($ => $ instanceof Nodes.MatchDefaultNode);
+  const lhs = module.set_local(match.localIndex, emit(match.lhs, module, document));
+  const getLocalCode = module.get_local(match.localIndex, match.lhs.ofType.binaryenType);
+
+  if (ixDefaultBranch !== -1) {
+    // the default branch must be the last element
+    const defaultMatcher = matchers[ixDefaultBranch];
+    matchers.splice(ixDefaultBranch, 1);
+    matchers.push(defaultMatcher);
+  }
+
+  const blocks = matchers
+    .map(function emitNode(node: Nodes.MatcherNode): { condition; body; type } {
+      if (node instanceof Nodes.MatchDefaultNode) {
+        const body = emit(node.rhs, module, document);
+        return { condition: null, body, type: node.rhs.ofType.binaryenType };
+      } else if (node instanceof Nodes.MatchLiteralNode) {
+        const condition = findBuiltInTypedBinaryOperation('==', node.literal.ofType, match.lhs.ofType);
+        const body = emit(node.rhs, module, document);
+        return {
+          condition: condition.generateCode(emit(node.literal, module, document), getLocalCode, module),
+          body,
+          type: node.rhs.ofType.binaryenType
+        };
+      }
+    })
+    .filter($ => !!$);
+
+  const breaks = blocks.filter($ => !!$.condition).map(($, $$) => module.br_if(`B${$$}`, $.condition));
+
+  const ret = blocks.reduceRight((prev, curr, ix) => {
+    return [module.block(`B${ix}`, prev), curr.body, module.break('B')];
+  }, breaks);
+
+  return module.block('B', [lhs].concat(ret), match.ofType.binaryenType);
 }
 
 function emit(node: Nodes.Node, module: binaryen.Module, document: Nodes.DocumentNode): any {
@@ -52,8 +100,12 @@ function emit(node: Nodes.Node, module: binaryen.Module, document: Nodes.Documen
       );
     } else if (node instanceof Nodes.IntegerLiteral) {
       return module.i32.const(node.value);
+    } else if (node instanceof Nodes.BooleanLiteral) {
+      return module.i32.const(node.value ? 0xffffffff : 0);
     } else if (node instanceof Nodes.FloatLiteral) {
       return module.f32.const(node.value);
+    } else if (node instanceof Nodes.MatchNode) {
+      return emitMatchingNode(node, module, document);
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       return node.binaryOperation.generateCode(
         emit(node.lhs, module, document),
@@ -101,110 +153,3 @@ export function compile(document: Nodes.DocumentNode) {
 
   return module;
 }
-
-// export function emit(node: nodes.Node, module: binaryen.Module) {
-//   if (!(node instanceof nodes.DocumentNode) && !module) {
-//     throw new Error('A module is required');
-//   }
-
-//   if (node instanceof nodes.DocumentNode) {
-//     if (!module) module = new binaryen.Module();
-
-//     let fiF = module.addFunctionType('fiF', binaryen.f64, [binaryen.f64]);
-//     let fiFF = module.addFunctionType('fiFF', binaryen.i64, [binaryen.f64, binaryen.f64]);
-
-//     module.addImport('exp', 'imports', 'exp', fiF);
-//     module.addImport('log', 'imports', 'log', fiF);
-//     module.addImport('pow', 'imports', 'pow', fiFF);
-
-//     let functions = node.children.filter($ => $ instanceof nodes.FunctionNode).map(x => emit(x, module));
-
-//     let testSignature = module.addFunctionType(`test$$signature`, binaryen.f64 /*ret*/, [
-//       /*params*/
-//     ]);
-//     let testFunction = module.addFunction(
-//       'test',
-//       testSignature,
-//       [
-//         /*params*/
-//       ],
-//       module.return(
-//         module.f64.add(
-//           module.f64.load(0 /*offset */, 8, module.i32.const(0)),
-//           module.f64.load(0 /*offset */, 8, module.i32.const(8))
-//         )
-//       )
-//     );
-//     module.addExport('test', 'test');
-
-//     functions.push(testFunction);
-
-//     // console.log(node.inspect());
-//     module.setFunctionTable(functions);
-
-//     return module;
-//   } else if (node instanceof nodes.BinaryExpressionNode) {
-//     // const isAssignment = ['=', '+=', '-=', '*=', '/='].indexOf(node.operator) != -1;
-
-//     const isComparison = node.operator in comparisonMap;
-//     const isPow = node.operator == '**';
-//     const isMath = node.operator in mathOperatorsMap;
-
-//     if (isPow) {
-//       if (node.rhs instanceof nodes.FloatLiteral && node.rhs.value == 2) {
-//         return module.f64.mul(emit(node.lhs, module), emit(node.lhs, module));
-//       }
-//       return module.callImport('pow', [emit(node.lhs, module), emit(node.rhs, module)], binaryen.f64);
-//     } else if (isComparison) {
-//       return module.f64[comparisonMap[node.operator]](emit(node.lhs, module), emit(node.rhs, module));
-//     } else if (isMath) {
-//       return module.f64[mathOperatorsMap[node.operator]](emit(node.lhs, module), emit(node.rhs, module));
-//     } else {
-//       console.error(`<<<<< UNKNOWN OPERATOR: ${node.operator}`);
-//       return module.nop();
-//     }
-//   } else if (node instanceof nodes.VariableReferenceNode) {
-//     return module.f64.load(0 /*offset */, 8 /* byte alignment */, module.i32.const(node..position * 8));
-//   } else if (node instanceof nodes.FloatLiteral) {
-//     return module.f64.const(node.value);
-//   // } else if (node instanceof nodes.TernaryExpressionNode) {
-//   //   return module.if(emit(node.condition, module), emit(node.truePart, module), emit(node.falsePart, module));
-//   } else if (node instanceof nodes.UnaryExpressionNode) {
-//     switch (node.operator) {
-//       case '-':
-//         return module.f64.neg(emit(node.rhs, module));
-//       case 'exp':
-//         return module.callImport('exp', [emit(node.rhs, module)], binaryen.f64);
-//       case 'rand':
-//         return module.callImport('rand', [emit(node.rhs, module)], binaryen.f64);
-//       case 'ln':
-//         return module.callImport('log', [emit(node.rhs, module)], binaryen.f64);
-//       case 'abs':
-//         return module.f64.abs(emit(node.rhs, module));
-//       case 'sqrt':
-//         return module.f64.sqrt(emit(node.rhs, module));
-//     }
-//     console.error(`<<<<< UNKNOWN OPERATOR: ${node.operator}`);
-//     return module.nop();
-//   } else if (node instanceof nodes.BlockNode) {
-//     return module.block(node.name || ``, node.children.map(x => emit(x, module)));
-//   } else if (node instanceof nodes.FunctionNode) {
-//     let functionSignature = module.addFunctionType(`${node.name}$$signature`, binaryen.none /*ret*/, [
-//       /*params*/
-//     ]);
-
-//     // Create the function
-//     let theFunction = module.addFunction(
-//       node.name,
-//       functionSignature,
-//       [
-//         /*params*/
-//       ],
-//       emit(node.body, module)
-//     );
-//     module.addExport(node.name, node.name);
-
-//     return theFunction;
-//   }
-//   throw new Error('Cannot emit node ' + (node.constructor as any).name);
-// }

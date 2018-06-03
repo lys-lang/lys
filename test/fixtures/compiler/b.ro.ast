@@ -1,46 +1,46 @@
 
 |-DocumentNode
   |-TypeDirectiveNode type=i32
-    |-NameIdentifierNode="int"
-  |-OverloadedFunctionNode type=anyfunc
+    |-NameIdentifierNode="i32"
+  |-OverloadedFunctionNode type=func
     |-FunDirectiveNode type=func
       |-FunctionNode type=func
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
-          |-TypeReferenceNode="int" type=i32
+          |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="innerFunctionArgs"
-        |-TypeReferenceNode="int" type=i32
+        |-TypeReferenceNode="i32" type=i32
         |-VariableReferenceNode type=i32
           |-NameIdentifierNode="a"
-  |-OverloadedFunctionNode type=anyfunc
+  |-OverloadedFunctionNode type=func
     |-FunDirectiveNode type=func
       |-FunctionNode type=func
         |-NameIdentifierNode="innerFunction"
-        |-TypeReferenceNode="int" type=i32
+        |-TypeReferenceNode="i32" type=i32
         |-FunctionCallNode type=i32
           |-VariableReferenceNode type=func
             |-NameIdentifierNode="innerFunctionArgs"
           |-IntegerLiteral=3 type=i32
-  |-OverloadedFunctionNode type=anyfunc
+  |-OverloadedFunctionNode type=func & func
     |-FunDirectiveNode type=func
       |-FunctionNode type=func
         |-NameIdentifierNode="over"
-        |-TypeReferenceNode="int" type=i32
+        |-TypeReferenceNode="i32" type=i32
         |-IntegerLiteral=1 type=i32
     |-FunDirectiveNode type=func
       |-FunctionNode type=func
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
-          |-TypeReferenceNode="int" type=i32
+          |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="over"
-        |-TypeReferenceNode="int" type=i32
+        |-TypeReferenceNode="i32" type=i32
         |-VariableReferenceNode type=i32
           |-NameIdentifierNode="a"
-  |-OverloadedFunctionNode type=anyfunc
+  |-OverloadedFunctionNode type=func
     |-FunDirectiveNode type=func
       |-FunctionNode type=func
         |-NameIdentifierNode="outerFunction"
-        |-TypeReferenceNode="int" type=i32
+        |-TypeReferenceNode="i32" type=i32
         |-BinaryExpressionNode="+" type=i32
           |-FunctionCallNode type=i32
             |-VariableReferenceNode type=func

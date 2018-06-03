@@ -1,0 +1,59 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="i32"
+  |-OverloadedFunctionNode type=func
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="n"
+          |-TypeReferenceNode="i32" type=i32
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="a"
+          |-TypeReferenceNode="i32" type=i32
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="b"
+          |-TypeReferenceNode="i32" type=i32
+        |-NameIdentifierNode="fibo"
+        |-TypeReferenceNode="i32" type=i32
+        |-MatchNode type=i32
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="n"
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=0 type=i32
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="a"
+          |-MatchLiteralNode type=i32
+            |-IntegerLiteral=1 type=i32
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="b"
+          |-MatchDefaultNode type=i32
+            |-FunctionCallNode type=i32
+              |-VariableReferenceNode type=func
+                |-NameIdentifierNode="fibo"
+              |-BinaryExpressionNode="-" type=i32
+                |-VariableReferenceNode type=i32
+                  |-NameIdentifierNode="n"
+                |-IntegerLiteral=1 type=i32
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="b"
+              |-BinaryExpressionNode="+" type=i32
+                |-VariableReferenceNode type=i32
+                  |-NameIdentifierNode="a"
+                |-VariableReferenceNode type=i32
+                  |-NameIdentifierNode="b"
+  |-OverloadedFunctionNode type=func
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="n"
+          |-TypeReferenceNode="i32" type=i32
+        |-NameIdentifierNode="fib"
+        |-TypeReferenceNode="i32" type=i32
+        |-FunctionCallNode type=i32
+          |-VariableReferenceNode type=func
+            |-NameIdentifierNode="fibo"
+          |-VariableReferenceNode type=i32
+            |-NameIdentifierNode="n"
+          |-IntegerLiteral=0 type=i32
+          |-IntegerLiteral=1 type=i32
