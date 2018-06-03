@@ -1,4 +1,4 @@
-import binaryen = require('binaryen');
+import binaryen = require('../../lib/binaryen');
 
 export enum NativeTypes {
   i32 = 'i32',

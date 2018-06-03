@@ -1,15 +1,7 @@
 import * as Nodes from '../parser/nodes';
-import binaryen = require('binaryen');
+import binaryen = require('../../lib/binaryen');
 import { FunctionType } from '../parser/types';
 import { findBuiltInTypedBinaryOperation } from './languageOperations';
-
-const moduleCounter = new Map<binaryen.Module, number>();
-
-function getId(module: binaryen.Module): number {
-  const num = (moduleCounter.get(module) || 0) + 1;
-  moduleCounter.set(module, num);
-  return num;
-}
 
 function getTypeForFunction(fn: Nodes.FunctionNode, module: binaryen.Module) {
   const retType = fn.functionReturnType.ofType;

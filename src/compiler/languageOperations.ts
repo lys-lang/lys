@@ -1,5 +1,5 @@
 import { Type, f32, i32, bool } from '../parser/types';
-import binaryen = require('binaryen');
+import binaryen = require('../../lib/binaryen');
 
 export interface BinaryOperation {
   lhsType: Type;

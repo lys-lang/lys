@@ -6,7 +6,7 @@
   "typings": "dist/index.d.ts",
   "bin": "dist/bin.js",
   "scripts": {
-    "test": "mocha --reporter min",
+    "test": "mocha --reporter list",
     "test-travis": "npm run lint && npm run build && npm run coverage && npm run test",
     "preversion": "npm run build && npm test",
     "coverage": "(`npm bin`/istanbul cover `npm bin`/_mocha || true)",
@@ -31,7 +31,6 @@
     "printWidth": 120
   },
   "dependencies": {
-    "binaryen": "^48.0.0",
     "colors": "^1.2.1",
     "ebnf": "^1.6.2"
   },
