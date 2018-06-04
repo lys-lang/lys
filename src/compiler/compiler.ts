@@ -105,6 +105,12 @@ function emit(node: Nodes.Node, module: binaryen.Module, document: Nodes.Documen
       return module.f32.const(node.value);
     } else if (node instanceof Nodes.MatchNode) {
       return emitMatchingNode(node, module, document);
+    } else if (node instanceof Nodes.IfNode) {
+      return module.if(
+        emit(node.condition, module, document),
+        emit(node.truePart, module, document),
+        emit(node.falsePart, module, document)
+      );
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       return node.binaryOperation.generateCode(
         emit(node.lhs, module, document),

@@ -172,6 +172,13 @@ const visitor = {
     doc.directives = astNode.children.map($ => visit($));
 
     return doc;
+  },
+  IfExpression(astNode: IToken) {
+    const ret = new Nodes.IfNode(astNode);
+    ret.condition = visit(astNode.children[0]);
+    ret.truePart = visit(astNode.children[1]);
+    ret.falsePart = visit(astNode.children[1]);
+    return ret;
   }
 };
 

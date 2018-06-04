@@ -26,20 +26,20 @@ export function testParseToken(
     parser,
     txt,
     target,
-    (doc: IToken) => {
-      if (doc.errors.length) throw doc.errors[0];
+    (doc: IToken, e) => {
+      if (doc && doc.errors && doc.errors.length) throw doc.errors[0];
 
-      const astNode = doc['astNode'];
+      const astNode = doc && doc['astNode'];
 
       if (astNode) {
-        if (astNode.errors.length) {
+        if (astNode.errors && astNode.errors.length) {
           console.dir(astNode.errors);
           throw astNode.errors[0];
         }
         if (astNode.rest.length != 0) throw new Error('Got rest: ' + astNode.rest);
       }
 
-      customTest && customTest(doc);
+      customTest && customTest(doc, e);
     },
     phases,
     debug,
@@ -95,12 +95,16 @@ export function testParseTokenFailsafe(
       //   console.(ee);
       // }
       // parser.debug = false;
-      printErrors(result);
-      result && describeTree(result);
+      if (result) {
+        try {
+          printErrors(result);
+          describeTree(result);
+        } catch {}
+      }
       throw e;
     }
 
-    debug && describeTree(result);
+    if (result && debug) describeTree(result);
   });
 }
 

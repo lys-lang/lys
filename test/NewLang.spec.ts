@@ -181,6 +181,24 @@ describe('Parser', () => {
       }
     `;
 
+    test`
+      var x =
+        if (x > y)
+          gcd(x - y, y)
+        else if (x < y)
+          gcd(x, y - x)
+        else
+          x
+    `;
+
+    test`
+      var x =
+        if (x)
+          elseifo() elsiso 3
+        else
+          ifa()
+    `;
+
     test`const test = 1 match { case x if x < 1 and x < 10 -> true }`;
     test`var a = x match { else -> 1 } map 1 * 2`;
 

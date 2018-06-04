@@ -77,13 +77,27 @@ export const binaryOperations: BinaryOperation[] = [
     rhsType: i32Type,
     outputType: i32Type,
     operator: '>=',
-    generateCode: (lhs, rhs, module) => module.i32.gt_s(lhs, rhs)
+    generateCode: (lhs, rhs, module) => module.i32.ge_s(lhs, rhs)
   },
   {
     lhsType: i32Type,
     rhsType: i32Type,
     outputType: i32Type,
     operator: '<=',
+    generateCode: (lhs, rhs, module) => module.i32.le_s(lhs, rhs)
+  },
+  {
+    lhsType: i32Type,
+    rhsType: i32Type,
+    outputType: i32Type,
+    operator: '>',
+    generateCode: (lhs, rhs, module) => module.i32.gt_s(lhs, rhs)
+  },
+  {
+    lhsType: i32Type,
+    rhsType: i32Type,
+    outputType: i32Type,
+    operator: '<',
     generateCode: (lhs, rhs, module) => module.i32.lt_s(lhs, rhs)
   },
   {

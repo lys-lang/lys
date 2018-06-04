@@ -65,6 +65,12 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
     node.ofType = union.simplify();
   }
 
+  if (node instanceof Nodes.IfNode) {
+    const union = new UnionType();
+    union.of = [node.truePart.ofType, node.falsePart.ofType];
+    node.ofType = union.simplify();
+  }
+
   if (node instanceof Nodes.VariableReferenceNode) {
     const decl = node.closure.getVariable(node.variable.name);
     node.ofType = decl.node.ofType;

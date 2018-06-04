@@ -207,6 +207,12 @@ export abstract class MatcherNode extends ExpressionNode {
   rhs: ExpressionNode;
 }
 
+export class IfNode extends ExpressionNode {
+  condition: ExpressionNode;
+  truePart: ExpressionNode;
+  falsePart: ExpressionNode;
+}
+
 export class MatchConditionNode extends MatcherNode {
   declaredName: NameIdentifierNode;
   condition: ExpressionNode;

@@ -40,7 +40,8 @@ describe('Semantic', function() {
       parser,
       result,
       'Document',
-      document => {
+      (document, e) => {
+        if (e) throw e;
         expect(document.errors.length).toEqual(0);
       },
       phases
@@ -78,6 +79,19 @@ describe('Semantic', function() {
     testToFail`
       type i32 = ???
       fun test(a: i32, a: i32) = 1
+    `;
+  });
+
+  describe('conditionals', () => {
+    test`
+    type i32 = ???
+    fun gcd(x: i32, y: i32): i32 =
+      if (x > y)
+        gcd(x - y, y)
+      else if (x < y)
+        gcd(x, y - x)
+      else
+        x
     `;
   });
 

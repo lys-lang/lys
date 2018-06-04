@@ -27,7 +27,7 @@ let inspect = require('util').inspect;
 const writeToFile = process.env.UPDATE_AST === 'true';
 const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, compilationPhase, findAllErrors];
 
-describe.only('Compiler', function() {
+describe('Compiler', function() {
   describe('AST', () => {
     folderBasedTest('**/compiler/*.ro', phases, (result: any) => printAST(result), '.ast');
   });

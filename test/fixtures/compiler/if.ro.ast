@@ -1,0 +1,41 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode type=i32
+    |-NameIdentifierNode="i32"
+  |-OverloadedFunctionNode type=func
+    |-FunDirectiveNode type=func
+      |-FunctionNode type=func
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="x"
+          |-TypeReferenceNode="i32" type=i32
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="y"
+          |-TypeReferenceNode="i32" type=i32
+        |-NameIdentifierNode="gcd"
+        |-TypeReferenceNode="i32" type=i32
+        |-IfNode type=i32
+          |-BinaryExpressionNode=">" type=i32
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="x"
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="y"
+          |-FunctionCallNode type=i32
+            |-VariableReferenceNode type=func
+              |-NameIdentifierNode="gcd"
+            |-BinaryExpressionNode="-" type=i32
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="x"
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="y"
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="y"
+          |-FunctionCallNode type=i32
+            |-VariableReferenceNode type=func
+              |-NameIdentifierNode="gcd"
+            |-BinaryExpressionNode="-" type=i32
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="x"
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="y"
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="y"

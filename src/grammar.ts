@@ -55,7 +55,9 @@ FunctionCallExpression
 Value             ::= Literal | RefExpression | VariableReference | ParenExpression {fragment=true}
 ParenExpression   ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN}
 
-IfExpression      ::= '%%if%%'
+IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression WS* ElseExpression {pin=1}
+IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN,fragment=true}
+ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
 
 /* Pattern matching */
 MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
@@ -121,9 +123,9 @@ NULL_KEYWORD      ::= 'null'   ![A-Za-z0-9_]
 IF_KEYWORD        ::= 'if'     ![A-Za-z0-9_]
 ELSE_KEYWORD      ::= 'else'   ![A-Za-z0-9_]
 CASE_KEYWORD      ::= 'case'   ![A-Za-z0-9_]
-MatchKeyword     ::= 'match'  ![A-Za-z0-9_]
-AndKeyword       ::= 'and'    ![A-Za-z0-9_]
-OrKeyword        ::= 'or'     ![A-Za-z0-9_]
+MatchKeyword      ::= 'match'  ![A-Za-z0-9_]
+AndKeyword        ::= 'and'    ![A-Za-z0-9_]
+OrKeyword         ::= 'or'     ![A-Za-z0-9_]
 
 /* Tokens */
 
