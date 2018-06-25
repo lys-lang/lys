@@ -78,6 +78,9 @@ describe('Parser', () => {
 
     test`fun test() = 1`;
     test`fun test() = ???`;
+    test`fun test() = {}`;
+    test`fun test() = {    }`;
+    test`fun test() = {  \n\n  }`;
 
     test`fun test(  a: MBER,      b   : NumBer) = 1`;
 
@@ -149,10 +152,23 @@ describe('Parser', () => {
 
     test`const test = 1 match {}`;
     test`const test = 1 match { else -> 1 }`;
+    test`const test = {1 match { else -> 1 }}`;
     test`
       const test = 1 match {
         case 2 -> true
         else -> false
+      }
+    `;
+
+    test`
+      var a = {null}
+      var b = { null }
+      var c = {
+        null
+      }
+      var d = {
+        null
+        null
       }
     `;
 
@@ -205,62 +221,62 @@ describe('Parser', () => {
     test`var a = !x()`;
     test`var a = x()`;
 
-    testParseTokenFailsafe(parser, `export fun test(a: ) = 2`, null, doc => {
+    testParseTokenFailsafe(parser, `export fun test(a: ) = 2`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual(') = 2');
     });
-    testParseTokenFailsafe(parser, `export struct Entity asd const x = 1`, null, doc => {
+    testParseTokenFailsafe(parser, `export struct Entity asd const x = 1`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('asd ');
     });
-    testParseTokenFailsafe(parser, `export struct Entity asd`, null, doc => {
+    testParseTokenFailsafe(parser, `export struct Entity asd`, null, async doc => {
       expect(doc.errors[0].message).toEqual('Unexpected end of input: \nasd');
     });
-    testParseTokenFailsafe(parser, `struct Entity asd const x = 1`, null, doc => {
+    testParseTokenFailsafe(parser, `struct Entity asd const x = 1`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('asd ');
     });
-    testParseTokenFailsafe(parser, `struct Entity asd`, null, doc => {
+    testParseTokenFailsafe(parser, `struct Entity asd`, null, async doc => {
       expect(doc.errors[0].message).toEqual('Unexpected end of input: \nasd');
     });
 
-    testParseTokenFailsafe(parser, `export fun test(a: ,b: AType) = 2`, null, doc => {
+    testParseTokenFailsafe(parser, `export fun test(a: ,b: AType) = 2`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual(',b: AType) = 2');
     });
 
-    testParseTokenFailsafe(parser, `export fun test() = 2 /*`, null, doc => {
+    testParseTokenFailsafe(parser, `export fun test() = 2 /*`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('');
     });
 
-    testParseTokenFailsafe(parser, `export fun test(a: 1) = 2`, null, doc => {
+    testParseTokenFailsafe(parser, `export fun test(a: 1) = 2`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].message).toEqual('Unexpected input: "1" Expecting: OfType');
       expect(doc.errors[0].token.text).toEqual('1');
     });
 
-    testParseTokenFailsafe(parser, 'export fun () = 1', null, doc => {
+    testParseTokenFailsafe(parser, 'export fun () = 1', null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('() = 1');
     });
 
-    testParseTokenFailsafe(parser, 'var a = .0', null, doc => {
+    testParseTokenFailsafe(parser, 'var a = .0', null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('.0');
     });
 
-    testParseTokenFailsafe(parser, 'var a = x match { else } map 1', null, doc => {
+    testParseTokenFailsafe(parser, 'var a = x match { else } map 1', null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('else } map 1');
     });
 
-    testParseTokenFailsafe(parser, 'var a = x match { else -> } map 1', null, doc => {
+    testParseTokenFailsafe(parser, 'var a = x match { else -> } map 1', null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('} map 1');
     });
 
-    testParseTokenFailsafe(parser, 'var a = match', null, doc => {
+    testParseTokenFailsafe(parser, 'var a = match', null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('match');
     });

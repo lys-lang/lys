@@ -34,14 +34,40 @@ describe('Canonical', function() {
   test`var a = 1`;
   test`var a: Number = 1`;
   test`var a = null`;
+
+  test`
+    var a = {null}
+    var b = { null }
+    var c = {
+      null
+    }
+    var d = {
+      null
+      null
+    }
+  `;
+
   test`
     var a = null
     var b = null
     var c = null
+
+    var d = {
+      1
+      null
+    }
+
     fun x() = a
   `;
+
   test`
     fun x(a: Number, b: Number): Int = 1
+    export fun y(a: Number, b: Number): Int = 1
+  `;
+  test`
+    fun x(a: Number, b: Number): Int = {
+      1
+    }
     export fun y(a: Number, b: Number): Int = 1
   `;
   test`var a: Double* = null`;
@@ -70,6 +96,14 @@ describe('Canonical', function() {
 
   test`
     export fun fn() = a match {case 1 -> 2 else -> 1}
+  `;
+
+  test`
+    export fun fn() = { {a} match {case 1 -> {2} else -> {1}} }
+  `;
+
+  test`
+    export fun fn() = { a match {case 1 -> 2 else -> 1} }
   `;
 
   test`

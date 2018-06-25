@@ -1,4 +1,4 @@
-import * as Nodes from '../nodes';
+import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { TokenError } from 'ebnf';
 import { Context, Closure } from '../closure';

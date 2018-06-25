@@ -1,5 +1,4 @@
-declare module binaryen {
-
+declare namespace binaryen {
   const none: Type;
   const i32: Type;
   const i64: Type;
@@ -63,7 +62,7 @@ declare module binaryen {
     trunc_u: {
       f32(value: Expression): Expression;
       f64(value: Expression): Expression;
-    }
+    };
     reinterpret(value: Expression): Expression;
     wrap(value: Expression): Expression;
     add(left: Expression, right: Expression): Expression;
@@ -106,7 +105,7 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      },
+      };
       rmw_8u: {
         add(offset: number, ptr: Expression, value: Expression): Expression;
         sub(offset: number, ptr: Expression, value: Expression): Expression;
@@ -115,7 +114,7 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      },
+      };
       rmw_16u: {
         add(offset: number, ptr: Expression, value: Expression): Expression;
         sub(offset: number, ptr: Expression, value: Expression): Expression;
@@ -124,8 +123,8 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      }
-    },
+      };
+    };
     wait(ptr: Expression, expected: Expression, timeout: Expression): Expression;
   }
 
@@ -153,7 +152,7 @@ declare module binaryen {
     trunc_u: {
       f32(value: Expression): Expression;
       f64(value: Expression): Expression;
-    }
+    };
     reinterpret(value: Expression): Expression;
     extend_s(value: Expression): Expression;
     extend_u(value: Expression): Expression;
@@ -199,7 +198,7 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      },
+      };
       rmw_8u: {
         add(offset: number, ptr: Expression, value: Expression): Expression;
         sub(offset: number, ptr: Expression, value: Expression): Expression;
@@ -208,7 +207,7 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      },
+      };
       rmw_16u: {
         add(offset: number, ptr: Expression, value: Expression): Expression;
         sub(offset: number, ptr: Expression, value: Expression): Expression;
@@ -217,7 +216,7 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      },
+      };
       rmw_32u: {
         add(offset: number, ptr: Expression, value: Expression): Expression;
         sub(offset: number, ptr: Expression, value: Expression): Expression;
@@ -226,8 +225,8 @@ declare module binaryen {
         xor(offset: number, ptr: Expression, value: Expression): Expression;
         xchg(offset: number, ptr: Expression, value: Expression): Expression;
         cmpxchg(offset: number, ptr: Expression, expected: Expression, replacement: Expression): Expression;
-      }
-    },
+      };
+    };
     wait(ptr: Expression, expected: Expression, timeout: Expression): Expression;
   }
 
@@ -316,17 +315,26 @@ declare module binaryen {
   }
 
   class Module {
-
     addFunctionType(name: string, resultType: Type, paramTypes: Type[]): FunctionType;
     getFunctionTypeBySignature(resultType: Type, paramTypes: Type[]): FunctionType;
     addFunction(name: string, functionType: FunctionType, varTypes: Type[], body: Statement): Function;
     getFunction(name: string): Function;
     removeFunction(name: string): void;
     addGlobal(name: string, type: Type, mutable: boolean, init: Expression): Global;
-    addFunctionImport(internalName: string, externalModuleName: string, externalBaseName: string, functionType: FunctionType): Import;
+    addFunctionImport(
+      internalName: string,
+      externalModuleName: string,
+      externalBaseName: string,
+      functionType: FunctionType
+    ): Import;
     addTableImport(internalName: string, externalModuleName: string, externalBaseName: string): Import;
     addMemoryImport(internalName: string, externalModuleName: string, externalBaseName: string): Import;
-    addGlobalImport(internalName: string, externalModuleName: string, externalBaseName: string, globalType: Type): Import;
+    addGlobalImport(
+      internalName: string,
+      externalModuleName: string,
+      externalBaseName: string,
+      globalType: Type
+    ): Import;
     removeImport(internalName: string): void;
     addFunctionExport(internalName: string, externalName: string): Export;
     addTableExport(internalName: string, externalName: string): Export;
@@ -343,14 +351,20 @@ declare module binaryen {
     emitAsmjs(): string;
     validate(): number;
     optimize(): void;
-    optimizeFunction(func: string|Function): void;
+    optimizeFunction(func: string | Function): void;
     runPasses(passes: string[]): void;
-    runPassesOnFunction(func: string|Function, passes: string[]): void;
+    runPassesOnFunction(func: string | Function, passes: string[]): void;
     autoDrop(): void;
     interpret(): void;
     addDebugInfoFileName(filename: string): number;
     getDebugInfoFileName(index: number): string | null;
-    setDebugLocation(func: Function, expr: Expression, fileIndex: number, lineNumber: number, columnNumber: number): void;
+    setDebugLocation(
+      func: Function,
+      expr: Expression,
+      fileIndex: number,
+      lineNumber: number,
+      columnNumber: number
+    ): void;
     dispose(): void;
 
     i32: I32Operations;
@@ -486,7 +500,7 @@ declare module binaryen {
   }
 
   interface ConstInfo extends ExpressionInfo {
-    value: number | { low: number, high: number };
+    value: number | { low: number; high: number };
   }
 
   interface UnaryInfo extends ExpressionInfo {
@@ -564,7 +578,7 @@ declare module binaryen {
     params: Type[];
     result: Type;
     vars: Type[];
-    body: Expression
+    body: Expression;
   }
 
   function getImportInfo(import_: Import): ImportInfo;
@@ -606,17 +620,39 @@ declare module binaryen {
   }
 
   // These are actually pointers internally
-  abstract class Type { protected __Type__: number; }
-  abstract class ExpressionId { protected __ExpressionId__: number; }
-  abstract class ExternalKind { protected __ExternalKind__: number; }
-  abstract class Statement { protected __Statement__: number; }
-  abstract class FunctionType { protected __FunctionType__: number; }
-  abstract class Function { protected __Function__: number; }
-  abstract class Expression { protected __Expression__: number; }
-  abstract class Global { protected __Global__: number; }
-  abstract class Import { protected __Import__: number; }
-  abstract class Export { protected __Export__: number; }
-  abstract class RelooperBlock { protected __RelooperBlock__: number; }
+  abstract class Type {
+    protected __Type__: number;
+  }
+  abstract class ExpressionId {
+    protected __ExpressionId__: number;
+  }
+  abstract class ExternalKind {
+    protected __ExternalKind__: number;
+  }
+  abstract class Statement {
+    protected __Statement__: number;
+  }
+  abstract class FunctionType {
+    protected __FunctionType__: number;
+  }
+  abstract class Function {
+    protected __Function__: number;
+  }
+  abstract class Expression {
+    protected __Expression__: number;
+  }
+  abstract class Global {
+    protected __Global__: number;
+  }
+  abstract class Import {
+    protected __Import__: number;
+  }
+  abstract class Export {
+    protected __Export__: number;
+  }
+  abstract class RelooperBlock {
+    protected __RelooperBlock__: number;
+  }
 }
 
 export = binaryen;

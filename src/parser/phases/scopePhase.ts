@@ -1,7 +1,49 @@
-import * as Nodes from '../nodes';
+import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { EStoredName } from '../closure';
 import { InjectableTypes } from '../types';
+import { annotations } from '../annotations';
+
+const findValueNodes = walkPreOrder((node: Nodes.Node) => {
+  /**
+   * This phase traverses all nodes and adds an annotation to the value nodes, value nodes are those nodes that
+   * must have a value.
+   * Value nodes are usually the RHS of an assigment node, the LHS of match nodes, function call arguments and so on.
+   */
+
+  if (node instanceof Nodes.FunctionCallNode) {
+    node.argumentsNode.forEach($ => $.annotate(new annotations.IsValueNode()));
+  }
+
+  if (node instanceof Nodes.VarDirectiveNode || node instanceof Nodes.ConstDirectiveNode) {
+    node.value.annotate(new annotations.IsValueNode());
+  }
+
+  if (node instanceof Nodes.FunctionNode) {
+    node.body.annotate(new annotations.IsValueNode());
+  }
+
+  if (node instanceof Nodes.IfNode) {
+    node.condition.annotate(new annotations.IsValueNode());
+    if (node.hasAnnotation(annotations.IsValueNode)) {
+      node.truePart.annotate(new annotations.IsValueNode());
+      node.falsePart.annotate(new annotations.IsValueNode());
+    }
+  }
+
+  if (node instanceof Nodes.MatchNode) {
+    node.lhs.annotate(new annotations.IsValueNode());
+    if (node.hasAnnotation(annotations.IsValueNode)) {
+      node.matchingSet.forEach($ => $.annotate(new annotations.IsValueNode()));
+    }
+  }
+
+  if (node instanceof Nodes.BlockNode) {
+    if (node.hasAnnotation(annotations.IsValueNode) && node.statements.length > 0) {
+      node.statements[node.statements.length - 1].annotate(new annotations.IsValueNode());
+    }
+  }
+});
 
 const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
   if (parent) {
@@ -19,7 +61,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, pa
     }
 
     if (node instanceof Nodes.FunctionNode) {
-      if (!node.value) {
+      if (!node.body) {
         throw new Error('Function has no value');
       }
 
@@ -29,7 +71,10 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, pa
 
       node.parameters.forEach($ => {
         node.closure.setVariable($.parameterName.name, $);
+        node.closure.localsMap.set($, node.closure.localsMap.size);
       });
+
+      node.processParameters();
     }
 
     if (node instanceof Nodes.TypeDirectiveNode) {
@@ -68,6 +113,7 @@ const resolveVariables = walkPreOrder((node: Nodes.Node) => {
 });
 
 export function scopePhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
+  findValueNodes(node, node, null);
   createClosures(node, node, null);
   resolveVariables(node, node, null);
 

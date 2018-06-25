@@ -4,9 +4,9 @@
     |-NameIdentifierNode="i32"
   |-TypeDirectiveNode type=f32
     |-NameIdentifierNode="f32"
-  |-OverloadedFunctionNode type=func & func
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+  |-OverloadedFunctionNode type=((f32, f32) -> f32) & ((i32, i32) -> i32)
+    |-FunDirectiveNode type=((f32, f32) -> f32)
+      |-FunctionNode type=((f32, f32) -> f32)
         |-ParameterNode type=f32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="f32" type=f32
@@ -15,13 +15,13 @@
           |-TypeReferenceNode="f32" type=f32
         |-NameIdentifierNode="sum"
         |-TypeReferenceNode="f32" type=f32
-        |-BinaryExpressionNode="+" type=f32
+        |-BinaryExpressionNode="+" type=f32 annotations=IsValueNode
           |-VariableReferenceNode type=f32
             |-NameIdentifierNode="a"
           |-VariableReferenceNode type=f32
             |-NameIdentifierNode="b"
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+    |-FunDirectiveNode type=((i32, i32) -> i32)
+      |-FunctionNode type=((i32, i32) -> i32)
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="i32" type=i32
@@ -30,14 +30,14 @@
           |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="sum"
         |-TypeReferenceNode="i32" type=i32
-        |-BinaryExpressionNode="+" type=i32
+        |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
           |-VariableReferenceNode type=i32
             |-NameIdentifierNode="a"
           |-VariableReferenceNode type=i32
             |-NameIdentifierNode="b"
-  |-OverloadedFunctionNode type=func
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+  |-OverloadedFunctionNode type=((i32, i32) -> i32)
+    |-FunDirectiveNode type=((i32, i32) -> i32)
+      |-FunctionNode type=((i32, i32) -> i32)
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="i32" type=i32
@@ -46,16 +46,16 @@
           |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="testInt"
         |-TypeReferenceNode="i32" type=i32
-        |-FunctionCallNode type=i32
-          |-VariableReferenceNode type=func
+        |-FunctionCallNode type=i32 annotations=IsValueNode
+          |-VariableReferenceNode type=((i32, i32) -> i32)
             |-NameIdentifierNode="sum"
-          |-VariableReferenceNode type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="a"
-          |-VariableReferenceNode type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="b"
-  |-OverloadedFunctionNode type=func
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+  |-OverloadedFunctionNode type=((f32, f32) -> f32)
+    |-FunDirectiveNode type=((f32, f32) -> f32)
+      |-FunctionNode type=((f32, f32) -> f32)
         |-ParameterNode type=f32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="f32" type=f32
@@ -64,10 +64,10 @@
           |-TypeReferenceNode="f32" type=f32
         |-NameIdentifierNode="testFloat"
         |-TypeReferenceNode="f32" type=f32
-        |-FunctionCallNode type=f32
-          |-VariableReferenceNode type=func
+        |-FunctionCallNode type=f32 annotations=IsValueNode
+          |-VariableReferenceNode type=((f32, f32) -> f32)
             |-NameIdentifierNode="sum"
-          |-VariableReferenceNode type=f32
+          |-VariableReferenceNode type=f32 annotations=IsValueNode
             |-NameIdentifierNode="a"
-          |-VariableReferenceNode type=f32
+          |-VariableReferenceNode type=f32 annotations=IsValueNode
             |-NameIdentifierNode="b"

@@ -6,7 +6,7 @@ import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
 import * as expect from 'expect';
 import glob = require('glob');
-import { Node } from '../dist/parser/nodes';
+import { Nodes } from '../dist/parser/nodes';
 export const printBNF = (parser: Parser) => console.log(parser.emitSource());
 
 const writeToFile = process.env.UPDATE_AST === 'true';
@@ -17,7 +17,7 @@ export function testParseToken(
   parser: Parser,
   txt: string,
   target?: string,
-  customTest?: (document: IToken, error?: Error) => void,
+  customTest?: (document: IToken, error?: Error) => Promise<void>,
   phases?: ((a: any) => any)[],
   debug?: boolean,
   itName?: string
@@ -26,8 +26,11 @@ export function testParseToken(
     parser,
     txt,
     target,
-    (doc: IToken, e) => {
-      if (doc && doc.errors && doc.errors.length) throw doc.errors[0];
+    async (doc: IToken, e) => {
+      if (doc && doc.errors && doc.errors.length) {
+        console.log(inspect(doc.children, { depth: 10, colors: true }));
+        throw doc.errors[0];
+      }
 
       const astNode = doc && doc['astNode'];
 
@@ -39,7 +42,7 @@ export function testParseToken(
         if (astNode.rest.length != 0) throw new Error('Got rest: ' + astNode.rest);
       }
 
-      customTest && customTest(doc, e);
+      customTest && (await customTest(doc, e));
     },
     phases,
     debug,
@@ -51,12 +54,12 @@ export function testParseTokenFailsafe(
   parser: Parser,
   txt: string,
   target?: string,
-  customTest?: (document: IToken, error?: Error) => void,
+  customTest?: (document: IToken, error?: Error) => Promise<any>,
   phases?: ((a: any) => any)[],
   debug?: boolean,
   itName?: string
 ) {
-  it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), () => {
+  it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async () => {
     debug && console.log('      ---------------------------------------------------');
 
     let result;
@@ -79,12 +82,12 @@ export function testParseTokenFailsafe(
             return reducer($);
           }, result);
         } catch (e) {
-          customTest(null, e);
+          await customTest(result, e);
           return;
         }
       }
 
-      if (customTest) customTest(result);
+      if (customTest) await customTest(result);
     } catch (e) {
       console.error(e);
       // parser.debug = true;
@@ -108,14 +111,21 @@ export function testParseTokenFailsafe(
   });
 }
 
-export function printAST(token: IToken | Node, level = 0) {
-  if (token instanceof Node) {
+export function printAST(token: IToken | Nodes.Node, level = 0) {
+  if (token instanceof Nodes.Node) {
+    const ofType = token.ofType ? ' type=' + token.ofType.toString() : '';
+    const text = token.text ? '=' + token.text.replace(/\n/g, '\\n') : '';
+    const annotations =
+      token.getAnnotations().size > 0
+        ? ' annotations=' +
+          Array.from(token.getAnnotations().values())
+            .map($ => $.toString())
+            .join(',')
+        : '';
     return (
       '\n' +
       '  '.repeat(level) +
-      `|-${token.nodeName}${token.text ? '=' + token.text : ''}${
-        token.ofType ? ' type=' + token.ofType.toString() : ''
-      }` +
+      `|-${token.nodeName}${text}${ofType}${annotations}` +
       (token.children || []).map(c => printAST(c, level + 1)).join('')
     );
   }
@@ -123,7 +133,7 @@ export function printAST(token: IToken | Node, level = 0) {
   return (
     '\n' +
     '  '.repeat(level) +
-    `|-${token.type}${token.text ? '=' + token.text : ''}` +
+    `|-${token.type}${token.text ? '=' + token.text.replace(/\n/g, '\\n') : ''}` +
     (token.children || []).map(c => printAST(c, level + 1)).join('')
   );
 }
@@ -135,7 +145,7 @@ export function describeTree(token: IToken) {
 export function folderBasedTest(
   grep: string,
   phases: any[],
-  fn: (x, err?) => string,
+  fn: (x, err?) => Promise<string>,
   extension = '.wast',
   shouldFail = false
 ) {
@@ -145,12 +155,12 @@ export function folderBasedTest(
       parser,
       content,
       'Document',
-      (resultNode: any, err) => {
+      async (resultNode: any, err) => {
         if (shouldFail) {
           if (!err) throw new Error('Test did not fail');
         }
 
-        let result = fn(resultNode, err);
+        let result = await fn(resultNode, err);
 
         const compareToFileName = file + extension;
         const compareFileExists = existsSync(compareToFileName);

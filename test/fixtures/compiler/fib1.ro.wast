@@ -1,60 +1,26 @@
 (module
- (type $f_i32_i32_i32_i32 (func (param i32 i32 i32) (result i32)))
- (type $f_i32_i32 (func (param i32) (result i32)))
- (table 2 2 anyfunc)
- (elem (i32.const 0) $fibo $fib)
- (export "fib" (func $fib))
- (func $fibo (; 0 ;) (type $f_i32_i32_i32_i32) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  (local $3 i32)
-  (return
-   (block $B (result i32)
-    (set_local $1
-     (get_local $0)
-    )
-    (block $B0
-     (block $B1
-      (block $B2
-       (br_if $B0
-        (i32.eq
-         (i32.const 0)
-         (get_local $1)
+  (export "fib" (func $fib))
+  (func $fibo (param $n i32) (param $a i32) (param $b i32) (result i32)
+    (local $var$3 i32)
+    (block $B1 (result i32)
+      (set_local $var$3 (get_local $n))
+      (block $B1_0
+          (block $B1_1
+              (block $B1_2
+                  (br_if $B1_0 (i32.eq (i32.const 0) (get_local $var$3)))
+                  (br_if $B1_1 (i32.eq (i32.const 1) (get_local $var$3)))
+                )
+              (call $fibo (i32.sub (get_local $n) (i32.const 1)) (get_local $b) (i32.add (get_local $a) (get_local $b)))
+              (br $B1)
+            )
+          (get_local $b)
+          (br $B1)
         )
-       )
-       (br_if $B1
-        (i32.eq
-         (i32.const 1)
-         (get_local $1)
-        )
-       )
-      )
-      (call $fibo
-       (i32.sub
-        (get_local $0)
-        (i32.const 1)
-       )
-       (get_local $2)
-       (i32.add
-        (get_local $1)
-        (get_local $2)
-       )
-      )
-      (br $B)
-     )
-     (get_local $2)
-     (br $B)
+      (get_local $a)
+      (br $B1)
     )
-    (get_local $1)
-    (br $B)
-   )
   )
- )
- (func $fib (; 1 ;) (type $f_i32_i32) (param $0 i32) (result i32)
-  (return
-   (call $fibo
-    (get_local $0)
-    (i32.const 0)
-    (i32.const 1)
-   )
+  (func $fib (param $n i32) (result i32)
+    (call $fibo (get_local $n) (i32.const 0) (i32.const 1))
   )
- )
 )

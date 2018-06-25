@@ -1,8 +1,10 @@
-import * as Nodes from '../nodes';
+import { Nodes } from '../nodes';
 import { walkPostOrder } from '../walker';
-import { Type, IntersectionType, FunctionType, UnionType } from '../types';
+import { Type, IntersectionType, FunctionType, UnionType, VoidType } from '../types';
 import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
 import { Closure } from '../closure';
+import { annotations } from '../annotations';
+import { last } from '../helpers';
 
 function resolveTypeByName(node: Nodes.Node, name: string) {
   const typeNode = node.closure.getType(name).node as Nodes.TypeDirectiveNode;
@@ -10,6 +12,7 @@ function resolveTypeByName(node: Nodes.Node, name: string) {
   if (!typeNode.ofType) {
     throw new Error(`Cannot resolve type ${name}`);
   }
+
   return typeNode.ofType;
 }
 
@@ -39,6 +42,15 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
     node.ofType = resolveBinaryOpType(node);
   }
 
+  if (node instanceof Nodes.BlockNode) {
+    if (node.hasAnnotation(annotations.IsValueNode) && node.statements.length > 0) {
+      node.statements.forEach($ => resolveType($));
+      node.ofType = last(node.statements).ofType;
+    } else {
+      node.ofType = new VoidType();
+    }
+  }
+
   if (node instanceof Nodes.TypeReferenceNode) {
     node.ofType = resolveTypeByName(node, node.name);
   }
@@ -66,9 +78,13 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
   }
 
   if (node instanceof Nodes.IfNode) {
-    const union = new UnionType();
-    union.of = [node.truePart.ofType, node.falsePart.ofType];
-    node.ofType = union.simplify();
+    if (node.hasAnnotation(annotations.IsValueNode)) {
+      const union = new UnionType();
+      union.of = [node.truePart.ofType, node.falsePart.ofType];
+      node.ofType = union.simplify();
+    } else {
+      node.ofType = new VoidType();
+    }
   }
 
   if (node instanceof Nodes.VariableReferenceNode) {
@@ -88,7 +104,7 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
 
     node.parameters.forEach(($, $$) => {
       const ofType = resolveScopeType(node.closure, $.parameterType.name);
-      fnType.parameterTypes[$$] = $.ofType = ofType;
+      node.localsByIndex[$$].type = fnType.parameterTypes[$$] = $.ofType = ofType;
     });
 
     if (node.functionReturnType) {
@@ -120,6 +136,7 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
 
     if (!node.functionNode.ofType) {
       const overloads = overloadFunctions.map(($: FunctionType) => '  (' + $.parameterTypes.join(',') + ')').join('\n');
+      node.ofType = new VoidType();
       throw new Error(`No overload found for arguments\n  (${argumentTypes.join(',')})\ngot:\n${overloads}`);
     }
 
@@ -170,13 +187,17 @@ const checkTypes = walkPostOrder((node: Nodes.Node) => {
 
 const ensureReturnTypes = walkPostOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
-    if (!node.value.ofType) {
+    if (!node.body.ofType) {
       throw new Error('Cannot infer function return type');
     } else if (node.functionReturnType) {
-      if (!node.functionReturnType.ofType.canAssign(node.value.ofType)) {
-        throw new Error(`Type "${node.value.ofType}" cannot be assigned to "${node.functionReturnType.ofType}"`);
+      if (!node.functionReturnType.ofType.canAssign(node.body.ofType)) {
+        throw new Error(`Type "${node.body.ofType}" cannot be assigned to "${node.functionReturnType.ofType}"`);
       }
     }
+  }
+
+  if (node.hasAnnotation(annotations.IsValueNode) && !node.ofType) {
+    throw new Error('Cannot infer type of node ' + node.nodeName);
   }
 });
 

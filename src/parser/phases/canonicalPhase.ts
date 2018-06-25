@@ -1,8 +1,8 @@
 import { IToken, TokenError } from 'ebnf';
-import * as Nodes from '../nodes';
+import { Nodes } from '../nodes';
 
 function binaryOpVisitor(astNode: IToken) {
-  let ret = visit(astNode.children[0]);
+  let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode;
 
   for (let i = 1; i < astNode.children.length; i += 2) {
     const oldRet = ret;
@@ -41,7 +41,7 @@ const visitor = {
 
     ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
     ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.valueType = visitLastChild(astNode);
+    ret.valueType = visitLastChild(astNode) as Nodes.TypeNode;
 
     return ret;
   },
@@ -62,8 +62,13 @@ const visitor = {
     }
 
     fun.parameters = params.children.map($ => visit($));
-    fun.value = visitLastChild(astNode);
+    fun.body = visitLastChild(astNode);
 
+    return ret;
+  },
+  CodeBlock(astNode: IToken) {
+    const ret = new Nodes.BlockNode(astNode);
+    ret.statements = astNode.children.map($ => visit($));
     return ret;
   },
   FunctionCallExpression(astNode: IToken) {
@@ -109,7 +114,7 @@ const visitor = {
       } else {
         const match = (ret = new Nodes.MatchNode(astNode.children[i]));
         match.lhs = oldRet;
-        match.matchingSet = visit(astNode.children[i + 1]);
+        match.matchingSet = astNode.children[i + 1].children.map($ => visit($));
       }
     }
 
@@ -132,9 +137,9 @@ const visitor = {
     ret.isArray = !!findChildrenType(astNode, 'IsArray');
     return ret;
   },
-  MatchBody(x: IToken) {
-    return x.children.map($ => visit($));
-  },
+  // MatchBody(x: IToken) {
+  //   return x.children.map($ => visit($));
+  // },
   CaseLiteral(x: IToken) {
     const ret = new Nodes.MatchLiteralNode(x);
     ret.literal = visit(x.children[0]);
@@ -177,12 +182,12 @@ const visitor = {
     const ret = new Nodes.IfNode(astNode);
     ret.condition = visit(astNode.children[0]);
     ret.truePart = visit(astNode.children[1]);
-    ret.falsePart = visit(astNode.children[1]);
+    ret.falsePart = visit(astNode.children[2]);
     return ret;
   }
 };
 
-function visit(astNode: IToken): any {
+function visit<T extends Nodes.Node>(astNode: IToken): T {
   if (!astNode) return null;
   if (visitor[astNode.type]) {
     return visitor[astNode.type](astNode);

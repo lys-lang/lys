@@ -1,0 +1,20 @@
+(module
+  (export "fib" (func $fib))
+  (export "test" (func $test))
+  (func $fibo (param $n i32) (param $x1 i32) (param $x2 i32) (result i32)
+    (if $a_wild_if (result i32) (i32.gt_s (get_local $n) (i32.const 0))
+      (then
+        (call $fibo (i32.sub (get_local $n) (i32.const 1)) (get_local $x2) (i32.add (get_local $x1) (get_local $x2)))
+      )
+      (else
+        (get_local $x1)
+      )
+    )
+  )
+  (func $fib (param $n i32) (result i32)
+    (call $fibo (get_local $n) (i32.const 0) (i32.const 1))
+  )
+  (func $test (result i32)
+    (call $fib (i32.const 46))
+  )
+)

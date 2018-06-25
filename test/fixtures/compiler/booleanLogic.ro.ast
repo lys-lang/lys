@@ -2,9 +2,9 @@
 |-DocumentNode
   |-TypeDirectiveNode type=boolean
     |-NameIdentifierNode="boolean"
-  |-OverloadedFunctionNode type=func
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+  |-OverloadedFunctionNode type=((boolean, boolean) -> boolean)
+    |-FunDirectiveNode type=((boolean, boolean) -> boolean)
+      |-FunctionNode type=((boolean, boolean) -> boolean)
         |-ParameterNode type=boolean
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="boolean" type=boolean
@@ -13,7 +13,7 @@
           |-TypeReferenceNode="boolean" type=boolean
         |-NameIdentifierNode="test"
         |-TypeReferenceNode="boolean" type=boolean
-        |-BinaryExpressionNode="and" type=boolean
+        |-BinaryExpressionNode="and" type=boolean annotations=IsValueNode
           |-VariableReferenceNode type=boolean
             |-NameIdentifierNode="a"
           |-VariableReferenceNode type=boolean

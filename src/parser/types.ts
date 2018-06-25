@@ -1,4 +1,4 @@
-import binaryen = require('../../lib/binaryen');
+export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
 
 export enum NativeTypes {
   i32 = 'i32',
@@ -8,6 +8,7 @@ export enum NativeTypes {
   anyfunc = 'anyfunc',
   func = 'func',
   block_type = 'block_type',
+  void = 'void',
 
   boolean = 'boolean',
   i8 = 'i8',
@@ -43,16 +44,16 @@ export abstract class Type {
   getSize(): number {
     return sizeOf[this.nativeType];
   }
-  get binaryenType() {
+  get binaryenType(): Valtype {
     switch (this.nativeType) {
       case NativeTypes.i32:
-        return binaryen.i32;
+        return 'i32';
       case NativeTypes.u32:
-        return binaryen.i32;
+        return 'i32';
       case NativeTypes.f32:
-        return binaryen.f32;
+        return 'f32';
       case NativeTypes.f64:
-        return binaryen.f64;
+        return 'f64';
 
       case NativeTypes.boolean:
       case NativeTypes.u8:
@@ -60,7 +61,10 @@ export abstract class Type {
       case NativeTypes.u16:
       case NativeTypes.i16:
       case NativeTypes.func:
-        return binaryen.i32;
+        return 'i32';
+
+      case NativeTypes.void:
+        return undefined;
     }
   }
   equals(_otherType: Type) {
@@ -69,6 +73,14 @@ export abstract class Type {
   }
   canAssign(_otherType: Type) {
     return this.equals(_otherType);
+  }
+}
+
+export class VoidType extends Type {
+  nativeType: NativeTypes = NativeTypes.void;
+
+  toString() {
+    return 'void';
   }
 }
 
@@ -88,7 +100,7 @@ export class FunctionType extends Type {
   }
 
   toString() {
-    return NativeTypes[this.nativeType];
+    return `((${this.parameterTypes.join(', ')}) -> ${this.returnType})`;
   }
 }
 
@@ -209,5 +221,6 @@ export const InjectableTypes = {
   u16,
   f32,
   f64,
-  pointer
+  pointer,
+  void: VoidType
 };

@@ -1,0 +1,16 @@
+type i32 = ???
+
+export fun gcd(x: i32, y: i32): i32 = {
+  if (x > y) {
+    gcd(x - y, y)
+  } else if (x < y) {
+    gcd(x, y - x)
+  } else {
+    x
+  }
+}
+
+export fun test(): i32 = {
+  gcd(119,7) // must return 7
+}
+

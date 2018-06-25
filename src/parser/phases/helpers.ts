@@ -1,7 +1,7 @@
-import { Node } from '../nodes';
+import { Nodes } from '../nodes';
 
-export function findParentType<T extends Node>(node: Node, desiredClass: { new (...args): T }): T {
-  let parent: T | Node = node.parent;
+export function findParentType<T extends Nodes.Node>(node: Nodes.Node, desiredClass: { new (...args): T }): T {
+  let parent: T | Nodes.Node = node.parent;
 
   while (parent && !(parent instanceof desiredClass)) {
     parent = parent.parent;

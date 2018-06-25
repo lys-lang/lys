@@ -4,59 +4,59 @@
     |-NameIdentifierNode="i32"
   |-TypeDirectiveNode type=boolean
     |-NameIdentifierNode="boolean"
-  |-OverloadedFunctionNode type=func
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+  |-OverloadedFunctionNode type=((i32) -> boolean)
+    |-FunDirectiveNode type=((i32) -> boolean)
+      |-FunctionNode type=((i32) -> boolean)
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="test"
         |-TypeReferenceNode="boolean" type=boolean
-        |-MatchNode type=boolean
-          |-VariableReferenceNode type=i32
+        |-MatchNode type=boolean annotations=IsValueNode
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="a"
-          |-MatchLiteralNode type=boolean
+          |-MatchLiteralNode type=boolean annotations=IsValueNode
             |-IntegerLiteral=1 type=i32
             |-BooleanLiteral=true type=boolean
-          |-MatchDefaultNode type=boolean
+          |-MatchDefaultNode type=boolean annotations=IsValueNode
             |-BooleanLiteral=false type=boolean
-  |-OverloadedFunctionNode type=func
-    |-FunDirectiveNode type=func
-      |-FunctionNode type=func
+  |-OverloadedFunctionNode type=((i32) -> i32)
+    |-FunDirectiveNode type=((i32) -> i32)
+      |-FunctionNode type=((i32) -> i32)
         |-ParameterNode type=i32
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="test2"
         |-TypeReferenceNode="i32" type=i32
-        |-MatchNode type=i32
-          |-VariableReferenceNode type=i32
+        |-MatchNode type=i32 annotations=IsValueNode
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="a"
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=10 type=i32
             |-IntegerLiteral=1 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=20 type=i32
             |-IntegerLiteral=2 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=30 type=i32
             |-IntegerLiteral=3 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=40 type=i32
             |-IntegerLiteral=4 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=50 type=i32
             |-IntegerLiteral=5 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=60 type=i32
             |-IntegerLiteral=6 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=70 type=i32
             |-IntegerLiteral=7 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=80 type=i32
             |-IntegerLiteral=8 type=i32
-          |-MatchLiteralNode type=i32
+          |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=90 type=i32
             |-IntegerLiteral=9 type=i32
-          |-MatchDefaultNode type=i32
+          |-MatchDefaultNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=0 type=i32

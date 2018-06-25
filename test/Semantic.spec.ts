@@ -1,6 +1,5 @@
 declare var describe, it, require, console;
 
-import { Grammars, Parser, IToken } from 'ebnf';
 import {
   testParseToken,
   describeTree,
@@ -10,7 +9,7 @@ import {
   printAST
 } from './TestHelpers';
 import { parser } from '../dist/grammar';
-import * as Nodes from '../dist/parser/nodes';
+import { Nodes, findNodesByType } from '../dist/parser/nodes';
 import * as expect from 'expect';
 import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
 import { semanticPhase } from '../dist/parser/phases/semanticPhase';
@@ -40,7 +39,7 @@ describe('Semantic', function() {
       parser,
       result,
       'Document',
-      (document, e) => {
+      async (document, e) => {
         if (e) throw e;
         expect(document.errors.length).toEqual(0);
       },
@@ -63,7 +62,7 @@ describe('Semantic', function() {
       parser,
       result,
       'Document',
-      document => {
+      async document => {
         expect(document.errors.length).toBeGreaterThan(0);
       },
       phases,
@@ -113,13 +112,51 @@ describe('Semantic', function() {
     `;
   });
 
+  describe('block', () => {
+    testParseToken(
+      parser,
+      `
+        type i32 = ???
+        fun map(a: i32,b: i32): i32 = a
+
+        fun a() = {
+          1 map 3
+        }`,
+      'Document',
+      async x => {
+        const refs = findNodesByType(x, Nodes.BlockNode);
+        const statements = refs[0].statements;
+        expect(statements.length).toBe(1);
+      },
+      phases
+    );
+    testParseToken(
+      parser,
+      `
+        type i32 = ???
+        fun map(a: i32,b: i32): i32 = a
+        var b = null
+        fun a() = {
+          1 map 3
+          b
+        }`,
+      'Document',
+      async x => {
+        const refs = findNodesByType(x, Nodes.BlockNode);
+        const statements = refs[0].statements;
+        expect(statements.length).toBe(2);
+      },
+      phases
+    );
+  });
+
   describe('scope resolution', () => {
     testParseToken(
       parser,
       `type i32 = ??? var a = 1 fun x(a: i32) = a`,
       'Document',
-      x => {
-        const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
+      async x => {
+        const refs = findNodesByType(x, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
         expect(resolved.node.astNode.type).toBe('Parameter');
       },
@@ -129,8 +166,8 @@ describe('Semantic', function() {
       parser,
       `const c = 1 var a = c`,
       'Document',
-      x => {
-        const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
+      async x => {
+        const refs = findNodesByType(x, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
         expect(resolved.node.astNode.type).toBe('ConstDirective');
       },
@@ -140,8 +177,8 @@ describe('Semantic', function() {
       parser,
       `type i32 = ??? var a = 1 fun x(b: i32) = a`,
       'Document',
-      x => {
-        const refs = Nodes.findNodesByType(x, Nodes.VariableReferenceNode);
+      async x => {
+        const refs = findNodesByType(x, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
         expect(resolved.node.astNode.type).toBe('VarDirective');
       },

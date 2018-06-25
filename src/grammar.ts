@@ -8,7 +8,7 @@ Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRE
 Directive         ::= FunctionDirective | ConstDirective | VarDirective | StructDirective | TypeDirective {fragment=true}
 
 FunctionDirective ::= ExportModifier? FUN_KEYWORD NameIdentifier FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
-ConstDirective      ::= ExportModifier? CONST_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
+ConstDirective    ::= ExportModifier? CONST_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
 VarDirective      ::= ExportModifier? VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
 TypeDirective     ::= ExportModifier? TYPE_KEYWORD NameIdentifier WS* '=' WS* (UnknownExpression | Type) {pin=2}
 StructDirective   ::= ExportModifier? STRUCT_KEYWORD NameIdentifier {pin=2}
@@ -32,7 +32,7 @@ IsArray           ::= '[]'
 Expression        ::= OrExpression (WS* (MatchExpression | BinaryExpression))* {simplifyWhenOneChildren=true}
 
 MatchExpression   ::= MatchKeyword WS* MatchBody WS* {pin=1,fragment=true}
-BinaryExpression  ::= NameIdentifier WS* OrExpression WS* {pin=1,fragment=true}
+BinaryExpression  ::= NameIdentifier !NEW_LINE WS* OrExpression {pin=2,fragment=true}
 
 OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
 AndExpression     ::= EqExpression (WS+ AndKeyword WS+ EqExpression)* {simplifyWhenOneChildren=true}
@@ -52,12 +52,21 @@ RefExpression     ::= RefPointerOperator VariableReference
 FunctionCallExpression
                   ::= Value (WS* &'(' CallArguments)? {simplifyWhenOneChildren=true}
 
-Value             ::= Literal | RefExpression | VariableReference | ParenExpression {fragment=true}
+Value             ::= ( Literal
+                      | RefExpression
+                      | VariableReference
+                      | &'(' ParenExpression
+                      | &'{' CodeBlock
+                      ) {fragment=true}
+
 ParenExpression   ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN}
 
 IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression WS* ElseExpression {pin=1}
 IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN,fragment=true}
 ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
+
+CodeBlock         ::= '{' WS* (CodeBlockExpr (NEW_LINE WS* CodeBlockExpr)* WS*)? '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+CodeBlockExpr     ::= Expression {pin=1,fragment=true}
 
 /* Pattern matching */
 MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
@@ -98,6 +107,8 @@ NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
 
 KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | CONST_KEYWORD | TYPE_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
 
+/* Tokens */
+
 FUN_KEYWORD       ::= 'fun'    WS+
 CONST_KEYWORD     ::= 'const'  WS+
 VAR_KEYWORD       ::= 'var'    WS+
@@ -110,7 +121,7 @@ RESERVED_WORDS    ::= ( 'async' | 'await' | 'defer'
                       | 'using'
                       | 'delete'
                       | 'break' | 'continue'
-                      | 'let' | 'const' | 'void'
+                      | 'let' | 'const'
                       | 'class' | 'private' | 'public' | 'protected' | 'extends'
                       | 'import' | 'from' | 'abstract'
                       | 'finally' | 'new' | 'native' | 'enum' | 'type'
@@ -127,12 +138,11 @@ MatchKeyword      ::= 'match'  ![A-Za-z0-9_]
 AndKeyword        ::= 'and'    ![A-Za-z0-9_]
 OrKeyword         ::= 'or'     ![A-Za-z0-9_]
 
-/* Tokens */
-
 DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | CONST_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')
+BLOCK_RECOVERY    ::= &('}' | NEW_LINE)
 OPEN_PAREN        ::= '('
 CLOSE_PAREN       ::= ')'
 COLON             ::= ':'
@@ -140,10 +150,12 @@ OPEN_DOC_COMMENT  ::= '/*'
 CLOSE_DOC_COMMENT ::= '*/'
 DOC_COMMENT       ::= !CLOSE_DOC_COMMENT [#x00-#xFFFF]
 
-Comment           ::= '//' (![#x0A#x0D] [#x00-#xFFFF])* EOL
-MultiLineComment  ::= OPEN_DOC_COMMENT DOC_COMMENT* CLOSE_DOC_COMMENT {pin=1}
-WS                ::= Comment | MultiLineComment | [#x20#x09#x0A#x0D]+ {fragment=true}
-EOL               ::= [#x0A#x0D]+|EOF
+COMMENT           ::= '//' (![#x0A#x0D] [#x00-#xFFFF])* EOL
+MULTI_COMMENT     ::= OPEN_DOC_COMMENT DOC_COMMENT* CLOSE_DOC_COMMENT {pin=1}
+WS                ::= COMMENT | MULTI_COMMENT | [#x20#x09#x0A#x0D]+ {fragment=true}
+EOL               ::= [#x0A#x0D]+
+
+NEW_LINE          ::= [#x20#x09]* (EOL | COMMENT)
 
 `;
 

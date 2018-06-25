@@ -1,6 +1,5 @@
 declare var describe, it, require, console;
 
-import { Grammars, Parser, IToken } from 'ebnf';
 import {
   testParseToken,
   describeTree,
@@ -9,8 +8,6 @@ import {
   folderBasedTest,
   printAST
 } from './TestHelpers';
-import { parser } from '../dist/grammar';
-import * as Nodes from '../dist/parser/nodes';
 
 import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
 import { semanticPhase } from '../dist/parser/phases/semanticPhase';
@@ -18,8 +15,8 @@ import { findAllErrors } from '../dist/parser/phases/findAllErrors';
 import { scopePhase } from '../dist/parser/phases/scopePhase';
 import { typePhase } from '../dist/parser/phases/typePhase';
 import { compilationPhase } from '../dist/parser/phases/compilationPhase';
+import { print } from '@webassemblyjs/wast-printer';
 
-import { readFileSync, writeFileSync, existsSync } from 'fs';
 import * as comp from '../dist/compiler/compiler';
 
 let inspect = require('util').inspect;
@@ -29,19 +26,32 @@ const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, compilatio
 
 describe('Compiler', function() {
   describe('AST', () => {
-    folderBasedTest('**/compiler/*.ro', phases, (result: any) => printAST(result), '.ast');
+    folderBasedTest('**/compiler/*.ro', phases, async (result: any) => printAST(result), '.ast');
   });
   describe('Compilation', () => {
-    folderBasedTest('**/compiler/*.ro', phases, (result: any) => {
-      const module = comp.compile(result);
-      return module.emitText();
+    folderBasedTest('**/compiler/*.ro', phases, async (result: any) => {
+      const x = await comp.compileModule(result);
+
+      return print(x.program);
     });
+  });
+  describe('Compilation-optimized', () => {
+    folderBasedTest(
+      '**/compiler/*.ro',
+      phases,
+      async (result: any) => {
+        const x = await comp.validateModule(await comp.compileModule(result));
+        x.module.optimize();
+        return x.module.emitText();
+      },
+      '.optimized.wast'
+    );
   });
   describe('Compiler-errors', () => {
     folderBasedTest(
       '**/type-error/*.ro',
       [canonicalPhase, semanticPhase, scopePhase],
-      result => {
+      async result => {
         const typeResult = findAllErrors(typePhase(result));
 
         if (typeResult.errors.length == 0) {

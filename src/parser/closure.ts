@@ -1,4 +1,4 @@
-import * as Nodes from './nodes';
+import { Nodes } from './nodes';
 
 export interface IDictionary<T> {
   [key: string]: T;

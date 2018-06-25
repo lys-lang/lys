@@ -1,4 +1,4 @@
-import * as Nodes from '../nodes';
+import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 
 const process = walkPreOrder((token: Nodes.Node, doc: Nodes.DocumentNode) => {
