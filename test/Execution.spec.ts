@@ -3,15 +3,53 @@ declare var describe;
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
+describe('return types', () => {
+  test(
+    'void return',
+    `
+      type void
+      fun main(): void = {
+        // stub
+      }
+    `,
+    async x => {
+      expect(x.exports.main()).to.eq(undefined);
+    }
+  );
+});
+
+describe('mutability', () => {
+  test(
+    'void return',
+    `
+      type i32
+      fun main(x: i32): i32 = {
+        var a: i32 = 1
+
+        if(x == 1) {
+          a = 3
+        } else {}
+
+        a
+      }
+    `,
+    async x => {
+      expect(x.exports.main(1)).to.eq(3);
+      expect(x.exports.main(3)).to.eq(1);
+    }
+  );
+});
+
 describe('math', () => {
   test(
     'sum',
     `
-      type i32 = ???
+      type i32
+      type f32
 
-      export fun add(a: i32, b: i32): i32 = a + b
+      fun add(a: i32, b: i32): i32 = a + b
 
-      export fun add2(a: i32, b: i32): i32 = {
+      fun add2(a: f32, b: f32): f32 = {
         a + b
       }
     `,
@@ -19,6 +57,7 @@ describe('math', () => {
       expect(x.exports.add(1, 2)).to.eq(3);
       expect(x.exports.add(-1, 2)).to.eq(1);
       expect(x.exports.add2(1, 2)).to.eq(3);
+      expect(x.exports.add2(0.2, 0.3)).to.eq(0.5);
       expect(x.exports.add2(-1, 2)).to.eq(1);
     }
   );
@@ -26,9 +65,9 @@ describe('math', () => {
   test(
     'fibo',
     `
-      type i32 = ???
+      type i32
 
-      fun fibo(n: i32, x1: i32, x2: i32): i32 = {
+      private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
         if (n > 0) {
           fibo(n - 1, x2, x1 + x2)
         } else {
@@ -36,11 +75,11 @@ describe('math', () => {
         }
       }
 
-      export fun fib(n: i32): i32 = {
+      fun fib(n: i32): i32 = {
         fibo(n, 0, 1)
       }
 
-      export fun test(): i32 = {
+      fun test(): i32 = {
         fib(46) // must be 1836311903
       }
     `,
@@ -53,17 +92,17 @@ describe('math', () => {
   test(
     'fibo 2',
     `
-      type i32 = ???
+      type i32
 
-      fun fibo(n: i32, x1: i32, x2: i32): i32 =
+      private fun fibo(n: i32, x1: i32, x2: i32): i32 =
         if (n > 0)
           fibo(n - 1, x2, x1 + x2)
         else
           x1
 
-      export fun fib(n: i32): i32 = fibo(n, 0, 1)
+      fun fib(n: i32): i32 = fibo(n, 0, 1)
 
-      export fun test(): i32 = fib(46) // must be 1836311903
+      fun test(): i32 = fib(46) // must be 1836311903
     `,
     async x => {
       expect(x.exports.fib(46)).to.eq(1836311903);
@@ -74,18 +113,18 @@ describe('math', () => {
   test(
     'fibo 3',
     `
-      type i32 = ???
+      type i32
 
-      fun fibo(n: i32, a: i32, b: i32): i32 =
+      private fun fibo(n: i32, a: i32, b: i32): i32 =
         n match {
           case 0 -> a
           case 1 -> b
           else   -> fibo(n - 1, b, a + b)
         }
 
-      export fun fib(n: i32): i32 = fibo(n, 0, 1)
+      fun fib(n: i32): i32 = fibo(n, 0, 1)
 
-      export fun test(): i32 = fib(46) // must be 1836311903
+      fun test(): i32 = fib(46) // must be 1836311903
     `,
     async x => {
       expect(x.exports.fib(46)).to.eq(1836311903);
@@ -96,14 +135,14 @@ describe('math', () => {
   test(
     'overload infix',
     `
-      type i32 = ???
-      type f32 = ???
+      type i32
+      type f32
 
-      fun sum(a: f32, b: f32): f32 = a + b
-      fun sum(a: i32, b: i32): i32 = a + b
+      private fun sum(a: f32, b: f32): f32 = a + b
+      private fun sum(a: i32, b: i32): i32 = a + b
 
-      export fun testInt(a: i32, b: i32): i32 = a sum b
-      export fun testFloat(a: f32, b: f32): f32 = a sum b
+      fun testInt(a: i32, b: i32): i32 = a sum b
+      fun testFloat(a: f32, b: f32): f32 = a sum b
     `,
     async x => {
       expect(x.exports.testInt(46, 3)).to.eq(49);
@@ -114,16 +153,16 @@ describe('math', () => {
   test(
     'pattern matching 1',
     `
-      type i32 = ???
-      type boolean = ???
+      type i32
+      type boolean
 
-      export fun test1(a: i32): boolean =
+      fun test1(a: i32): boolean =
         a match {
           case 1 -> true
           else -> false
         }
 
-      export fun test2(a: i32): i32 =
+      fun test2(a: i32): i32 =
         a match {
           case 10 -> 1
           case 20 -> 2
@@ -137,7 +176,7 @@ describe('math', () => {
           else -> 0
         }
 
-      export fun test3(a: i32): boolean =
+      fun test3(a: i32): boolean =
         (a + 1) match {
           case 1 -> true
           else -> false

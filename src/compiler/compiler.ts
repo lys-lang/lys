@@ -160,6 +160,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return emitTailCall(node, document);
     } else if (node instanceof Nodes.GetLocalNode) {
       return t.instruction('get_local', [t.identifier(node.local.name)]);
+    } else if (node instanceof Nodes.VarDeclarationNode) {
+      return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
+    } else if (node instanceof Nodes.AssignmentNode) {
+      return t.instruction('set_local', [t.identifier(node.variableName.variable.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'unknown_block_' + getModuleSecuentialId(document));
@@ -179,7 +183,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.ifInstruction(
         t.identifier('a_wild_if'),
         [emit(node.condition, document)],
-        node.condition.ofType.binaryenType,
+        node.ofType.binaryenType,
         emitList(node.truePart, document),
         emitList(node.falsePart, document)
       );

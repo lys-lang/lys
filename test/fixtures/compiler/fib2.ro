@@ -1,12 +1,12 @@
 
-type i32 = ???
+type i32 
 
-fun fibo(n: i32, x1: i32, x2: i32): i32 =
+private fun fibo(n: i32, x1: i32, x2: i32): i32 =
   if (n > 0)
     fibo(n - 1, x2, x1 + x2)
   else
     x1
 
-export fun fib(n: i32): i32 = fibo(n, 0, 1)
+fun fib(n: i32): i32 = fibo(n, 0, 1)
 
-export fun test(): i32 = fib(46) // must be 1836311903
+fun test(): i32 = fib(46) // must be 1836311903

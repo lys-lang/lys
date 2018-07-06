@@ -28,7 +28,7 @@ export function testParseToken(
     target,
     async (doc: IToken, e) => {
       if (doc && doc.errors && doc.errors.length) {
-        console.log(inspect(doc.children, { depth: 10, colors: true }));
+        // console.log(inspect(doc.children, { depth: 10, colors: true }));
         throw doc.errors[0];
       }
 

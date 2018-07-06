@@ -15,7 +15,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     node.argumentsNode.forEach($ => $.annotate(new annotations.IsValueNode()));
   }
 
-  if (node instanceof Nodes.VarDirectiveNode || node instanceof Nodes.ConstDirectiveNode) {
+  if (node instanceof Nodes.VarDeclarationNode) {
     node.value.annotate(new annotations.IsValueNode());
   }
 
@@ -51,11 +51,21 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, pa
       node.closure = parent.closure;
     }
 
+    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.MatchNode) {
+      const innerClosure = node.closure.newChildClosure();
+      innerClosure.setVariable(node.declaredName.name, parent.lhs);
+    }
+
+    // if (node instanceof Nodes.MatchConditionNode) {
+    //   node.rhs.closure = node.closure.newChildClosure();
+    //   node.closure.setVariable(node.declaredName.name, node);
+    // }
+
     if (node instanceof Nodes.OverloadedFunctionNode) {
       node.closure.setVariable(node.name, node);
     }
 
-    if (node instanceof Nodes.VarDirectiveNode) {
+    if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
       node.closure.setVariable(node.variableName.name, node);
     }

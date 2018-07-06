@@ -19,36 +19,74 @@ const visitor = {
   VarDirective(astNode: IToken) {
     const ret = new Nodes.VarDirectiveNode(astNode);
 
-    ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
-    ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.variableType = visit(findChildrenType(astNode, 'Type'));
-    ret.value = visitLastChild(astNode);
+    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+
+    ret.decl = visit(findChildrenType(astNode, 'VarDeclaration'));
 
     return ret;
   },
   ConstDirective(astNode: IToken) {
     const ret = new Nodes.ConstDirectiveNode(astNode);
 
-    ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
+    ret.decl = visit(findChildrenType(astNode, 'ConstDeclaration'));
+
+    return ret;
+  },
+  VarDeclaration(astNode: IToken) {
+    const ret = new Nodes.VarDeclarationNode(astNode);
+
     ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
     ret.variableType = visit(findChildrenType(astNode, 'Type'));
     ret.value = visitLastChild(astNode);
 
     return ret;
   },
+  ConstDeclaration(astNode: IToken) {
+    const ret = new Nodes.ConstDeclarationNode(astNode);
+
+    ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
+    ret.variableType = visit(findChildrenType(astNode, 'Type'));
+    ret.value = visitLastChild(astNode);
+
+    return ret;
+  },
+  AssignStatement(astNode: IToken) {
+    const ret = new Nodes.AssignmentNode(astNode);
+    ret.variableName = visit(astNode.children[0]);
+    ret.value = visit(astNode.children[1]);
+    return ret;
+  },
   TypeDirective(astNode: IToken) {
     const ret = new Nodes.TypeDirectiveNode(astNode);
+    const children = astNode.children.slice();
 
-    ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
-    ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.valueType = visitLastChild(astNode) as Nodes.TypeNode;
+    let child = children.shift();
+
+    if (child.type === 'PrivateModifier') {
+      ret.isExported = false;
+      child = children.shift();
+    } else {
+      ret.isExported = true;
+    }
+
+    child; // this is the type kind
+
+    child = children.shift(); // this is the NameIdentifier
+
+    ret.variableName = visit(child);
+
+    if (children.length) {
+      ret.valueType = visitLastChild(astNode) as Nodes.TypeNode;
+    } else {
+      ret.valueType = null;
+    }
 
     return ret;
   },
   FunctionDirective(astNode: IToken) {
     const ret = new Nodes.FunDirectiveNode(astNode);
 
-    ret.isExported = !!findChildrenType(astNode, 'ExportModifier');
+    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
 
     const fun = (ret.functionNode = new Nodes.FunctionNode(astNode));
 
@@ -68,7 +106,7 @@ const visitor = {
   },
   CodeBlock(astNode: IToken) {
     const ret = new Nodes.BlockNode(astNode);
-    ret.statements = astNode.children.map($ => visit($));
+    ret.statements = astNode.children.map($ => visit($)).filter($ => !!$);
     return ret;
   },
   FunctionCallExpression(astNode: IToken) {
@@ -77,9 +115,6 @@ const visitor = {
     ret.argumentsNode = astNode.children[1].children.map($ => visit($));
 
     return ret;
-  },
-  UnknownExpression() {
-    return null;
   },
   Parameter(astNode: IToken) {
     const ret = new Nodes.ParameterNode(astNode);
@@ -184,6 +219,10 @@ const visitor = {
     ret.truePart = visit(astNode.children[1]);
     ret.falsePart = visit(astNode.children[2]);
     return ret;
+  },
+  SyntaxError(astNode: IToken) {
+    console.dir(astNode);
+    return null;
   }
 };
 

@@ -1,47 +1,50 @@
 
 |-DocumentNode
   |-VarDirectiveNode
-    |-NameIdentifierNode="x"
-    |-FunctionCallNode
-      |-VariableReferenceNode
-        |-NameIdentifierNode="map"
+    |-VarDeclarationNode
+      |-NameIdentifierNode="x"
       |-FunctionCallNode
         |-VariableReferenceNode
           |-NameIdentifierNode="map"
         |-FunctionCallNode
           |-VariableReferenceNode
             |-NameIdentifierNode="map"
+          |-FunctionCallNode
+            |-VariableReferenceNode
+              |-NameIdentifierNode="map"
+            |-VariableReferenceNode
+              |-NameIdentifierNode="a"
+            |-VariableReferenceNode
+              |-NameIdentifierNode="b"
           |-VariableReferenceNode
-            |-NameIdentifierNode="a"
-          |-VariableReferenceNode
-            |-NameIdentifierNode="b"
+            |-NameIdentifierNode="c"
         |-VariableReferenceNode
-          |-NameIdentifierNode="c"
-      |-VariableReferenceNode
-        |-NameIdentifierNode="d"
+          |-NameIdentifierNode="d"
   |-VarDirectiveNode
-    |-NameIdentifierNode="y"
-    |-BinaryExpressionNode="-"
-      |-BinaryExpressionNode="+"
-        |-IntegerLiteral=1
+    |-VarDeclarationNode
+      |-NameIdentifierNode="y"
+      |-BinaryExpressionNode="-"
+        |-BinaryExpressionNode="+"
+          |-IntegerLiteral=1
+          |-BinaryExpressionNode="/"
+            |-BinaryExpressionNode="*"
+              |-IntegerLiteral=2
+              |-IntegerLiteral=3
+            |-IntegerLiteral=4
+        |-BinaryExpressionNode="%"
+          |-IntegerLiteral=5
+          |-IntegerLiteral=6
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="z"
+      |-BinaryExpressionNode="%"
         |-BinaryExpressionNode="/"
           |-BinaryExpressionNode="*"
-            |-IntegerLiteral=2
+            |-BinaryExpressionNode="+"
+              |-IntegerLiteral=1
+              |-IntegerLiteral=2
             |-IntegerLiteral=3
-          |-IntegerLiteral=4
-      |-BinaryExpressionNode="%"
-        |-IntegerLiteral=5
+          |-BinaryExpressionNode="-"
+            |-IntegerLiteral=4
+            |-IntegerLiteral=5
         |-IntegerLiteral=6
-  |-VarDirectiveNode
-    |-NameIdentifierNode="z"
-    |-BinaryExpressionNode="%"
-      |-BinaryExpressionNode="/"
-        |-BinaryExpressionNode="*"
-          |-BinaryExpressionNode="+"
-            |-IntegerLiteral=1
-            |-IntegerLiteral=2
-          |-IntegerLiteral=3
-        |-BinaryExpressionNode="-"
-          |-IntegerLiteral=4
-          |-IntegerLiteral=5
-      |-IntegerLiteral=6

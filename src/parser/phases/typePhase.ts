@@ -73,8 +73,16 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
 
   if (node instanceof Nodes.MatchNode) {
     const union = new UnionType();
+    resolveType(node.lhs);
+
     union.of = node.matchingSet.map($ => $.ofType);
     node.ofType = union.simplify();
+
+    node.matchingSet.forEach($ => {
+      if ($ instanceof Nodes.MatchConditionNode) {
+        $.declaredName.ofType = node.lhs.ofType;
+      }
+    });
   }
 
   if (node instanceof Nodes.IfNode) {
@@ -92,9 +100,24 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
     node.ofType = decl.node.ofType;
   }
 
+  if (node instanceof Nodes.VarDeclarationNode) {
+    resolveType(node.variableType);
+    node.ofType = node.variableType.ofType;
+  }
+
+  if (node instanceof Nodes.VarDirectiveNode) {
+    resolveType(node.decl.variableType);
+    node.ofType = node.decl.variableType.ofType;
+  }
+
   if (node instanceof Nodes.ParameterNode) {
     resolveType(node.parameterType);
     node.ofType = node.parameterType.ofType;
+  }
+
+  if (node instanceof Nodes.AssignmentNode) {
+    resolveType(node.value);
+    node.ofType = node.value.ofType;
   }
 
   if (node instanceof Nodes.FunctionNode) {
@@ -171,7 +194,11 @@ const resolveOverloads = walkPostOrder((node: Nodes.Node) => {
 });
 
 const resolveVariables = walkPostOrder((node: Nodes.Node) => {
-  if (node instanceof Nodes.VarDirectiveNode || node instanceof Nodes.ParameterNode) {
+  if (
+    node instanceof Nodes.VarDirectiveNode ||
+    node instanceof Nodes.ParameterNode ||
+    node instanceof Nodes.VarDeclarationNode
+  ) {
     resolveType(node);
   }
 });
@@ -186,6 +213,12 @@ const checkTypes = walkPostOrder((node: Nodes.Node) => {
 });
 
 const ensureReturnTypes = walkPostOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.AssignmentNode) {
+    if (!node.variableName.ofType.canAssign(node.value.ofType)) {
+      throw new Error(`Type "${node.value.ofType}" cannot be assigned to "${node.variableName.ofType}"`);
+    }
+  }
+
   if (node instanceof Nodes.FunctionNode) {
     if (!node.body.ofType) {
       throw new Error('Cannot infer function return type');

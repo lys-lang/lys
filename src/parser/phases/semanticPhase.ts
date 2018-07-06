@@ -39,7 +39,7 @@ const overloadFunctions = function(document: Nodes.DocumentNode) {
   return document;
 };
 
-const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
+const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, _1: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
     let used = [];
     node.parameters.forEach(param => {
@@ -58,11 +58,6 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNo
     if (node.matchingSet.length == 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
       throw new TokenError(`This match is useless`, node.astNode);
     }
-  }
-
-  if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.MatchNode) {
-    const innerClosure = node.closure.newChildClosure();
-    innerClosure.setVariable(node.declaredName.name, parent.lhs);
   }
 });
 

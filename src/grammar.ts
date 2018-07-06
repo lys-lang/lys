@@ -3,29 +3,62 @@ import { Parser, Grammars, IRule } from 'ebnf';
 export const grammar = `
 {ws=explicit}
 
-Document          ::= Directives EOF? {ws=implicit}
+Document          ::= Directives WS* EOF? {ws=implicit}
 Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
-Directive         ::= FunctionDirective | ConstDirective | VarDirective | StructDirective | TypeDirective {fragment=true}
 
-FunctionDirective ::= ExportModifier? FUN_KEYWORD NameIdentifier FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
-ConstDirective    ::= ExportModifier? CONST_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
-VarDirective      ::= ExportModifier? VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=2}
-TypeDirective     ::= ExportModifier? TYPE_KEYWORD NameIdentifier WS* '=' WS* (UnknownExpression | Type) {pin=2}
-StructDirective   ::= ExportModifier? STRUCT_KEYWORD NameIdentifier {pin=2}
+Directive         ::= ( FunctionDirective
+                      | ConstDirective
+                      | VarDirective
+                      | StructDirective
+                      | TypeDirective
+                      | EffectDirective
+                      ) {fragment=true}
 
-ExportModifier    ::= EXPORT_KEYWORD
+FunctionDirective ::= PrivateModifier? FUN_KEYWORD NameIdentifier WS* FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
+ConstDirective    ::= PrivateModifier? ConstDeclaration {pin=2}
+VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
+TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
+EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD NameIdentifier WS* TypeVariables? (&('{') EffectDeclaration | &('=') TypeAlias)? {pin=2}
+StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+
+PrivateModifier   ::= PRIVATE_KEYWORD
+
+TypeKind          ::= TYPE_KEYWORD
 
 UnknownExpression ::= '???'
 
+
+
+
+TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
+NthTypeVariable   ::= ',' WS* TypeVariable {fragment=true}
+TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
+TypeVariables     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
+
 AssignExpression  ::= '=' WS* Expression {pin=1,fragment=true}
+AssignStatement   ::= VariableReference WS* '=' WS* Expression {pin=3}
 OfType            ::= COLON WS* Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
-FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=CLOSE_PAREN}
+FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
 ParameterList     ::= Parameter NthParameter* {fragment=true}
 NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 Parameter         ::= NameIdentifier WS* OfType {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
+StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
+EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType
+TypeDeclElements  ::= (WS* StructDeclaration)*
+EffectElements    ::= (WS* EffectMemberDeclaration)*
+
+
+ConstDeclaration  ::= CONST_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+
+EffectDeclaration ::= '{' EffectElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+TypeDeclaration   ::= '{' TypeDeclElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+
+TypeAlias         ::= '=' WS* Type {pin=1}
 Type              ::= NameIdentifier IsPointer* IsArray?
+
 IsPointer         ::= '*'
 IsArray           ::= '[]'
 
@@ -66,7 +99,7 @@ IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN
 ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
 
 CodeBlock         ::= '{' WS* (CodeBlockExpr (NEW_LINE WS* CodeBlockExpr)* WS*)? '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-CodeBlockExpr     ::= Expression {pin=1,fragment=true}
+CodeBlockExpr     ::= (ConstDeclaration | VarDeclaration | AssignStatement | Expression) {pin=1,fragment=true}
 
 /* Pattern matching */
 MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
@@ -105,16 +138,22 @@ NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | CONST_KEYWORD | TYPE_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | CONST_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
 
 /* Tokens */
 
 FUN_KEYWORD       ::= 'fun'    WS+
 CONST_KEYWORD     ::= 'const'  WS+
 VAR_KEYWORD       ::= 'var'    WS+
-TYPE_KEYWORD      ::= 'type'   WS+
+EFFECT_KEYWORD    ::= 'effect' WS+
+
+TYPE_KEYWORD      ::= ( 'type'
+                      | 'cotype'
+                      | 'rectype'
+                      ) WS+
+
 STRUCT_KEYWORD    ::= 'struct' WS+
-EXPORT_KEYWORD    ::= 'export' WS+
+PRIVATE_KEYWORD   ::= 'private' WS+
 
 RESERVED_WORDS    ::= ( 'async' | 'await' | 'defer'
                       | 'package' | 'declare'
@@ -122,7 +161,7 @@ RESERVED_WORDS    ::= ( 'async' | 'await' | 'defer'
                       | 'delete'
                       | 'break' | 'continue'
                       | 'let' | 'const'
-                      | 'class' | 'private' | 'public' | 'protected' | 'extends'
+                      | 'class' | 'export' | 'public' | 'protected' | 'extends'
                       | 'import' | 'from' | 'abstract'
                       | 'finally' | 'new' | 'native' | 'enum' | 'type'
                       | 'yield' | 'for' | 'do' | 'while' | 'try'
@@ -138,7 +177,7 @@ MatchKeyword      ::= 'match'  ![A-Za-z0-9_]
 AndKeyword        ::= 'and'    ![A-Za-z0-9_]
 OrKeyword         ::= 'or'     ![A-Za-z0-9_]
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | CONST_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | EXPORT_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | CONST_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

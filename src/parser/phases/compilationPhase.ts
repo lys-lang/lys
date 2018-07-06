@@ -36,6 +36,16 @@ const resolveLocals = walkPreOrder(
   }
 );
 
+const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.VarDeclarationNode) {
+    const fn = findParentType(node, Nodes.FunctionNode);
+
+    if (fn) {
+      node.local = fn.addLocal(node.value.ofType, node.variableName.name, node);
+    }
+  }
+});
+
 // export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
 //   if (node instanceof Nodes.FunctionNode) {
 //     const isTailRec = isRecursiveCallExpression(node, node.body);
@@ -157,6 +167,7 @@ const resolveLocals = walkPreOrder(
 export function compilationPhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
   fixParents(node, node, null);
   resolveLocals(node, node, null);
+  resolveDeclarations(node, node, null);
   // detectReturnExpressions(node);
   // detectTailCall(node);
   fixParents(node, node, null);

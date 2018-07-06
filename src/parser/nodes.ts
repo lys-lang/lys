@@ -349,10 +349,28 @@ export namespace Nodes {
     functions: FunDirectiveNode[] = [];
   }
 
-  export class VarDirectiveNode extends DirectiveNode {
+  export class VarDeclarationNode extends Node {
     mutable = true;
     variableName: NameIdentifierNode;
     variableType: TypeReferenceNode;
+    value: ExpressionNode;
+    local: Local;
+  }
+
+  export class ConstDeclarationNode extends VarDeclarationNode {
+    mutable = false;
+  }
+
+  export class VarDirectiveNode extends DirectiveNode {
+    decl: VarDeclarationNode;
+  }
+
+  export class ConstDirectiveNode extends VarDirectiveNode {
+    decl: ConstDeclarationNode;
+  }
+
+  export class AssignmentNode extends Node {
+    variableName: VariableReferenceNode;
     value: ExpressionNode;
   }
 
@@ -363,10 +381,6 @@ export namespace Nodes {
 
   export class TypeNode extends Node {
     nativeType: Type;
-  }
-
-  export class ConstDirectiveNode extends VarDirectiveNode {
-    mutable = false;
   }
 
   export abstract class LiteralNode<T> extends ExpressionNode {

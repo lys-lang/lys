@@ -1,16 +1,20 @@
 
 |-DocumentNode
   |-VarDirectiveNode
-    |-NameIdentifierNode="a"
-    |-IntegerLiteral=1 annotations=IsValueNode
-  |-VarDirectiveNode
-    |-NameIdentifierNode="b"
-    |-VariableReferenceNode annotations=IsValueNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="a"
+      |-IntegerLiteral=1 annotations=IsValueNode
   |-VarDirectiveNode
-    |-NameIdentifierNode="c"
-    |-IntegerLiteral=1 annotations=IsValueNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="b"
+      |-VariableReferenceNode annotations=IsValueNode
+        |-NameIdentifierNode="a"
   |-VarDirectiveNode
-    |-NameIdentifierNode="d"
-    |-VariableReferenceNode annotations=IsValueNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="c"
+      |-IntegerLiteral=1 annotations=IsValueNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="d"
+      |-VariableReferenceNode annotations=IsValueNode
+        |-NameIdentifierNode="c"

@@ -1,0 +1,31 @@
+(module
+  (export "main" (func $main))
+  (export "main2" (func $main2))
+  (func $main (result i32)
+    (local $a i32)
+    (block $unknown_block_1 (result i32)
+      (set_local $a (i32.const 1))
+      (set_local $a (i32.const 2))
+      (get_local $a)
+    )
+  )
+  (func $main2 (param $x i32) (result i32)
+    (local $a i32)
+    (block $unknown_block_2 (result i32)
+      (set_local $a (i32.const 1))
+      (if $a_wild_if (i32.eq (get_local $x) (i32.const 1))
+          (then
+            (block $unknown_block_3
+                (set_local $a (i32.const 3))
+              )
+          )
+          (else
+            (block $unknown_block_4
+                (nop)
+              )
+          )
+        )
+      (get_local $a)
+    )
+  )
+)

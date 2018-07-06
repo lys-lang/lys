@@ -72,18 +72,18 @@ describe('Semantic', function() {
   }
   describe('Duplicated parameters', () => {
     test`
-      type i32 = ???
+      type i32 
       fun test(a: i32, b: i32) = 1
     `;
     testToFail`
-      type i32 = ???
+      type i32 
       fun test(a: i32, a: i32) = 1
     `;
   });
 
   describe('conditionals', () => {
     test`
-    type i32 = ???
+    type i32 
     fun gcd(x: i32, y: i32): i32 =
       if (x > y)
         gcd(x - y, y)
@@ -96,18 +96,18 @@ describe('Semantic', function() {
 
   describe('Pattern matching', () => {
     test`
-      type i32 = ???
+      type i32 
       fun test(a: i32) = a match {
         case 1 -> true
         else -> false
       }
     `;
     testToFail`
-      type i32 = ???
+      type i32 
       fun test(a: i32) = a match { }
     `;
     testToFail`
-      type i32 = ???
+      type i32 
       fun test(a: i32) = a match { else -> 1 }
     `;
   });
@@ -116,7 +116,7 @@ describe('Semantic', function() {
     testParseToken(
       parser,
       `
-        type i32 = ???
+        type i32 
         fun map(a: i32,b: i32): i32 = a
 
         fun a() = {
@@ -133,7 +133,25 @@ describe('Semantic', function() {
     testParseToken(
       parser,
       `
-        type i32 = ???
+        type i32
+        fun main(): i32 = {
+          var a: i32 = 1
+          a = 2
+          a
+        }
+      `,
+      'Document',
+      async x => {
+        const refs = findNodesByType(x, Nodes.BlockNode);
+        const statements = refs[0].statements;
+        expect(statements.length).toBe(3);
+      },
+      phases
+    );
+    testParseToken(
+      parser,
+      `
+        type i32 
         fun map(a: i32,b: i32): i32 = a
         var b = null
         fun a() = {
@@ -153,7 +171,7 @@ describe('Semantic', function() {
   describe('scope resolution', () => {
     testParseToken(
       parser,
-      `type i32 = ??? var a = 1 fun x(a: i32) = a`,
+      `type i32  var a = 1 fun x(a: i32) = a`,
       'Document',
       async x => {
         const refs = findNodesByType(x, Nodes.VariableReferenceNode);
@@ -169,18 +187,18 @@ describe('Semantic', function() {
       async x => {
         const refs = findNodesByType(x, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
-        expect(resolved.node.astNode.type).toBe('ConstDirective');
+        expect(resolved.node.astNode.type).toBe('ConstDeclaration');
       },
       phases
     );
     testParseToken(
       parser,
-      `type i32 = ??? var a = 1 fun x(b: i32) = a`,
+      `type i32  var a = 1 fun x(b: i32) = a`,
       'Document',
       async x => {
         const refs = findNodesByType(x, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
-        expect(resolved.node.astNode.type).toBe('VarDirective');
+        expect(resolved.node.astNode.type).toBe('VarDeclaration');
       },
       phases
     );
@@ -201,24 +219,24 @@ describe('Semantic', function() {
       fun test() = test
     `;
     test`
-      type i32 = ???
+      type i32 
       var a = 1
       fun test(a: i32) = a
     `;
     testToFail`var a = a`;
 
-    test`type i32 = ??? var a: i32 = 1`;
+    test`type i32  var a: i32 = 1`;
 
     testToFail`var a: i32 = 1`;
 
     testToFail`var b = 1 var a: b = 1`;
     test`var i32 = 1`;
-    testToFail`type i32 = ??? var i32 = 1`;
+    testToFail`type i32  var i32 = 1`;
 
     test`var a = 1 var b = a`;
 
     testToFail`
-      type i32 = ???
+      type i32 
       fun test(a: i32) = b
     `;
   });
