@@ -5,12 +5,10 @@ import { annotations } from '../parser/annotations';
 import { findParentType } from '../parser/phases/helpers';
 import * as t from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
-import * as binaryen from '../../lib/binaryen';
+import * as binaryen from 'binaryen';
 
-import * as _wabt from '../../lib/wabt';
+import * as wabt from 'wabt';
 import { flatten } from '../parser/helpers';
-
-const wabt: any = _wabt();
 
 declare var WebAssembly;
 
@@ -255,6 +253,9 @@ export async function compileModule(document: Nodes.DocumentNode) {
 
 export async function validateModule(x: { program: any; document: Nodes.DocumentNode }) {
   let text = print(x.program);
+
+  await wabt.ready;
+
   const wabtModule = wabt.parseWat(x.document.file || 'main.ro', text);
 
   wabtModule.resolveNames();
