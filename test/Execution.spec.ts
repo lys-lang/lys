@@ -26,7 +26,7 @@ describe('mutability', () => {
       fun main(x: i32): i32 = {
         var a: i32 = 1
 
-        if(x == 1) {
+        if (x == 1) {
           a = 3
         } else {}
 

@@ -168,7 +168,7 @@ export function folderBasedTest(
         if (writeToFile || !compareFileExists) {
           writeFileSync(compareToFileName, result);
         }
-        expect(result).toEqual(compareTo);
+        expect(result.trim()).toEqual(compareTo.trim());
       },
       phases,
       false,
