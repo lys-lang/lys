@@ -160,13 +160,21 @@ describe('math', () => {
 
       private fun sum(a: f32, b: f32): f32 = a + b
       private fun sum(a: i32, b: i32): i32 = a + b
+      private fun sum(a: i32): i32 = a + 100
+      private fun sum(a: f32): f32 = a + 100.0
 
-      fun testInt(a: i32, b: i32): i32 = a sum b
-      fun testFloat(a: f32, b: f32): f32 = a sum b
+      fun testInt(a: i32, b: i32): i32 = a.sum(b)
+      fun testFloat(a: f32, b: f32): f32 = a.sum(b)
+
+      fun testInt2(a: i32): i32 = a.sum()
+      fun testFloat2(a: f32): f32 = a.sum()
     `,
     async x => {
       expect(x.exports.testInt(46, 3)).to.eq(49);
       expect(x.exports.testFloat(0.2, 0.3)).to.eq(0.5);
+
+      expect(x.exports.testInt2(46)).to.eq(146);
+      expect(x.exports.testFloat2(0.5)).to.eq(100.5);
     }
   );
 

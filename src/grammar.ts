@@ -14,7 +14,7 @@ Directive         ::= ( FunctionDirective
                       | EffectDirective
                       ) {fragment=true}
 
-FunctionDirective ::= PrivateModifier? FUN_KEYWORD NameIdentifier WS* FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
+FunctionDirective ::= PrivateModifier? FunDeclaration {pin=2}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
@@ -35,14 +35,14 @@ NthTypeVariable   ::= ',' WS* TypeVariable {fragment=true}
 TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
 TypeVariables     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
-AssignExpression  ::= '=' WS* Expression {pin=1,fragment=true}
+AssignExpression  ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
 AssignStatement   ::= VariableReference WS* '=' !('=') WS* Expression {pin=3}
 OfType            ::= COLON WS* Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
 ParameterList     ::= Parameter NthParameter* {fragment=true}
 NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
-Parameter         ::= NameIdentifier WS* OfType {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
+Parameter         ::= NameIdentifier WS* OfType? {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
 StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
 EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType
@@ -52,6 +52,7 @@ EffectElements    ::= (WS* EffectMemberDeclaration)*
 
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD NameIdentifier WS* FunctionParamsList OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= '{' EffectElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 TypeDeclaration   ::= '{' TypeDeclElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
@@ -64,8 +65,14 @@ IsArray           ::= '[]'
 
 Expression        ::= OrExpression (WS* (MatchExpression | BinaryExpression))* {simplifyWhenOneChildren=true}
 
+Statement         ::= ValDeclaration
+                    | VarDeclaration
+                    | FunDeclaration
+                    | AssignStatement
+                    | Expression {fragment=true}
+
 MatchExpression   ::= MatchKeyword WS* MatchBody WS* {pin=1,fragment=true}
-BinaryExpression  ::= NameIdentifier !NEW_LINE WS* OrExpression {pin=2,fragment=true}
+BinaryExpression  ::= '.' NameIdentifier CallArguments? {pin=2,fragment=true}
 
 OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
 AndExpression     ::= EqExpression (WS+ AndKeyword WS+ EqExpression)* {simplifyWhenOneChildren=true}
@@ -92,14 +99,13 @@ Value             ::= ( Literal
                       | &'{' CodeBlock
                       ) {fragment=true}
 
-ParenExpression   ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN}
+ParenExpression   ::= '(' WS* Expression WS* ')' {pin=1,recoverUntil=CLOSE_PAREN}
 
 IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression (WS* ElseExpression)? {pin=1}
 IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN,fragment=true}
 ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
 
-CodeBlock         ::= '{' WS* (CodeBlockExpr (NEW_LINE WS* CodeBlockExpr)* WS*)? '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-CodeBlockExpr     ::= (ValDeclaration | VarDeclaration | AssignStatement | Expression) {pin=1,fragment=true}
+CodeBlock         ::= '{' WS* (Statement (NEW_LINE WS* Statement)* WS*)? '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 /* Pattern matching */
 MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}

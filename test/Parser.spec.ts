@@ -190,7 +190,7 @@ describe('Parser', () => {
 
     test`val test = 1`;
 
-    test`val test = 1 mul 4`;
+    test`val test = 1.mul(4)`;
 
     test`val floatingNumber: Number = 1.0`;
     test`val floatingNumber: Number = 0.0`;
@@ -314,13 +314,14 @@ describe('Parser', () => {
     test`
       var x =
         if (x)
-          elseifo() elsiso 3
+          elseifo()
+            .elsiso(3)
         else
           ifa()
     `;
 
     test`val test = 1 match { case x if x < 1 and x < 10 -> true }`;
-    test`var a = x match { else -> 1 } map 1 * 2`;
+    test`var a = (x match { else -> 1 }).map(1 * 2)`;
 
     test`var a = !x()`;
     test`var a = x()`;
@@ -385,11 +386,11 @@ describe('Parser', () => {
       expect(doc.errors[0].token.text).toEqual('match');
     });
 
-    test`val test = 1 map 1 map 2 map 3`;
+    test`val test = (1).map(1).map(2).map(3)`;
     test`val test = x(1)`;
     test`val test = x(1,2)`;
-    test`val test = (x)(1,2)`;
-    test`val test = (x())(1,2)`;
+    test`val test = x(1, asd)`;
+    test`val test = nnn( 1 ,   \n asd )`;
     test`val test = x( 1 , 2 /* sdgf */)`;
     test`
       private fun compare(a: Color, b: Color): bool = {

@@ -154,11 +154,11 @@ describe('Semantic', function() {
     testParseToken(
       parser,
       `
-        type i32 
+        type i32
         fun map(a: i32,b: i32): i32 = a
 
         fun a() = {
-          1 map 3
+          1.map(3)
         }`,
       'Document',
       async x => {
@@ -193,7 +193,7 @@ describe('Semantic', function() {
         fun map(a: i32,b: i32): i32 = a
         var b = null
         fun a() = {
-          1 map 3
+          (1).map(3)
           b
         }`,
       'Document',

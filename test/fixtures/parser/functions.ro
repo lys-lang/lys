@@ -1,0 +1,24 @@
+fun x() = {
+  fun repeat(number: i32, fn) = {
+    if (numner > 0)
+      fn()
+    else
+      repeat(number - 1, fn)
+  }
+  val x = 1
+  repeat()
+  var y = 2
+  repeat()
+}
+
+fun main(): i32 = {
+  var counter: i32 = 0
+
+  fun add() = {
+    counter = counter + 1
+  }
+
+  repeat(10, add)
+
+  counter
+}

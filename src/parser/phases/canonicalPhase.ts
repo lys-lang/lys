@@ -84,12 +84,8 @@ const visitor = {
 
     return ret;
   },
-  FunctionDirective(astNode: IToken) {
-    const ret = new Nodes.FunDirectiveNode(astNode);
-
-    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
-
-    const fun = (ret.functionNode = new Nodes.FunctionNode(astNode));
+  FunDeclaration(astNode: IToken) {
+    const fun = new Nodes.FunctionNode(astNode);
 
     fun.functionName = visit(findChildrenType(astNode, 'NameIdentifier'));
     fun.functionReturnType = visit(findChildrenType(astNode, 'Type'));
@@ -102,6 +98,15 @@ const visitor = {
 
     fun.parameters = params.children.map($ => visit($));
     fun.body = visitLastChild(astNode);
+
+    return fun;
+  },
+  FunctionDirective(astNode: IToken) {
+    const ret = new Nodes.FunDirectiveNode(astNode);
+
+    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+
+    ret.functionNode = visit(findChildrenType(astNode, 'FunDeclaration')) as Nodes.FunctionNode;
 
     return ret;
   },
@@ -140,17 +145,24 @@ const visitor = {
 
     for (let i = 1; i < astNode.children.length; i += 2) {
       const oldRet = ret;
-      if (astNode.children[i].type !== 'MatchKeyword') {
-        const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
-        x.isInfix = true;
-        const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
-        vrn.variable = new Nodes.NameIdentifierNode(astNode.children[i]);
-        vrn.variable.name = astNode.children[i].text;
-        x.argumentsNode = [oldRet, visit(astNode.children[i + 1])];
-      } else {
+      if (astNode.children[i].type === 'MatchKeyword') {
         const match = (ret = new Nodes.MatchNode(astNode.children[i]));
         match.lhs = oldRet;
         match.matchingSet = astNode.children[i + 1].children.map($ => visit($));
+      } else {
+        const doesItHaveCallArguments = !!astNode.children[i + 1];
+
+        if (doesItHaveCallArguments) {
+          const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
+          x.isInfix = true;
+          const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
+          vrn.variable = new Nodes.NameIdentifierNode(astNode.children[i]);
+          vrn.variable.name = astNode.children[i].text;
+
+          x.argumentsNode = [oldRet, ...astNode.children[i + 1].children.map($ => visit($))];
+        } else {
+          // it is a member selection
+        }
       }
     }
 

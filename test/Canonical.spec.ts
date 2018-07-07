@@ -84,7 +84,15 @@ describe('Canonical', function() {
   `;
 
   test`
-    fun gte(a: Float, b: Float) = a XX b XX c XX d
+    fun gte(a: Float, b: Float) = a.XX(b).XX(c).XX(d)
+  `;
+
+  test`
+    fun gte(a: Float, b: Float) = a.XX
+  `;
+
+  test`
+    fun gte(a: Float, b: Float) = a.XX()
   `;
 
   test`
