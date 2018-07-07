@@ -47,7 +47,7 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
       node.statements.forEach($ => resolveType($));
       node.ofType = last(node.statements).ofType;
     } else {
-      node.ofType = new VoidType();
+      node.ofType = VoidType.instance;
     }
   }
 
@@ -91,7 +91,7 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
       union.of = [node.truePart.ofType, node.falsePart.ofType];
       node.ofType = union.simplify();
     } else {
-      node.ofType = new VoidType();
+      node.ofType = VoidType.instance;
     }
   }
 
@@ -159,7 +159,7 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
 
     if (!node.functionNode.ofType) {
       const overloads = overloadFunctions.map(($: FunctionType) => '  (' + $.parameterTypes.join(',') + ')').join('\n');
-      node.ofType = new VoidType();
+      node.ofType = VoidType.instance;
       throw new Error(`No overload found for arguments\n  (${argumentTypes.join(',')})\ngot:\n${overloads}`);
     }
 

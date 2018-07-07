@@ -18,7 +18,7 @@ describe('return types', () => {
   );
 });
 
-describe('mutability', () => {
+describe.only('mutability', () => {
   test(
     'void return',
     `
@@ -29,6 +29,26 @@ describe('mutability', () => {
         if(x == 1) {
           a = 3
         } else {}
+
+        a
+      }
+    `,
+    async x => {
+      expect(x.exports.main(1)).to.eq(3);
+      expect(x.exports.main(3)).to.eq(1);
+    }
+  );
+
+  test(
+    'void return, if w/o else',
+    `
+      type i32
+      fun main(x: i32): i32 = {
+        var a: i32 = 1
+
+        if (x == 1) {
+          a = 3
+        }
 
         a
       }

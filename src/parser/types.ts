@@ -79,9 +79,15 @@ export abstract class Type {
 export class VoidType extends Type {
   nativeType: NativeTypes = NativeTypes.void;
 
+  private constructor() {
+    super();
+  }
+
   toString() {
     return 'void';
   }
+
+  static instance = new VoidType();
 }
 
 export class FunctionType extends Type {

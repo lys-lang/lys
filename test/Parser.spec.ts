@@ -301,6 +301,17 @@ describe('Parser', () => {
     `;
 
     test`
+      fun ifWithoutElse(x: i32): i32 = {
+        if (x == 1) {
+          a = 3
+        }
+      }
+      fun ifWithoutElse2(x: i32): i32 = {
+        if (x == 1) asd()
+      }
+    `;
+
+    test`
       var x =
         if (x)
           elseifo() elsiso 3

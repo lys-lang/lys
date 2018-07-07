@@ -83,15 +83,53 @@ describe('Semantic', function() {
 
   describe('conditionals', () => {
     test`
-    type i32 
-    fun gcd(x: i32, y: i32): i32 =
-      if (x > y)
-        gcd(x - y, y)
-      else if (x < y)
-        gcd(x, y - x)
-      else
-        x
+      type i32 
+      fun gcd(x: i32, y: i32): i32 =
+        if (x > y)
+          gcd(x - y, y)
+        else if (x < y)
+          gcd(x, y - x)
+        else
+          x
     `;
+
+    testParseToken(
+      parser,
+      `
+        type i32
+        var x = 1
+        var b = null
+        fun a() = {
+          if (x < 3) a()
+          b
+        }`,
+      'Document',
+      async x => {
+        const refs = findNodesByType(x, Nodes.BlockNode);
+        const statements = refs[0].statements;
+        expect(statements.length).toBe(2);
+      },
+      phases
+    );
+
+    testParseToken(
+      parser,
+      `
+        type i32
+        var x = 1
+        var b = null
+        fun a() = {
+          if (x < 3) { a() }
+          b
+        }`,
+      'Document',
+      async x => {
+        const refs = findNodesByType(x, Nodes.BlockNode);
+        const statements = refs[0].statements;
+        expect(statements.length).toBe(2);
+      },
+      phases
+    );
   });
 
   describe('Pattern matching', () => {

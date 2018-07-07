@@ -220,8 +220,7 @@ const visitor = {
     ret.falsePart = visit(astNode.children[2]);
     return ret;
   },
-  SyntaxError(astNode: IToken) {
-    console.dir(astNode);
+  SyntaxError(_: IToken) {
     return null;
   }
 };

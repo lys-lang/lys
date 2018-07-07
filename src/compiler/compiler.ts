@@ -183,7 +183,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         [emit(node.condition, document)],
         node.ofType.binaryenType,
         emitList(node.truePart, document),
-        emitList(node.falsePart, document)
+        node.falsePart ? emitList(node.falsePart, document) : []
       );
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       return node.binaryOperation.generateCode(emit(node.lhs, document), emit(node.rhs, document));

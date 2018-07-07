@@ -94,7 +94,7 @@ Value             ::= ( Literal
 
 ParenExpression   ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN}
 
-IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression WS* ElseExpression {pin=1}
+IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression (WS* ElseExpression)? {pin=1}
 IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN,fragment=true}
 ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
 

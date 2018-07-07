@@ -57,3 +57,28 @@
             |-NameIdentifierNode="gcd"
           |-IntegerLiteral=119 type=i32 annotations=IsValueNode
           |-IntegerLiteral=7 type=i32 annotations=IsValueNode
+  |-OverloadedFunctionNode type=((i32) -> i32)
+    |-FunDirectiveNode type=((i32) -> i32)
+      |-FunctionNode type=((i32) -> i32)
+        |-ParameterNode type=i32
+          |-NameIdentifierNode="x"
+          |-TypeReferenceNode="i32" type=i32
+        |-NameIdentifierNode="ifWithoutElse"
+        |-TypeReferenceNode="i32" type=i32
+        |-BlockNode type=i32 annotations=IsValueNode
+          |-VarDeclarationNode type=i32
+            |-NameIdentifierNode="a"
+            |-TypeReferenceNode="i32" type=i32
+            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
+          |-IfNode type=void
+            |-BinaryExpressionNode="==" type=i32
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="x"
+              |-IntegerLiteral=1 type=i32
+            |-BlockNode type=void
+              |-AssignmentNode type=i32
+                |-VariableReferenceNode type=i32
+                  |-NameIdentifierNode="a"
+                |-IntegerLiteral=3 type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-NameIdentifierNode="a"

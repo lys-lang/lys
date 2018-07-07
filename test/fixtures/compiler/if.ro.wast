@@ -1,6 +1,7 @@
 (module
   (export "gcd" (func $gcd))
   (export "test" (func $test))
+  (export "ifWithoutElse" (func $ifWithoutElse))
   (func $gcd (param $x i32) (param $y i32) (result i32)
     (if $a_wild_if (result i32) (i32.gt_s (get_local $x) (get_local $y))
       (then
@@ -20,5 +21,20 @@
   )
   (func $test (result i32)
     (call $gcd (i32.const 119) (i32.const 7))
+  )
+  (func $ifWithoutElse (param $x i32) (result i32)
+    (local $a i32)
+    (block $unknown_block_1 (result i32)
+      (set_local $a (i32.const 1))
+      (if $a_wild_if (i32.eq (get_local $x) (i32.const 1))
+          (then
+            (block $unknown_block_2
+                (set_local $a (i32.const 3))
+              )
+          )
+          (else)
+        )
+      (get_local $a)
+    )
   )
 )

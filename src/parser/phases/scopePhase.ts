@@ -1,7 +1,7 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { EStoredName } from '../closure';
-import { InjectableTypes } from '../types';
+import { InjectableTypes, VoidType } from '../types';
 import { annotations } from '../annotations';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
@@ -24,10 +24,14 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   }
 
   if (node instanceof Nodes.IfNode) {
-    node.condition.annotate(new annotations.IsValueNode());
-    if (node.hasAnnotation(annotations.IsValueNode)) {
-      node.truePart.annotate(new annotations.IsValueNode());
-      node.falsePart.annotate(new annotations.IsValueNode());
+    if (!node.falsePart) {
+      node.ofType = VoidType.instance;
+    } else {
+      node.condition.annotate(new annotations.IsValueNode());
+      if (node.hasAnnotation(annotations.IsValueNode)) {
+        node.truePart.annotate(new annotations.IsValueNode());
+        node.falsePart.annotate(new annotations.IsValueNode());
+      }
     }
   }
 
