@@ -62,8 +62,8 @@ describe('Semantic', function() {
       parser,
       result,
       'Document',
-      async document => {
-        expect(document.errors.length).toBeGreaterThan(0);
+      async (document, err) => {
+        expect(!!err).toEqual(true, 'It mush have failed');
       },
       phases,
       false,

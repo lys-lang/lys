@@ -1,5 +1,6 @@
 import { IToken, TokenError } from 'ebnf';
 import { Nodes } from '../nodes';
+import { failIfErrors } from './findAllErrors';
 
 function binaryOpVisitor(astNode: IToken) {
   let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode;
@@ -243,5 +244,9 @@ function visitLastChild(token: IToken) {
 }
 
 export function canonicalPhase(astNode: IToken): Nodes.DocumentNode {
-  return visit(astNode);
+  const document: Nodes.DocumentNode = visit(astNode);
+
+  failIfErrors('Canonical phase', document);
+
+  return document;
 }

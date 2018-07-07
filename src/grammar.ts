@@ -36,7 +36,7 @@ TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
 TypeVariables     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
 AssignExpression  ::= '=' WS* Expression {pin=1,fragment=true}
-AssignStatement   ::= VariableReference WS* '=' WS* Expression {pin=3}
+AssignStatement   ::= VariableReference WS* '=' !('=') WS* Expression {pin=3}
 OfType            ::= COLON WS* Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}

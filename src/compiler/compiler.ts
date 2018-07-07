@@ -9,6 +9,7 @@ import * as binaryen from 'binaryen';
 
 import * as wabt from 'wabt';
 import { flatten } from '../parser/helpers';
+import { failIfErrors } from '../parser/phases/findAllErrors';
 
 declare var WebAssembly;
 
@@ -244,6 +245,8 @@ export async function compileModule(document: Nodes.DocumentNode) {
 
   const module = t.module(null, [...exportedFunctions, ...createdFunctions]);
   const program = t.program([module]);
+
+  failIfErrors('Code generation', document);
 
   return {
     program,

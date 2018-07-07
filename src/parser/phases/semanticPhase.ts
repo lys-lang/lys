@@ -2,6 +2,7 @@ import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { TokenError } from 'ebnf';
 import { Context, Closure } from '../closure';
+import { failIfErrors } from './findAllErrors';
 
 const overloadFunctions = function(document: Nodes.DocumentNode) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
@@ -61,12 +62,14 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNo
   }
 });
 
-export function semanticPhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
-  node.context = new Context();
-  node.closure = new Closure(node.context);
+export function semanticPhase(document: Nodes.DocumentNode): Nodes.DocumentNode {
+  document.context = new Context();
+  document.closure = new Closure(document.context);
 
-  overloadFunctions(node);
-  checkDuplicatedNames(node, node);
+  overloadFunctions(document);
+  checkDuplicatedNames(document, document);
 
-  return node;
+  failIfErrors('Semantic phase', document);
+
+  return document;
 }

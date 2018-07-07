@@ -51,16 +51,18 @@ describe('Compiler', function() {
     folderBasedTest(
       '**/type-error/*.ro',
       [canonicalPhase, semanticPhase, scopePhase],
-      async result => {
-        const typeResult = findAllErrors(typePhase(result));
+      async (result, e) => {
+        if (e) throw e;
 
-        if (typeResult.errors.length == 0) {
-          throw new Error('Test did not fail');
+        try {
+          const typeResult = typePhase(result);
+        } catch (e) {
+          return (result.textContent || '(no source)') + '\n---\n' + e.message;
         }
 
-        return JSON.stringify(typeResult.errors.map($ => $.message));
+        throw new Error('Type phase did not fail');
       },
-      '.json'
+      '.txt'
     );
   });
 });

@@ -1,0 +1,16 @@
+type i32
+type f32
+
+private fun x(): i32 = 1
+private fun x(a: i32): i32 = 1
+
+fun test(a: f32): i32 = x(a)
+
+---
+Type phase failed. 2 errors found:
+  1)  Type "void" cannot be assigned to "i32"
+  2)  No overload found for arguments
+        (f32)
+      got:
+        ()
+        (i32)

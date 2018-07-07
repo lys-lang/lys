@@ -5,6 +5,7 @@ import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperatio
 import { Closure } from '../closure';
 import { annotations } from '../annotations';
 import { last } from '../helpers';
+import { failIfErrors } from './findAllErrors';
 
 function resolveTypeByName(node: Nodes.Node, name: string) {
   const typeNode = node.closure.getType(name).node as Nodes.TypeDirectiveNode;
@@ -234,12 +235,14 @@ const ensureReturnTypes = walkPostOrder((node: Nodes.Node) => {
   }
 });
 
-export function typePhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
-  resolveDeclarations(node, node, null);
-  resolveOverloads(node, node, null);
-  resolveVariables(node, node, null);
-  checkTypes(node, node, null);
-  ensureReturnTypes(node, node, null);
+export function typePhase(document: Nodes.DocumentNode): Nodes.DocumentNode {
+  resolveDeclarations(document, document, null);
+  resolveOverloads(document, document, null);
+  resolveVariables(document, document, null);
+  checkTypes(document, document, null);
+  ensureReturnTypes(document, document, null);
 
-  return node;
+  failIfErrors('Type phase', document);
+
+  return document;
 }

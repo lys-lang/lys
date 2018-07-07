@@ -1,0 +1,11 @@
+type i32
+
+fun test(x: i32): i32 =
+  if (x > 0) {
+    1
+  } else {
+    // void
+  }
+---
+Type phase failed. 1 errors found:
+  1)  Type "i32 | void" cannot be assigned to "i32"

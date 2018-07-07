@@ -1,9 +1,7 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { findParentType } from './helpers';
-// import { FunctionType } from '../types';
-// import { annotations } from '../annotations';
-// import { last } from '../helpers';
+import { failIfErrors } from './findAllErrors';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
   node.parent = parent;
@@ -171,6 +169,8 @@ export function compilationPhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
   // detectReturnExpressions(node);
   // detectTailCall(node);
   fixParents(node, node, null);
+
+  failIfErrors('Compilation phase', node);
 
   return node;
 }

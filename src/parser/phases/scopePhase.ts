@@ -3,6 +3,7 @@ import { walkPreOrder } from '../walker';
 import { EStoredName } from '../closure';
 import { InjectableTypes, VoidType } from '../types';
 import { annotations } from '../annotations';
+import { failIfErrors } from './findAllErrors';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
@@ -126,10 +127,12 @@ const resolveVariables = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-export function scopePhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
-  findValueNodes(node, node, null);
-  createClosures(node, node, null);
-  resolveVariables(node, node, null);
+export function scopePhase(document: Nodes.DocumentNode): Nodes.DocumentNode {
+  findValueNodes(document, document, null);
+  createClosures(document, document, null);
+  resolveVariables(document, document, null);
 
-  return node;
+  failIfErrors('Scope phase', document);
+
+  return document;
 }

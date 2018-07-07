@@ -391,5 +391,10 @@ describe('Parser', () => {
     test`val test = (x)(1,2)`;
     test`val test = (x())(1,2)`;
     test`val test = x( 1 , 2 /* sdgf */)`;
+    test`
+      private fun compare(a: Color, b: Color): bool = {
+        a == b
+      }
+    `;
   });
 });
