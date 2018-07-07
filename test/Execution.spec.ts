@@ -18,7 +18,7 @@ describe('return types', () => {
   );
 });
 
-describe.only('mutability', () => {
+describe('mutability', () => {
   test(
     'void return',
     `

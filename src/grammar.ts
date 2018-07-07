@@ -7,7 +7,7 @@ Document          ::= Directives WS* EOF? {ws=implicit}
 Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
 
 Directive         ::= ( FunctionDirective
-                      | ConstDirective
+                      | ValDirective
                       | VarDirective
                       | StructDirective
                       | TypeDirective
@@ -15,7 +15,7 @@ Directive         ::= ( FunctionDirective
                       ) {fragment=true}
 
 FunctionDirective ::= PrivateModifier? FUN_KEYWORD NameIdentifier WS* FunctionParamsList OfType? WS* ('=' WS* UnknownExpression | AssignExpression) {pin=2}
-ConstDirective    ::= PrivateModifier? ConstDeclaration {pin=2}
+ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD NameIdentifier WS* TypeVariables? (&('{') EffectDeclaration | &('=') TypeAlias)? {pin=2}
@@ -50,7 +50,7 @@ TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)*
 
 
-ConstDeclaration  ::= CONST_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= '{' EffectElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
@@ -99,7 +99,7 @@ IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN
 ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
 
 CodeBlock         ::= '{' WS* (CodeBlockExpr (NEW_LINE WS* CodeBlockExpr)* WS*)? '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-CodeBlockExpr     ::= (ConstDeclaration | VarDeclaration | AssignStatement | Expression) {pin=1,fragment=true}
+CodeBlockExpr     ::= (ValDeclaration | VarDeclaration | AssignStatement | Expression) {pin=1,fragment=true}
 
 /* Pattern matching */
 MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
@@ -138,12 +138,12 @@ NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | CONST_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
 
 /* Tokens */
 
 FUN_KEYWORD       ::= 'fun'    WS+
-CONST_KEYWORD     ::= 'const'  WS+
+VAL_KEYWORD       ::= 'val'    WS+
 VAR_KEYWORD       ::= 'var'    WS+
 EFFECT_KEYWORD    ::= 'effect' WS+
 
@@ -177,7 +177,7 @@ MatchKeyword      ::= 'match'  ![A-Za-z0-9_]
 AndKeyword        ::= 'and'    ![A-Za-z0-9_]
 OrKeyword         ::= 'or'     ![A-Za-z0-9_]
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | CONST_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

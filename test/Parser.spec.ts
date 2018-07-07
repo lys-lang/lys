@@ -32,8 +32,8 @@ describe('Parser', () => {
         fun main(): i32 = {
           var a: i32 = 1
           var a = 2
-          const a = 3
-          const a: i32 = 4
+          val a = 3
+          val a: i32 = 4
           a = 5
           a
         }
@@ -183,22 +183,22 @@ describe('Parser', () => {
     test`private var test = 1`;
     test`var test = 1`;
 
-    test`const test: Number = 1`;
-    test`const test = 1`;
+    test`val test: Number = 1`;
+    test`val test = 1`;
 
-    test`const test = 1 * 1 - 2 / 4 and 1 == 3 or 4 <= 4`;
+    test`val test = 1 * 1 - 2 / 4 and 1 == 3 or 4 <= 4`;
 
-    test`const test = 1`;
+    test`val test = 1`;
 
-    test`const test = 1 mul 4`;
+    test`val test = 1 mul 4`;
 
-    test`const floatingNumber: Number = 1.0`;
-    test`const floatingNumber: Number = 0.0`;
+    test`val floatingNumber: Number = 1.0`;
+    test`val floatingNumber: Number = 0.0`;
 
-    test`private const test = 1`;
-    test`const test = true`;
-    test`const test = false`;
-    test`const test = null`;
+    test`private val test = 1`;
+    test`val test = true`;
+    test`val test = false`;
+    test`val test = null`;
 
     test`fun test(): Number = 1`;
 
@@ -208,13 +208,13 @@ describe('Parser', () => {
     test`private fun test(a: Number) = 2`;
     test`private fun test(a: Number, b: Type) = 2`;
 
-    test`const test = 1 + (4 + 1)`;
-    test`const test = (1 + 4) + 1`;
+    test`val test = 1 + (4 + 1)`;
+    test`val test = (1 + 4) + 1`;
 
     test`
       private var test = 1
       var test2 = 1
-      const test2 = 1
+      val test2 = 1
     `;
 
     test`
@@ -243,11 +243,11 @@ describe('Parser', () => {
     // private fun getTest() = test
     // `;
 
-    test`const test = 1 match {}`;
-    test`const test = 1 match { else -> 1 }`;
-    test`const test = {1 match { else -> 1 }}`;
+    test`val test = 1 match {}`;
+    test`val test = 1 match { else -> 1 }`;
+    test`val test = {1 match { else -> 1 }}`;
     test`
-      const test = 1 match {
+      val test = 1 match {
         case 2 -> true
         else -> false
       }
@@ -265,24 +265,24 @@ describe('Parser', () => {
       }
     `;
 
-    test`const test = 1 match { case 2 -> true else -> false }`;
+    test`val test = 1 match { case 2 -> true else -> false }`;
 
     test`
-      const test = 1 match {
+      val test = 1 match {
         case 2->true
         else->false
       }
     `;
 
     test`
-      const test = 1 match {
+      val test = 1 match {
         case 2 -> true
         else -> false
       }
     `;
 
     test`
-      const test = 1 match {
+      val test = 1 match {
         case x if true -> true
         case x if x < 1 and x < 10 -> true
         case 2 -> true
@@ -319,7 +319,7 @@ describe('Parser', () => {
           ifa()
     `;
 
-    test`const test = 1 match { case x if x < 1 and x < 10 -> true }`;
+    test`val test = 1 match { case x if x < 1 and x < 10 -> true }`;
     test`var a = x match { else -> 1 } map 1 * 2`;
 
     test`var a = !x()`;
@@ -329,14 +329,14 @@ describe('Parser', () => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual(') = 2');
     });
-    testParseTokenFailsafe(parser, `private struct Entity asd const x = 1`, null, async doc => {
+    testParseTokenFailsafe(parser, `private struct Entity asd val x = 1`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('asd ');
     });
     testParseTokenFailsafe(parser, `private struct Entity asd`, null, async doc => {
       expect(doc.errors[0].message).toEqual('Unexpected end of input: \nasd');
     });
-    testParseTokenFailsafe(parser, `struct Entity asd const x = 1`, null, async doc => {
+    testParseTokenFailsafe(parser, `struct Entity asd val x = 1`, null, async doc => {
       expect(doc.errors[0].token.type).toEqual('SyntaxError');
       expect(doc.errors[0].token.text).toEqual('asd ');
     });
@@ -385,11 +385,11 @@ describe('Parser', () => {
       expect(doc.errors[0].token.text).toEqual('match');
     });
 
-    test`const test = 1 map 1 map 2 map 3`;
-    test`const test = x(1)`;
-    test`const test = x(1,2)`;
-    test`const test = (x)(1,2)`;
-    test`const test = (x())(1,2)`;
-    test`const test = x( 1 , 2 /* sdgf */)`;
+    test`val test = 1 map 1 map 2 map 3`;
+    test`val test = x(1)`;
+    test`val test = x(1,2)`;
+    test`val test = (x)(1,2)`;
+    test`val test = (x())(1,2)`;
+    test`val test = x( 1 , 2 /* sdgf */)`;
   });
 });

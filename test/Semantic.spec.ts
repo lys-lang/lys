@@ -220,12 +220,12 @@ describe('Semantic', function() {
     );
     testParseToken(
       parser,
-      `const c = 1 var a = c`,
+      `val c = 1 var a = c`,
       'Document',
       async x => {
         const refs = findNodesByType(x, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
-        expect(resolved.node.astNode.type).toBe('ConstDeclaration');
+        expect(resolved.node.astNode.type).toBe('ValDeclaration');
       },
       phases
     );
@@ -244,12 +244,12 @@ describe('Semantic', function() {
 
   describe('Closures', () => {
     test`
-      const a = true
+      val a = true
       fun test() = a
     `;
 
     test`
-      const a = true
+      val a = true
       fun test() = a
     `;
 
@@ -257,7 +257,7 @@ describe('Semantic', function() {
       fun test() = test
     `;
     test`
-      type i32 
+      type i32
       var a = 1
       fun test(a: i32) = a
     `;
@@ -274,7 +274,7 @@ describe('Semantic', function() {
     test`var a = 1 var b = a`;
 
     testToFail`
-      type i32 
+      type i32
       fun test(a: i32) = b
     `;
   });

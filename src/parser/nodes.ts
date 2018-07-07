@@ -357,7 +357,7 @@ export namespace Nodes {
     local: Local;
   }
 
-  export class ConstDeclarationNode extends VarDeclarationNode {
+  export class ValDeclarationNode extends VarDeclarationNode {
     mutable = false;
   }
 
@@ -365,8 +365,8 @@ export namespace Nodes {
     decl: VarDeclarationNode;
   }
 
-  export class ConstDirectiveNode extends VarDirectiveNode {
-    decl: ConstDeclarationNode;
+  export class ValDirectiveNode extends VarDirectiveNode {
+    decl: ValDeclarationNode;
   }
 
   export class AssignmentNode extends Node {

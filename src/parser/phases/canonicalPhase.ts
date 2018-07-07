@@ -25,10 +25,10 @@ const visitor = {
 
     return ret;
   },
-  ConstDirective(astNode: IToken) {
-    const ret = new Nodes.ConstDirectiveNode(astNode);
+  ValDirective(astNode: IToken) {
+    const ret = new Nodes.ValDirectiveNode(astNode);
 
-    ret.decl = visit(findChildrenType(astNode, 'ConstDeclaration'));
+    ret.decl = visit(findChildrenType(astNode, 'ValDeclaration'));
 
     return ret;
   },
@@ -41,8 +41,8 @@ const visitor = {
 
     return ret;
   },
-  ConstDeclaration(astNode: IToken) {
-    const ret = new Nodes.ConstDeclarationNode(astNode);
+  ValDeclaration(astNode: IToken) {
+    const ret = new Nodes.ValDeclarationNode(astNode);
 
     ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
     ret.variableType = visit(findChildrenType(astNode, 'Type'));
