@@ -1,13 +1,15 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { TokenError } from 'ebnf';
-import { Context, Closure } from '../closure';
+import { ParsingContext, Closure } from '../closure';
 import { failIfErrors } from './findAllErrors';
+import { PhaseResult } from './PhaseResult';
+import { CanonicalPhaseResult } from './canonicalPhase';
 
-const overloadFunctions = function(document: Nodes.DocumentNode) {
+const overloadFunctions = function(document: Nodes.DocumentNode, phase: SemanticPhaseResult) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
 
-  const process = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode) => {
+  const process = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult) => {
     if (node instanceof Nodes.FunDirectiveNode) {
       const name = node.functionNode.functionName.name;
       const x = overloadedFunctions.get(name);
@@ -29,7 +31,7 @@ const overloadFunctions = function(document: Nodes.DocumentNode) {
     }
   });
 
-  process(document);
+  process(document, phase);
 
   document.directives = document.directives.filter($ => !($ instanceof Nodes.FunDirectiveNode));
 
@@ -40,7 +42,7 @@ const overloadFunctions = function(document: Nodes.DocumentNode) {
   return document;
 };
 
-const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, _1: Nodes.Node) => {
+const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
     let used = [];
     node.parameters.forEach(param => {
@@ -62,14 +64,22 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNo
   }
 });
 
-export function semanticPhase(document: Nodes.DocumentNode): Nodes.DocumentNode {
-  document.context = new Context();
-  document.closure = new Closure(document.context);
+export class SemanticPhaseResult extends PhaseResult {
+  get document() {
+    return this.canonicalPhaseResult.document;
+  }
 
-  overloadFunctions(document);
-  checkDuplicatedNames(document, document);
+  constructor(public canonicalPhaseResult: CanonicalPhaseResult, public parsingContext = new ParsingContext()) {
+    super();
+    this.execute();
+  }
 
-  failIfErrors('Semantic phase', document);
+  protected execute() {
+    this.document.closure = new Closure(this.parsingContext);
 
-  return document;
+    overloadFunctions(this.document, this);
+    checkDuplicatedNames(this.document, this);
+
+    failIfErrors('Semantic phase', this.document, this);
+  }
 }

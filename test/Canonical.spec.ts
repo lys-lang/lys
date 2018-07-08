@@ -1,16 +1,19 @@
 declare var describe, it, require, console;
 
-import { testParseToken, printAST, printBNF, testParseTokenFailsafe, folderBasedTest } from './TestHelpers';
-import { parser } from '../dist/grammar';
-import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
-import { findAllErrors } from '../dist/parser/phases/findAllErrors';
+import { testParseToken, printAST, testParseTokenFailsafe, folderBasedTest } from './TestHelpers';
+import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 
 let inspect = require('util').inspect;
 
-const phases = [canonicalPhase, findAllErrors];
+const phases = function(txt: string): CanonicalPhaseResult {
+  const parsing = new ParsingPhaseResult('test.ro', txt);
+  const canonical = new CanonicalPhaseResult(parsing);
+  return canonical;
+};
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/parser/*.ro', phases, (result: any) => printAST(result), '.ast');
+  folderBasedTest('test/fixtures/parser/*.ro', phases, result => printAST(result.document), '.ast');
 });
 
 describe('Canonical', function() {
@@ -25,7 +28,7 @@ describe('Canonical', function() {
 
     // add the last literal
     result += literals[literals.length - 1];
-    testParseToken(parser, result, 'Document', null, phases);
+    testParseToken(result, 'Document', null, phases);
   }
 
   test`var a = 1`;

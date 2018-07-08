@@ -1,0 +1,146 @@
+
+|-Document=type bool\n\ntype Color {\n  Red\n  Green\n  Blue\n}\n\ntype theFn1 = fun()-> void\ntype theFn2 = fun (bool)-> void\ntype theFn3 = fun(bool,bool)-> void\ntype theFn4 = fun   (x: bool)-> void\ntype theFn5 = fun( x : bool , b: i32)->void\ntype theFn6 = fun( x : bool ,  i32 ) ->i32\n\nprivate fun compare(a: Color, b: Color): bool = {\n  a == b\n}\n\nfun main(): i32 = compare(Red, Green)
+  |-TypeDirective=type bool\n\n
+    |-TypeKind=type 
+    |-NameIdentifier=bool
+  |-TypeDirective=type Color {\n  Red\n  Green\n  Blue\n}
+    |-TypeKind=type 
+    |-NameIdentifier=Color
+    |-TypeDeclaration={\n  Red\n  Green\n  Blue\n}
+      |-TypeDeclElements=\n  Red\n  Green\n  Blue\n
+        |-StructDeclaration=Red\n  
+          |-NameIdentifier=Red
+        |-StructDeclaration=Green\n  
+          |-NameIdentifier=Green
+        |-StructDeclaration=Blue\n
+          |-NameIdentifier=Blue
+  |-TypeDirective=type theFn1 = fun()-> void
+    |-TypeKind=type 
+    |-NameIdentifier=theFn1
+    |-TypeAlias== fun()-> void
+      |-Type=fun()-> void
+        |-FunctionTypeLiteral=fun()-> void
+          |-Type=void
+            |-TypeReference=void
+              |-NameIdentifier=void
+  |-TypeDirective=type theFn2 = fun (bool)-> void
+    |-TypeKind=type 
+    |-NameIdentifier=theFn2
+    |-TypeAlias== fun (bool)-> void
+      |-Type=fun (bool)-> void
+        |-FunctionTypeLiteral=fun (bool)-> void
+          |-FunctionTypeParameter=bool
+            |-Type=bool
+              |-TypeReference=bool
+                |-NameIdentifier=bool
+          |-Type=void
+            |-TypeReference=void
+              |-NameIdentifier=void
+  |-TypeDirective=type theFn3 = fun(bool,bool)-> void
+    |-TypeKind=type 
+    |-NameIdentifier=theFn3
+    |-TypeAlias== fun(bool,bool)-> void
+      |-Type=fun(bool,bool)-> void
+        |-FunctionTypeLiteral=fun(bool,bool)-> void
+          |-FunctionTypeParameter=bool
+            |-Type=bool
+              |-TypeReference=bool
+                |-NameIdentifier=bool
+          |-FunctionTypeParameter=bool
+            |-Type=bool
+              |-TypeReference=bool
+                |-NameIdentifier=bool
+          |-Type=void
+            |-TypeReference=void
+              |-NameIdentifier=void
+  |-TypeDirective=type theFn4 = fun   (x: bool)-> void
+    |-TypeKind=type 
+    |-NameIdentifier=theFn4
+    |-TypeAlias== fun   (x: bool)-> void
+      |-Type=fun   (x: bool)-> void
+        |-FunctionTypeLiteral=fun   (x: bool)-> void
+          |-FunctionTypeParameter=x: bool
+            |-NameIdentifier=x
+            |-Type=bool
+              |-TypeReference=bool
+                |-NameIdentifier=bool
+          |-Type=void
+            |-TypeReference=void
+              |-NameIdentifier=void
+  |-TypeDirective=type theFn5 = fun( x : bool , b: i32)->void
+    |-TypeKind=type 
+    |-NameIdentifier=theFn5
+    |-TypeAlias== fun( x : bool , b: i32)->void
+      |-Type=fun( x : bool , b: i32)->void
+        |-FunctionTypeLiteral=fun( x : bool , b: i32)->void
+          |-FunctionTypeParameter=x : bool
+            |-NameIdentifier=x
+            |-Type=bool
+              |-TypeReference=bool
+                |-NameIdentifier=bool
+          |-FunctionTypeParameter=b: i32
+            |-NameIdentifier=b
+            |-Type=i32
+              |-TypeReference=i32
+                |-NameIdentifier=i32
+          |-Type=void
+            |-TypeReference=void
+              |-NameIdentifier=void
+  |-TypeDirective=type theFn6 = fun( x : bool ,  i32 ) ->i32
+    |-TypeKind=type 
+    |-NameIdentifier=theFn6
+    |-TypeAlias== fun( x : bool ,  i32 ) ->i32
+      |-Type=fun( x : bool ,  i32 ) ->i32
+        |-FunctionTypeLiteral=fun( x : bool ,  i32 ) ->i32
+          |-FunctionTypeParameter=x : bool
+            |-NameIdentifier=x
+            |-Type=bool
+              |-TypeReference=bool
+                |-NameIdentifier=bool
+          |-FunctionTypeParameter=i32
+            |-Type=i32
+              |-TypeReference=i32
+                |-NameIdentifier=i32
+          |-Type=i32
+            |-TypeReference=i32
+              |-NameIdentifier=i32
+  |-FunctionDirective=private fun compare(a: Color, b: Color): bool = {\n  a == b\n}
+    |-PrivateModifier=private 
+    |-FunDeclaration=fun compare(a: Color, b: Color): bool = {\n  a == b\n}
+      |-NameIdentifier=compare
+      |-FunctionParamsList=(a: Color, b: Color)
+        |-Parameter=a: Color
+          |-NameIdentifier=a
+          |-Type=Color
+            |-TypeReference=Color
+              |-NameIdentifier=Color
+        |-Parameter=b: Color
+          |-NameIdentifier=b
+          |-Type=Color
+            |-TypeReference=Color
+              |-NameIdentifier=Color
+      |-Type=bool
+        |-TypeReference=bool
+          |-NameIdentifier=bool
+      |-CodeBlock={\n  a == b\n}
+        |-EqExpression=a == b
+          |-VariableReference=a
+            |-NameIdentifier=a
+          |-EqOperator===
+          |-VariableReference=b
+            |-NameIdentifier=b
+  |-FunctionDirective=fun main(): i32 = compare(Red, Green)
+    |-FunDeclaration=fun main(): i32 = compare(Red, Green)
+      |-NameIdentifier=main
+      |-FunctionParamsList=()
+      |-Type=i32
+        |-TypeReference=i32
+          |-NameIdentifier=i32
+      |-FunctionCallExpression=compare(Red, Green)
+        |-VariableReference=compare
+          |-NameIdentifier=compare
+        |-CallArguments=(Red, Green)
+          |-VariableReference=Red
+            |-NameIdentifier=Red
+          |-VariableReference=Green
+            |-NameIdentifier=Green

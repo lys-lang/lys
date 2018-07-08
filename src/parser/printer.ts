@@ -42,7 +42,6 @@ export function printErrors(root: Nodes.DocumentNode) {
       const token = node.astNode;
       const start = lineMapper.position(token.start);
       const end = lineMapper.position(token.end);
-      // console.log({ a: token.start, b: token.end, start, end, text: token.text });
       node.errors.forEach(err => {
         Object.assign(err, { start, end });
         if (start.line >= 0) {

@@ -106,7 +106,7 @@ export class FunctionType extends Type {
   }
 
   toString() {
-    return `((${this.parameterTypes.join(', ')}) -> ${this.returnType})`;
+    return `fun(${this.parameterTypes.join(', ')}) -> ${this.returnType}`;
   }
 }
 

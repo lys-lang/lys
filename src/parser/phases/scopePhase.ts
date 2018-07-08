@@ -4,6 +4,8 @@ import { EStoredName } from '../closure';
 import { InjectableTypes, VoidType } from '../types';
 import { annotations } from '../annotations';
 import { failIfErrors } from './findAllErrors';
+import { PhaseResult } from './PhaseResult';
+import { SemanticPhaseResult } from './semanticPhase';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
@@ -50,7 +52,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
+const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, parent: Nodes.Node) => {
   if (parent) {
     if (!node.closure) {
       node.closure = parent.closure;
@@ -78,6 +80,10 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, pa
     if (node instanceof Nodes.FunctionNode) {
       if (!node.body) {
         throw new Error('Function has no value');
+      }
+
+      if (!(parent instanceof Nodes.DirectiveNode)) {
+        node.closure.setVariable(node.functionName.name, node);
       }
 
       node.internalIdentifier = node.closure.getInternalIdentifier(node);
@@ -127,12 +133,21 @@ const resolveVariables = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-export function scopePhase(document: Nodes.DocumentNode): Nodes.DocumentNode {
-  findValueNodes(document, document, null);
-  createClosures(document, document, null);
-  resolveVariables(document, document, null);
+export class ScopePhaseResult extends PhaseResult {
+  get document() {
+    return this.semanticPhaseResult.document;
+  }
 
-  failIfErrors('Scope phase', document);
+  constructor(public semanticPhaseResult: SemanticPhaseResult) {
+    super();
+    this.execute();
+  }
 
-  return document;
+  protected execute() {
+    findValueNodes(this.document, this, null);
+    createClosures(this.document, this, null);
+    resolveVariables(this.document, this, null);
+
+    failIfErrors('Scope phase', this.document, this);
+  }
 }

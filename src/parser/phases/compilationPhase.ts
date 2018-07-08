@@ -1,9 +1,11 @@
-import { Nodes } from '../nodes';
+import { Nodes, Local } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { findParentType } from './helpers';
 import { failIfErrors } from './findAllErrors';
+import { PhaseResult } from './PhaseResult';
+import { TypePhaseResult } from './typePhase';
 
-const fixParents = walkPreOrder((node: Nodes.Node, _: Nodes.DocumentNode, parent: Nodes.Node) => {
+const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
   return node;
 });
@@ -26,7 +28,7 @@ const resolveLocals = walkPreOrder(
     if (node instanceof Nodes.MatchNode) {
       // release the local for lhs of MatchNode
 
-      if (node.local) {
+      if (node.local instanceof Local) {
         const fn = findParentType(node, Nodes.FunctionNode);
         fn.freeTempLocal(node.local);
       }
@@ -162,15 +164,24 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
 //   return false;
 // }
 
-export function compilationPhase(node: Nodes.DocumentNode): Nodes.DocumentNode {
-  fixParents(node, node, null);
-  resolveLocals(node, node, null);
-  resolveDeclarations(node, node, null);
-  // detectReturnExpressions(node);
-  // detectTailCall(node);
-  fixParents(node, node, null);
+export class CompilationPhaseResult extends PhaseResult {
+  get document() {
+    return this.typePhaseResult.document;
+  }
 
-  failIfErrors('Compilation phase', node);
+  constructor(public typePhaseResult: TypePhaseResult) {
+    super();
+    this.execute();
+  }
 
-  return node;
+  protected execute() {
+    fixParents(this.document, this, null);
+    resolveLocals(this.document, this, null);
+    resolveDeclarations(this.document, this, null);
+    // detectReturnExpressions(this.document);
+    // detectTailCall(this.document);
+    fixParents(this.document, this, null);
+
+    failIfErrors('Compilation phase', this.document, this);
+  }
 }

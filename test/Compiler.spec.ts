@@ -1,68 +1,52 @@
 declare var describe, it, require, console;
 
-import {
-  testParseToken,
-  describeTree,
-  printBNF,
-  testParseTokenFailsafe,
-  folderBasedTest,
-  printAST
-} from './TestHelpers';
+import { testParseToken, testParseTokenFailsafe, folderBasedTest, printAST } from './TestHelpers';
 
-import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
-import { semanticPhase } from '../dist/parser/phases/semanticPhase';
-import { findAllErrors } from '../dist/parser/phases/findAllErrors';
-import { scopePhase } from '../dist/parser/phases/scopePhase';
-import { typePhase } from '../dist/parser/phases/typePhase';
-import { compilationPhase } from '../dist/parser/phases/compilationPhase';
 import { print } from '@webassemblyjs/wast-printer';
 
-import * as comp from '../dist/compiler/compiler';
+import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
+import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
+import { TypePhaseResult } from '../dist/parser/phases/typePhase';
+import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
+import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
+import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
 
 let inspect = require('util').inspect;
 
 const writeToFile = process.env.UPDATE_AST === 'true';
-const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, compilationPhase, findAllErrors];
+
+const phases = function(txt: string): CodeGenerationPhaseResult {
+  const parsing = new ParsingPhaseResult('test.ro', txt);
+  const canonical = new CanonicalPhaseResult(parsing);
+  const semantic = new SemanticPhaseResult(canonical);
+  const scope = new ScopePhaseResult(semantic);
+  const types = new TypePhaseResult(scope);
+  const compiler = new CompilationPhaseResult(types);
+  return new CodeGenerationPhaseResult(compiler);
+};
 
 describe('Compiler', function() {
   describe('AST', () => {
-    folderBasedTest('**/compiler/*.ro', phases, async (result: any) => printAST(result), '.ast');
+    folderBasedTest('**/compiler/*.ro', phases, async result => printAST(result.document), '.ast');
   });
   describe('Compilation', () => {
-    folderBasedTest('**/compiler/*.ro', phases, async (result: any) => {
-      const x = await comp.compileModule(result);
-
-      return print(x.program);
+    folderBasedTest('**/compiler/*.ro', phases, async (result, e) => {
+      if (e) throw e;
+      await result.validate(false);
+      return print(result.programAST);
     });
   });
   describe('Compilation-optimized', () => {
     folderBasedTest(
       '**/compiler/*.ro',
       phases,
-      async (result: any) => {
-        const x = await comp.validateModule(await comp.compileModule(result));
-        x.module.optimize();
-        return x.module.emitText();
-      },
-      '.optimized.wast'
-    );
-  });
-  describe('Compiler-errors', () => {
-    folderBasedTest(
-      '**/type-error/*.ro',
-      [canonicalPhase, semanticPhase, scopePhase],
       async (result, e) => {
         if (e) throw e;
-
-        try {
-          const typeResult = typePhase(result);
-        } catch (e) {
-          return (result.textContent || '(no source)') + '\n---\n' + e.message;
-        }
-
-        throw new Error('Type phase did not fail');
+        await result.validate(true);
+        return result.module.emitText();
       },
-      '.txt'
+      '.optimized.wast'
     );
   });
 });

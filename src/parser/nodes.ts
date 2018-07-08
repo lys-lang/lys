@@ -1,5 +1,5 @@
 import { IToken, TokenError } from 'ebnf';
-import { Closure, Context } from './closure';
+import { Closure } from './closure';
 import { Type, NativeTypes } from './types';
 import { BinaryOperation } from '../compiler/languageOperations';
 import { Annotation, IAnnotationConstructor } from './annotations';
@@ -20,6 +20,7 @@ export namespace Nodes {
 
     constructor(public astNode?: IToken) {}
 
+    /** Name of the node constructor */
     get nodeName(): string {
       return this.constructor.name;
     }
@@ -104,9 +105,31 @@ export namespace Nodes {
     }
   }
 
-  export class TypeReferenceNode extends NameIdentifierNode {
+  export class TypeNode extends Node {
+    /** Resolved type object */
+    nativeType: Type;
+  }
+
+  export class TypeReferenceNode extends TypeNode {
+    /** Name of the referenced type */
+    name: string;
+
+    get text() {
+      return JSON.stringify(this.name);
+    }
+
     isPointer: number = 0;
     isArray: boolean = false;
+  }
+
+  export class FunctionParameterType extends TypeNode {
+    name?: NameIdentifierNode;
+    parameterType: TypeNode;
+  }
+
+  export class FunctionType extends TypeNode {
+    returnType: TypeNode;
+    parameters: FunctionParameterType[];
   }
 
   export class VariableReferenceNode extends ExpressionNode {
@@ -125,7 +148,6 @@ export namespace Nodes {
   export class DocumentNode extends Node {
     directives: DirectiveNode[];
     errors: TokenError[] = [];
-    context: Context;
     file?: string;
     textContent: string;
   }
@@ -354,7 +376,7 @@ export namespace Nodes {
     variableName: NameIdentifierNode;
     variableType: TypeReferenceNode;
     value: ExpressionNode;
-    local: Local;
+    local: LocalGlobalHeapReference;
   }
 
   export class ValDeclarationNode extends VarDeclarationNode {
@@ -377,10 +399,6 @@ export namespace Nodes {
   export class TypeDirectiveNode extends DirectiveNode {
     variableName: NameIdentifierNode;
     valueType: TypeNode;
-  }
-
-  export class TypeNode extends Node {
-    nativeType: Type;
   }
 
   export abstract class LiteralNode<T> extends ExpressionNode {
@@ -482,14 +500,10 @@ export namespace Nodes {
     matchingSet: MatcherNode[];
 
     /** local index in the function's scope */
-    local: Local;
+    local: LocalGlobalHeapReference;
   }
 
   /////// Non-grammar nodes
-
-  export class GetLocalNode extends ExpressionNode {
-    local: Local;
-  }
 
   /** This node replaces the function body */
   export class TailRecLoopNode extends Nodes.ExpressionNode {
@@ -497,14 +511,27 @@ export namespace Nodes {
   }
 }
 
-export class Local {
+export interface LocalGlobalHeapReference {
+  type: Type;
+  name: string;
+  declarationNode: Nodes.Node;
+}
+
+export class Global implements LocalGlobalHeapReference {
+  type: Type;
+  constructor(public index: number, public name: string, public declarationNode: Nodes.Node) {}
+}
+
+export class Local implements LocalGlobalHeapReference {
   type: Type;
   /** index in the function */
   constructor(public index: number, public name: string, public declarationNode: Nodes.Node) {}
 }
 
-export function findNodesByType<T>(astRoot: any, type: { new (...args): T }, list: T[] = []): T[] {
-  if (astRoot instanceof type) list.push(astRoot);
+export function findNodesByType<T>(astRoot: { children: any[] }, type: { new (...args): T }, list: T[] = []): T[] {
+  if (astRoot instanceof type) {
+    list.push(astRoot);
+  }
   astRoot.children.forEach($ => findNodesByType($, type, list));
   return list;
 }

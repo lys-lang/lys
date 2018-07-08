@@ -10,7 +10,7 @@ export interface IOverloadedInfix {
       [rhs: number]: {
         fn: Nodes.FunDirectiveNode;
         directive: Nodes.DirectiveNode;
-        executionContext: Context;
+        executionContext: ParsingContext;
       };
     };
   };
@@ -30,7 +30,7 @@ export interface ITapeElement {
   exported: boolean;
 }
 
-export class Context {}
+export class ParsingContext {}
 
 export class Closure {
   localsMap: Map<Nodes.Node, number> = new Map();
@@ -41,7 +41,7 @@ export class Closure {
 
   programTakenNames = new Set<string>();
 
-  constructor(public executionContext: Context, public parent: Closure = null) {
+  constructor(public executionContext: ParsingContext, public parent: Closure = null) {
     if (parent) {
       Object.assign(this.nameMappings, parent.nameMappings);
     }

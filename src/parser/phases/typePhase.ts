@@ -6,6 +6,8 @@ import { Closure } from '../closure';
 import { annotations } from '../annotations';
 import { last } from '../helpers';
 import { failIfErrors } from './findAllErrors';
+import { PhaseResult } from './PhaseResult';
+import { ScopePhaseResult } from './scopePhase';
 
 function resolveTypeByName(node: Nodes.Node, name: string) {
   const typeNode = node.closure.getType(name).node as Nodes.TypeDirectiveNode;
@@ -27,11 +29,6 @@ function resolveScopeType(closure: Closure, name: string) {
   const node = closure.getType(name).node as Nodes.TypeDirectiveNode;
   return node.ofType;
 }
-
-// function findOverloadFunction(inputTypes: Nodes.ExpressionNode[], functions: Nodes.FunctionNode[]) {
-//   console.log(inputTypes);
-//   console.log(functions);
-// }
 
 function resolveType(node: Nodes.Node, failOnError = true): void {
   if (node.ofType) return;
@@ -109,6 +106,25 @@ function resolveType(node: Nodes.Node, failOnError = true): void {
   if (node instanceof Nodes.VarDirectiveNode) {
     resolveType(node.decl.variableType);
     node.ofType = node.decl.variableType.ofType;
+  }
+
+  if (node instanceof Nodes.TypeDirectiveNode && node.valueType) {
+    resolveType(node.valueType);
+    node.ofType = node.valueType.ofType;
+  }
+
+  if (node instanceof Nodes.FunctionParameterType) {
+    resolveType(node.parameterType);
+    node.ofType = node.parameterType.ofType;
+  }
+
+  if (node instanceof Nodes.FunctionType) {
+    const fnType = (node.ofType = new FunctionType('anon.function'));
+    node.parameters.forEach($ => resolveType($));
+    resolveType(node.returnType);
+
+    fnType.parameterTypes = node.parameters.map($ => $.ofType);
+    fnType.returnType = node.returnType.ofType;
   }
 
   if (node instanceof Nodes.ParameterNode) {
@@ -235,14 +251,23 @@ const ensureReturnTypes = walkPostOrder((node: Nodes.Node) => {
   }
 });
 
-export function typePhase(document: Nodes.DocumentNode): Nodes.DocumentNode {
-  resolveDeclarations(document, document, null);
-  resolveOverloads(document, document, null);
-  resolveVariables(document, document, null);
-  checkTypes(document, document, null);
-  ensureReturnTypes(document, document, null);
+export class TypePhaseResult extends PhaseResult {
+  get document() {
+    return this.scopePhaseResult.document;
+  }
 
-  failIfErrors('Type phase', document);
+  constructor(public scopePhaseResult: ScopePhaseResult) {
+    super();
+    this.execute();
+  }
 
-  return document;
+  protected execute() {
+    resolveDeclarations(this.document, this.document, null);
+    resolveOverloads(this.document, this.document, null);
+    resolveVariables(this.document, this.document, null);
+    checkTypes(this.document, this.document, null);
+    ensureReturnTypes(this.document, this.document, null);
+
+    failIfErrors('Type phase', this.document, this);
+  }
 }

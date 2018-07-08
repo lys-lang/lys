@@ -1,6 +1,8 @@
 import { IToken, TokenError } from 'ebnf';
 import { Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
+import { PhaseResult } from './PhaseResult';
+import { ParsingPhaseResult } from './parsingPhase';
 
 function binaryOpVisitor(astNode: IToken) {
   let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode;
@@ -178,12 +180,41 @@ const visitor = {
     ret.name = astNode.text.trim();
     return ret;
   },
-  Type(astNode: IToken) {
-    const ret = new Nodes.TypeReferenceNode(astNode);
-    ret.name = findChildrenType(astNode, 'NameIdentifier').text.trim();
-    ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
-    ret.isArray = !!findChildrenType(astNode, 'IsArray');
+  FunctionTypeParameter(astNode: IToken) {
+    const ret = new Nodes.FunctionParameterType(astNode);
+
+    ret.name = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    ret.parameterType = visitChildTypeOrNull(astNode, 'Type') as Nodes.TypeNode;
+
     return ret;
+  },
+  TypeAlias(astNode: IToken) {
+    return visitChildTypeOrNull(astNode, 'Type');
+  },
+  TypeReference(child: IToken) {
+    const ret = new Nodes.TypeReferenceNode(child);
+    ret.name = findChildrenType(child, 'NameIdentifier').text.trim();
+    // ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
+    // ret.isArray = !!findChildrenType(astNode, 'IsArray');
+    return ret;
+  },
+  FunctionTypeLiteral(child: IToken) {
+    const ret = new Nodes.FunctionType(child);
+
+    const parametersNode = findChildrenType(child, 'FunctionTypeParameters');
+
+    if (parametersNode) {
+      ret.parameters = parametersNode.children.map($ => visit($));
+    } else {
+      ret.parameters = [];
+    }
+
+    ret.returnType = visitChildTypeOrNull(child, 'Type') as Nodes.TypeNode;
+
+    return ret;
+  },
+  Type(astNode: IToken) {
+    return visit(astNode.children[0]);
   },
   // MatchBody(x: IToken) {
   //   return x.children.map($ => visit($));
@@ -251,14 +282,27 @@ function findChildrenType(token: IToken, type: string) {
   return token.children.find($ => $.type == type);
 }
 
+function visitChildTypeOrNull(token: IToken, type: string) {
+  const child = findChildrenType(token, type);
+  if (!child) return null;
+  return visit(child);
+}
+
 function visitLastChild(token: IToken) {
   return visit(token.children[token.children.length - 1]);
 }
 
-export function canonicalPhase(astNode: IToken): Nodes.DocumentNode {
-  const document: Nodes.DocumentNode = visit(astNode);
+export class CanonicalPhaseResult extends PhaseResult {
+  document: Nodes.DocumentNode;
 
-  failIfErrors('Canonical phase', document);
+  constructor(public parsingPhaseResult: ParsingPhaseResult) {
+    super();
+    this.execute();
+  }
 
-  return document;
+  protected execute() {
+    this.document = visit(this.parsingPhaseResult.document);
+
+    failIfErrors('Canonical phase', this.document, this);
+  }
 }

@@ -1,11 +1,12 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
+import { PhaseResult } from './PhaseResult';
 
 function indent(str: string, indentation: string = '  ') {
   return str.replace(/^(.*)$/gm, indentation + '$1');
 }
 
-const process = walkPreOrder((token: Nodes.Node, doc: Nodes.DocumentNode) => {
+const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
     token.astNode.errors.forEach($ => {
       if ($ && !doc.errors.includes($)) {
@@ -22,25 +23,27 @@ const process = walkPreOrder((token: Nodes.Node, doc: Nodes.DocumentNode) => {
   }
 });
 
-export function findAllErrors(document: Nodes.DocumentNode) {
-  document.children.forEach($ => process($, document));
+export function findAllErrors(document: Nodes.DocumentNode, phase: PhaseResult) {
+  document.children.forEach($ => process($, phase));
 
   return document;
 }
 
-export function failIfErrors(phaseName: string, document: Nodes.DocumentNode) {
-  findAllErrors(document);
+export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, phase: PhaseResult) {
+  findAllErrors(document, phase);
+  failWithErrors(phaseName, phase.errors, phase);
+}
 
-  if (document.errors.length) {
-    const error = new Error(
-      `${phaseName} failed. ${document.errors.length} errors found:\n` +
+export function failWithErrors(phaseName: string, errors: Error[], phase: PhaseResult) {
+  if (errors.length === 0) return;
+
+  throw Object.assign(
+    new Error(
+      `${phaseName} failed. ${errors.length} errors found:\n` +
         indent(
-          document.errors
-            .map(($, $$) => indent($.message, '    ').replace(/^\s+(.*)/, ($$ + 1).toString() + ')  $1'))
-            .join('\n')
+          errors.map(($, $$) => indent($.message, '    ').replace(/^\s+(.*)/, ($$ + 1).toString() + ')  $1')).join('\n')
         )
-    );
-    (error as any).document = document;
-    throw error;
-  }
+    ),
+    { phase }
+  );
 }

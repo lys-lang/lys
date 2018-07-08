@@ -1,0 +1,20 @@
+type bool
+
+type Color {
+  Red
+  Green
+  Blue
+}
+
+type theFn1 = fun()-> void
+type theFn2 = fun (bool)-> void
+type theFn3 = fun(bool,bool)-> void
+type theFn4 = fun   (x: bool)-> void
+type theFn5 = fun( x : bool , b: i32)->void
+type theFn6 = fun( x : bool ,  i32 ) ->i32
+
+private fun compare(a: Color, b: Color): bool = {
+  a == b
+}
+
+fun main(): i32 = compare(Red, Green)

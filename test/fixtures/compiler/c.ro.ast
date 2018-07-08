@@ -4,9 +4,9 @@
     |-NameIdentifierNode="i32"
   |-TypeDirectiveNode type=f32
     |-NameIdentifierNode="f32"
-  |-OverloadedFunctionNode type=((i32) -> i32) & ((f32) -> f32)
-    |-FunDirectiveNode type=((i32) -> i32)
-      |-FunctionNode type=((i32) -> i32)
+  |-OverloadedFunctionNode type=fun(i32) -> i32 & fun(f32) -> f32
+    |-FunDirectiveNode type=fun(i32) -> i32
+      |-FunctionNode type=fun(i32) -> i32
         |-ParameterNode type=i32
           |-NameIdentifierNode="x"
           |-TypeReferenceNode="i32" type=i32
@@ -14,8 +14,8 @@
         |-TypeReferenceNode="i32" type=i32
         |-VariableReferenceNode type=i32 annotations=IsValueNode
           |-NameIdentifierNode="x"
-    |-FunDirectiveNode type=((f32) -> f32)
-      |-FunctionNode type=((f32) -> f32)
+    |-FunDirectiveNode type=fun(f32) -> f32
+      |-FunctionNode type=fun(f32) -> f32
         |-ParameterNode type=f32
           |-NameIdentifierNode="x"
           |-TypeReferenceNode="f32" type=f32
@@ -23,12 +23,12 @@
         |-TypeReferenceNode="f32" type=f32
         |-VariableReferenceNode type=f32 annotations=IsValueNode
           |-NameIdentifierNode="x"
-  |-OverloadedFunctionNode type=(() -> i32)
-    |-FunDirectiveNode type=(() -> i32)
-      |-FunctionNode type=(() -> i32)
+  |-OverloadedFunctionNode type=fun() -> i32
+    |-FunDirectiveNode type=fun() -> i32
+      |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="outer"
         |-TypeReferenceNode="i32" type=i32
         |-FunctionCallNode type=i32 annotations=IsValueNode
-          |-VariableReferenceNode type=((i32) -> i32)
+          |-VariableReferenceNode type=fun(i32) -> i32
             |-NameIdentifierNode="x"
           |-IntegerLiteral=1 type=i32 annotations=IsValueNode

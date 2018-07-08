@@ -1,48 +1,38 @@
 import { IToken, Parser, Grammars } from 'ebnf';
 import { parser } from '../dist/grammar';
-import { printErrors } from '../dist/parser/printer';
 
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
 import * as expect from 'expect';
 import glob = require('glob');
 import { Nodes } from '../dist/parser/nodes';
-export const printBNF = (parser: Parser) => console.log(parser.emitSource());
+import { PhaseResult } from '../dist/parser/phases/PhaseResult';
 
 const writeToFile = process.env.UPDATE_AST === 'true';
 
 let inspect = require('util').inspect;
 
-export function testParseToken(
-  parser: Parser,
+export function testParseToken<T extends PhaseResult>(
   txt: string,
   target?: string,
-  customTest?: (document: IToken, error?: Error) => Promise<void>,
-  phases?: ((a: any) => any)[],
+  customTest?: (document: T, error?: Error) => Promise<void>,
+  phases?: (txt: string) => T,
   debug?: boolean,
   itName?: string
 ) {
   testParseTokenFailsafe(
-    parser,
     txt,
     target,
-    async (doc: IToken, e) => {
+    async (doc: T, e) => {
       if (doc && doc.errors && doc.errors.length) {
-        // console.log(inspect(doc.children, { depth: 10, colors: true }));
         throw doc.errors[0];
       }
 
-      const astNode = doc && doc['astNode'];
-
-      if (astNode) {
-        if (astNode.errors && astNode.errors.length) {
-          console.dir(astNode.errors);
-          throw astNode.errors[0];
-        }
-        if (astNode.rest.length != 0) throw new Error('Got rest: ' + astNode.rest);
+      if (customTest) {
+        await customTest(doc, e);
+      } else if (e) {
+        throw e;
       }
-
-      customTest && (await customTest(doc, e));
     },
     phases,
     debug,
@@ -50,64 +40,32 @@ export function testParseToken(
   );
 }
 
-export function testParseTokenFailsafe(
-  parser: Parser,
+export function testParseTokenFailsafe<T extends PhaseResult>(
   txt: string,
   target?: string,
-  customTest?: (document: IToken, error?: Error) => Promise<any>,
-  phases?: ((a: any) => any)[],
+  customTest?: (document: T, error?: Error) => Promise<any>,
+  phases?: (txt: string) => T,
   debug?: boolean,
   itName?: string
 ) {
   it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async () => {
     debug && console.log('      ---------------------------------------------------');
 
-    let result;
+    let result: T;
 
     try {
-      result = parser.getAST(txt, target);
-
-      if (!result) throw new Error('Did not resolve');
-
-      if (target && result.type != target) throw new Error("Type doesn't match. Got: " + result.type);
-
-      if (result.text.length == 0) throw new Error('Empty text result');
-
-      if (phases && phases.length) {
-        debug && console.log(`      Phase ${0}:`);
-        try {
-          result = phases.reduce(($, reducer, i) => {
-            debug && describeTree($);
-            debug && console.log(`      Phase ${i + 1}:`);
-            return reducer($);
-          }, result);
-        } catch (e) {
-          await customTest(result, e);
-          return;
-        }
-      }
-
-      if (customTest) await customTest(result);
+      result = phases(txt);
     } catch (e) {
-      console.error(e);
-      // parser.debug = true;
-      // try {
-      //   // result = parser.getAST(txt, target);
-      //   console.log(txt + '\n' + inspect(result, false, 20, true));
-      // } catch (ee) {
-      //   console.(ee);
-      // }
-      // parser.debug = false;
-      if (result) {
-        try {
-          printErrors(result);
-          describeTree(result);
-        } catch {}
+      if (customTest) {
+        await customTest(result, e);
+      } else {
+        throw e;
       }
-      throw e;
     }
 
-    if (result && debug) describeTree(result);
+    if (customTest && result) {
+      await customTest(result);
+    }
   });
 }
 
@@ -138,26 +96,29 @@ export function printAST(token: IToken | Nodes.Node, level = 0) {
   );
 }
 
-export function describeTree(token: IToken) {
-  console.log(printAST(token));
-}
-
-export function folderBasedTest(
+export function folderBasedTest<T extends PhaseResult>(
   grep: string,
-  phases: any[],
-  fn: (x, err?) => Promise<string>,
+  phases: (txt: string) => T,
+  fn: (x: T, err?: Error) => Promise<string>,
   extension = '.wast',
   shouldFail = false
 ) {
   function testFile(file: string) {
     const content = readFileSync(file).toString();
-    testParseToken(
-      parser,
+    testParseTokenFailsafe(
       content,
       'Document',
-      async (resultNode: any, err) => {
+      async (resultNode: T, err) => {
+        if (!resultNode && !err) throw new Error('WTF');
+
         if (shouldFail) {
-          if (!err) throw new Error('Test did not fail');
+          if (!err && resultNode && resultNode.isSuccess()) {
+            throw new Error('Test did not fail');
+          }
+        } else {
+          if (err) {
+            throw err;
+          }
         }
 
         let result = await fn(resultNode, err);
@@ -178,3 +139,17 @@ export function folderBasedTest(
 
   glob.sync(grep).map(testFile);
 }
+
+process.on('uncaughtException', function(err) {
+  console.log('UncaughtException');
+  console.error(err);
+  console.log(err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', function(err) {
+  console.log('unhandledRejection');
+  console.error(err);
+  console.log(err.stack);
+  process.exit(1);
+});

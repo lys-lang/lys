@@ -58,7 +58,13 @@ EffectDeclaration ::= '{' EffectElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOV
 TypeDeclaration   ::= '{' TypeDeclElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 TypeAlias         ::= '=' WS* Type {pin=1}
-Type              ::= NameIdentifier IsPointer* IsArray?
+
+Type              ::= (FunctionTypeLiteral | TypeReference) IsPointer* IsArray?
+TypeReference     ::= NameIdentifier
+
+FunctionTypeLiteral   ::= 'fun' WS* FunctionTypeParameters WS* '->' WS* Type {pin=1}
+FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,fragment=true,recoverUntil=PAREN_RECOVERY}
+FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 
 IsPointer         ::= '*'
 IsArray           ::= '[]'

@@ -1,52 +1,48 @@
-import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
-import { semanticPhase } from '../dist/parser/phases/semanticPhase';
-import { scopePhase } from '../dist/parser/phases/scopePhase';
-import { typePhase } from '../dist/parser/phases/typePhase';
-import { compilationPhase } from '../dist/parser/phases/compilationPhase';
-import { findAllErrors } from '../dist/parser/phases/findAllErrors';
-import { Parser } from 'ebnf';
-import { parser } from '../dist/grammar';
+import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
+import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
+import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
+import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
+import { TypePhaseResult } from '../dist/parser/phases/typePhase';
+import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
 
-import * as comp from '../dist/compiler/compiler';
-
-const phases = [canonicalPhase, semanticPhase, scopePhase, typePhase, compilationPhase, findAllErrors];
 declare var it;
+
+const phases = function(txt: string): CodeGenerationPhaseResult {
+  const parsing = new ParsingPhaseResult('test.ro', txt);
+  const canonical = new CanonicalPhaseResult(parsing);
+  const semantic = new SemanticPhaseResult(canonical);
+  const scope = new ScopePhaseResult(semantic);
+  const types = new TypePhaseResult(scope);
+  const compilation = new CompilationPhaseResult(types);
+  return new CodeGenerationPhaseResult(compilation);
+};
 
 export function test(name: string, src: string, customTest?: (document: any, error?: Error) => Promise<any>) {
   it(name, async () => {
     let result;
+    let compilationPhaseResult: CodeGenerationPhaseResult;
 
     try {
-      result = parser.getAST(src, 'Document');
+      compilationPhaseResult = phases(src);
 
-      if (!result) throw new Error('Did not resolve');
-
-      if (result.text.length == 0) throw new Error('Empty text result');
-
-      if (phases && phases.length) {
-        result = phases.reduce(($, reducer, i) => {
-          return (reducer as any)($);
-        }, result);
-      }
+      await compilationPhaseResult.validate(false);
 
       if (customTest) {
-        const x = await comp.generateBinary(await comp.validateModule(await comp.compileModule(result)));
-
-        await customTest(x);
+        await customTest(await compilationPhaseResult.toInstance());
       }
 
+      await compilationPhaseResult.validate(true);
+
       if (customTest) {
-        const y = await comp.validateModule(await comp.compileModule(result));
-        y.module.optimize();
-
-        const x = await comp.generateBinary(Object.assign(y, { buffer: y.module.emitBinary() }));
-
-        await customTest(x);
+        await customTest(await compilationPhaseResult.toInstance());
       }
     } catch (e) {
-      console.error(e);
-
-      throw e;
+      if (customTest) {
+        await customTest(compilationPhaseResult, e);
+      } else {
+        throw e;
+      }
     }
   });
 }

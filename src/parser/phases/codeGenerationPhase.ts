@@ -1,15 +1,16 @@
-import { Nodes, findNodesByType } from '../parser/nodes';
-import { FunctionType } from '../parser/types';
-import { findBuiltInTypedBinaryOperation } from './languageOperations';
-import { annotations } from '../parser/annotations';
-import { findParentType } from '../parser/phases/helpers';
 import * as t from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
 import * as binaryen from 'binaryen';
-
 import * as wabt from 'wabt';
-import { flatten } from '../parser/helpers';
-import { failIfErrors } from '../parser/phases/findAllErrors';
+import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
+import { annotations } from '../../parser/annotations';
+import { flatten } from '../../parser/helpers';
+import { findNodesByType, Nodes } from '../../parser/nodes';
+import { failIfErrors } from '../../parser/phases/findAllErrors';
+import { findParentType } from '../../parser/phases/helpers';
+import { FunctionType } from '../../parser/types';
+import { CompilationPhaseResult } from './compilationPhase';
+import { PhaseResult } from './PhaseResult';
 
 declare var WebAssembly;
 
@@ -35,7 +36,7 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
   );
 }
 
-function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
+function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode, _: CodeGenerationPhaseResult) {
   const fnType = getTypeForFunction(fn);
 
   const locals = fn.additionalLocals.map($ =>
@@ -157,8 +158,6 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return emitMatchingNode(node, document);
     } else if (node instanceof Nodes.TailRecLoopNode) {
       return emitTailCall(node, document);
-    } else if (node instanceof Nodes.GetLocalNode) {
-      return t.instruction('get_local', [t.identifier(node.local.name)]);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
@@ -217,83 +216,107 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   return generatedNode;
 }
 
-export async function compileModule(document: Nodes.DocumentNode) {
-  const functions = findNodesByType(document, Nodes.OverloadedFunctionNode);
+export class CodeGenerationPhaseResult extends PhaseResult {
+  programAST: any;
+  buffer: Uint8Array;
+  module: binaryen.Module;
 
-  const createdFunctions = [];
-  const exportedFunctions = [];
-
-  functions.forEach($ => {
-    const canBeExported = $.functions.length === 1;
-
-    $.functions.forEach(fun => {
-      createdFunctions.push(emitFunction(fun.functionNode, document));
-      if (fun.isExported) {
-        if (canBeExported) {
-          exportedFunctions.push(
-            t.moduleExport(
-              fun.functionNode.functionName.name,
-              t.moduleExportDescr('Func', t.identifier(fun.functionNode.internalIdentifier))
-            )
-          );
-        } else {
-          throw new Error('You cannot export overloaded functions');
-        }
-      }
-    });
-  });
-
-  const module = t.module(null, [...exportedFunctions, ...createdFunctions]);
-  const program = t.program([module]);
-
-  failIfErrors('Code generation', document);
-
-  return {
-    program,
-    document
-  };
-}
-
-export async function validateModule(x: { program: any; document: Nodes.DocumentNode }) {
-  let text = print(x.program);
-
-  await wabt.ready;
-
-  const wabtModule = wabt.parseWat(x.document.file || 'main.ro', text);
-
-  wabtModule.resolveNames();
-  wabtModule.validate();
-
-  const compiled = wabtModule.toBinary({ log: false });
-
-  const module = binaryen.readBinary(compiled.buffer);
-
-  if (module.validate() == 0) {
-    throw new Error('binaryen validation failed');
+  get document() {
+    return this.compilationPhaseResult.document;
   }
 
-  return { ...x, text, module, buffer: compiled.buffer };
-}
+  constructor(public compilationPhaseResult: CompilationPhaseResult) {
+    super();
+    this.execute();
+  }
 
-export async function generateBinary(x: {
-  program: any;
-  document: Nodes.DocumentNode;
-  text: string;
-  buffer: Uint8Array;
-}) {
-  // Create the imports for the module, including the
-  // standard dynamic library imports
-  const imports = {
-    env: {
-      memoryBase: 0,
-      tableBase: 0,
-      memory: new WebAssembly.Memory({ initial: 256 }),
-      table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
+  async validate(optimize: boolean = true) {
+    let text = print(this.programAST);
+
+    await wabt.ready;
+
+    const wabtModule = wabt.parseWat(
+      this.compilationPhaseResult.typePhaseResult.scopePhaseResult.semanticPhaseResult.canonicalPhaseResult
+        .parsingPhaseResult.fileName || 'main.ro',
+      text
+    );
+
+    wabtModule.resolveNames();
+
+    try {
+      wabtModule.validate();
+    } catch (e) {
+      this.errors.push(e);
+      return;
     }
-  };
 
-  // Create the instance.
-  const compiled = await WebAssembly.compile(x.buffer);
+    const binary = wabtModule.toBinary({ log: false });
+    this.buffer = binary.buffer;
+    this.module = binaryen.readBinary(this.buffer);
 
-  return new WebAssembly.Instance(compiled, imports);
+    if (this.module.validate() == 0) {
+      this.errors.push(new Error('binaryen validation failed'));
+    }
+
+    if (optimize) {
+      this.module.optimize();
+
+      this.buffer = this.module.emitBinary();
+    }
+  }
+
+  optimize() {}
+
+  /** This method only exists for test porpuses */
+  async toInstance() {
+    if (!this.buffer) throw new Error("You didn't generate a binary yet");
+    // Create the imports for the module, including the
+    // standard dynamic library imports
+    const imports = {
+      env: {
+        memoryBase: 0,
+        tableBase: 0,
+        memory: new WebAssembly.Memory({ initial: 256 }),
+        table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
+      }
+    };
+
+    // Create the instance.
+    const compiled = await WebAssembly.compile(this.buffer);
+
+    return new WebAssembly.Instance(compiled, imports);
+  }
+
+  protected execute() {
+    const functions = findNodesByType(this.document, Nodes.OverloadedFunctionNode);
+
+    const createdFunctions = [];
+    const exportedFunctions = [];
+
+    functions.forEach($ => {
+      const canBeExported = $.functions.length === 1;
+
+      $.functions.forEach(fun => {
+        createdFunctions.push(emitFunction(fun.functionNode, this.document, this));
+        if (fun.isExported) {
+          if (canBeExported) {
+            exportedFunctions.push(
+              t.moduleExport(
+                fun.functionNode.functionName.name,
+                t.moduleExportDescr('Func', t.identifier(fun.functionNode.internalIdentifier))
+              )
+            );
+          } else {
+            throw new Error('You cannot export overloaded functions');
+          }
+        }
+      });
+    });
+
+    const module = t.module(null, [...exportedFunctions, ...createdFunctions]);
+
+    this.programAST = t.program([module]);
+
+    failIfErrors('WASM generation', this.document, this);
+  }
 }

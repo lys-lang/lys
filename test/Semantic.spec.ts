@@ -1,27 +1,26 @@
 declare var describe, it, require, console;
 
-import {
-  testParseToken,
-  describeTree,
-  printBNF,
-  testParseTokenFailsafe,
-  folderBasedTest,
-  printAST
-} from './TestHelpers';
-import { parser } from '../dist/grammar';
-import { Nodes, findNodesByType } from '../dist/parser/nodes';
 import * as expect from 'expect';
-import { canonicalPhase } from '../dist/parser/phases/canonicalPhase';
-import { semanticPhase } from '../dist/parser/phases/semanticPhase';
-import { findAllErrors } from '../dist/parser/phases/findAllErrors';
-import { scopePhase } from '../dist/parser/phases/scopePhase';
+import { findNodesByType, Nodes } from '../dist/parser/nodes';
+import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
+import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
+import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
+import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 
 let inspect = require('util').inspect;
 
 describe('Semantic', function() {
-  const phases = [canonicalPhase, semanticPhase, scopePhase, findAllErrors];
+  const phases = function(txt: string): ScopePhaseResult {
+    const parsing = new ParsingPhaseResult('test.ro', txt);
+    const canonical = new CanonicalPhaseResult(parsing);
+    const semantic = new SemanticPhaseResult(canonical);
+    const scope = new ScopePhaseResult(semantic);
+    return scope;
+  };
+
   describe('Files', () => {
-    folderBasedTest('test/fixtures/semantics/*.ro', phases, (result: any) => printAST(result), '.ast');
+    folderBasedTest('test/fixtures/semantics/*.ro', phases, result => printAST(result.document), '.ast');
   });
 
   function test(literals, ...placeholders) {
@@ -36,12 +35,11 @@ describe('Semantic', function() {
     // add the last literal
     result += literals[literals.length - 1];
     testParseToken(
-      parser,
       result,
       'Document',
-      async (document, e) => {
+      async (result, e) => {
         if (e) throw e;
-        expect(document.errors.length).toEqual(0);
+        expect(result.isSuccess()).toEqual(true, 'Phase did not succeed');
       },
       phases
     );
@@ -59,11 +57,11 @@ describe('Semantic', function() {
     // add the last literal
     result += literals[literals.length - 1];
     testParseTokenFailsafe(
-      parser,
       result,
       'Document',
       async (document, err) => {
-        expect(!!err).toEqual(true, 'It mush have failed');
+        const didFail = !!err || !document || !document.isSuccess();
+        expect(didFail).toEqual(true, 'It mush have failed');
       },
       phases,
       false,
@@ -94,7 +92,6 @@ describe('Semantic', function() {
     `;
 
     testParseToken(
-      parser,
       `
         type i32
         var x = 1
@@ -104,8 +101,9 @@ describe('Semantic', function() {
           b
         }`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.BlockNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
@@ -113,7 +111,6 @@ describe('Semantic', function() {
     );
 
     testParseToken(
-      parser,
       `
         type i32
         var x = 1
@@ -123,8 +120,9 @@ describe('Semantic', function() {
           b
         }`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.BlockNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
@@ -152,7 +150,6 @@ describe('Semantic', function() {
 
   describe('block', () => {
     testParseToken(
-      parser,
       `
         type i32
         fun map(a: i32,b: i32): i32 = a
@@ -161,15 +158,15 @@ describe('Semantic', function() {
           1.map(3)
         }`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.BlockNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(1);
       },
       phases
     );
     testParseToken(
-      parser,
       `
         type i32
         fun main(): i32 = {
@@ -179,15 +176,15 @@ describe('Semantic', function() {
         }
       `,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.BlockNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(3);
       },
       phases
     );
     testParseToken(
-      parser,
       `
         type i32 
         fun map(a: i32,b: i32): i32 = a
@@ -197,8 +194,9 @@ describe('Semantic', function() {
           b
         }`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.BlockNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
@@ -208,33 +206,33 @@ describe('Semantic', function() {
 
   describe('scope resolution', () => {
     testParseToken(
-      parser,
       `type i32  var a = 1 fun x(a: i32) = a`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.VariableReferenceNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
         expect(resolved.node.astNode.type).toBe('Parameter');
       },
       phases
     );
     testParseToken(
-      parser,
       `val c = 1 var a = c`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.VariableReferenceNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
         expect(resolved.node.astNode.type).toBe('ValDeclaration');
       },
       phases
     );
     testParseToken(
-      parser,
       `type i32  var a = 1 fun x(b: i32) = a`,
       'Document',
-      async x => {
-        const refs = findNodesByType(x, Nodes.VariableReferenceNode);
+      async (x, e) => {
+        if (e) throw e;
+        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
         expect(resolved.node.astNode.type).toBe('VarDeclaration');
       },
