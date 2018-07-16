@@ -6,9 +6,4 @@ private fun x(a: i32): i32 = 1
 fun test(): i32 = x(1.0)
 
 ---
-Type phase failed. 5 errors found:
-  1)  Cannot infer function return type
-  2)  Cannot resolve name "f32"
-  3)  Cannot infer type of node FunctionCallNode
-  4)  Cannot resolve name "f32"
-  5)  Cannot infer type of node FloatLiteral
+PassThrough resolver only works with nodes with one edge but found '0' with node VariableReferenceNode

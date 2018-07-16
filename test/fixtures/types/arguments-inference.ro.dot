@@ -1,0 +1,13 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  0 [label="name(i32)"];
+  1 [label="name(x)"];
+  2 [label="IntegerLiteral1"];
+  3 [label="OverloadedFun: getX"];
+  4 [label="FunDirectiveNode"];
+  5 [label="Fun: getX"];
+  2 -> 1[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun() -> undefined" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="fun() -> undefined" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

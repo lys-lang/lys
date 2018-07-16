@@ -71,8 +71,12 @@ export abstract class Type {
     if (!_otherType) return false;
     return _otherType && this.nativeType == _otherType.nativeType && this.binaryenType == _otherType.binaryenType;
   }
-  canAssign(_otherType: Type) {
+  canBeAssignedTo(_otherType: Type) {
     return this.equals(_otherType);
+  }
+
+  toString() {
+    return `???<${NativeTypes[this.nativeType]}>`;
   }
 }
 
@@ -113,14 +117,38 @@ export class FunctionType extends Type {
 export class IntersectionType extends Type {
   nativeType: NativeTypes = NativeTypes.anyfunc;
 
-  constructor() {
+  constructor(public of: Type[] = []) {
     super();
   }
 
-  of: Type[] = [];
-
   toString() {
     return this.of.map($ => $.toString()).join(' & ');
+  }
+
+  simplify() {
+    const newTypes: Type[] = [];
+    this.of.forEach($ => {
+      if (!newTypes.some($1 => $1.equals($))) {
+        newTypes.push($);
+      }
+    });
+
+    if (newTypes.length === 1) {
+      return newTypes[0];
+    } else {
+      const newType = new UnionType();
+      newType.of = newTypes;
+      return newType;
+    }
+  }
+}
+
+export class TypeReference extends Type {
+  constructor(public referencedName: string) {
+    super();
+  }
+  toString() {
+    return `TypeRef(${this.referencedName})`;
   }
 }
 
@@ -172,7 +200,11 @@ export class u8 extends NativeType {
 
 export class bool extends NativeType {
   constructor() {
-    super(NativeTypes.boolean);
+    super(NativeTypes.i32);
+  }
+
+  toString() {
+    return NativeTypes.boolean;
   }
 }
 

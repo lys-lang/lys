@@ -7,7 +7,7 @@ import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
-
+import { print } from '../dist/utils/typeGraphPrinter';
 let inspect = require('util').inspect;
 
 const writeToFile = process.env.UPDATE_AST === 'true';
@@ -20,7 +20,21 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function() {
+describe.only('Types', function() {
+  describe('Resolution', () => {
+    folderBasedTest(
+      '**/types/*.ro',
+      phases,
+      async (result, e) => {
+        if (e) throw e;
+        const typePhase = new TypePhaseResult(result);
+
+        return print(typePhase.typeGraph);
+      },
+      '.dot'
+    );
+  });
+
   describe('Compiler errors', () => {
     folderBasedTest(
       '**/type-error/*.ro',

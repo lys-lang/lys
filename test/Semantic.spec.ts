@@ -212,7 +212,7 @@ describe('Semantic', function() {
         if (e) throw e;
         const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
-        expect(resolved.node.astNode.type).toBe('Parameter');
+        expect(resolved.valueNode.astNode.type).toBe('Parameter');
       },
       phases
     );
@@ -223,7 +223,7 @@ describe('Semantic', function() {
         if (e) throw e;
         const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
-        expect(resolved.node.astNode.type).toBe('ValDeclaration');
+        expect(resolved.valueNode.astNode.type).toBe('ValDeclaration');
       },
       phases
     );
@@ -234,7 +234,7 @@ describe('Semantic', function() {
         if (e) throw e;
         const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
         const resolved = refs[0].closure.get(refs[0].variable.name);
-        expect(resolved.node.astNode.type).toBe('VarDeclaration');
+        expect(resolved.valueNode.astNode.type).toBe('VarDeclaration');
       },
       phases
     );

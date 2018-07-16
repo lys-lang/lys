@@ -1,0 +1,13 @@
+type i32
+type void
+
+fun get(x: ref<i32>): i32 = ???
+fun put(x: ref<i32>, value: i32): void = ???
+fun ref(value: i32): ref = ???
+
+val x = ref(0)
+
+fun main(): i32 = {
+  x.set(x.get() + 1)
+  x.get()
+}

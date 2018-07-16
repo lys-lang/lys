@@ -1,7 +1,7 @@
 import { Nodes } from './nodes';
 declare var require, console;
 const colors = require('colors/safe');
-import { LineMapper, ITextPosition } from './LineMapper';
+import { LineMapper, ITextPosition } from '../utils/LineMapper';
 import { walkPreOrder } from './walker';
 
 function collectErrors(root: Nodes.Node) {

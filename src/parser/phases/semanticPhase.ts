@@ -54,7 +54,7 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
     });
   }
 
-  if (node instanceof Nodes.MatchNode) {
+  if (node instanceof Nodes.PatternMatcherNode) {
     if (node.matchingSet.length == 0) {
       throw new TokenError(`Invalid match expression, there are no matchers`, node.astNode);
     }

@@ -77,42 +77,42 @@ export const binaryOperations: BinaryOperation[] = [
   {
     lhsType: i32Type,
     rhsType: i32Type,
-    outputType: i32Type,
+    outputType: booleanType,
     operator: '==',
     generateCode: (lhs, rhs) => ast.instruction('i32.eq', [lhs, rhs])
   },
   {
     lhsType: i32Type,
     rhsType: i32Type,
-    outputType: i32Type,
+    outputType: booleanType,
     operator: '>=',
     generateCode: (lhs, rhs) => ast.instruction('i32.ge_s', [lhs, rhs])
   },
   {
     lhsType: i32Type,
     rhsType: i32Type,
-    outputType: i32Type,
+    outputType: booleanType,
     operator: '<=',
     generateCode: (lhs, rhs) => ast.instruction('i32.le_s', [lhs, rhs])
   },
   {
     lhsType: i32Type,
     rhsType: i32Type,
-    outputType: i32Type,
+    outputType: booleanType,
     operator: '>',
     generateCode: (lhs, rhs) => ast.instruction('i32.gt_s', [lhs, rhs])
   },
   {
     lhsType: i32Type,
     rhsType: i32Type,
-    outputType: i32Type,
+    outputType: booleanType,
     operator: '<',
     generateCode: (lhs, rhs) => ast.instruction('i32.lt_s', [lhs, rhs])
   },
   {
     lhsType: i32Type,
     rhsType: i32Type,
-    outputType: i32Type,
+    outputType: booleanType,
     operator: '!=',
     generateCode: (lhs, rhs) => ast.instruction('i32.ne', [lhs, rhs])
   },

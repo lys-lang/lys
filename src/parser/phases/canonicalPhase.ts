@@ -148,7 +148,7 @@ const visitor = {
     for (let i = 1; i < astNode.children.length; i += 2) {
       const oldRet = ret;
       if (astNode.children[i].type === 'MatchKeyword') {
-        const match = (ret = new Nodes.MatchNode(astNode.children[i]));
+        const match = (ret = new Nodes.PatternMatcherNode(astNode.children[i]));
         match.lhs = oldRet;
         match.matchingSet = astNode.children[i + 1].children.map($ => visit($));
       } else {

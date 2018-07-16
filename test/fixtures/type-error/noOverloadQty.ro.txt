@@ -7,11 +7,4 @@ private fun x(a: i32): i32 = 1
 fun x(a: f32): i32 = x(1.0, 1, 2)
 
 ---
-Type phase failed. 2 errors found:
-  1)  Type "void" cannot be assigned to "i32"
-  2)  No overload found for arguments
-        (f32,i32,i32)
-      got:
-        ()
-        (i32)
-        (f32)
+PassThrough resolver only works with nodes with one edge but found '0' with node VariableReferenceNode

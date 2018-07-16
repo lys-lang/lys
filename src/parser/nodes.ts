@@ -495,7 +495,7 @@ export namespace Nodes {
 
   export class MatchDefaultNode extends MatcherNode {}
 
-  export class MatchNode extends ExpressionNode {
+  export class PatternMatcherNode extends ExpressionNode {
     lhs: ExpressionNode;
     matchingSet: MatcherNode[];
 

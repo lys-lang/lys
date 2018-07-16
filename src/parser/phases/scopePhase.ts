@@ -1,6 +1,5 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { EStoredName } from '../closure';
 import { InjectableTypes, VoidType } from '../types';
 import { annotations } from '../annotations';
 import { failIfErrors } from './findAllErrors';
@@ -38,7 +37,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     }
   }
 
-  if (node instanceof Nodes.MatchNode) {
+  if (node instanceof Nodes.PatternMatcherNode) {
     node.lhs.annotate(new annotations.IsValueNode());
     if (node.hasAnnotation(annotations.IsValueNode)) {
       node.matchingSet.forEach($ => $.annotate(new annotations.IsValueNode()));
@@ -58,9 +57,9 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = parent.closure;
     }
 
-    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.MatchNode) {
+    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.PatternMatcherNode) {
       const innerClosure = node.closure.newChildClosure();
-      innerClosure.setVariable(node.declaredName.name, parent.lhs);
+      innerClosure.set(node.declaredName, parent.lhs);
     }
 
     // if (node instanceof Nodes.MatchConditionNode) {
@@ -69,12 +68,12 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
     // }
 
     if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure.setVariable(node.name, node);
+      node.closure.set(node.functions[0].functionNode.functionName, node);
     }
 
     if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
-      node.closure.setVariable(node.variableName.name, node);
+      node.closure.set(node.variableName, node);
     }
 
     if (node instanceof Nodes.FunctionNode) {
@@ -83,7 +82,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       }
 
       if (!(parent instanceof Nodes.DirectiveNode)) {
-        node.closure.setVariable(node.functionName.name, node);
+        node.closure.set(node.functionName, node);
       }
 
       node.internalIdentifier = node.closure.getInternalIdentifier(node);
@@ -91,7 +90,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = node.closure.newChildClosure();
 
       node.parameters.forEach($ => {
-        node.closure.setVariable($.parameterName.name, $);
+        node.closure.set($.parameterName, $);
         node.closure.localsMap.set($, node.closure.localsMap.size);
       });
 
@@ -109,7 +108,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       } else {
         node.valueType.closure = node.closure.newChildClosure();
       }
-      node.closure.setType(node.variableName.name, node);
+      node.closure.set(node.variableName, node);
     }
   }
 });
@@ -124,12 +123,8 @@ const resolveVariables = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.TypeReferenceNode) {
     if (!node.closure.canResolveName(node.name)) {
       throw new Error(`Cannot resolve type "${node.name}"`);
-    } else {
-      const resolved = node.closure.get(node.name);
-      if (resolved.type !== EStoredName.TYPE) {
-        throw new Error(`Variable "${node.name}" is not a type`);
-      }
     }
+    node.closure.incrementUsage(node.name);
   }
 });
 
