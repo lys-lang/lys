@@ -1,0 +1,75 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="Name:\nvoid"];
+  3 [label="Name:\nx"];
+  4 [label="Int:\n1"];
+  5 [label="OverloadedFun:\naddOne"];
+  6 [label="fun addOne"];
+  7 [label="Fun:\naddOne"];
+  8 [label="Name:\naddOne"];
+  9 [label="OverloadedFun:\naddOneNoReturn"];
+  10 [label="fun addOneNoReturn"];
+  11 [label="Fun:\naddOneNoReturn"];
+  12 [label="Name:\naddOneNoReturn"];
+  subgraph cluster0 {
+    node [style=filled];
+    13 [label="BlockNode"];
+    14 [label="AssignmentNode"];
+    15 [label="Var:\nx"];
+    16 [label="BinaryExpressionNode'+'"];
+    17 [label="Var:\nx"];
+    18 [label="Int:\n1"];
+    19 [label="Fun:\naddOneNoReturn"];
+    13 -> 19[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="red" ];
+    14 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    15 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    16 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    17 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    18 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "addOneNoReturn()";
+}
+  subgraph cluster1 {
+    node [style=filled];
+    20 [label="BlockNode"];
+    21 [label="Var Decl:\ny"];
+    22 [label="Name:\ny"];
+    23 [label="Var:\nx"];
+    24 [label="AssignmentNode"];
+    25 [label="Var:\ny"];
+    26 [label="BinaryExpressionNode'+'"];
+    27 [label="Var:\ny"];
+    28 [label="Int:\n1"];
+    29 [label="AssignmentNode"];
+    30 [label="Var:\nx"];
+    31 [label="Var:\ny"];
+    32 [label="Fun:\naddOne"];
+    20 -> 32[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    21 -> 20[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    22 -> 25[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    22 -> 27[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    22 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    23 -> 22[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    24 -> 20[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    25 -> 24[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    26 -> 24[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    27 -> 26[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    28 -> 26[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    29 -> 20[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    30 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    31 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "addOne()";
+}
+  3 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 17[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 23[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 30[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 8[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  6 -> 5[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  7 -> 6[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  9 -> 12[taillabel="fun() -> void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  10 -> 9[taillabel="fun() -> void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  11 -> 10[taillabel="fun() -> void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

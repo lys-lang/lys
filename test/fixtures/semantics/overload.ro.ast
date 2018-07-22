@@ -1,8 +1,8 @@
 
 |-DocumentNode
-  |-TypeDirectiveNode type=i32
+  |-TypeDirectiveNode
     |-NameIdentifierNode="i32"
-  |-TypeDirectiveNode type=f32
+  |-TypeDirectiveNode
     |-NameIdentifierNode="f32"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
@@ -10,11 +10,14 @@
         |-ParameterNode
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-ParameterNode
           |-NameIdentifierNode="b"
           |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-NameIdentifierNode="add"
         |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
         |-BinaryExpressionNode="+" annotations=IsValueNode
           |-VariableReferenceNode
             |-NameIdentifierNode="a"
@@ -25,13 +28,17 @@
         |-ParameterNode
           |-NameIdentifierNode="a"
           |-TypeReferenceNode="f32"
+            |-NameIdentifierNode="f32"
         |-ParameterNode
           |-NameIdentifierNode="b"
           |-TypeReferenceNode="f32"
+            |-NameIdentifierNode="f32"
         |-NameIdentifierNode="add"
         |-TypeReferenceNode="f32"
+          |-NameIdentifierNode="f32"
         |-BinaryExpressionNode="+" annotations=IsValueNode
           |-VariableReferenceNode
             |-NameIdentifierNode="a"
           |-VariableReferenceNode
             |-NameIdentifierNode="b"
+    |-NameIdentifierNode="add"

@@ -2,6 +2,7 @@ import { TypeGraph, TypeNode, Edge } from './TypeGraph';
 import { ParsingContext, Closure } from '../closure';
 import { Nodes } from '../nodes';
 import { Type } from '../types';
+import { TypeGraphBuilder } from './TypeGraphBuilder';
 
 function top<T>(stack: Array<T>): T | null {
   if (stack.length) {
@@ -11,7 +12,7 @@ function top<T>(stack: Array<T>): T | null {
 }
 
 export class TypeResolutionContext {
-  constructor(public rootGraph: TypeGraph) {}
+  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) {}
 
   private _executors = new Array<{
     dataGraph: TypeGraph;
@@ -24,14 +25,6 @@ export class TypeResolutionContext {
     functionNode: Nodes.FunctionNode;
     list: Array<{ seq: Array<Type>; graph: TypeGraph }>;
   }>();
-
-  error(message: string, node: TypeNode): void {
-    node.astNode.errors.push(new Error(message));
-  }
-
-  warning(message: string, node: TypeNode): void {
-    node.astNode.errors.push(new Error(message));
-  }
 
   newExecutorWithContext(scope: Closure, dataGraph: TypeGraph, parsingContext: ParsingContext): TypePropagator {
     const propagator: TypePropagator = new TypePropagator(this);
@@ -77,13 +70,17 @@ export class TypeResolutionContext {
   getFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>): TypeGraph | null {
     const x = this.getFunctionGraph(functionNode);
     if (x) {
-      return x.find(graph => this.matches(graph.seq, parameterTypes)).graph;
+      const ret = x.find(graph => this.matches(graph.seq, parameterTypes));
+      if (!ret) return null;
+      return ret.graph;
     }
     return null;
   }
 
   getFunctionGraph(functionNode: Nodes.FunctionNode): null | Array<{ seq: Array<Type>; graph: TypeGraph }> {
-    return this._functionSubGraphs.find($ => $.functionNode == functionNode).list;
+    const ret = this._functionSubGraphs.find($ => $.functionNode == functionNode);
+    if (!ret) return null;
+    return ret.list;
   }
 
   private matches(expected: Array<Type>, actual: Array<Type>): boolean {
@@ -94,25 +91,26 @@ export class TypeResolutionContext {
     }
   }
 
-  // removeFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>): void {
-  //   const x = this.getFunctionGraph(functionNode)
-  //   if(x){
-  //  //   x.find((graph) => this.matches(graph.seq, parameterTypes)).map((function) => x.-=(function))
-  //   }
+  removeFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>, _graph: TypeGraph): void {
+    const x = this.getFunctionGraph(functionNode);
+    if (x) {
+      const theFn = x.findIndex(graph => this.matches(graph.seq, parameterTypes));
+      x.splice(theFn, 1);
+    }
+  }
 
-  // }
+  addFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Type[], graph: TypeGraph): void {
+    const x = this.getFunctionGraph(functionNode);
 
-  // addFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Seq[Type], graph: TypeGraph): void {
-  //   getFunctionGraph(functionNode) match {
-  //     case Some(x) => {
-  //       x.+=((parameterTypes, graph))
-  //     }
-  //     case None => {
-  //       const tuple = (functionNode, ListBuffer((parameterTypes, graph)))
-  //       _functionSubGraphs.+=(tuple)
-  //     }
-  //   }
-  // }
+    if (x) {
+      x.push({ seq: parameterTypes, graph });
+    } else {
+      this._functionSubGraphs.push({
+        functionNode,
+        list: [{ seq: parameterTypes, graph }]
+      });
+    }
+  }
 }
 
 export class TypePropagator {
@@ -120,7 +118,9 @@ export class TypePropagator {
   constructor(public ctx: TypeResolutionContext) {}
 
   scheduleNode(node: TypeNode): void {
-    if (!this.executionStack.some(n => n == node)) this.executionStack.push(node);
+    if (!this.executionStack.some(n => n == node)) {
+      this.executionStack.push(node);
+    }
   }
 
   private start(): void {
@@ -132,12 +132,18 @@ export class TypePropagator {
 
   private scheduleNodes(): void {
     this.ctx.currentGraph.nodes.forEach(node => {
-      const incomingEdges = node.incomingEdges();
+      if (!node.allDependenciesResolved()) {
+        const incomingEdges = node.incomingEdges();
+
+        if (incomingEdges.some($ => $.crossGraphEdge())) {
+          const crossGraph = incomingEdges.filter(edge => edge.crossGraphEdge());
+          crossGraph.forEach($ => this.scheduleDependencies($, []));
+        }
+      }
+    });
+    this.ctx.currentGraph.nodes.forEach(node => {
       if (node.allDependenciesResolved()) {
         this.scheduleNode(node);
-      } else if (incomingEdges.some($ => $.crossGraphEdge())) {
-        const crossGraph = incomingEdges.filter(edge => edge.crossGraphEdge());
-        crossGraph.forEach($ => this.scheduleDependencies($, []));
       }
     });
   }
@@ -169,5 +175,40 @@ export class TypePropagator {
     this.scheduleNodes();
     this.start();
     this.ctx.endContext();
+  }
+}
+
+export function resolveReturnType(
+  typeGraph: TypeGraph,
+  functionNode: Nodes.FunctionNode,
+  argTypes: Type[],
+  returnType: Type | null,
+  ctx: TypeResolutionContext
+): Type | null {
+  const subGraph: TypeGraph = ctx.getFunctionSubGraph(functionNode, argTypes);
+
+  if (subGraph) {
+    return subGraph.findNode(functionNode).resultType();
+  } else {
+    const context = ctx.currentParsingContext;
+
+    const dataGraphBuilder = new TypeGraphBuilder(ctx.parsingContext, typeGraph, returnType);
+
+    const dataGraph: TypeGraph = dataGraphBuilder.buildFunctionNode(functionNode, argTypes);
+
+    ctx.addFunctionSubGraph(functionNode, argTypes, dataGraph);
+    const functionName = functionNode.functionName.name + '(' + argTypes.join(',') + ')';
+    ctx.rootGraph.addSubGraph(dataGraph, functionName);
+    ctx.newExecutorWithContext(functionNode.closure, dataGraph, context).run();
+    const value = dataGraph.findNode(functionNode);
+
+    const result = value.resultType();
+
+    // if (result && ctx.parsingContext.hasErrors()) {
+    //   ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
+    //   ctx.rootGraph.removeSubGraph(dataGraph, functionName);
+    // }
+
+    return result;
   }
 }

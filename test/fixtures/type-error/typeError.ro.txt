@@ -1,5 +1,8 @@
-type i32 
-type boolean 
+type i32
+type boolean
+
 fun x(): i32 = false
 ---
-PassThrough resolver only works with nodes with one edge but found '0' with node NameIdentifierNode
+Type phase failed. 2 errors found:
+  1)  Type mismatch: Type "boolean" is not assignable to "i32"
+  2)  Cannot infer return type

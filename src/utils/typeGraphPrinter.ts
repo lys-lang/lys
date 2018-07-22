@@ -38,7 +38,7 @@ export function printEdges(writer: StringCodeWriter, graph: TypeGraph): void {
   graph.nodes.forEach(node => {
     node.outgoingEdges().forEach(edge => {
       writer.printIndent();
-      writer.print(`${id(edge.source)} -> ${id(edge.target)}`);
+      writer.print(`${id(edge.source, graph)} -> ${id(edge.target, graph)}`);
       writer.println(
         '[taillabel=' +
           '"' +
@@ -58,7 +58,7 @@ export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
   graph.nodes.forEach(node => {
     if (!printedNodes.has(node)) {
       writer.printIndent();
-      writer.println(`${id(node)} [label="${nodeLabel(node).replace(/"/g, "'")}"];`);
+      writer.println(`${id(node, graph)} [label="${nodeLabel(node).replace(/"/g, "'")}"];`);
       printedNodes.add(node);
     }
   });
@@ -78,26 +78,47 @@ export function edgeLabel(edge: Edge): string {
 
 export function nodeLabel(node: TypeNode): string {
   if (node.astNode instanceof Nodes.VariableReferenceNode) {
-    return `VarRef(${node.astNode.variable.name})`;
+    return `Var:\\n${node.astNode.variable.name}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
-    return `name(${node.astNode.name})`;
+    return `Name:\\n${node.astNode.name}`;
+  } else if (node.astNode instanceof Nodes.IntegerLiteral) {
+    return `Int:\\n${node.astNode.value}`;
+  } else if (node.astNode instanceof Nodes.FloatLiteral) {
+    return `Float:\\n${node.astNode.value.toFixed(5)}`;
+  } else if (node.astNode instanceof Nodes.ValDeclarationNode) {
+    return `Val Decl:\\n${node.astNode.variableName.name}`;
+  } else if (node.astNode instanceof Nodes.VarDeclarationNode) {
+    return `Var Decl:\\n${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.OverloadedFunctionNode) {
-    return `OverloadedFun: ${node.astNode.name}`;
+    return `OverloadedFun:\\n${node.astNode.functionName.name}`;
   } else if (node.astNode instanceof Nodes.FunctionNode) {
-    return `Fun: ${node.astNode.functionName.name}`;
+    return `Fun:\\n${node.astNode.functionName.name}`;
   } else if (node.astNode instanceof Nodes.TypeDirectiveNode) {
-    return `TypeDirective: ${node.astNode.variableName.name}`;
+    return `TypeDirective:\\n${node.astNode.variableName.name}`;
+  } else if (node.astNode instanceof Nodes.FunDirectiveNode) {
+    return `fun ${node.astNode.functionNode.functionName.name}`;
   }
   return node.astNode ? node.astNode.nodeName + node.astNode.text : '<no node>';
 }
 
 const idSymbol = Symbol('id');
-let counter = 0;
 
-export function id(node: TypeNode): string {
-  if (!node[idSymbol]) {
-    node[idSymbol] = counter++;
+export function id(node: TypeNode, typeGraph: TypeGraph): string {
+  while (typeGraph.parentGraph) {
+    typeGraph = typeGraph.parentGraph;
   }
 
-  return node[idSymbol];
+  let map: Map<TypeNode, string>;
+
+  if (typeGraph[idSymbol]) {
+    map = typeGraph[idSymbol];
+  } else {
+    map = typeGraph[idSymbol] = new Map();
+  }
+
+  if (!map.has(node)) {
+    map.set(node, (map.size + 1).toString());
+  }
+
+  return map.get(node);
 }

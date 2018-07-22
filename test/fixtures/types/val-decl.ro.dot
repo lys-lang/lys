@@ -1,0 +1,31 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="OverloadedFun:\ntest"];
+  3 [label="fun test"];
+  4 [label="Fun:\ntest"];
+  5 [label="Name:\ntest"];
+  subgraph cluster0 {
+    node [style=filled];
+    6 [label="BlockNode"];
+    7 [label="Val Decl:\ntest"];
+    8 [label="Name:\ntest"];
+    9 [label="Int:\n1"];
+    10 [label="BinaryExpressionNode'+'"];
+    11 [label="Var:\ntest"];
+    12 [label="Int:\n2"];
+    13 [label="Fun:\ntest"];
+    6 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    7 -> 6[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    8 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    9 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    10 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    11 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    12 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "test()";
+}
+  2 -> 5[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

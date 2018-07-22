@@ -1,4 +1,5 @@
 import { Nodes } from './nodes';
+import { AstNodeError } from './NodeError';
 
 export interface IDictionary<T> {
   [key: string]: T;
@@ -19,14 +20,30 @@ export interface IOverloadedInfix {
 export class ParsingContext {
   programTakenNames = new Set<string>();
 
-  errors: Error[] = [];
+  errors: AstNodeError[] = [];
 
-  error(message: string, node: Nodes.Node) {
-    this.errors.push(Object.assign(new Error(message), { node }));
+  error(error: AstNodeError);
+  error(message: string, node: Nodes.Node);
+  error(error: string | AstNodeError, node?: Nodes.Node) {
+    if (error instanceof AstNodeError) {
+      if (!this.errors.some($ => $.message == error.message && $.node == error.node)) {
+        this.errors.push(error);
+      }
+    } else {
+      if (!this.errors.some($ => $.message == error && $.node == node)) {
+        this.errors.push(new AstNodeError(error, node));
+      }
+    }
   }
 
   warning(message: string, node: Nodes.Node) {
-    this.errors.push(Object.assign(new Error(message), { node }));
+    if (!this.errors.some($ => $.message == message && $.node == node)) {
+      this.errors.push(new AstNodeError(message, node, true));
+    }
+  }
+
+  hasErrors() {
+    return this.errors.some($ => !$.warning);
   }
 }
 
@@ -124,6 +141,6 @@ export class Reference {
   ) {}
 
   get isLocalReference(): boolean {
-    return !!this.moduleSource;
+    return !this.moduleSource;
   }
 }

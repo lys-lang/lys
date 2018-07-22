@@ -161,7 +161,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
-      return t.instruction('set_local', [t.identifier(node.variableName.variable.name), emit(node.value, document)]);
+      return t.instruction('set_local', [t.identifier(node.variable.variable.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'unknown_block_' + getModuleSecuentialId(document));

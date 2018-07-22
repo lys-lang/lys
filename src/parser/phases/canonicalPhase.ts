@@ -55,7 +55,7 @@ const visitor = {
   },
   AssignStatement(astNode: IToken) {
     const ret = new Nodes.AssignmentNode(astNode);
-    ret.variableName = visit(astNode.children[0]);
+    ret.variable = visit(astNode.children[0]);
     ret.value = visit(astNode.children[1]);
     return ret;
   },
@@ -193,7 +193,7 @@ const visitor = {
   },
   TypeReference(child: IToken) {
     const ret = new Nodes.TypeReferenceNode(child);
-    ret.name = findChildrenType(child, 'NameIdentifier').text.trim();
+    ret.name = visit(findChildrenType(child, 'NameIdentifier'));
     // ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
     // ret.isArray = !!findChildrenType(astNode, 'IsArray');
     return ret;

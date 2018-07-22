@@ -41,7 +41,7 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
     const fn = findParentType(node, Nodes.FunctionNode);
 
     if (fn) {
-      node.local = fn.addLocal(node.value.ofType, node.variableName.name, node);
+      node.local = fn.addLocal(node.value.ofType, node.variableName.name, node.variableName);
     }
   }
 });

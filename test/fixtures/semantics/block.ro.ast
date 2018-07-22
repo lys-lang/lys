@@ -1,0 +1,52 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="void"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="x"
+          |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="main"
+        |-BlockNode annotations=IsValueNode
+          |-VarDeclarationNode
+            |-NameIdentifierNode="test"
+            |-IntegerLiteral=0 annotations=IsValueNode
+          |-AssignmentNode
+            |-VariableReferenceNode
+              |-NameIdentifierNode="test"
+            |-BinaryExpressionNode="+"
+              |-IntegerLiteral=1
+              |-VariableReferenceNode
+                |-NameIdentifierNode="x"
+          |-VariableReferenceNode annotations=IsValueNode
+            |-NameIdentifierNode="test"
+    |-NameIdentifierNode="main"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="x"
+          |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="main2"
+        |-TypeReferenceNode="void"
+          |-NameIdentifierNode="void"
+        |-BlockNode annotations=IsValueNode
+          |-VarDeclarationNode
+            |-NameIdentifierNode="test"
+            |-IntegerLiteral=0 annotations=IsValueNode
+          |-AssignmentNode
+            |-VariableReferenceNode
+              |-NameIdentifierNode="test"
+            |-BinaryExpressionNode="+"
+              |-IntegerLiteral=1
+              |-VariableReferenceNode
+                |-NameIdentifierNode="x"
+          |-VariableReferenceNode annotations=IsValueNode
+            |-NameIdentifierNode="test"
+    |-NameIdentifierNode="main2"

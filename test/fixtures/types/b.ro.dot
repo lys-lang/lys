@@ -1,0 +1,95 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="OverloadedFun:\ninnerFunctionArgs"];
+  3 [label="fun innerFunctionArgs"];
+  4 [label="Fun:\ninnerFunctionArgs"];
+  5 [label="Name:\na"];
+  6 [label="Name:\ninnerFunctionArgs"];
+  7 [label="OverloadedFun:\ninnerFunction"];
+  8 [label="fun innerFunction"];
+  9 [label="Fun:\ninnerFunction"];
+  10 [label="Name:\ninnerFunction"];
+  11 [label="OverloadedFun:\nover"];
+  12 [label="fun over"];
+  13 [label="Fun:\nover"];
+  14 [label="fun over"];
+  15 [label="Fun:\nover"];
+  16 [label="Name:\na"];
+  17 [label="Name:\nover"];
+  18 [label="OverloadedFun:\nouterFunction"];
+  19 [label="fun outerFunction"];
+  20 [label="Fun:\nouterFunction"];
+  21 [label="Name:\nouterFunction"];
+  subgraph cluster0 {
+    node [style=filled];
+    22 [label="BinaryExpressionNode'+'"];
+    23 [label="FunctionCallNode"];
+    24 [label="Var:\ninnerFunction"];
+    25 [label="FunctionCallNode"];
+    26 [label="Var:\nover"];
+    27 [label="Fun:\nouterFunction"];
+    22 -> 27[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    23 -> 22[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    24 -> 23[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    25 -> 22[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    26 -> 25[taillabel="fun() -> i32 & fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "outerFunction()";
+}
+  subgraph cluster1 {
+    node [style=filled];
+    28 [label="Name:\na"];
+    29 [label="Var:\na"];
+    30 [label="Fun:\nover"];
+    28 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    29 -> 30[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "over(i32)";
+}
+  subgraph cluster2 {
+    node [style=filled];
+    31 [label="Int:\n1"];
+    32 [label="Fun:\nover"];
+    31 -> 32[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "over()";
+}
+  subgraph cluster3 {
+    node [style=filled];
+    33 [label="FunctionCallNode"];
+    34 [label="Var:\ninnerFunctionArgs"];
+    35 [label="Int:\n3"];
+    36 [label="Fun:\ninnerFunction"];
+    33 -> 36[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    34 -> 33[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    35 -> 33[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "innerFunction()";
+}
+  subgraph cluster4 {
+    node [style=filled];
+    37 [label="Name:\na"];
+    38 [label="Var:\na"];
+    39 [label="Fun:\ninnerFunctionArgs"];
+    37 -> 38[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    38 -> 39[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "innerFunctionArgs(i32)";
+}
+  2 -> 6[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 2[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  6 -> 34[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  7 -> 10[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  8 -> 7[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  9 -> 8[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  10 -> 24[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  11 -> 17[taillabel="fun() -> i32 & fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  12 -> 11[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  13 -> 12[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  14 -> 11[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  15 -> 14[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  16 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  17 -> 26[taillabel="fun() -> i32 & fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  18 -> 21[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  19 -> 18[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  20 -> 19[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

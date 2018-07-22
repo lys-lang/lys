@@ -1,6 +1,6 @@
 
 |-DocumentNode
-  |-TypeDirectiveNode type=i32
+  |-TypeDirectiveNode
     |-NameIdentifierNode="i32"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
@@ -8,14 +8,18 @@
         |-ParameterNode
           |-NameIdentifierNode="n"
           |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-ParameterNode
           |-NameIdentifierNode="x1"
           |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-ParameterNode
           |-NameIdentifierNode="x2"
           |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-NameIdentifierNode="fibo"
         |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-IfNode annotations=IsValueNode
             |-BinaryExpressionNode=">" annotations=IsValueNode
@@ -40,14 +44,17 @@
             |-BlockNode annotations=IsValueNode
               |-VariableReferenceNode annotations=IsValueNode
                 |-NameIdentifierNode="x1"
+    |-NameIdentifierNode="fibo"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="n"
           |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-NameIdentifierNode="fib"
         |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-FunctionCallNode annotations=IsValueNode
             |-VariableReferenceNode
@@ -56,13 +63,16 @@
               |-NameIdentifierNode="n"
             |-IntegerLiteral=0 annotations=IsValueNode
             |-IntegerLiteral=1 annotations=IsValueNode
+    |-NameIdentifierNode="fib"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="test"
         |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-FunctionCallNode annotations=IsValueNode
             |-VariableReferenceNode
               |-NameIdentifierNode="fib"
             |-IntegerLiteral=46 annotations=IsValueNode
+    |-NameIdentifierNode="test"

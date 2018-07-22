@@ -1,12 +1,12 @@
 import { TypeNode, TypeGraph, TypeResolver, Edge, LiteralTypeResolver } from './TypeGraph';
 import { Reference, ParsingContext } from '../closure';
 import { Nodes } from '../nodes';
-import { getTypeResolver, EdgeLabels } from './typeResolvers';
+import { getTypeResolver, EdgeLabels, PassThroughTypeResolver } from './typeResolvers';
 import { bool, Type, InjectableTypes, VoidType, TypeReference } from '../types';
 
 export function fromTypeNode(node: Nodes.TypeNode): Type {
   if (node instanceof Nodes.TypeReferenceNode) {
-    return new TypeReference(node.name);
+    return new TypeReference(node.name.name, node.closure);
   }
 
   return null;
@@ -14,9 +14,13 @@ export function fromTypeNode(node: Nodes.TypeNode): Type {
 
 export class TypeGraphBuilder {
   _nodes: TypeNode[] = [];
-  _referenceNode: Map<Reference, TypeNode> = new Map();
+  _referenceNode: { reference: Reference; result: TypeNode }[] = [];
 
-  constructor(public parsingContext: ParsingContext, public parentGraph: TypeGraph = null) {
+  constructor(
+    public parsingContext: ParsingContext,
+    public parentGraph: TypeGraph = null,
+    public expectedOutput: Type = null
+  ) {
     //
   }
 
@@ -54,54 +58,45 @@ export class TypeGraphBuilder {
     return this.createTypeGraph();
   }
 
-  // build(functionNode: FunctionNode, arguments: Seq[WeaveType]): TypeGraph {
-  //   const paramList: Seq[FunctionParameter] = functionNode.params.paramList
-  //   if (arguments.size != paramList.length) {
-  //     if (paramList.head.defaultValue.isDefined) {
-  //       const defaultValued: Int = paramList.length - arguments.size
-  //       //Map first with default values
-  //       paramList.slice(0, defaultValued).foreach((param) => {
-  //         if (param.defaultValue.isDefined) {
-  //           const paramNode: TypeNode = traverse(param.variable)
-  //           Edge(traverse(param.defaultValue.get), paramNode)
-  //         } else {
-  //           createNode(param.variable)
-  //         }
-  //       })
-  //       paramList.slice(defaultValued, paramList.length).zipWithIndex.foreach((param) => {
-  //         createNode(param._1.variable, LiteralTypeResolver(arguments(param._2)))
-  //       })
-  //     } else {
-  //       paramList.zipWithIndex.foreach((param) => {
-  //         if (arguments.size <= param._2) {
-  //           if (param._1.defaultValue.isDefined) {
-  //             const paramNode: TypeNode = traverse(param._1.variable)
-  //             Edge(traverse(param._1.defaultValue.get), paramNode)
-  //           } else {
-  //             createNode(param._1.variable)
-  //           }
-  //         } else {
-  //           createNode(param._1.variable, LiteralTypeResolver(arguments(param._2)))
-  //         }
-  //       })
-  //     }
-  //   } else {
-  //     paramList.zipWithIndex.foreach((param) => {
-  //       createNode(param._1.variable, LiteralTypeResolver(arguments(param._2)))
-  //     })
-  //   }
+  buildFunctionNode(functionNode: Nodes.FunctionNode, args: Type[]): TypeGraph {
+    const paramList = functionNode.parameters;
+    if (args.length != paramList.length) {
+      paramList.forEach((param, index) => {
+        if (index >= args.length) {
+          if (param.defaultValue) {
+            const paramNode: TypeNode = this.traverse(param.parameterName);
+            new Edge(this.traverse(param.defaultValue), paramNode);
+          } else {
+            this.createReferenceNode(param.parameterName);
+          }
+        } else {
+          this.createNode(param.parameterName, new LiteralTypeResolver(args[index]));
+        }
+      });
+    } else {
+      paramList.forEach((param, index) => {
+        this.createNode(param.parameterName, new LiteralTypeResolver(args[index]));
+      });
+    }
 
-  //   const bodyNode: TypeNode = traverse(functionNode.body)
-  //   const result = createNode(functionNode, PassThroughTypeResolver)
-  //   Edge(bodyNode, result, expected = expectedOutput, supportsCoercion = false)
-  //   createTypeGraph()
-  // }
+    const bodyNode: TypeNode = this.traverse(functionNode.body);
+    const result = this.createNode(functionNode, new PassThroughTypeResolver());
+    new Edge(bodyNode, result, void 0, this.expectedOutput);
+    return this.createTypeGraph();
+  }
 
   private createTypeGraph(): TypeGraph {
-    this._referenceNode.forEach((typeNode, referenceNode) => {
-      const referencedType: TypeNode = this.resolveReferenceNode(referenceNode);
+    this._referenceNode.forEach(({ result, reference }) => {
+      const referencedType: TypeNode = this.resolveReferenceNode(reference);
       if (referencedType) {
-        new Edge(referencedType, typeNode);
+        new Edge(referencedType, result);
+      } else {
+        throw new Error(
+          'Unable to resolve reference to ' +
+            reference.referencedNode.name +
+            ' from ' +
+            (reference.moduleSource || 'local module')
+        );
       }
     });
     return new TypeGraph(this._nodes, this.parentGraph);
@@ -123,7 +118,7 @@ export class TypeGraphBuilder {
   private resolveVariable(node: Nodes.NameIdentifierNode, result: TypeNode): void {
     const reference = node.closure.get(node.name);
     if (reference) {
-      this._referenceNode.set(reference, result);
+      this._referenceNode.push({ reference, result });
     } else {
       this.parsingContext.error(`Invalid reference ${node.name}` /* InvalidReferenceMessage */, node);
     }
@@ -142,50 +137,66 @@ export class TypeGraphBuilder {
           const argumentNode: TypeNode = this.createNode(arg.parameterName, new LiteralTypeResolver(expectedType));
           new Edge(argumentNode, target, arg.parameterName.name);
           if (defaultValue) {
-            new Edge(this.traverse(defaultValue), argumentNode, 'default value', expectedType);
+            new Edge(this.traverse(defaultValue), argumentNode, void 0, expectedType);
           }
         } else {
           this.parsingContext.error(`Parameter ${arg.parameterName.name} has no defined type`, node);
         }
       });
-      new Edge(this.traverse(node.body), target, EdgeLabels.FUNCTION_BODY);
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       node.functions.forEach(fun => new Edge(this.traverse(fun), target));
-    } else if (node instanceof Nodes.FunDirectiveNode) {
-      new Edge(this.traverse(node.functionNode), target);
+      new Edge(target, this.traverse(node.functionName));
     } else if (node instanceof Nodes.VariableReferenceNode) {
       this.resolveVariable(node.variable, target);
+    } else if (node instanceof Nodes.AssignmentNode) {
+      // this.resolveVariable(node.variable.variable, target);
+      new Edge(this.traverse(node.variable), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.value), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.TypeReferenceNode) {
+      this.resolveVariable(node.name, target);
     } else if (node instanceof Nodes.IfNode) {
       new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
       new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION, new bool());
-      new Edge(this.traverse(node.falsePart), target, EdgeLabels.FALSE_PART);
+
+      if (node.falsePart) {
+        new Edge(this.traverse(node.falsePart), target, EdgeLabels.FALSE_PART);
+      }
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.BlockNode) {
+      node.statements.forEach($ => {
+        new Edge(this.traverse($), target, EdgeLabels.STATEMENTS);
+      });
     } else if (node instanceof Nodes.FunctionCallNode) {
       new Edge(this.traverse(node.functionNode), target);
 
       node.argumentsNode.forEach(child => {
         new Edge(this.traverse(child), target, EdgeLabels.PARAMETER);
       });
+    } else if (node instanceof Nodes.PatternMatcherNode) {
+      new Edge(this.traverse(node.lhs), target, EdgeLabels.PATTERN_EXPRESSION);
+
+      node.matchingSet.forEach(child => {
+        new Edge(this.traverse(child), target, EdgeLabels.MATCH_EXPRESSION);
+      });
+    } else if (node instanceof Nodes.VarDeclarationNode) {
+      this.processVarDecl(node);
     } else this.traverseChildren(node, target);
 
     return target;
   }
 
-  processVarDecl(directive: Nodes.VarDeclarationNode): Edge {
-    const requiredType = directive.variableType && directive.variableType.ofType;
+  processVarDecl(decl: Nodes.VarDeclarationNode): Edge {
+    const requiredType = (decl.variableType && fromTypeNode(decl.variableType)) || null;
 
     const variableNode: TypeNode = requiredType
-      ? this.traverseNode(
-          directive.variableName,
-          this.createNode(directive.variableName, new LiteralTypeResolver(requiredType))
-        )
-      : this.traverse(directive.variableName);
+      ? this.traverseNode(decl.variableName, this.createNode(decl.variableName, new LiteralTypeResolver(requiredType)))
+      : this.traverse(decl.variableName);
 
-    const valueNode = this.traverse(directive.value);
+    const valueNode = this.traverse(decl.value);
 
-    return new Edge(valueNode, variableNode, void 0, requiredType, false);
+    return new Edge(valueNode, variableNode, void 0, requiredType);
   }
 
   processTypeDirective(directive: Nodes.TypeDirectiveNode) {
@@ -194,10 +205,10 @@ export class TypeGraphBuilder {
     } else {
       if (directive.variableName.name in InjectableTypes) {
         const type = new InjectableTypes[directive.variableName.name]();
-
+        directive.variableName.ofType = type;
         this.createNode(directive.variableName, new LiteralTypeResolver(type));
       } else {
-        this.parsingContext.error(`Cannot resolve type "${directive.variableName.name}"`, directive.variableName);
+        this.parsingContext.error(`Cannot find built in type "${directive.variableName.name}"`, directive.variableName);
 
         this.createNode(directive.variableName, new LiteralTypeResolver(VoidType.instance));
       }

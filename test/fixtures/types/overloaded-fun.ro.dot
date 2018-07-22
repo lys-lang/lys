@@ -1,0 +1,34 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="OverloadedFun:\nx"];
+  3 [label="fun x"];
+  4 [label="Fun:\nx"];
+  5 [label="Name:\na"];
+  6 [label="fun x"];
+  7 [label="Fun:\nx"];
+  8 [label="Name:\nx"];
+  subgraph cluster0 {
+    node [style=filled];
+    9 [label="Int:\n1"];
+    10 [label="Fun:\nx"];
+    9 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "x()";
+}
+  subgraph cluster1 {
+    node [style=filled];
+    11 [label="Name:\na"];
+    12 [label="Var:\na"];
+    13 [label="Fun:\nx"];
+    11 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    12 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "x(i32)";
+}
+  2 -> 8[taillabel="fun(a: i32) -> i32 & fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 2[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  6 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  7 -> 6[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

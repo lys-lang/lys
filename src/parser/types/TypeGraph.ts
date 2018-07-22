@@ -1,6 +1,7 @@
 import { Nodes } from '../nodes';
-import { Type } from '../types';
+import { Type, toConcreteType } from '../types';
 import { TypeResolutionContext } from './TypePropagator';
+import { TypeMismatch } from '../NodeError';
 
 function exists<T>(set: Array<T>, delegate: (T) => boolean): boolean {
   if (set.length == 0) return false;
@@ -70,7 +71,7 @@ export class TypeGraph {
     if (!ret) {
       const sg = this.subGraphs.entries();
       for (let x of sg) {
-        const foundNode = x['0'].findNodeInSubGraphs(astNode);
+        const foundNode = x[0].findNodeInSubGraphs(astNode);
         if (foundNode) {
           ret = foundNode;
           break;
@@ -84,13 +85,14 @@ export class TypeGraph {
 
 export class TypeNode {
   constructor(public astNode: Nodes.Node, public typeResolver: TypeResolver) {
-    if (!astNode) throw new Error('empty astNode');
+    if (!astNode) {
+      throw new Error('empty astNode');
+    }
   }
 
   private MAX_ATTEMPTS = 5;
   private _outgoingEdges: Array<Edge> = [];
   private _incomingEdges: Array<Edge> = [];
-  private _type: Type | null = null;
   private amount = 0;
 
   parentGraph: TypeGraph | null = null;
@@ -99,23 +101,26 @@ export class TypeNode {
     if (this.typeResolver.supportsPartialResolution() || this.allDependenciesResolved()) {
       if (this.amount < this.MAX_ATTEMPTS) {
         this.amount = this.amount + 1;
-        const resultType: Type | null = this.typeResolver.execute(this, ctx);
-        if (resultType) {
-          if (this._type === null || !resultType.equals(this._type)) {
-            //We only add one if the type is new
-            this._type = resultType;
-            this._outgoingEdges.forEach(edge => {
-              const newType =
-                this.astNode instanceof Nodes.VariableReferenceNode
-                  ? this._type // to concrete type
-                  : this._type;
+        let resultType: Type | null = this.typeResolver.execute(this, ctx);
 
+        if (resultType) {
+          if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
+            // We only add one if the type is new
+            const newType =
+              this.astNode instanceof Nodes.VariableReferenceNode ? toConcreteType(resultType, ctx) : resultType;
+
+            this.astNode.ofType = newType;
+
+            this._outgoingEdges.forEach(edge => {
               edge.propagateType(newType, ctx);
             });
           }
         }
       } else {
-        ctx.warning(`Unable to infer type as recursion didn't stabilize after ${this.MAX_ATTEMPTS} attempts.`, this);
+        ctx.parsingContext.warning(
+          `Unable to infer type as recursion didn't stabilize after ${this.MAX_ATTEMPTS} attempts.`,
+          this.astNode
+        );
       }
     }
   }
@@ -137,7 +142,7 @@ export class TypeNode {
   }
 
   resultType(): Type | null {
-    return this._type;
+    return this.astNode.ofType || null;
   }
 
   addOutgoingEdge(edge: Edge): void {
@@ -169,8 +174,7 @@ export class Edge {
     public source: TypeNode,
     public target: TypeNode,
     public label: string = '',
-    public expected: Type | null = null,
-    public supportsCoercion: boolean = false
+    public expected: Type | null = null
   ) {
     source.addOutgoingEdge(this);
     target.addIncomingEdge(this);
@@ -178,7 +182,6 @@ export class Edge {
 
   /**
    * If this node has an error or not
-   *
    * @return
    */
   error(): boolean {
@@ -200,19 +203,15 @@ export class Edge {
   }
 
   propagateType(actualType: Type, ctx: TypeResolutionContext): void {
+    actualType = toConcreteType(actualType, ctx);
+
     if (this.expected) {
-      const expectedType: Type = this.expected;
-      const messageCollector = {
-        errorMessages: []
-      };
+      const expectedType: Type = toConcreteType(this.expected, ctx);
 
       if (!actualType.canBeAssignedTo(expectedType)) {
         this._error = true;
         this._incomingType = actualType;
-        ctx.error(
-          JSON.stringify({ TypeMismatch: { expectedType, actualType, errors: messageCollector.errorMessages } }),
-          this.source
-        );
+        ctx.parsingContext.error(new TypeMismatch(actualType, expectedType, this.source.astNode));
       } else {
         this._incomingType = actualType;
         ctx.currentExecutor.scheduleNode(this.target);

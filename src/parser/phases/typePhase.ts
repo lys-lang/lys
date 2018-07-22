@@ -267,7 +267,10 @@ export class TypePhaseResult extends PhaseResult {
     const graphBuilder = new TypeGraphBuilder(this.scopePhaseResult.semanticPhaseResult.parsingContext);
 
     this.typeGraph = graphBuilder.build(this.document);
-    this.typeResolutionContext = new TypeResolutionContext(this.typeGraph);
+    this.typeResolutionContext = new TypeResolutionContext(
+      this.typeGraph,
+      this.scopePhaseResult.semanticPhaseResult.parsingContext
+    );
 
     const executor = this.typeResolutionContext.newExecutorWithContext(
       this.document.closure,
@@ -280,12 +283,16 @@ export class TypePhaseResult extends PhaseResult {
     this.execute();
   }
 
+  ensureIsValid() {
+    failWithErrors('Type phase', this.scopePhaseResult.semanticPhaseResult.parsingContext.errors, this);
+  }
+
   protected execute() {
     // resolveDeclarations(this.document, this.document, null);
     // resolveOverloads(this.document, this.document, null);
     // resolveVariables(this.document, this.document, null);
     // checkTypes(this.document, this.document, null);
     // ensureReturnTypes(this.document, this.document, null);
-    failWithErrors('Type phase', this.scopePhaseResult.semanticPhaseResult.parsingContext.errors, this);
+    // failWithErrors('Type phase', this.scopePhaseResult.semanticPhaseResult.parsingContext.errors, this);
   }
 }
