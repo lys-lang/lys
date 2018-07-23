@@ -1,7 +1,7 @@
 import { TypeGraph, TypeNode, Edge } from './TypeGraph';
 import { ParsingContext, Closure } from '../closure';
 import { Nodes } from '../nodes';
-import { Type } from '../types';
+import { Type, FunctionType } from '../types';
 import { TypeGraphBuilder } from './TypeGraphBuilder';
 
 function top<T>(stack: Array<T>): T | null {
@@ -94,7 +94,7 @@ export class TypeResolutionContext {
   removeFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>, _graph: TypeGraph): void {
     const x = this.getFunctionGraph(functionNode);
     if (x) {
-      const theFn = x.findIndex(graph => this.matches(graph.seq, parameterTypes));
+      const theFn = x.findIndex(graph => graph.graph === _graph || this.matches(graph.seq, parameterTypes));
       x.splice(theFn, 1);
     }
   }
@@ -188,7 +188,12 @@ export function resolveReturnType(
   const subGraph: TypeGraph = ctx.getFunctionSubGraph(functionNode, argTypes);
 
   if (subGraph) {
-    return subGraph.findNode(functionNode).resultType();
+    const result = subGraph.findNode(functionNode).resultType();
+    if (result instanceof FunctionType) {
+      // THIS SHOULD NOT HAPPEN
+      return result.returnType;
+    }
+    return result;
   } else {
     const context = ctx.currentParsingContext;
 
@@ -204,11 +209,14 @@ export function resolveReturnType(
 
     const result = value.resultType();
 
-    // if (result && ctx.parsingContext.hasErrors()) {
-    //   ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
-    //   ctx.rootGraph.removeSubGraph(dataGraph, functionName);
-    // }
-
+    if (!result && ctx.parsingContext.hasErrors()) {
+      ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
+      ctx.rootGraph.removeSubGraph(dataGraph, functionName);
+    }
+    if (result instanceof FunctionType) {
+      // THIS SHOULD NOT HAPPEN
+      return result.returnType;
+    }
     return result;
   }
 }

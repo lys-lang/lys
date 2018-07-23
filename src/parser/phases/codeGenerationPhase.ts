@@ -11,6 +11,7 @@ import { findParentType } from './helpers';
 import { FunctionType } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
+import { AstNodeError } from '../NodeError';
 
 declare var WebAssembly;
 
@@ -23,14 +24,15 @@ function getModuleSecuentialId(module) {
 }
 
 function getTypeForFunction(fn: Nodes.FunctionNode) {
-  const ret = fn.functionReturnType.ofType;
+  const fnType = fn.ofType as FunctionType;
+  const ret = fnType.returnType;
 
   const retType = ret.binaryenType ? [ret.binaryenType] : [];
 
   return t.signature(
-    fn.parameters.map($ => ({
+    fn.parameters.map(($, $$) => ({
       id: $.parameterName.name,
-      valtype: $.ofType.binaryenType
+      valtype: fnType.parameterTypes[$$].binaryenType
     })),
     retType
   );
@@ -74,7 +76,7 @@ function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.Document
 
     return setArgsStatements;
   } else {
-    const ofType = node.functionNode.ofType as FunctionType;
+    const ofType = node.resolvedFunctionType;
 
     return t.callInstruction(t.identifier(ofType.internalName), node.argumentsNode.map($ => emit($, document)));
   }
@@ -255,7 +257,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     this.module = binaryen.readBinary(this.buffer);
 
     if (this.module.validate() == 0) {
-      this.errors.push(new Error('binaryen validation failed'));
+      this.errors.push(new AstNodeError('binaryen validation failed', this.document));
     }
 
     if (optimize) {

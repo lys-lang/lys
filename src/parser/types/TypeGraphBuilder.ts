@@ -175,13 +175,21 @@ export class TypeGraphBuilder {
         new Edge(this.traverse(child), target, EdgeLabels.PARAMETER);
       });
     } else if (node instanceof Nodes.PatternMatcherNode) {
-      new Edge(this.traverse(node.lhs), target, EdgeLabels.PATTERN_EXPRESSION);
+      const matched = this.traverse(node.lhs);
+      new Edge(matched, target, EdgeLabels.PATTERN_EXPRESSION);
 
       node.matchingSet.forEach(child => {
-        new Edge(this.traverse(child), target, EdgeLabels.MATCH_EXPRESSION);
+        const source = this.traverse(child);
+        new Edge(source, target, EdgeLabels.MATCH_EXPRESSION);
+        new Edge(matched, source, EdgeLabels.PATTERN_MATCHING_VALUE);
       });
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
+    } else if (node instanceof Nodes.MatchLiteralNode) {
+      new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.MatchDefaultNode) {
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else this.traverseChildren(node, target);
 
     return target;
@@ -213,25 +221,6 @@ export class TypeGraphBuilder {
         this.createNode(directive.variableName, new LiteralTypeResolver(VoidType.instance));
       }
     }
-  }
-
-  buildPattern(
-    patternExpressionNode: Nodes.MatcherNode,
-    matchNode: TypeNode,
-    caseNode: Nodes.Node,
-    onMatch: Nodes.ExpressionNode,
-    requiredPattern: Boolean = true
-  ): TypeNode {
-    const patternExpression = new TypeNode(patternExpressionNode, getTypeResolver(patternExpressionNode));
-    this._nodes.push(patternExpression);
-    const matchExpression = this.traverse(onMatch);
-    const caseExpression = this.traverse(caseNode);
-    if (requiredPattern) {
-      new Edge(matchNode, patternExpression, EdgeLabels.PATTERN_EXPRESSION);
-    }
-    new Edge(matchExpression, patternExpression, EdgeLabels.MATCH_EXPRESSION);
-    new Edge(caseExpression, patternExpression, EdgeLabels.CASE_EXPRESSION);
-    return patternExpression;
   }
 
   findNode(referenceNode: Nodes.Node): TypeNode | null {

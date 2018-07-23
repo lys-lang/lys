@@ -181,7 +181,7 @@ const visitor = {
     return ret;
   },
   FunctionTypeParameter(astNode: IToken) {
-    const ret = new Nodes.FunctionParameterType(astNode);
+    const ret = new Nodes.FunctionParameterTypeNode(astNode);
 
     ret.name = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
     ret.parameterType = visitChildTypeOrNull(astNode, 'Type') as Nodes.TypeNode;
@@ -199,7 +199,7 @@ const visitor = {
     return ret;
   },
   FunctionTypeLiteral(child: IToken) {
-    const ret = new Nodes.FunctionType(child);
+    const ret = new Nodes.FunctionTypeNode(child);
 
     const parametersNode = findChildrenType(child, 'FunctionTypeParameters');
 

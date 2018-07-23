@@ -1,6 +1,6 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure } from './closure';
-import { Type, NativeTypes } from './types';
+import { Type, NativeTypes, FunctionType } from './types';
 import { BinaryOperation } from '../compiler/languageOperations';
 import { Annotation, IAnnotationConstructor } from './annotations';
 
@@ -118,14 +118,14 @@ export namespace Nodes {
     isArray: boolean = false;
   }
 
-  export class FunctionParameterType extends TypeNode {
+  export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
     parameterType: TypeNode;
   }
 
-  export class FunctionType extends TypeNode {
+  export class FunctionTypeNode extends TypeNode {
     returnType: TypeNode;
-    parameters: FunctionParameterType[];
+    parameters: FunctionParameterTypeNode[];
   }
 
   export class VariableReferenceNode extends ExpressionNode {
@@ -438,6 +438,7 @@ export namespace Nodes {
     isInfix: boolean = false;
     functionNode: ExpressionNode;
     argumentsNode: ExpressionNode[];
+    resolvedFunctionType: FunctionType;
   }
 
   export class BinaryExpressionNode extends ExpressionNode {

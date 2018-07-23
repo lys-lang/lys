@@ -7,9 +7,6 @@ private fun x(a: i32): i32 = 1
 fun x(a: f32): i32 = x(1.0, 1, 2)
 
 ---
-Type phase failed. 5 errors found:
+Type phase failed. 2 errors found:
   1)  Cannot infer return type
   2)  Could not find a valid overload for function of type fun() -> i32 & fun(a: i32) -> i32 & fun(a: f32) -> i32 with the arguments of type (f32, i32, i32)
-  3)  Type mismatch: Type "fun(a: f32) -> i32" is not assignable to "i32"
-  4)  Type mismatch: Type "fun(a: i32) -> i32" is not assignable to "i32"
-  5)  Type mismatch: Type "fun() -> i32" is not assignable to "i32"

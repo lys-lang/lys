@@ -8,6 +8,7 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { print } from '../dist/utils/typeGraphPrinter';
+import { printErrors } from '../dist/parser/printer';
 import { expect } from 'chai';
 
 const phases = function(txt: string): ScopePhaseResult {
@@ -18,7 +19,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe.only('Types', function() {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -29,7 +30,7 @@ describe.only('Types', function() {
       .join('\n');
   }
   function checkMainType(literals, ...placeholders) {
-    function test(program: string, expectedType: string) {
+    function test(program: string, expectedType: string, expectedError: string) {
       it(`type inference test #${n++}`, async () => {
         const phaseResult = phases(program);
 
@@ -40,7 +41,22 @@ describe.only('Types', function() {
 
         try {
           expect(givenResult).to.eq(expectedResult);
+          if (expectedError) {
+            try {
+              typePhase.ensureIsValid();
+              throw new Error('x');
+            } catch (e) {
+              if (e.message === 'x') {
+                throw new Error("Didn't fail");
+              } else {
+                expect(e.message).to.contain(expectedError.trim());
+              }
+            }
+          } else {
+            typePhase.ensureIsValid();
+          }
         } catch (e) {
+          console.log(printErrors(typePhase.document, typePhase.errors));
           console.log(print(typePhase.typeGraph));
           throw e;
         }
@@ -58,14 +74,63 @@ describe.only('Types', function() {
 
     const parts = result.split('---');
 
-    test(parts[0], parts[1]);
+    test(parts[0], parts[1], parts[2]);
   }
 
-  describe('unit', () => {
+  describe.only('unit', () => {
+    checkMainType`
+      type i32
+
+      fun matcher(x: i32) =
+        x match {
+          case 1 -> 1
+          else -> 2
+        }
+      ---
+      fun(x: i32) -> i32
+    `;
+
+    checkMainType`
+      type i32
+
+      fun matcher(x: i32) =
+        x match {
+          case 1.5 -> 1
+          else -> 2
+        }
+      ---
+      fun(x: i32) -> i32
+      ---
+      Type "f32" is not assignable to "i32"
+    `;
+
+    checkMainType`
+      type i32
+
+      fun matcher(x: i32) =
+        x match {
+          case 1 -> 1
+          else -> 2.1
+        }
+      ---
+      fun(x: i32) -> i32 | f32
+    `;
+
     checkMainType`
       type i32
       type boolean
       fun gte(x: i32, y: i32) = {
+        val test = x >= y
+        test
+      }
+      ---
+      fun(x: i32, y: i32) -> boolean
+    `;
+
+    checkMainType`
+      type i32
+      type boolean
+      fun gte(x: i32, y: i32): i32 = {
         val test = x >= y
         test
       }
@@ -83,6 +148,8 @@ describe.only('Types', function() {
           0.0
       ---
       fun() -> f32
+      ---
+      Type "f32" is not assignable to "boolean"
     `;
 
     checkMainType`
@@ -125,6 +192,24 @@ describe.only('Types', function() {
       }
       ---
       fun(x: i32) -> i32
+    `;
+
+    checkMainType`
+      type i32
+
+      private fun fibo(n: i32, x1: i32, x2: i32): i32 =
+        if (n > 0)
+          fibo(n - 1, x2, x1 + x2)
+        else
+          x1
+
+      fun fib(n: i32): i32 = fibo(n, 0, 1)
+
+      fun test(): i32 = fib(46) // must be 1836311903
+      ---
+      fun(n: i32, x1: i32, x2: i32) -> i32
+      fun(n: i32) -> i32
+      fun() -> i32
     `;
 
     checkMainType`

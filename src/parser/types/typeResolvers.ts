@@ -34,7 +34,8 @@ export const EdgeLabels = {
   CASE_EXPRESSION: 'CASE_EXPRESSION',
   LHS: 'LHS',
   RHS: 'RHS',
-  STATEMENTS: 'STATEMENTS'
+  STATEMENTS: 'STATEMENTS',
+  PATTERN_MATCHING_VALUE: 'PATTERN_MATCHING_VALUE'
 };
 
 export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
@@ -71,9 +72,9 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   } else if (astNode instanceof Nodes.PatternMatcherNode) {
     return new PatternMatcherTypeResolver();
   } else if (astNode instanceof Nodes.MatchDefaultNode) {
-    return new PassThroughTypeResolver();
+    return new MatchDefaultTypeResolver();
   } else if (astNode instanceof Nodes.MatchLiteralNode) {
-    return new PassThroughTypeResolver();
+    return new MatchLiteralTypeResolver();
   } else if (astNode instanceof Nodes.AssignmentNode) {
     return new AssignmentNodeTypeResolver();
   }
@@ -224,6 +225,9 @@ export class BinaryOpTypeResolver extends TypeResolver {
         node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
       );
 
+      const binaryOp = node.astNode as Nodes.BinaryExpressionNode;
+      binaryOp.binaryOperation = ret;
+
       return ret.outputType;
     } catch (e) {
       ctx.currentParsingContext.error(e.toString(), node.astNode);
@@ -242,6 +246,39 @@ export class BlockTypeResolver extends TypeResolver {
       }
 
       return last(edges).incomingType();
+    } else {
+      return VoidType.instance;
+    }
+  }
+}
+
+export class MatchLiteralTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
+    const matched = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0];
+    const literal = node.incomingEdgesByName(EdgeLabels.LHS)[0];
+    const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
+
+    if (!literal.incomingType().canBeAssignedTo(matched.incomingType())) {
+      const astNode = node.astNode as Nodes.MatchLiteralNode;
+      ctx.currentParsingContext.error(
+        new TypeMismatch(literal.incomingType(), matched.incomingType(), astNode.literal)
+      );
+    }
+
+    if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
+      return result.incomingType();
+    } else {
+      return VoidType.instance;
+    }
+  }
+}
+
+export class MatchDefaultTypeResolver extends TypeResolver {
+  execute(node: TypeNode, _: TypeResolutionContext): Type {
+    const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
+
+    if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
+      return result.incomingType();
     } else {
       return VoidType.instance;
     }
@@ -327,6 +364,7 @@ export class FunctionCallResolver extends TypeResolver {
       for (let fun of incommingType.of) {
         if (fun instanceof FunctionType) {
           if (fun.acceptsTypes(argTypes)) {
+            functionCallNode.resolvedFunctionType = fun;
             return fun.returnType;
           }
         } else {
@@ -339,6 +377,7 @@ export class FunctionCallResolver extends TypeResolver {
       return null;
     } else if (incommingType instanceof FunctionType) {
       if (incommingType.acceptsTypes(argTypes)) {
+        functionCallNode.resolvedFunctionType = incommingType;
         return incommingType.returnType;
       }
     } else {

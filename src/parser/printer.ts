@@ -2,18 +2,7 @@ import { Nodes } from './nodes';
 declare var require, console;
 const colors = require('colors/safe');
 import { LineMapper, ITextPosition } from '../utils/LineMapper';
-import { walkPreOrder } from './walker';
-
-function collectErrors(root: Nodes.Node) {
-  const errorNodes = new Set<Nodes.Node>();
-  const collector = walkPreOrder((node: Nodes.Node) => {
-    if (node.errors.length) {
-      errorNodes.add(node);
-    }
-  });
-  collector(root);
-  return errorNodes;
-}
+import { AstNodeError } from './NodeError';
 
 function mapSet<T, V>(set: Set<T>, fn: (T) => V): V[] {
   const out = [];
@@ -21,34 +10,34 @@ function mapSet<T, V>(set: Set<T>, fn: (T) => V): V[] {
   return out;
 }
 
-export function printErrors(root: Nodes.DocumentNode) {
+export function printErrors(root: Nodes.DocumentNode, errors: AstNodeError[]) {
   let source = root.textContent;
 
-  const nodesWithErrors = collectErrors(root);
   let lineMapper = new LineMapper(source, Math.random().toString());
+
+  if (errors.length == 0) return '';
 
   lineMapper.initMapping();
 
   let lines = source.split(/\r\n|\r|\n/g);
 
-  let errorOnLines: Set<Error & { start: ITextPosition; end: ITextPosition }>[] = new Array(lines.length + 1).map(
-    () => new Set()
-  );
+  let errorOnLines: Set<AstNodeError & { start: ITextPosition; end: ITextPosition }>[] = new Array(
+    lines.length + 1
+  ).map(() => new Set());
 
-  let errors = root.errors;
+  errors.forEach(err => {
+    const { node } = err;
 
-  nodesWithErrors.forEach(node => {
     if (node.astNode) {
       const token = node.astNode;
       const start = lineMapper.position(token.start);
       const end = lineMapper.position(token.end);
-      node.errors.forEach(err => {
-        Object.assign(err, { start, end });
-        if (start.line >= 0) {
-          errorOnLines[start.line] = errorOnLines[start.line] || new Set();
-          errorOnLines[start.line].add(err as any);
-        }
-      });
+
+      Object.assign(err, { start, end });
+      if (start.line >= 0) {
+        errorOnLines[start.line] = errorOnLines[start.line] || new Set();
+        errorOnLines[start.line].add(err as any);
+      }
     }
   });
 
