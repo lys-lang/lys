@@ -13,7 +13,7 @@ import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
 
-declare var WebAssembly;
+declare var WebAssembly, console;
 
 const secSymbol = Symbol('secuentialId');
 function getModuleSecuentialId(module) {
@@ -243,13 +243,13 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       text
     );
 
-    wabtModule.resolveNames();
-
     try {
+      wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
+      console.log(text);
       this.errors.push(e);
-      return;
+      throw e;
     }
 
     const binary = wabtModule.toBinary({ log: false });

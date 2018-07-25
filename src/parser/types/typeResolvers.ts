@@ -305,20 +305,19 @@ export class FunctionTypeResolver extends TypeResolver {
       fnType.returnType = toConcreteType(fromTypeNode(functionNode.functionReturnType), ctx);
     }
 
-    const inferedReturnType = resolveReturnType(
-      node.parentGraph,
-      functionNode,
-      fnType.parameterTypes,
-      fnType.returnType,
-      ctx
-    );
+    const inferedReturnType = resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
 
     if (!inferedReturnType) {
-      ctx.parsingContext.error(`Cannot infer return type`, node.astNode);
-
       if (!fnType.returnType) {
+        ctx.parsingContext.error(`Cannot infer return type`, functionNode.body);
         fnType.returnType = INVALID_TYPE;
       }
+
+      debugger;
+
+      resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
+
+      return fnType;
     } else {
       if (!fnType.returnType) {
         fnType.returnType = inferedReturnType;

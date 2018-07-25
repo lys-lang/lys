@@ -1,11 +1,10 @@
-type i32
-type f32
-
-fun test() = {
-  var test = 1
-  test = 123.0
-  test
-}
----
-Type phase failed. 1 errors found:
-  1)  Type mismatch: Type "f32" is not assignable to "i32"
+(unknown file)
+    1│ type i32
+    2│ type f32
+    3│ 
+    4│ fun test() = {
+    5│   var test = 1
+    6│   test = 123.0
+     │          ^^^^^ Type mismatch: Type "f32" is not assignable to "i32"
+    7│   test
+    8│ }

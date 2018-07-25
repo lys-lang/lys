@@ -1,11 +1,9 @@
-type i32
-
-var x = 1
-
-fun addOne(): i32 = {
-  x = x + 1.0
-}
----
-Type phase failed. 2 errors found:
-  1)  Error: Cannot resolve type of i32 (+) f32
-  2)  Cannot infer return type
+(unknown file)
+    1│ type i32
+    2│ 
+    3│ var x = 1
+    4│ 
+    5│ fun addOne(): i32 = {
+    6│   x = x + 1.0
+     │       ^^^^^^^ Error: Cannot resolve type of i32 (+) f32
+    7│ }

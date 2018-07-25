@@ -209,6 +209,9 @@ export class TypeGraphBuilder {
 
   processTypeDirective(directive: Nodes.TypeDirectiveNode) {
     if (directive.valueType) {
+      if (directive.variableName.name in InjectableTypes) {
+        this.parsingContext.error('You cannot redefine a built-in type', directive.valueType);
+      }
       new Edge(this.createReferenceNode(directive.valueType), this.traverse(directive.variableName));
     } else {
       if (directive.variableName.name in InjectableTypes) {

@@ -1,0 +1,25 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32" type=i32
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="void" type=void
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="x" type=i32
+      |-IntegerLiteral=0 type=i32 annotations=IsValueNode
+  |-OverloadedFunctionNode type=fun() -> i32
+    |-FunDirectiveNode type=fun() -> i32
+      |-FunctionNode type=fun() -> i32
+        |-NameIdentifierNode="main"
+        |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
+        |-BlockNode type=i32 annotations=IsValueNode
+          |-AssignmentNode type=i32 annotations=IsValueNode
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="x"
+            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="x"
+              |-IntegerLiteral=1 type=i32
+    |-NameIdentifierNode="main" type=fun() -> i32

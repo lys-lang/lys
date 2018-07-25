@@ -5,7 +5,7 @@ import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
 import { fromTypeNode } from '../types/TypeGraphBuilder';
-import { VoidType } from '../types';
+import { TypeReference } from '../types';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
@@ -31,7 +31,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
 
     if (node.functionReturnType) {
       const type = fromTypeNode(node.functionReturnType);
-      returnsVoidValue = type && VoidType.instance.equals(type);
+      returnsVoidValue = type && type instanceof TypeReference && type.referencedName === 'void';
     }
 
     if (!returnsVoidValue) {

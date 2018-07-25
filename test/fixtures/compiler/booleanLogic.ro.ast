@@ -1,20 +1,24 @@
 
 |-DocumentNode
-  |-TypeDirectiveNode type=boolean
-    |-NameIdentifierNode="boolean"
-  |-OverloadedFunctionNode type=fun(boolean, boolean) -> boolean
-    |-FunDirectiveNode type=fun(boolean, boolean) -> boolean
-      |-FunctionNode type=fun(boolean, boolean) -> boolean
-        |-ParameterNode type=boolean
-          |-NameIdentifierNode="a"
-          |-TypeReferenceNode="boolean" type=boolean
-        |-ParameterNode type=boolean
-          |-NameIdentifierNode="b"
-          |-TypeReferenceNode="boolean" type=boolean
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="boolean" type=boolean
+  |-OverloadedFunctionNode type=fun(a: boolean, b: boolean) -> boolean
+    |-FunDirectiveNode type=fun(a: boolean, b: boolean) -> boolean
+      |-FunctionNode type=fun(a: boolean, b: boolean) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=boolean
+          |-TypeReferenceNode="boolean"
+            |-NameIdentifierNode="boolean"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=boolean
+          |-TypeReferenceNode="boolean"
+            |-NameIdentifierNode="boolean"
         |-NameIdentifierNode="test"
-        |-TypeReferenceNode="boolean" type=boolean
+        |-TypeReferenceNode="boolean"
+          |-NameIdentifierNode="boolean"
         |-BinaryExpressionNode="and" type=boolean annotations=IsValueNode
           |-VariableReferenceNode type=boolean
             |-NameIdentifierNode="a"
           |-VariableReferenceNode type=boolean
             |-NameIdentifierNode="b"
+    |-NameIdentifierNode="test" type=fun(a: boolean, b: boolean) -> boolean

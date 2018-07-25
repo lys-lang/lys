@@ -77,7 +77,7 @@ describe('Types', function() {
     test(parts[0], parts[1], parts[2]);
   }
 
-  describe.only('unit', () => {
+  describe('unit', () => {
     checkMainType`
       type i32
 
@@ -102,6 +102,38 @@ describe('Types', function() {
       fun(x: i32) -> i32
       ---
       Type "f32" is not assignable to "i32"
+    `;
+
+    checkMainType`
+      type void
+
+      fun matcher() = {}
+      ---
+      fun() -> void
+    `;
+
+    checkMainType`
+      type i32
+
+      private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
+        if (n > 0) {
+          fibo(n - 1, x2, x1 + x2)
+        } else {
+          x1
+        }
+      }
+
+      fun fib(n: i32) = {
+        fibo(n, 0, 1)
+      }
+
+      fun test() = {
+        fib(46) // must be 1836311903
+      }
+      ---
+      fun(n: i32, x1: i32, x2: i32) -> i32
+      fun(n: i32) -> i32
+      fun() -> i32
     `;
 
     checkMainType`
@@ -135,7 +167,9 @@ describe('Types', function() {
         test
       }
       ---
-      fun(x: i32, y: i32) -> boolean
+      fun(x: i32, y: i32) -> i32
+      ---
+      Type "boolean" is not assignable to "i32"
     `;
 
     checkMainType`
@@ -362,6 +396,12 @@ describe('Types', function() {
         if (e) throw e;
         const typePhase = new TypePhaseResult(result);
 
+        try {
+          typePhase.ensureIsValid();
+        } catch (e) {
+          console.log(printErrors(typePhase.document, typePhase.errors, false));
+        }
+
         return print(typePhase.typeGraph);
       },
       '.dot'
@@ -389,16 +429,13 @@ describe('Types', function() {
       async (result, e) => {
         if (e) throw e;
 
+        const typePhase = new TypePhaseResult(result);
+
         try {
-          const typePhase = new TypePhaseResult(result);
           typePhase.ensureIsValid();
           debugger;
         } catch (e) {
-          return (
-            (result.semanticPhaseResult.canonicalPhaseResult.parsingPhaseResult.content || '(no source)') +
-            '\n---\n' +
-            e.message
-          );
+          return printErrors(typePhase.document, typePhase.errors, true);
         }
 
         throw new Error('Type phase did not fail');

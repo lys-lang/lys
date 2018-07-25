@@ -182,7 +182,6 @@ export function resolveReturnType(
   typeGraph: TypeGraph,
   functionNode: Nodes.FunctionNode,
   argTypes: Type[],
-  returnType: Type | null,
   ctx: TypeResolutionContext
 ): Type | null {
   const subGraph: TypeGraph = ctx.getFunctionSubGraph(functionNode, argTypes);
@@ -197,7 +196,7 @@ export function resolveReturnType(
   } else {
     const context = ctx.currentParsingContext;
 
-    const dataGraphBuilder = new TypeGraphBuilder(ctx.parsingContext, typeGraph, returnType);
+    const dataGraphBuilder = new TypeGraphBuilder(ctx.parsingContext, typeGraph);
 
     const dataGraph: TypeGraph = dataGraphBuilder.buildFunctionNode(functionNode, argTypes);
 
@@ -209,7 +208,7 @@ export function resolveReturnType(
 
     const result = value.resultType();
 
-    if (!result && ctx.parsingContext.hasErrors()) {
+    if (!result || ctx.parsingContext.hasErrors()) {
       ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
       ctx.rootGraph.removeSubGraph(dataGraph, functionName);
     }

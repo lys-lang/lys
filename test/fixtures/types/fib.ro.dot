@@ -1,0 +1,107 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="OverloadedFun:\nfibo"];
+  3 [label="fun fibo"];
+  4 [label="Fun:\nfibo"];
+  5 [label="Name:\nn"];
+  6 [label="Name:\nx1"];
+  7 [label="Name:\nx2"];
+  8 [label="Name:\nfibo"];
+  9 [label="OverloadedFun:\nfib"];
+  10 [label="fun fib"];
+  11 [label="Fun:\nfib"];
+  12 [label="Name:\nn"];
+  13 [label="Name:\nfib"];
+  14 [label="OverloadedFun:\ntest"];
+  15 [label="fun test"];
+  16 [label="Fun:\ntest"];
+  17 [label="Name:\ntest"];
+  subgraph cluster0 {
+    node [style=filled];
+    18 [label="FunctionCallNode"];
+    19 [label="Var:\nfib"];
+    20 [label="Int:\n46"];
+    21 [label="Fun:\ntest"];
+    18 -> 21[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    19 -> 18[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    20 -> 18[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "test()";
+}
+  subgraph cluster1 {
+    node [style=filled];
+    22 [label="Name:\nn"];
+    23 [label="FunctionCallNode"];
+    24 [label="Var:\nfibo"];
+    25 [label="Var:\nn"];
+    26 [label="Int:\n0"];
+    27 [label="Int:\n1"];
+    28 [label="Fun:\nfib"];
+    22 -> 25[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    23 -> 28[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    24 -> 23[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    25 -> 23[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    26 -> 23[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    27 -> 23[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "fib(i32)";
+}
+  subgraph cluster2 {
+    node [style=filled];
+    29 [label="Name:\nn"];
+    30 [label="Name:\nx1"];
+    31 [label="Name:\nx2"];
+    32 [label="IfNode"];
+    33 [label="FunctionCallNode"];
+    34 [label="Var:\nfibo"];
+    35 [label="BinaryExpressionNode'-'"];
+    36 [label="Var:\nn"];
+    37 [label="Int:\n1"];
+    38 [label="Var:\nx2"];
+    39 [label="BinaryExpressionNode'+'"];
+    40 [label="Var:\nx1"];
+    41 [label="Var:\nx2"];
+    42 [label="BinaryExpressionNode'>'"];
+    43 [label="Var:\nn"];
+    44 [label="Int:\n0"];
+    45 [label="Var:\nx1"];
+    46 [label="Fun:\nfibo"];
+    29 -> 36[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    29 -> 43[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    30 -> 40[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    30 -> 45[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    31 -> 38[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    31 -> 41[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    32 -> 46[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    33 -> 32[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    34 -> 33[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    35 -> 33[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    36 -> 35[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    37 -> 35[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    38 -> 33[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    39 -> 33[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    40 -> 39[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    41 -> 39[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    42 -> 32[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    43 -> 42[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    44 -> 42[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    45 -> 32[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "fibo(i32,i32,i32)";
+}
+  2 -> 8[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 2[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  6 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  7 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  8 -> 24[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  8 -> 34[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  9 -> 13[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  10 -> 9[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  11 -> 10[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  12 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  13 -> 19[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  14 -> 17[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  15 -> 14[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  16 -> 15[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}
