@@ -1,31 +1,25 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { TokenError } from 'ebnf';
 import { ParsingContext, Closure } from '../closure';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
+import { AstNodeError } from '../NodeError';
 
 const overloadFunctions = function(document: Nodes.DocumentNode, phase: SemanticPhaseResult) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
 
   const process = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult) => {
     if (node instanceof Nodes.FunDirectiveNode) {
-      const name = node.functionNode.functionName.name;
-      const x = overloadedFunctions.get(name);
-      if (x) {
-        if (x instanceof Nodes.OverloadedFunctionNode) {
-          x.functions.push(node);
-        } else {
-          const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
-          overloaded.name = name;
-          overloadedFunctions.set(name, overloaded);
-          overloaded.functions = [x];
-        }
+      const functionName = node.functionNode.functionName.name;
+      const x = overloadedFunctions.get(functionName);
+      if (x && x instanceof Nodes.OverloadedFunctionNode) {
+        x.functions.push(node);
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
-        overloaded.name = name;
-        overloadedFunctions.set(name, overloaded);
+        overloaded.functionName = new Nodes.NameIdentifierNode();
+        overloaded.functionName.name = functionName;
+        overloadedFunctions.set(functionName, overloaded);
         overloaded.functions = [node];
       }
     }
@@ -49,17 +43,17 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
       if (used.indexOf(param.parameterName.name) == -1) {
         used.push(param.parameterName.name);
       } else {
-        throw new TokenError(`Duplicated parameter "${param.parameterName.name}"`, node.astNode);
+        throw new AstNodeError(`Duplicated parameter "${param.parameterName.name}"`, node);
       }
     });
   }
 
-  if (node instanceof Nodes.MatchNode) {
+  if (node instanceof Nodes.PatternMatcherNode) {
     if (node.matchingSet.length == 0) {
-      throw new TokenError(`Invalid match expression, there are no matchers`, node.astNode);
+      throw new AstNodeError(`Invalid match expression, there are no matchers`, node);
     }
     if (node.matchingSet.length == 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
-      throw new TokenError(`This match is useless`, node.astNode);
+      throw new AstNodeError(`This match is useless`, node);
     }
   }
 });

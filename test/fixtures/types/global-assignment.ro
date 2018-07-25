@@ -1,0 +1,14 @@
+type i32
+type void
+
+var x = 1
+
+fun addOne(): i32 = {
+  var y = x
+  y = y + 1
+  x = y
+}
+
+fun addOneNoReturn(): void = {
+  x = x + 1
+}

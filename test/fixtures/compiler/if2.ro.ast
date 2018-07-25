@@ -1,28 +1,31 @@
 
 |-DocumentNode
-  |-TypeDirectiveNode type=i32
-    |-NameIdentifierNode="i32"
-  |-OverloadedFunctionNode type=fun(i32, i32) -> i32
-    |-FunDirectiveNode type=fun(i32, i32) -> i32
-      |-FunctionNode type=fun(i32, i32) -> i32
-        |-ParameterNode type=i32
-          |-NameIdentifierNode="x"
-          |-TypeReferenceNode="i32" type=i32
-        |-ParameterNode type=i32
-          |-NameIdentifierNode="y"
-          |-TypeReferenceNode="i32" type=i32
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32" type=i32
+  |-OverloadedFunctionNode type=fun(x: i32, y: i32) -> i32
+    |-FunDirectiveNode type=fun(x: i32, y: i32) -> i32
+      |-FunctionNode type=fun(x: i32, y: i32) -> i32
+        |-ParameterNode
+          |-NameIdentifierNode="x" type=TypeRef(i32)
+          |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="y" type=TypeRef(i32)
+          |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
         |-NameIdentifierNode="gcd"
-        |-TypeReferenceNode="i32" type=i32
+        |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
         |-BlockNode type=i32 annotations=IsValueNode
           |-IfNode type=i32 annotations=IsValueNode
-            |-BinaryExpressionNode=">" type=i32 annotations=IsValueNode
+            |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
               |-VariableReferenceNode type=i32
                 |-NameIdentifierNode="x"
               |-VariableReferenceNode type=i32
                 |-NameIdentifierNode="y"
             |-BlockNode type=i32 annotations=IsValueNode
               |-FunctionCallNode type=i32 annotations=IsValueNode
-                |-VariableReferenceNode type=fun(i32, i32) -> i32
+                |-VariableReferenceNode type=fun(x: i32, y: i32) -> i32
                   |-NameIdentifierNode="gcd"
                 |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
                   |-VariableReferenceNode type=i32
@@ -32,14 +35,14 @@
                 |-VariableReferenceNode type=i32 annotations=IsValueNode
                   |-NameIdentifierNode="y"
             |-IfNode type=i32 annotations=IsValueNode
-              |-BinaryExpressionNode="<" type=i32 annotations=IsValueNode
+              |-BinaryExpressionNode="<" type=boolean annotations=IsValueNode
                 |-VariableReferenceNode type=i32
                   |-NameIdentifierNode="x"
                 |-VariableReferenceNode type=i32
                   |-NameIdentifierNode="y"
               |-BlockNode type=i32 annotations=IsValueNode
                 |-FunctionCallNode type=i32 annotations=IsValueNode
-                  |-VariableReferenceNode type=fun(i32, i32) -> i32
+                  |-VariableReferenceNode type=fun(x: i32, y: i32) -> i32
                     |-NameIdentifierNode="gcd"
                   |-VariableReferenceNode type=i32 annotations=IsValueNode
                     |-NameIdentifierNode="x"
@@ -51,14 +54,17 @@
               |-BlockNode type=i32 annotations=IsValueNode
                 |-VariableReferenceNode type=i32 annotations=IsValueNode
                   |-NameIdentifierNode="x"
+    |-NameIdentifierNode="gcd" type=fun(x: i32, y: i32) -> i32
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="test"
-        |-TypeReferenceNode="i32" type=i32
+        |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
         |-BlockNode type=i32 annotations=IsValueNode
           |-FunctionCallNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=fun(i32, i32) -> i32
+            |-VariableReferenceNode type=fun(x: i32, y: i32) -> i32
               |-NameIdentifierNode="gcd"
             |-IntegerLiteral=119 type=i32 annotations=IsValueNode
             |-IntegerLiteral=7 type=i32 annotations=IsValueNode
+    |-NameIdentifierNode="test" type=fun() -> i32

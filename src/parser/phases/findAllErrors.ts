@@ -9,8 +9,9 @@ function indent(str: string, indentation: string = '  ') {
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
     token.astNode.errors.forEach($ => {
-      if ($ && !doc.errors.includes($)) {
-        doc.errors.push($);
+      if ($ && !doc.errors.includes($ as any)) {
+        doc.errors.push($ as any);
+        // TODO: coerce to AstNodeError
       }
     });
   }

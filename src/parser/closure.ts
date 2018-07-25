@@ -1,4 +1,5 @@
 import { Nodes } from './nodes';
+import { AstNodeError } from './NodeError';
 
 export interface IDictionary<T> {
   [key: string]: T;
@@ -16,32 +17,44 @@ export interface IOverloadedInfix {
   };
 }
 
-export enum EStoredName {
-  VARIABLE,
-  TYPE,
-  FUNCTION
-}
+export class ParsingContext {
+  programTakenNames = new Set<string>();
 
-export interface ITapeElement {
-  frame: Closure;
-  type: EStoredName;
-  node: Nodes.Node;
-  usages: number;
-  exported: boolean;
-}
+  errors: AstNodeError[] = [];
 
-export class ParsingContext {}
+  error(error: AstNodeError);
+  error(message: string, node: Nodes.Node);
+  error(error: string | AstNodeError, node?: Nodes.Node) {
+    if (error instanceof AstNodeError) {
+      if (!this.errors.some($ => $.message == error.message && $.node == error.node)) {
+        this.errors.push(error);
+      }
+    } else {
+      if (!this.errors.some($ => $.message == error && $.node == node)) {
+        this.errors.push(new AstNodeError(error, node));
+      }
+    }
+  }
+
+  warning(message: string, node: Nodes.Node) {
+    if (!this.errors.some($ => $.message == message && $.node == node)) {
+      this.errors.push(new AstNodeError(message, node, true));
+    }
+  }
+
+  hasErrors() {
+    return this.errors.some($ => !$.warning);
+  }
+}
 
 export class Closure {
   localsMap: Map<Nodes.Node, number> = new Map();
 
   localScopeDeclares: Set<string> = new Set();
-  nameMappings: IDictionary<ITapeElement> = {};
+  nameMappings: IDictionary<Reference> = {};
   localUsages: IDictionary<number> = {};
 
-  programTakenNames = new Set<string>();
-
-  constructor(public executionContext: ParsingContext, public parent: Closure = null) {
+  constructor(public parsingContext: ParsingContext, public parent: Closure = null) {
     if (parent) {
       Object.assign(this.nameMappings, parent.nameMappings);
     }
@@ -57,20 +70,12 @@ export class Closure {
     let i = 0;
     while (true) {
       const newName = i ? `${prefix}${i}` : prefix;
-      if (!this.programTakenNames.has(newName)) {
-        this.programTakenNames.add(newName);
+      if (!this.parsingContext.programTakenNames.has(newName)) {
+        this.parsingContext.programTakenNames.add(newName);
         return newName;
       }
       i++;
     }
-  }
-
-  setVariable(localName: string, node: Nodes.Node) {
-    return this.tapeSet(localName, node, EStoredName.VARIABLE);
-  }
-
-  setType(localName: string, node: Nodes.Node) {
-    return this.tapeSet(localName, node, EStoredName.TYPE);
   }
 
   incrementUsage(name: string) {
@@ -79,7 +84,9 @@ export class Closure {
     x.usages++;
   }
 
-  private tapeSet(localName: string, node: Nodes.Node, type: EStoredName) {
+  set(nameNode: Nodes.NameIdentifierNode, valueNode: Nodes.ExpressionNode) {
+    const localName = nameNode.name;
+
     if (localName in this.localUsages && this.localUsages[localName] > 0) {
       throw new Error(`Cannot reasign ${localName} because it was used`);
     }
@@ -88,13 +95,7 @@ export class Closure {
       throw new Error(`"${localName}" is already declared`);
     }
 
-    this.nameMappings[localName] = {
-      type,
-      node,
-      frame: this,
-      exported: false,
-      usages: 0
-    };
+    this.nameMappings[localName] = new Reference(nameNode, this, null, valueNode);
 
     this.localScopeDeclares.add(localName);
 
@@ -105,7 +106,7 @@ export class Closure {
     return localName in this.nameMappings;
   }
 
-  get(localName: string): ITapeElement {
+  get(localName: string): Reference {
     if (localName in this.nameMappings) {
       return this.nameMappings[localName];
     }
@@ -113,25 +114,9 @@ export class Closure {
     throw new Error('Cannot resolve name "' + localName + '"');
   }
 
-  getType(localName: string) {
-    let namedItem = this.get(localName);
-
-    if (namedItem.type == EStoredName.TYPE) {
-      return namedItem;
-    }
-
-    throw new Error(`Variable "${localName}" is not a type`);
-  }
-
-  getVariable(name: string) {
-    let ret = this.get(name);
-
-    return ret;
-  }
-
   inspect() {
     return (
-      'Clojure [' +
+      'Closure [' +
       '\n  ' +
       Object.keys(this.nameMappings).join('\n  ') +
       '\n  parent = ' +
@@ -141,8 +126,21 @@ export class Closure {
   }
 
   newChildClosure(): Closure {
-    const child = new Closure(this.executionContext, this);
-    child.programTakenNames = this.programTakenNames;
-    return child;
+    return new Closure(this.parsingContext, this);
+  }
+}
+
+export class Reference {
+  usages = 0;
+
+  constructor(
+    public referencedNode: Nodes.NameIdentifierNode,
+    public scope: Closure,
+    public moduleSource: Nodes.NameIdentifierNode = null,
+    public valueNode: Nodes.ExpressionNode
+  ) {}
+
+  get isLocalReference(): boolean {
+    return !this.moduleSource;
   }
 }

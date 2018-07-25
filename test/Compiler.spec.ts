@@ -22,6 +22,7 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
   const semantic = new SemanticPhaseResult(canonical);
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
+  types.ensureIsValid();
   const compiler = new CompilationPhaseResult(types);
   return new CodeGenerationPhaseResult(compiler);
 };

@@ -1,0 +1,156 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="Name:\nf32"];
+  3 [label="Name:\nf64"];
+  4 [label="OverloadedFun:\ntest"];
+  5 [label="fun test"];
+  6 [label="Fun:\ntest"];
+  7 [label="Name:\ntest"];
+  8 [label="OverloadedFun:\ntest0"];
+  9 [label="fun test0"];
+  10 [label="Fun:\ntest0"];
+  11 [label="Name:\ntest0"];
+  12 [label="OverloadedFun:\ntesta"];
+  13 [label="fun testa"];
+  14 [label="Fun:\ntesta"];
+  15 [label="Name:\na"];
+  16 [label="Name:\ntesta"];
+  17 [label="OverloadedFun:\nfloatingPoints"];
+  18 [label="fun floatingPoints"];
+  19 [label="Fun:\nfloatingPoints"];
+  20 [label="Name:\na"];
+  21 [label="Name:\nb"];
+  22 [label="Name:\nfloatingPoints"];
+  23 [label="OverloadedFun:\naddFloat"];
+  24 [label="fun addFloat"];
+  25 [label="Fun:\naddFloat"];
+  26 [label="Name:\na"];
+  27 [label="Name:\nb"];
+  28 [label="Name:\naddFloat"];
+  29 [label="OverloadedFun:\naddInts"];
+  30 [label="fun addInts"];
+  31 [label="Fun:\naddInts"];
+  32 [label="Name:\na"];
+  33 [label="Name:\nb"];
+  34 [label="Name:\naddInts"];
+  35 [label="OverloadedFun:\nx"];
+  36 [label="fun x"];
+  37 [label="Fun:\nx"];
+  38 [label="Name:\nwidth"];
+  39 [label="Name:\nheight"];
+  40 [label="Name:\nx"];
+  subgraph cluster0 {
+    node [style=filled];
+    41 [label="Name:\nwidth"];
+    42 [label="Name:\nheight"];
+    43 [label="BinaryExpressionNode'*'"];
+    44 [label="BinaryExpressionNode'+'"];
+    45 [label="Var:\nwidth"];
+    46 [label="Float:\n1.00000"];
+    47 [label="Var:\nheight"];
+    48 [label="Fun:\nx"];
+    41 -> 45[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    42 -> 47[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    43 -> 48[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    44 -> 43[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    45 -> 44[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    46 -> 44[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    47 -> 43[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "x(f32,f32)";
+}
+  subgraph cluster1 {
+    node [style=filled];
+    49 [label="Name:\na"];
+    50 [label="Name:\nb"];
+    51 [label="BinaryExpressionNode'+'"];
+    52 [label="Var:\na"];
+    53 [label="Var:\nb"];
+    54 [label="Fun:\naddInts"];
+    49 -> 52[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    50 -> 53[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    51 -> 54[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    52 -> 51[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    53 -> 51[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "addInts(i32,i32)";
+}
+  subgraph cluster2 {
+    node [style=filled];
+    55 [label="Name:\na"];
+    56 [label="Name:\nb"];
+    57 [label="BinaryExpressionNode'+'"];
+    58 [label="Var:\na"];
+    59 [label="Var:\nb"];
+    60 [label="Fun:\naddFloat"];
+    55 -> 58[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    56 -> 59[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    57 -> 60[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    58 -> 57[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    59 -> 57[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "addFloat(f32,f32)";
+}
+  subgraph cluster3 {
+    node [style=filled];
+    61 [label="Name:\na"];
+    62 [label="Name:\nb"];
+    63 [label="Var:\na"];
+    64 [label="Fun:\nfloatingPoints"];
+    61 -> 63[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    63 -> 64[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "floatingPoints(f32,f64)";
+}
+  subgraph cluster4 {
+    node [style=filled];
+    65 [label="Name:\na"];
+    66 [label="Var:\na"];
+    67 [label="Fun:\ntesta"];
+    65 -> 66[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    66 -> 67[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "testa(i32)";
+}
+  subgraph cluster5 {
+    node [style=filled];
+    68 [label="Int:\n1"];
+    69 [label="Fun:\ntest0"];
+    68 -> 69[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "test0()";
+}
+  subgraph cluster6 {
+    node [style=filled];
+    70 [label="Int:\n1"];
+    71 [label="Fun:\ntest"];
+    70 -> 71[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "test()";
+}
+  4 -> 7[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  6 -> 5[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  8 -> 11[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  9 -> 8[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  10 -> 9[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  12 -> 16[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  13 -> 12[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  14 -> 13[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  15 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  17 -> 22[taillabel="fun(a: f32, b: f64) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  18 -> 17[taillabel="fun(a: f32, b: f64) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  19 -> 18[taillabel="fun(a: f32, b: f64) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  20 -> 19[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  21 -> 19[taillabel="f64" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  23 -> 28[taillabel="fun(a: f32, b: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  24 -> 23[taillabel="fun(a: f32, b: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  25 -> 24[taillabel="fun(a: f32, b: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  26 -> 25[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  27 -> 25[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  29 -> 34[taillabel="fun(a: i32, b: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  30 -> 29[taillabel="fun(a: i32, b: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  31 -> 30[taillabel="fun(a: i32, b: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  32 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  33 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  35 -> 40[taillabel="fun(width: f32, height: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  36 -> 35[taillabel="fun(width: f32, height: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  37 -> 36[taillabel="fun(width: f32, height: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  38 -> 37[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  39 -> 37[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

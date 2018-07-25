@@ -1,0 +1,23 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="OverloadedFun:\ngetX"];
+  3 [label="fun getX"];
+  4 [label="Fun:\ngetX"];
+  5 [label="Name:\nx"];
+  6 [label="Name:\ngetX"];
+  subgraph cluster0 {
+    node [style=filled];
+    7 [label="Name:\nx"];
+    8 [label="Var:\nx"];
+    9 [label="Fun:\ngetX"];
+    7 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    8 -> 9[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "getX(i32)";
+}
+  2 -> 6[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 2[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

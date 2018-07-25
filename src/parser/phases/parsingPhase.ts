@@ -1,8 +1,9 @@
 import { PhaseResult } from './PhaseResult';
-import { IToken, TokenError } from 'ebnf';
+import { IToken } from 'ebnf';
 import { parser } from '../../grammar';
 import { walkPreOrder } from '../walker';
 import { failWithErrors } from './findAllErrors';
+import { AstNodeError } from '../NodeError';
 
 const process = walkPreOrder((token: IToken, result: PhaseResult) => {
   if (token.errors && token.errors.length) {
@@ -16,7 +17,7 @@ const process = walkPreOrder((token: IToken, result: PhaseResult) => {
 
 export class ParsingPhaseResult extends PhaseResult {
   document: IToken;
-  errors: TokenError[] = [];
+  errors: AstNodeError[] = [];
 
   constructor(public fileName: string, public content: string) {
     super();

@@ -3,16 +3,17 @@ import { print } from '@webassemblyjs/wast-printer';
 import * as binaryen from 'binaryen';
 import * as wabt from 'wabt';
 import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
-import { annotations } from '../../parser/annotations';
-import { flatten } from '../../parser/helpers';
-import { findNodesByType, Nodes } from '../../parser/nodes';
-import { failIfErrors } from '../../parser/phases/findAllErrors';
-import { findParentType } from '../../parser/phases/helpers';
-import { FunctionType } from '../../parser/types';
+import { annotations } from '../annotations';
+import { flatten } from '../helpers';
+import { findNodesByType, Nodes } from '../nodes';
+import { failIfErrors } from './findAllErrors';
+import { findParentType } from './helpers';
+import { FunctionType } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
+import { AstNodeError } from '../NodeError';
 
-declare var WebAssembly;
+declare var WebAssembly, console;
 
 const secSymbol = Symbol('secuentialId');
 function getModuleSecuentialId(module) {
@@ -23,14 +24,15 @@ function getModuleSecuentialId(module) {
 }
 
 function getTypeForFunction(fn: Nodes.FunctionNode) {
-  const ret = fn.functionReturnType.ofType;
+  const fnType = fn.ofType as FunctionType;
+  const ret = fnType.returnType;
 
   const retType = ret.binaryenType ? [ret.binaryenType] : [];
 
   return t.signature(
-    fn.parameters.map($ => ({
+    fn.parameters.map(($, $$) => ({
       id: $.parameterName.name,
-      valtype: $.ofType.binaryenType
+      valtype: fnType.parameterTypes[$$].binaryenType
     })),
     retType
   );
@@ -74,13 +76,13 @@ function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.Document
 
     return setArgsStatements;
   } else {
-    const ofType = node.functionNode.ofType as FunctionType;
+    const ofType = node.resolvedFunctionType;
 
     return t.callInstruction(t.identifier(ofType.internalName), node.argumentsNode.map($ => emit($, document)));
   }
 }
 
-function emitMatchingNode(match: Nodes.MatchNode, document: Nodes.DocumentNode) {
+function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.DocumentNode) {
   const matchers = match.matchingSet.slice(0);
   const ixDefaultBranch = matchers.findIndex($ => $ instanceof Nodes.MatchDefaultNode);
   const lhs = t.instruction('set_local', [t.identifier(match.local.name), emit(match.lhs, document)]);
@@ -154,14 +156,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 0xffffffff : 0)]);
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
-    } else if (node instanceof Nodes.MatchNode) {
+    } else if (node instanceof Nodes.PatternMatcherNode) {
       return emitMatchingNode(node, document);
     } else if (node instanceof Nodes.TailRecLoopNode) {
       return emitTailCall(node, document);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
-      return t.instruction('set_local', [t.identifier(node.variableName.variable.name), emit(node.value, document)]);
+      return t.instruction('set_local', [t.identifier(node.variable.variable.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'unknown_block_' + getModuleSecuentialId(document));
@@ -241,13 +243,13 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       text
     );
 
-    wabtModule.resolveNames();
-
     try {
+      wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
+      console.log(text);
       this.errors.push(e);
-      return;
+      throw e;
     }
 
     const binary = wabtModule.toBinary({ log: false });
@@ -255,7 +257,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     this.module = binaryen.readBinary(this.buffer);
 
     if (this.module.validate() == 0) {
-      this.errors.push(new Error('binaryen validation failed'));
+      this.errors.push(new AstNodeError('binaryen validation failed', this.document));
     }
 
     if (optimize) {

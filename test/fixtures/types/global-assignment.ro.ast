@@ -1,0 +1,49 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32" type=i32
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="void" type=void
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="x" type=i32
+      |-IntegerLiteral=1 type=i32 annotations=IsValueNode
+  |-OverloadedFunctionNode type=fun() -> i32
+    |-FunDirectiveNode type=fun() -> i32
+      |-FunctionNode type=fun() -> i32
+        |-NameIdentifierNode="addOne"
+        |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="i32"
+        |-BlockNode type=i32 annotations=IsValueNode
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="y" type=i32
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-NameIdentifierNode="x"
+          |-AssignmentNode type=i32
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="y"
+            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="y"
+              |-IntegerLiteral=1 type=i32
+          |-AssignmentNode type=i32 annotations=IsValueNode
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="x"
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-NameIdentifierNode="y"
+    |-NameIdentifierNode="addOne" type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> void
+    |-FunDirectiveNode type=fun() -> void
+      |-FunctionNode type=fun() -> void
+        |-NameIdentifierNode="addOneNoReturn"
+        |-TypeReferenceNode="void"
+          |-NameIdentifierNode="void"
+        |-BlockNode type=void
+          |-AssignmentNode type=i32
+            |-VariableReferenceNode type=i32
+              |-NameIdentifierNode="x"
+            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
+              |-VariableReferenceNode type=i32
+                |-NameIdentifierNode="x"
+              |-IntegerLiteral=1 type=i32
+    |-NameIdentifierNode="addOneNoReturn" type=fun() -> void

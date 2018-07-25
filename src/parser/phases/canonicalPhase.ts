@@ -55,7 +55,7 @@ const visitor = {
   },
   AssignStatement(astNode: IToken) {
     const ret = new Nodes.AssignmentNode(astNode);
-    ret.variableName = visit(astNode.children[0]);
+    ret.variable = visit(astNode.children[0]);
     ret.value = visit(astNode.children[1]);
     return ret;
   },
@@ -148,7 +148,7 @@ const visitor = {
     for (let i = 1; i < astNode.children.length; i += 2) {
       const oldRet = ret;
       if (astNode.children[i].type === 'MatchKeyword') {
-        const match = (ret = new Nodes.MatchNode(astNode.children[i]));
+        const match = (ret = new Nodes.PatternMatcherNode(astNode.children[i]));
         match.lhs = oldRet;
         match.matchingSet = astNode.children[i + 1].children.map($ => visit($));
       } else {
@@ -181,7 +181,7 @@ const visitor = {
     return ret;
   },
   FunctionTypeParameter(astNode: IToken) {
-    const ret = new Nodes.FunctionParameterType(astNode);
+    const ret = new Nodes.FunctionParameterTypeNode(astNode);
 
     ret.name = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
     ret.parameterType = visitChildTypeOrNull(astNode, 'Type') as Nodes.TypeNode;
@@ -193,13 +193,13 @@ const visitor = {
   },
   TypeReference(child: IToken) {
     const ret = new Nodes.TypeReferenceNode(child);
-    ret.name = findChildrenType(child, 'NameIdentifier').text.trim();
+    ret.name = visit(findChildrenType(child, 'NameIdentifier'));
     // ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
     // ret.isArray = !!findChildrenType(astNode, 'IsArray');
     return ret;
   },
   FunctionTypeLiteral(child: IToken) {
-    const ret = new Nodes.FunctionType(child);
+    const ret = new Nodes.FunctionTypeNode(child);
 
     const parametersNode = findChildrenType(child, 'FunctionTypeParameters');
 

@@ -1,0 +1,43 @@
+digraph Document {
+  node [fixedsize=shape fontsize=10]
+  1 [label="Name:\ni32"];
+  2 [label="OverloadedFun:\ngte"];
+  3 [label="fun gte"];
+  4 [label="Fun:\ngte"];
+  5 [label="Name:\nx"];
+  6 [label="Name:\ngte"];
+  subgraph cluster0 {
+    node [style=filled];
+    7 [label="Name:\nx"];
+    8 [label="BlockNode"];
+    9 [label="Var Decl:\nttt"];
+    10 [label="Name:\nttt"];
+    11 [label="Int:\n0"];
+    12 [label="AssignmentNode"];
+    13 [label="Var:\nttt"];
+    14 [label="BinaryExpressionNode'+'"];
+    15 [label="Var:\nttt"];
+    16 [label="Var:\nx"];
+    17 [label="Var:\nttt"];
+    18 [label="Fun:\ngte"];
+    7 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    8 -> 18[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    9 -> 8[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    10 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    10 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    10 -> 17[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    11 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    12 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    13 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    14 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    15 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    16 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    17 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label = "gte(i32)";
+}
+  2 -> 6[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  3 -> 2[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  4 -> 3[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  label="";
+}

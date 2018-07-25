@@ -1,16 +1,10 @@
-type i32
-type f32
-
-private fun x(): i32 = 1
-private fun x(a: i32): i32 = 1
-
-fun test(a: f32): i32 = x(a)
-
----
-Type phase failed. 2 errors found:
-  1)  Type "void" cannot be assigned to "i32"
-  2)  No overload found for arguments
-        (f32)
-      got:
-        ()
-        (i32)
+(unknown file)
+    1│ type i32
+    2│ type f32
+    3│ 
+    4│ private fun x(): i32 = 1
+    5│ private fun x(a: i32): i32 = 1
+    6│ 
+    7│ fun test(a: f32): i32 = x(a)
+     │                         ^ Could not find a valid overload for function of type fun() -> i32 & fun(a: i32) -> i32 with the arguments of type (f32)
+    8│ 

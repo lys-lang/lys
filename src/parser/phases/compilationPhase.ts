@@ -12,7 +12,7 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, pa
 
 const resolveLocals = walkPreOrder(
   (node: Nodes.Node) => {
-    if (node instanceof Nodes.MatchNode) {
+    if (node instanceof Nodes.PatternMatcherNode) {
       // create a local for lhs of MatchNode
 
       /**
@@ -25,7 +25,7 @@ const resolveLocals = walkPreOrder(
     }
   },
   (node: Nodes.Node) => {
-    if (node instanceof Nodes.MatchNode) {
+    if (node instanceof Nodes.PatternMatcherNode) {
       // release the local for lhs of MatchNode
 
       if (node.local instanceof Local) {
@@ -41,7 +41,7 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
     const fn = findParentType(node, Nodes.FunctionNode);
 
     if (fn) {
-      node.local = fn.addLocal(node.value.ofType, node.variableName.name, node);
+      node.local = fn.addLocal(node.value.ofType, node.variableName.name, node.variableName);
     }
   }
 });

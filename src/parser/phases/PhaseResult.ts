@@ -1,5 +1,7 @@
+import { AstNodeError } from '../NodeError';
+
 export abstract class PhaseResult {
-  errors: Error[] = [];
+  errors: AstNodeError[] = [];
 
   isSuccess() {
     return this.errors.length === 0;

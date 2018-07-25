@@ -1,3 +1,8 @@
+import { Closure } from './closure';
+import { AstNodeError } from './NodeError';
+import { TypeGraph } from './types/TypeGraph';
+import { TypeResolutionContext } from './types/TypePropagator';
+
 export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
 
 export enum NativeTypes {
@@ -67,19 +72,25 @@ export abstract class Type {
         return undefined;
     }
   }
+
   equals(_otherType: Type) {
     if (!_otherType) return false;
     return _otherType && this.nativeType == _otherType.nativeType && this.binaryenType == _otherType.binaryenType;
   }
-  canAssign(_otherType: Type) {
+
+  canBeAssignedTo(_otherType: Type) {
     return this.equals(_otherType);
+  }
+
+  toString() {
+    return `???<${NativeTypes[this.nativeType]}>`;
   }
 }
 
 export class VoidType extends Type {
   nativeType: NativeTypes = NativeTypes.void;
 
-  private constructor() {
+  protected constructor() {
     super();
   }
 
@@ -90,6 +101,14 @@ export class VoidType extends Type {
   static instance = new VoidType();
 }
 
+export class InvalidType extends VoidType {
+  toString() {
+    return 'INVALID_TYPE';
+  }
+
+  static instance = new InvalidType();
+}
+
 export class FunctionType extends Type {
   nativeType: NativeTypes = NativeTypes.func;
 
@@ -98,6 +117,7 @@ export class FunctionType extends Type {
   }
 
   parameterTypes: Type[];
+  parameterNames: string[];
   returnType: Type;
 
   acceptsTypes(types: Type[]) {
@@ -105,33 +125,90 @@ export class FunctionType extends Type {
     return types.every(($, $$) => this.parameterTypes[$$].equals($));
   }
 
+  equals(type: Type) {
+    if (!(type instanceof FunctionType)) return false;
+    if (this.parameterTypes.length != type.parameterTypes.length) return false;
+    if (!this.returnType.equals(type.returnType)) return false;
+    if (this.parameterTypes.some(($, $$) => !$.equals(type.parameterTypes[$$]))) return false;
+    return true;
+  }
+
   toString() {
-    return `fun(${this.parameterTypes.join(', ')}) -> ${this.returnType}`;
+    return `fun(${this.parameterTypes
+      .map(($, $$) => {
+        if (this.parameterNames[$$]) {
+          return this.parameterNames[$$] + ': ' + $;
+        } else {
+          return $;
+        }
+      })
+      .join(', ')}) -> ${this.returnType}`;
   }
 }
 
 export class IntersectionType extends Type {
   nativeType: NativeTypes = NativeTypes.anyfunc;
 
-  constructor() {
+  constructor(public of: Type[] = []) {
     super();
   }
 
-  of: Type[] = [];
-
   toString() {
     return this.of.map($ => $.toString()).join(' & ');
+  }
+
+  simplify() {
+    const newTypes: Type[] = [];
+    this.of.forEach($ => {
+      if (!newTypes.some($1 => $1.equals($))) {
+        newTypes.push($);
+      }
+    });
+
+    if (newTypes.length === 1) {
+      return newTypes[0];
+    } else {
+      const newType = new IntersectionType();
+      newType.of = newTypes;
+      return newType;
+    }
+  }
+}
+
+export class TypeReference extends Type {
+  constructor(public referencedName: string, public closure: Closure) {
+    super();
+  }
+
+  resolveType(typeGraph: TypeGraph): Type {
+    const resolvedReference = this.closure.get(this.referencedName);
+    const typeNode = typeGraph.findNode(resolvedReference.referencedNode);
+
+    // TODO: verify referencedNode is a type declaration and not a variable name
+
+    if (!typeNode) {
+      throw new AstNodeError('Node has no type node', resolvedReference.referencedNode);
+    }
+    if (!typeNode.resultType()) {
+      throw new AstNodeError(
+        `Node ${resolvedReference.referencedNode.nodeName} has no resolved type`,
+        resolvedReference.referencedNode
+      );
+    }
+    return typeNode.resultType();
+  }
+
+  toString() {
+    return `TypeRef(${this.referencedName})`;
   }
 }
 
 export class UnionType extends Type {
   nativeType: NativeTypes = NativeTypes.anyfunc;
 
-  constructor() {
+  constructor(public of: Type[] = []) {
     super();
   }
-
-  of: Type[] = [];
 
   toString() {
     return this.of.map($ => $.toString()).join(' | ');
@@ -171,8 +248,19 @@ export class u8 extends NativeType {
 }
 
 export class bool extends NativeType {
+  static instance = new bool();
+
   constructor() {
-    super(NativeTypes.boolean);
+    super(NativeTypes.i32);
+  }
+
+  equals(_otherType: Type) {
+    if (!_otherType) return false;
+    return _otherType && _otherType instanceof bool;
+  }
+
+  toString() {
+    return NativeTypes.boolean;
   }
 }
 
@@ -230,3 +318,11 @@ export const InjectableTypes = {
   pointer,
   void: VoidType
 };
+
+export function toConcreteType(type: Type, ctx: TypeResolutionContext) {
+  if (type instanceof TypeReference) {
+    return type.resolveType(ctx.currentGraph);
+  }
+
+  return type;
+}

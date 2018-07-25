@@ -1,20 +1,16 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure } from './closure';
-import { Type, NativeTypes } from './types';
+import { Type, NativeTypes, FunctionType } from './types';
 import { BinaryOperation } from '../compiler/languageOperations';
 import { Annotation, IAnnotationConstructor } from './annotations';
 
-export interface TypePhaseNode {
-  ofType: Type;
-}
-
 export namespace Nodes {
-  export abstract class Node implements TypePhaseNode {
-    ofType: Type;
+  export abstract class Node {
     hasParentheses: boolean = false;
     errors: Error[] = [];
     closure: Closure;
     parent: Node;
+    ofType: Type = null;
 
     private annotations: Set<Annotation>;
 
@@ -112,24 +108,24 @@ export namespace Nodes {
 
   export class TypeReferenceNode extends TypeNode {
     /** Name of the referenced type */
-    name: string;
+    name: NameIdentifierNode;
 
     get text() {
-      return JSON.stringify(this.name);
+      return JSON.stringify(this.name.name);
     }
 
     isPointer: number = 0;
     isArray: boolean = false;
   }
 
-  export class FunctionParameterType extends TypeNode {
+  export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
     parameterType: TypeNode;
   }
 
-  export class FunctionType extends TypeNode {
+  export class FunctionTypeNode extends TypeNode {
     returnType: TypeNode;
-    parameters: FunctionParameterType[];
+    parameters: FunctionParameterTypeNode[];
   }
 
   export class VariableReferenceNode extends ExpressionNode {
@@ -154,14 +150,14 @@ export namespace Nodes {
 
   export class ParameterNode extends Node {
     parameterName: NameIdentifierNode;
-    parameterType: TypeReferenceNode;
+    parameterType: TypeNode;
     defaultValue: ExpressionNode;
   }
 
   export class FunctionNode extends ExpressionNode {
     injected: boolean = false;
     functionName: NameIdentifierNode;
-    functionReturnType: TypeReferenceNode;
+    functionReturnType: TypeNode;
     parameters: ParameterNode[] = [];
     body: ExpressionNode;
 
@@ -195,15 +191,14 @@ export namespace Nodes {
       let localIndex = 0;
 
       this.parameters.forEach(parameter => {
-        let local = new Local(localIndex++, parameter.parameterName.name, parameter);
-        local.type = parameter.ofType;
+        let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
         this.localsByName.set(local.name, local);
         this.localsByIndex[local.index] = local;
       });
     }
 
     /** Adds a local of the specified type, with an optional name. */
-    addLocal(type: Type, name: string | null = null, declaration: Node | null = null): Local {
+    addLocal(type: Type, name: string | null = null, declaration: NameIdentifierNode | null = null): Local {
       // if it has a name, check previously as this method will throw otherwise
       var localIndex = this.parameters.length + this.additionalLocals.length;
 
@@ -367,7 +362,7 @@ export namespace Nodes {
 
   export class OverloadedFunctionNode extends DirectiveNode {
     injected = true;
-    name: string;
+    functionName: NameIdentifierNode;
     functions: FunDirectiveNode[] = [];
   }
 
@@ -392,7 +387,7 @@ export namespace Nodes {
   }
 
   export class AssignmentNode extends Node {
-    variableName: VariableReferenceNode;
+    variable: VariableReferenceNode;
     value: ExpressionNode;
   }
 
@@ -443,6 +438,7 @@ export namespace Nodes {
     isInfix: boolean = false;
     functionNode: ExpressionNode;
     argumentsNode: ExpressionNode[];
+    resolvedFunctionType: FunctionType;
   }
 
   export class BinaryExpressionNode extends ExpressionNode {
@@ -495,7 +491,7 @@ export namespace Nodes {
 
   export class MatchDefaultNode extends MatcherNode {}
 
-  export class MatchNode extends ExpressionNode {
+  export class PatternMatcherNode extends ExpressionNode {
     lhs: ExpressionNode;
     matchingSet: MatcherNode[];
 

@@ -1,0 +1,9 @@
+type i32
+
+private fun innerFunctionArgs(a: i32): i32 = a
+private fun innerFunction(): i32 = innerFunctionArgs(3)
+
+private fun over(): i32 = 1
+private fun over(a: i32): i32 = a
+
+fun outerFunction(): i32 = innerFunction() + over()

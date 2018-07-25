@@ -14,6 +14,7 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
   const semantic = new SemanticPhaseResult(canonical);
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
+  types.ensureIsValid();
   const compilation = new CompilationPhaseResult(types);
   return new CodeGenerationPhaseResult(compilation);
 };
@@ -28,8 +29,12 @@ export function test(name: string, src: string, customTest?: (document: any, err
 
       await compilationPhaseResult.validate(false);
 
+      const instance = await compilationPhaseResult.toInstance();
+
+      if (!instance) throw new Error('Invalid compilation');
+
       if (customTest) {
-        await customTest(await compilationPhaseResult.toInstance());
+        await customTest(instance);
       }
 
       await compilationPhaseResult.validate(true);
@@ -38,8 +43,8 @@ export function test(name: string, src: string, customTest?: (document: any, err
         await customTest(await compilationPhaseResult.toInstance());
       }
     } catch (e) {
-      if (customTest) {
-        await customTest(compilationPhaseResult, e);
+      if (customTest && customTest.length >= 2) {
+        await customTest(null, e);
       } else {
         throw e;
       }
