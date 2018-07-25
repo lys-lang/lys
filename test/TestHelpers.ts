@@ -1,6 +1,4 @@
-import { IToken, Parser, Grammars } from 'ebnf';
-import { parser } from '../dist/grammar';
-
+import { IToken } from 'ebnf';
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
 import * as expect from 'expect';

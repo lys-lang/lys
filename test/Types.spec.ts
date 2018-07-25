@@ -1,7 +1,6 @@
-declare var describe, it, require, console;
+declare var describe, it, console;
 
-import { testParseToken, testParseTokenFailsafe, folderBasedTest, printAST } from './TestHelpers';
-
+import { folderBasedTest, printAST } from './TestHelpers';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';

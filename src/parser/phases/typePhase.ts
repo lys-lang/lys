@@ -5,12 +5,13 @@ import { TypeResolutionContext } from '../types/TypePropagator';
 import { TypeGraph } from '../types/TypeGraph';
 import { TypeGraphBuilder } from '../types/TypeGraphBuilder';
 import { AstNodeError } from '../NodeError';
+import { Nodes } from '../nodes';
 
 export class TypePhaseResult extends PhaseResult {
   typeGraph: TypeGraph;
   typeResolutionContext: TypeResolutionContext;
 
-  get document() {
+  get document(): Nodes.DocumentNode {
     return this.scopePhaseResult.document;
   }
 
