@@ -1,8 +1,8 @@
-import { Nodes } from './nodes';
+import { Nodes } from '../parser/nodes';
 declare var require;
 const colors = require('colors/safe');
-import { LineMapper, ITextPosition } from '../utils/LineMapper';
-import { IErrorPositionCapable } from './NodeError';
+import { LineMapper, ITextPosition } from './LineMapper';
+import { IErrorPositionCapable } from '../parser/NodeError';
 
 function mapSet<T, V>(set: Set<T>, fn: (x: T) => V): V[] {
   const out = [];

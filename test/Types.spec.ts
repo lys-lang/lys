@@ -7,7 +7,7 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { print } from '../dist/utils/typeGraphPrinter';
-import { printErrors } from '../dist/parser/printer';
+import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
 
 const phases = function(txt: string): ScopePhaseResult {
