@@ -3,8 +3,6 @@ declare var describe, it, require, console;
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { folderBasedTest, testParseToken } from './TestHelpers';
 
-let inspect = require('util').inspect;
-
 describe('Parser', () => {
   const phases = function(txt: string): ParsingPhaseResult {
     return new ParsingPhaseResult('test.ro', txt);
@@ -143,13 +141,13 @@ describe('Parser', () => {
 
     describe('Effects', () => {
       test`
-        effect byte
-        private effect byte
-        effect byte
+        effect byte {}
+        private effect byte {}
+        effect byte {}
       `;
 
       test`
-        private effect byte
+        private effect byte {}
       `;
 
       test`
@@ -170,6 +168,15 @@ describe('Parser', () => {
           get(): T
           put(x: T): void
         }
+      `;
+
+      test`
+        effect total {}
+        fun sqr(x: i32): <total> i32 = x * x
+        fun sqr(x: i32): <total|_> i32 = x * x
+        fun sqr(x: i32): <total> i32 = x * x
+        fun sqr(x: i32): <> i32 = x * x
+        fun sqr(x: i32): i32 = x * x
       `;
     });
 
@@ -239,14 +246,20 @@ describe('Parser', () => {
 
     test`var test = 1    fun pointerOfTest() = &test    `;
 
-    test`var test: Entity* = 1 fun valueOfTest() = *test`;
+    test`var test: Entity = 1 fun valueOfTest() = test`;
 
-    test`var test: Struct* = 1`;
-    test`var test: Struct**** = 1`;
-
-    test`var test: Struct[] = 1`;
-    test`var test: Struct*[] = 1`;
-    test`var test: Int64**[] = 1`;
+    test`var test: Struct = 1`;
+    test`var test: Struct = 1`;
+    test`var test: Int64 = 1`;
+    test`var test: _ = 1`;
+    test`var test: _|_ = 1`;
+    test`var test: a|b& c | d & b = 1`;
+    test`var test: fun() -> void = 1`;
+    test`var test: fun() -> void & fun(i32) -> i32 = 1`;
+    test`var test: fun() -> void & fun(a: i32) -> i32 = 1`;
+    test`var test: fun() -> void & fun( a : i32) -> i32 = 1`;
+    test`var test: fun() -> (void & fun( a : i32) -> i32) = 1`;
+    test`var test: (fun() -> void) | fun ( a : i32) -> i32 = 1`;
 
     // test`
     // private struct Entity {

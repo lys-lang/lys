@@ -125,7 +125,14 @@ export namespace Nodes {
 
   export class FunctionTypeNode extends TypeNode {
     returnType: TypeNode;
+    typeParameters: string[];
     parameters: FunctionParameterTypeNode[];
+  }
+  export class EffectMemberDeclarationNode extends TypeNode {
+    name: NameIdentifierNode;
+    typeParameters: string[];
+    parameters: FunctionParameterTypeNode[];
+    returnType: TypeNode;
   }
 
   export class VariableReferenceNode extends ExpressionNode {
@@ -360,6 +367,10 @@ export namespace Nodes {
     functionNode: FunctionNode;
   }
 
+  export class EffectDirectiveNode extends DirectiveNode {
+    effect: EffectDeclarationNode;
+  }
+
   export class OverloadedFunctionNode extends DirectiveNode {
     injected = true;
     functionName: NameIdentifierNode;
@@ -487,6 +498,21 @@ export namespace Nodes {
 
   export class MatchLiteralNode extends MatcherNode {
     literal: LiteralNode<any>;
+  }
+
+  export class UnionTypeNode extends TypeNode {
+    of: TypeNode[];
+  }
+
+  export class IntersectionTypeNode extends TypeNode {
+    of: TypeNode[];
+  }
+
+  export class TypeDeclarationNode extends Node {}
+
+  export class EffectDeclarationNode extends Node {
+    name: NameIdentifierNode;
+    elements: FunctionTypeNode[];
   }
 
   export class MatchDefaultNode extends MatcherNode {}

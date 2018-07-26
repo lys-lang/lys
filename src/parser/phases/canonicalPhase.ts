@@ -31,7 +31,42 @@ const visitor = {
   ValDirective(astNode: IToken) {
     const ret = new Nodes.ValDirectiveNode(astNode);
 
+    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
     ret.decl = visit(findChildrenType(astNode, 'ValDeclaration'));
+
+    return ret;
+  },
+  EffectDirective(astNode: IToken) {
+    const ret = new Nodes.EffectDirectiveNode(astNode);
+
+    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+    ret.effect = visit(findChildrenType(astNode, 'EffectDeclaration'));
+
+    return ret;
+  },
+  EffectDeclaration(astNode: IToken) {
+    const ret = new Nodes.EffectDeclarationNode(astNode);
+
+    ret.name = visit(findChildrenType(astNode, 'NameIdentifierNode'));
+
+    const list = findChildrenType(astNode, 'EffectElementList');
+
+    ret.elements = list.children.map($ => visit($));
+
+    return ret;
+  },
+  EffectMemberDeclaration(astNode: IToken) {
+    const ret = new Nodes.EffectMemberDeclarationNode(astNode);
+
+    ret.name = visit(findChildrenType(astNode, 'NameIdentifierNode'));
+
+    const params = findChildrenType(astNode, 'FunctionParamsList');
+
+    if (!params) {
+      throw new TokenError('Missing param list in function declaration', astNode);
+    }
+
+    ret.parameters = params.children.map($ => visit($));
 
     return ret;
   },
@@ -266,6 +301,26 @@ const visitor = {
   },
   SyntaxError(_: IToken) {
     return null;
+  },
+  TypeDeclaration(astNode: IToken) {
+    const ret = new Nodes.UnionTypeNode(astNode);
+    // TODO
+    return ret;
+  },
+  UnionType(astNode: IToken) {
+    const ret = new Nodes.UnionTypeNode(astNode);
+    ret.of = astNode.children.map($ => visit($));
+    return ret;
+  },
+  IntersectionType(astNode: IToken) {
+    const ret = new Nodes.IntersectionTypeNode(astNode);
+    ret.of = astNode.children.map($ => visit($));
+    return ret;
+  },
+  TypeParen(astNode: IToken) {
+    const ret = visit(astNode.children[0]);
+    ret.hasParentheses = true;
+    return ret;
   }
 };
 

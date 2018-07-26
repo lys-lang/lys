@@ -70,7 +70,6 @@ describe('Canonical', function() {
     }
     fun y(a: Number, b: Number): Int = 1
   `;
-  test`var a: Double* = null`;
 
   test`
     fun y(a: Float, b: Float): Float = a + b

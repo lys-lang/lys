@@ -18,7 +18,7 @@ FunctionDirective ::= PrivateModifier? FunDeclaration {pin=2}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
-EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD NameIdentifier WS* TypeVariables? (&('{') EffectDeclaration | &('=') TypeAlias)? {pin=2}
+EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
@@ -31,13 +31,13 @@ UnknownExpression ::= '???'
 
 
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
-NthTypeVariable   ::= ',' WS* TypeVariable {fragment=true}
+NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
 TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
-TypeVariables     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
+TypeParameters     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
 AssignExpression  ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
 AssignStatement   ::= VariableReference WS* '=' !('=') WS* Expression {pin=3}
-OfType            ::= COLON WS* Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
+OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
 ParameterList     ::= Parameter NthParameter* {fragment=true}
@@ -45,25 +45,31 @@ NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NE
 Parameter         ::= NameIdentifier WS* OfType? {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
 StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
-EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType
+EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType {pin=1}
 TypeDeclElements  ::= (WS* StructDeclaration)*
-EffectElements    ::= (WS* EffectMemberDeclaration)*
+EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
 
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunDeclaration    ::= FUN_KEYWORD NameIdentifier WS* FunctionParamsList OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD NameIdentifier WS* TypeParameters? FunctionParamsList OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 
-EffectDeclaration ::= '{' EffectElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
+EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 TypeDeclaration   ::= '{' TypeDeclElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 TypeAlias         ::= '=' WS* Type {pin=1}
 
-Type              ::= (FunctionTypeLiteral | TypeReference) IsPointer* IsArray?
+FunctionEffect    ::= '<' WS* (Type WS*)? '>' {pin=1}
+Type              ::= UnionType
+UnionType         ::= IntersectionType (WS* '|' WS* IntersectionType)* {simplifyWhenOneChildren=true}
+IntersectionType  ::= AtomType (WS* '&' WS* AtomType)* {simplifyWhenOneChildren=true}
+AtomType          ::= TypeParen | FunctionTypeLiteral | TypeReference {fragment=true}
+TypeParen         ::= '(' WS* Type WS* ')' {pin=1}
 TypeReference     ::= NameIdentifier
 
-FunctionTypeLiteral   ::= 'fun' WS* FunctionTypeParameters WS* '->' WS* Type {pin=1}
-FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,fragment=true,recoverUntil=PAREN_RECOVERY}
+FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* '->' WS* Type {pin=1}
+FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,recoverUntil=PAREN_RECOVERY}
 FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 
 IsPointer         ::= '*'

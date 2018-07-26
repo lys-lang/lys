@@ -1,0 +1,27 @@
+effect exn {
+  raise(): _
+}
+
+effect exn<T> {
+  raise(): T
+}
+
+fun sqr(x: i32): <total> i32 = x * x
+fun sqr(x: i32): <> i32 = x * x
+fun sqr(x: i32): i32 = x * x
+
+fun safeDiv<T>(a: T, b: T): <exn|_> T = {
+  if (b == 0) {
+    raise()
+  } else {
+    a / b
+  }
+}
+
+fun zeroDiv(a: i32, b: i32): <_> i32 = {
+  if (b == 0) {
+    raise()
+  } else {
+    a / b
+  }
+}
