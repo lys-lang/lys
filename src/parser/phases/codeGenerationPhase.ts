@@ -24,7 +24,7 @@ function getModuleSecuentialId(module) {
 }
 
 function getTypeForFunction(fn: Nodes.FunctionNode) {
-  const fnType = fn.ofType as FunctionType;
+  const fnType = fn.functionName.ofType as FunctionType;
   const ret = fnType.returnType;
 
   const retType = ret.binaryenType ? [ret.binaryenType] : [];
@@ -195,7 +195,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.instruction('get_local', [t.identifier(node.variable.name)]);
     }
 
-    throw new Error(`This node cannot be emited ${node.nodeName}`);
+    throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
     // } catch (e) {
     //   node.errors.push(e);
     // }
@@ -203,7 +203,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
   const generatedNode = _emit();
 
-  if (!generatedNode) throw new Error(`Could not emit any code for node ${node.nodeName}`);
+  if (!generatedNode) throw new AstNodeError(`Could not emit any code for node ${node.nodeName}`, node);
 
   const retAnnotation = node.getAnnotation(annotations.IsReturnExpression);
 
@@ -309,7 +309,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
               )
             );
           } else {
-            throw new Error('You cannot export overloaded functions');
+            throw new AstNodeError('You cannot export overloaded functions', fun.functionNode.functionName);
           }
         }
       });

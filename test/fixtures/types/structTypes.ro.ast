@@ -1,0 +1,105 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32" type=i32
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="f32" type=f32
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="boolean" type=boolean
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Number" type=Number
+    |-TypeDeclarationNode
+      |-StructDeclarationNode type=Infinity
+        |-NameIdentifierNode="Infinity" type=Infinity
+      |-StructDeclarationNode type=NDet
+        |-NameIdentifierNode="NDet" type=NDet
+      |-StructDeclarationNode type=Real
+        |-NameIdentifierNode="Real" type=Real
+        |-ParameterNode
+          |-NameIdentifierNode="number" type=f32
+          |-TypeReferenceNode="f32" type=f32
+            |-NameIdentifierNode="f32"
+      |-StructDeclarationNode type=Natural
+        |-NameIdentifierNode="Natural" type=Natural
+        |-ParameterNode
+          |-NameIdentifierNode="number" type=i32
+          |-TypeReferenceNode="i32" type=i32
+            |-NameIdentifierNode="i32"
+      |-StructDeclarationNode type=Complex
+        |-NameIdentifierNode="Complex" type=Complex
+        |-ParameterNode
+          |-NameIdentifierNode="real" type=f32
+          |-TypeReferenceNode="f32" type=f32
+            |-NameIdentifierNode="f32"
+        |-ParameterNode
+          |-NameIdentifierNode="imaginary" type=f32
+          |-TypeReferenceNode="f32" type=f32
+            |-NameIdentifierNode="f32"
+  |-OverloadedFunctionNode type=fun(number: Number) -> boolean
+    |-FunDirectiveNode type=fun(number: Number) -> boolean
+      |-FunctionNode type=fun(number: Number) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="number" type=Number
+          |-TypeReferenceNode="Number" type=Number
+            |-NameIdentifierNode="Number"
+        |-NameIdentifierNode="isComplex" type=fun(number: Number) -> boolean
+        |-TypeReferenceNode="boolean" type=boolean
+          |-NameIdentifierNode="boolean"
+        |-PatternMatcherNode annotations=IsValueNode
+          |-VariableReferenceNode type=Number annotations=IsValueNode
+            |-NameIdentifierNode="number"
+          |-MatchCaseIsNode type=boolean annotations=IsValueNode
+            |-TypeReferenceNode="Real"
+              |-NameIdentifierNode="Real"
+            |-NameIdentifierNode="_"
+            |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-MatchCaseIsNode type=boolean annotations=IsValueNode
+            |-TypeReferenceNode="Natural"
+              |-NameIdentifierNode="Natural"
+            |-NameIdentifierNode="_"
+            |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode="Complex"
+              |-NameIdentifierNode="Complex"
+            |-NameIdentifierNode="_"
+            |-NameIdentifierNode="imaginary"
+            |-BinaryExpressionNode="!=" annotations=IsValueNode
+              |-VariableReferenceNode
+                |-NameIdentifierNode="imaginary"
+              |-FloatLiteral=0 type=f32
+          |-MatchDefaultNode type=boolean annotations=IsValueNode
+            |-BooleanLiteral=false type=boolean annotations=IsValueNode
+    |-NameIdentifierNode="isComplex" type=fun(number: Number) -> boolean
+  |-OverloadedFunctionNode type=fun() -> boolean
+    |-FunDirectiveNode type=fun() -> boolean
+      |-FunctionNode type=boolean
+        |-NameIdentifierNode="main" type=fun() -> boolean
+        |-BlockNode type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=boolean
+            |-VariableReferenceNode type=fun(number: Number) -> boolean
+              |-NameIdentifierNode="isComplex"
+            |-VariableReferenceNode type=Infinity annotations=IsValueNode
+              |-NameIdentifierNode="Infinity"
+          |-FunctionCallNode type=boolean
+            |-VariableReferenceNode type=fun(number: Number) -> boolean
+              |-NameIdentifierNode="isComplex"
+            |-FunctionCallNode type=Real annotations=IsValueNode
+              |-VariableReferenceNode type=Real
+                |-NameIdentifierNode="Real"
+              |-FloatLiteral=0 type=f32 annotations=IsValueNode
+          |-FunctionCallNode type=boolean
+            |-VariableReferenceNode type=fun(number: Number) -> boolean
+              |-NameIdentifierNode="isComplex"
+            |-FunctionCallNode type=Natural annotations=IsValueNode
+              |-VariableReferenceNode type=Natural
+                |-NameIdentifierNode="Natural"
+              |-IntegerLiteral=123 type=i32 annotations=IsValueNode
+          |-FunctionCallNode type=boolean annotations=IsValueNode
+            |-VariableReferenceNode type=fun(number: Number) -> boolean
+              |-NameIdentifierNode="isComplex"
+            |-FunctionCallNode type=Complex annotations=IsValueNode
+              |-VariableReferenceNode type=Complex
+                |-NameIdentifierNode="Complex"
+              |-FloatLiteral=0 type=f32 annotations=IsValueNode
+              |-FloatLiteral=99.1 type=f32 annotations=IsValueNode
+    |-NameIdentifierNode="main" type=fun() -> boolean

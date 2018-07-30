@@ -35,11 +35,19 @@ describe('Types', function() {
 
         const typePhase = new TypePhaseResult(phaseResult);
 
+        try {
+          typePhase.execute();
+        } catch (e) {
+          console.log(print(typePhase.typeGraph));
+          throw e;
+        }
+
         const expectedResult = normalizeResult(expectedType);
         const givenResult = normalizeResult(typePhase.document.directives.map($ => $.ofType).join('\n'));
 
         try {
           expect(givenResult).to.eq(expectedResult);
+
           if (expectedError) {
             try {
               typePhase.ensureIsValid();
@@ -80,6 +88,23 @@ describe('Types', function() {
     checkMainType`
       type i32
 
+      private fun innerFunctionArgs(a: i32): i32 = a
+      private fun innerFunction(): i32 = innerFunctionArgs(3)
+
+      private fun over(): i32 = 1
+      private fun over(a: i32): i32 = a
+
+      fun outerFunction(): i32 = innerFunction() + over()
+      ---
+      fun(a: i32) -> i32
+      fun() -> i32
+      fun() -> i32 & fun(a: i32) -> i32
+      fun() -> i32
+    `;
+
+    checkMainType`
+      type i32
+
       fun matcher(x: i32) =
         x match {
           case 1 -> 1
@@ -91,6 +116,7 @@ describe('Types', function() {
 
     checkMainType`
       type i32
+      type f32
 
       fun matcher(x: i32) =
         x match {
@@ -109,6 +135,44 @@ describe('Types', function() {
       fun matcher() = {}
       ---
       fun() -> void
+    `;
+
+    checkMainType`
+      type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      fun gt0(x: i32): Boolean =
+        if (x > 0)
+          True()
+        else
+          False()
+      ---
+      fun(x: i32) -> Boolean
+    `;
+
+    checkMainType`
+      type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      type Boolean2 {
+        True2()
+      }
+
+      fun gt0(x: i32) =
+        if (x > 0)
+          True()
+        else
+          True2()
+      ---
+      fun(x: i32) -> True | True2
     `;
 
     checkMainType`
@@ -137,6 +201,70 @@ describe('Types', function() {
 
     checkMainType`
       type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      type Boolean2 {
+        True2()
+      }
+
+      fun gt0(x: i32): True | Boolean2 =
+        if (x > 0)
+          True()
+        else
+          True2()
+      ---
+      fun(x: i32) -> True | Boolean2
+    `;
+
+    checkMainType`
+      type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      fun gt0(x: i32) =
+        if (x > 0)
+          True()
+        else
+          False()
+      ---
+      fun(x: i32) -> Boolean
+    `;
+
+    checkMainType`
+      type i32
+      type f32
+
+      fun x1() = {
+        fun Y() = 1.0
+        Y()
+      }
+
+      fun x2() = {
+        var n = 1
+        fun Y() = n
+        Y()
+      }
+
+      fun x3() = {
+        x2()
+        x1() + x1()
+      }
+      ---
+      fun() -> f32
+      fun() -> i32
+      fun() -> f32
+    `;
+
+    checkMainType`
+      type i32
+      type f32
 
       fun matcher(x: i32) =
         x match {
@@ -385,6 +513,26 @@ describe('Types', function() {
       ---
       fun() -> void
     `;
+
+    checkMainType`
+      type i32
+      type void
+
+      var x = 1
+
+      fun addOne(): i32 = {
+        var y = x
+        y = y + 1
+        x = y
+      }
+
+      fun addOneNoReturn(): void = {
+        x = x + 1
+      }
+      ---
+      fun() -> i32
+      fun() -> void
+    `;
   });
 
   describe('Resolution', () => {
@@ -394,12 +542,8 @@ describe('Types', function() {
       async (result, e) => {
         if (e) throw e;
         const typePhase = new TypePhaseResult(result);
-
-        try {
-          typePhase.ensureIsValid();
-        } catch (e) {
-          console.log(printErrors(typePhase.document, typePhase.errors, false));
-        }
+        typePhase.execute();
+        typePhase.ensureIsValid();
 
         return print(typePhase.typeGraph);
       },
@@ -412,10 +556,21 @@ describe('Types', function() {
       '**/types/*.ro',
       phases,
       async (result, e) => {
-        if (e) throw e;
-        const typePhase = new TypePhaseResult(result);
+        if (e) {
+          if (result) {
+            console.log(printErrors(result.document, [e as any]));
+          }
+          throw e;
+        }
 
-        return printAST(typePhase.document);
+        try {
+          const typePhase = new TypePhaseResult(result);
+          typePhase.execute();
+          return printAST(typePhase.document);
+        } catch (e) {
+          console.log(printErrors(result.document, [e]));
+          throw e;
+        }
       },
       '.ast'
     );
@@ -431,6 +586,7 @@ describe('Types', function() {
         const typePhase = new TypePhaseResult(result);
 
         try {
+          typePhase.execute();
           typePhase.ensureIsValid();
           debugger;
         } catch (e) {

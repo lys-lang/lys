@@ -46,6 +46,7 @@ export enum sizeOf {
 
 export abstract class Type {
   nativeType: NativeTypes;
+  superType: Type | null = null;
   getSize(): number {
     return sizeOf[this.nativeType];
   }
@@ -79,7 +80,11 @@ export abstract class Type {
   }
 
   canBeAssignedTo(_otherType: Type) {
-    return this.equals(_otherType);
+    if (this.superType && this.superType.canBeAssignedTo(_otherType)) {
+      return true;
+    }
+
+    return this.equals(_otherType); // add supertype logic here
   }
 
   toString() {
@@ -146,6 +151,51 @@ export class FunctionType extends Type {
   }
 }
 
+export class HeapReferenceType extends Type {
+  nativeType: NativeTypes = NativeTypes.i32;
+
+  toString() {
+    return 'HEAP<???>';
+  }
+}
+
+export class PolimorphicType extends HeapReferenceType {
+  constructor(public fqn: string) {
+    super();
+  }
+
+  toString() {
+    return this.fqn;
+  }
+}
+
+export class StructType extends PolimorphicType {
+  constructor(public internalName: string, fqn: string, superType: Type = null) {
+    super(fqn);
+    this.superType = superType;
+  }
+
+  parameterTypes: Type[];
+  parameterNames: string[];
+
+  acceptsTypes(types: Type[]) {
+    if (this.parameterTypes.length !== types.length) return false;
+    return types.every(($, $$) => this.parameterTypes[$$].equals($));
+  }
+
+  equals(type: Type) {
+    if (!(type instanceof StructType)) return false;
+    if (this.fqn !== type.fqn) return false;
+    if (this.parameterTypes.length != type.parameterTypes.length) return false;
+    if (this.parameterTypes.some(($, $$) => !$.equals(type.parameterTypes[$$]))) return false;
+    return true;
+  }
+
+  toString() {
+    return this.fqn;
+  }
+}
+
 export class IntersectionType extends Type {
   nativeType: NativeTypes = NativeTypes.anyfunc;
 
@@ -175,9 +225,12 @@ export class IntersectionType extends Type {
   }
 }
 
-export class TypeReference extends Type {
+export class ReferenceType extends Type {
   constructor(public referencedName: string, public closure: Closure) {
     super();
+    if (!closure) {
+      debugger;
+    }
   }
 
   resolveType(typeGraph: TypeGraph): Type {
@@ -191,7 +244,9 @@ export class TypeReference extends Type {
     }
     if (!typeNode.resultType()) {
       throw new AstNodeError(
-        `Node ${resolvedReference.referencedNode.nodeName} has no resolved type`,
+        `Node ${resolvedReference.referencedNode.parent.nodeName}.${
+          resolvedReference.referencedNode.nodeName
+        } has no resolved type (${resolvedReference.referencedNode.name})`,
         resolvedReference.referencedNode
       );
     }
@@ -216,7 +271,12 @@ export class UnionType extends Type {
 
   simplify() {
     const newTypes: Type[] = [];
+
+    const superTypes = new Set<Type>();
+
     this.of.forEach($ => {
+      superTypes.add($.superType);
+
       if (!newTypes.some($1 => $1.equals($))) {
         newTypes.push($);
       }
@@ -225,6 +285,12 @@ export class UnionType extends Type {
     if (newTypes.length === 1) {
       return newTypes[0];
     } else {
+      if (superTypes.size == 1) {
+        const superType = superTypes.values().next().value;
+        if (newTypes.every($ => $.canBeAssignedTo(superType))) {
+          return superType;
+        }
+      }
       const newType = new UnionType();
       newType.of = newTypes;
       return newType;
@@ -320,7 +386,7 @@ export const InjectableTypes = {
 };
 
 export function toConcreteType(type: Type, ctx: TypeResolutionContext) {
-  if (type instanceof TypeReference) {
+  if (type instanceof ReferenceType) {
     return type.resolveType(ctx.currentGraph);
   }
 

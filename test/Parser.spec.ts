@@ -1,11 +1,14 @@
 declare var describe, it, require, console;
 
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
-import { folderBasedTest, testParseToken } from './TestHelpers';
-
+import { folderBasedTest, testParseToken, printAST } from './TestHelpers';
+import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { expect } from 'chai';
 describe('Parser', () => {
-  const phases = function(txt: string): ParsingPhaseResult {
-    return new ParsingPhaseResult('test.ro', txt);
+  const phases = function(txt: string): CanonicalPhaseResult {
+    const x = new ParsingPhaseResult('test.ro', txt);
+
+    return new CanonicalPhaseResult(x);
   };
   describe('Failing examples', () => {
     folderBasedTest(
@@ -36,6 +39,42 @@ describe('Parser', () => {
       result += literals[literals.length - 1];
       testParseToken(result, 'Document', null, phases);
     }
+
+    function testEquivalence(a: string, b: string) {
+      let aDocument: CanonicalPhaseResult = null;
+
+      testParseToken(
+        a,
+        'Document',
+        async (doc, err) => {
+          if (err) throw err;
+          aDocument = doc;
+        },
+        phases
+      );
+      testParseToken(
+        b,
+        'Document',
+        async (doc, err) => {
+          if (err) throw err;
+          expect(printAST(aDocument.document)).to.eq(printAST(doc.document));
+        },
+        phases
+      );
+    }
+
+    describe('operator precedence', () => {
+      testEquivalence(`var x = 1 + 2`, `var x = (1 + 2)`);
+      testEquivalence(`var x = 1 + 2 * 3`, `var x = (1 + (2 * 3))`);
+      testEquivalence(`var x = 1 + 2 * 3 - 4`, `var x = (1 + (2 * 3)) - 4`);
+      testEquivalence(`var x = 1 + 2 * 3 - 4 / 5`, `var x = (1 + (2 * 3)) - (4 / 5)`);
+      testEquivalence(`var x = 1 + 2 * 3 - 4 / 5`, `var x = (1 + (2 * 3)) - (4 / 5)`);
+      testEquivalence(`var x = -test.a().b()`, `var x = -((test.a()).b())`);
+      testEquivalence(`var x = -test.a() - 3`, `var x = (-(test.a())) - 3`);
+      testEquivalence(`var x = ~test.a() - 3`, `var x = (~(test.a())) - 3`);
+      testEquivalence(`var x = ~test - 3`, `var x = (~test) - 3`);
+      testEquivalence(`var x = 1 - -test - 3`, `var x = (1 - (-test)) - 3`);
+    });
 
     describe('code blocks', () => {
       test`
@@ -243,8 +282,6 @@ describe('Parser', () => {
     var test = 1
     fun getTest() = test
     `;
-
-    test`var test = 1    fun pointerOfTest() = &test    `;
 
     test`var test: Entity = 1 fun valueOfTest() = test`;
 

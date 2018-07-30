@@ -1,0 +1,71 @@
+
+|-DocumentNode
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="a"
+        |-NameIdentifierNode="x"
+        |-IntegerLiteral=1 annotations=IsValueNode
+    |-NameIdentifierNode="x"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="x1"
+        |-BinaryExpressionNode="-" annotations=IsValueNode
+          |-BinaryExpressionNode="+"
+            |-IntegerLiteral=1
+            |-BinaryExpressionNode="*"
+              |-BinaryExpressionNode="/"
+                |-IntegerLiteral=2
+                |-IntegerLiteral=3
+              |-IntegerLiteral=4
+          |-IntegerLiteral=-5
+    |-NameIdentifierNode="x1"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="x"
+        |-NameIdentifierNode="x2"
+        |-UnaryExpressionNode="~" annotations=IsValueNode
+          |-VariableReferenceNode
+            |-NameIdentifierNode="x"
+    |-NameIdentifierNode="x2"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="x"
+        |-NameIdentifierNode="x3"
+        |-UnaryExpressionNode="-" annotations=IsValueNode
+          |-VariableReferenceNode
+            |-NameIdentifierNode="x"
+    |-NameIdentifierNode="x3"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="x4"
+        |-UnaryExpressionNode="~" annotations=IsValueNode
+          |-IntegerLiteral=99
+    |-NameIdentifierNode="x4"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="test"
+        |-NameIdentifierNode="x5"
+        |-FunctionCallNode annotations=IsValueNode
+          |-VariableReferenceNode
+            |-NameIdentifierNode="x"
+          |-UnaryExpressionNode="~" annotations=IsValueNode
+            |-VariableReferenceNode
+              |-NameIdentifierNode="test"
+    |-NameIdentifierNode="x5"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="x6"
+        |-UnaryExpressionNode="!" annotations=IsValueNode
+          |-BooleanLiteral=true
+    |-NameIdentifierNode="x6"

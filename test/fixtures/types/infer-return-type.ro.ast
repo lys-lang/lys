@@ -10,22 +10,22 @@
       |-IntegerLiteral=1 type=i32 annotations=IsValueNode
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="b" type=TypeRef(i32)
-      |-TypeReferenceNode="i32"
+      |-NameIdentifierNode="b" type=i32
+      |-TypeReferenceNode="i32" type=i32
         |-NameIdentifierNode="i32"
       |-IntegerLiteral=123 type=i32 annotations=IsValueNode
   |-OverloadedFunctionNode type=fun() -> i32 & fun(a: i32) -> i32
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test"
+        |-NameIdentifierNode="test" type=fun() -> i32
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-FunDirectiveNode type=fun(a: i32) -> i32
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode="i32"
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="test"
+        |-NameIdentifierNode="test" type=fun(a: i32) -> i32
         |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
           |-BinaryExpressionNode="+" type=i32
             |-IntegerLiteral=99 type=i32
@@ -35,7 +35,7 @@
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test2"
+        |-NameIdentifierNode="test2" type=fun() -> i32
         |-IfNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
             |-IntegerLiteral=1 type=i32

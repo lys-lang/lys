@@ -1,10 +1,8 @@
-declare var describe, it, require, console;
+declare var describe;
 
-import { testParseToken, printAST, testParseTokenFailsafe, folderBasedTest } from './TestHelpers';
+import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
-
-let inspect = require('util').inspect;
 
 const phases = function(txt: string): CanonicalPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);

@@ -20,6 +20,10 @@ export interface IOverloadedInfix {
 export class ParsingContext {
   programTakenNames = new Set<string>();
 
+  messageCollector = new MessageCollector();
+}
+
+export class MessageCollector {
   errors: AstNodeError[] = [];
 
   error(error: AstNodeError);
@@ -44,6 +48,15 @@ export class ParsingContext {
 
   hasErrors() {
     return this.errors.some($ => !$.warning);
+  }
+
+  /**
+   * Takes the content of other message collector into this instance. The other instance will be purged.
+   * @param otherMessageCollector
+   */
+  mergeWith(otherMessageCollector: MessageCollector) {
+    this.errors = this.errors.concat(otherMessageCollector.errors);
+    otherMessageCollector.errors.length = 0;
   }
 }
 
@@ -84,8 +97,10 @@ export class Closure {
     x.usages++;
   }
 
-  set(nameNode: Nodes.NameIdentifierNode, valueNode: Nodes.ExpressionNode) {
+  set(nameNode: Nodes.NameIdentifierNode) {
     const localName = nameNode.name;
+
+    if (localName === '_') return;
 
     if (localName in this.localUsages && this.localUsages[localName] > 0) {
       throw new Error(`Cannot reasign ${localName} because it was used`);
@@ -95,7 +110,7 @@ export class Closure {
       throw new Error(`"${localName}" is already declared`);
     }
 
-    this.nameMappings[localName] = new Reference(nameNode, this, null, valueNode);
+    this.nameMappings[localName] = new Reference(nameNode, this, null);
 
     this.localScopeDeclares.add(localName);
 
@@ -136,8 +151,7 @@ export class Reference {
   constructor(
     public referencedNode: Nodes.NameIdentifierNode,
     public scope: Closure,
-    public moduleSource: Nodes.NameIdentifierNode = null,
-    public valueNode: Nodes.ExpressionNode
+    public moduleSource: Nodes.NameIdentifierNode = null
   ) {}
 
   get isLocalReference(): boolean {

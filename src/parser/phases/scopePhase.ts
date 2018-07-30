@@ -4,8 +4,7 @@ import { annotations } from '../annotations';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
-import { fromTypeNode } from '../types/TypeGraphBuilder';
-import { TypeReference } from '../types';
+import { IErrorPositionCapable, AstNodeError } from '../NodeError';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
@@ -30,8 +29,8 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     let returnsVoidValue = false;
 
     if (node.functionReturnType) {
-      const type = fromTypeNode(node.functionReturnType);
-      returnsVoidValue = type && type instanceof TypeReference && type.referencedName === 'void';
+      returnsVoidValue =
+        node.functionReturnType instanceof Nodes.TypeReferenceNode && node.functionReturnType.name.name === 'void';
     }
 
     if (!returnsVoidValue) {
@@ -53,7 +52,10 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.PatternMatcherNode) {
     node.lhs.annotate(new annotations.IsValueNode());
     if (node.hasAnnotation(annotations.IsValueNode)) {
-      node.matchingSet.forEach($ => $.annotate(new annotations.IsValueNode()));
+      node.matchingSet.forEach($ => {
+        $.annotate(new annotations.IsValueNode());
+        $.rhs.annotate(new annotations.IsValueNode());
+      });
     }
   }
 
@@ -70,32 +72,53 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = parent.closure;
     }
 
-    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.PatternMatcherNode) {
-      const innerClosure = node.closure.newChildClosure();
-      innerClosure.set(node.declaredName, parent.lhs);
+    if (node instanceof Nodes.MatchCaseIsNode) {
+      node.rhs.closure = node.closure.newChildClosure();
+
+      if (node.declaredName) {
+        node.rhs.closure.set(node.declaredName);
+      }
+
+      if (node.deconstructorNames) {
+        node.deconstructorNames.forEach($ => {
+          if ($.name !== '_') {
+            node.rhs.closure.set($);
+          }
+        });
+      }
     }
 
-    // if (node instanceof Nodes.MatchConditionNode) {
-    //   node.rhs.closure = node.closure.newChildClosure();
-    //   node.closure.setVariable(node.declaredName.name, node);
-    // }
+    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.PatternMatcherNode) {
+      node.rhs.closure = node.closure.newChildClosure();
+      node.rhs.closure.set(node.declaredName);
+    }
 
     if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure.set(node.functionName, node);
+      node.closure.set(node.functionName);
     }
 
     if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
-      node.closure.set(node.variableName, node);
+      node.closure.set(node.variableName);
+    }
+
+    if (node instanceof Nodes.TypeDirectiveNode) {
+      node.closure.set(node.variableName);
+    }
+
+    if (node instanceof Nodes.TypeDeclarationNode) {
+      node.declarations.forEach($ => {
+        node.closure.set($.declaredName);
+      });
     }
 
     if (node instanceof Nodes.FunctionNode) {
       if (!node.body) {
-        throw new Error('Function has no value');
+        throw new AstNodeError('Function has no value', node);
       }
 
       if (!(parent instanceof Nodes.DirectiveNode)) {
-        node.closure.set(node.functionName, node);
+        node.closure.set(node.functionName);
       }
 
       node.internalIdentifier = node.closure.getInternalIdentifier(node);
@@ -103,15 +126,11 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = node.closure.newChildClosure();
 
       node.parameters.forEach($ => {
-        node.closure.set($.parameterName, $);
+        node.closure.set($.parameterName);
         node.closure.localsMap.set($, node.closure.localsMap.size);
       });
 
       node.processParameters();
-    }
-
-    if (node instanceof Nodes.TypeDirectiveNode) {
-      node.closure.set(node.variableName, node);
     }
   }
 });
@@ -119,13 +138,13 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
 const resolveVariables = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (!node.closure.canResolveName(node.variable.name)) {
-      throw new Error(`Cannot resolve variable "${node.variable.name}"`);
+      throw new AstNodeError(`Cannot resolve variable "${node.variable.name}"`, node.variable);
     }
     node.closure.incrementUsage(node.variable.name);
   }
   if (node instanceof Nodes.TypeReferenceNode) {
     if (!node.closure.canResolveName(node.name.name)) {
-      throw new Error(`Cannot resolve type named "${node.name.name}"`);
+      throw new AstNodeError(`Cannot resolve type named "${node.name.name}"`, node.name);
     }
     node.closure.incrementUsage(node.name.name);
   }
@@ -136,15 +155,23 @@ export class ScopePhaseResult extends PhaseResult {
     return this.semanticPhaseResult.document;
   }
 
+  get errors() {
+    return this.semanticPhaseResult.parsingContext.messageCollector.errors;
+  }
+
+  set errors(val: IErrorPositionCapable[]) {
+    if (val.length) throw new Error('cannot set errors property');
+  }
+
   constructor(public semanticPhaseResult: SemanticPhaseResult) {
     super();
     this.execute();
   }
 
   protected execute() {
-    findValueNodes(this.document, this, null);
     createClosures(this.document, this, null);
     resolveVariables(this.document, this, null);
+    findValueNodes(this.document, this, null);
 
     failIfErrors('Scope phase', this.document, this);
   }

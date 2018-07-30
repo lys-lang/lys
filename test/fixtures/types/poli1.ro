@@ -1,0 +1,18 @@
+type i32
+type boolean
+
+type Boolean {
+  True()
+  False()
+}
+
+fun gt0(x: i32) =
+  if (x > 0)
+    True()
+  else
+    False()
+
+fun isTrue(a: Boolean) = a match {
+  case is True() -> true
+  else -> false
+}

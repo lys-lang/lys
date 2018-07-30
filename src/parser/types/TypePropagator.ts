@@ -1,5 +1,5 @@
 import { TypeGraph, TypeNode, Edge } from './TypeGraph';
-import { ParsingContext, Closure } from '../closure';
+import { ParsingContext, Closure, MessageCollector } from '../closure';
 import { Nodes } from '../nodes';
 import { Type, FunctionType } from '../types';
 import { TypeGraphBuilder } from './TypeGraphBuilder';
@@ -125,25 +125,22 @@ export class TypePropagator {
 
   private start(): void {
     while (this.executionStack.length !== 0) {
-      const nodeToExecute = this.executionStack.pop();
+      const nodeToExecute = this.executionStack.shift();
       nodeToExecute.execute(this.ctx);
     }
   }
 
   private scheduleNodes(): void {
     this.ctx.currentGraph.nodes.forEach(node => {
-      if (!node.allDependenciesResolved()) {
+      if (node.allDependenciesResolved()) {
+        this.scheduleNode(node);
+      } else {
         const incomingEdges = node.incomingEdges();
 
         if (incomingEdges.some($ => $.crossGraphEdge())) {
           const crossGraph = incomingEdges.filter(edge => edge.crossGraphEdge());
           crossGraph.forEach($ => this.scheduleDependencies($, []));
         }
-      }
-    });
-    this.ctx.currentGraph.nodes.forEach(node => {
-      if (node.allDependenciesResolved()) {
-        this.scheduleNode(node);
       }
     });
   }
@@ -158,7 +155,7 @@ export class TypePropagator {
         if (!stack.includes(edge.source)) {
           stack.push(edge.source);
           edge.source.incomingEdges().forEach(incomingEdge => {
-            //Avoid self reference loop
+            // Avoid self reference loop
             if (incomingEdge.source != edge.target) {
               this.scheduleDependencies(incomingEdge, stack);
             }
@@ -195,23 +192,28 @@ export function resolveReturnType(
     return result;
   } else {
     const context = ctx.currentParsingContext;
+    const messageCollector = new MessageCollector();
 
-    const dataGraphBuilder = new TypeGraphBuilder(ctx.parsingContext, typeGraph);
+    const dataGraphBuilder = new TypeGraphBuilder(context, typeGraph, messageCollector);
 
     const dataGraph: TypeGraph = dataGraphBuilder.buildFunctionNode(functionNode, argTypes);
 
     ctx.addFunctionSubGraph(functionNode, argTypes, dataGraph);
     const functionName = functionNode.functionName.name + '(' + argTypes.join(',') + ')';
     ctx.rootGraph.addSubGraph(dataGraph, functionName);
-    ctx.newExecutorWithContext(functionNode.closure, dataGraph, context).run();
+    const propagator = ctx.newExecutorWithContext(functionNode.closure, dataGraph, context);
+    propagator.run();
     const value = dataGraph.findNode(functionNode);
 
     const result = value.resultType();
 
-    if (!result || ctx.parsingContext.hasErrors()) {
+    if (!result && messageCollector.hasErrors()) {
       ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
       ctx.rootGraph.removeSubGraph(dataGraph, functionName);
+    } else {
+      context.messageCollector.mergeWith(messageCollector);
     }
+
     if (result instanceof FunctionType) {
       // THIS SHOULD NOT HAPPEN
       return result.returnType;

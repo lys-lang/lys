@@ -43,7 +43,7 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
       if (used.indexOf(param.parameterName.name) == -1) {
         used.push(param.parameterName.name);
       } else {
-        throw new AstNodeError(`Duplicated parameter "${param.parameterName.name}"`, node);
+        throw new AstNodeError(`Duplicated parameter "${param.parameterName.name}"`, param);
       }
     });
   }

@@ -4,35 +4,35 @@
     |-NameIdentifierNode="i32" type=i32
   |-OverloadedFunctionNode type=fun(n: i32, a: i32, b: i32) -> i32
     |-FunDirectiveNode type=fun(n: i32, a: i32, b: i32) -> i32
-      |-FunctionNode type=fun(n: i32, a: i32, b: i32) -> i32
+      |-FunctionNode type=i32
         |-ParameterNode
-          |-NameIdentifierNode="n" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="n" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
         |-ParameterNode
-          |-NameIdentifierNode="a" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="a" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
         |-ParameterNode
-          |-NameIdentifierNode="b" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="b" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="fibo"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="fibo" type=fun(n: i32, a: i32, b: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-PatternMatcherNode type=i32 annotations=IsValueNode
           |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="n"
           |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=0 type=i32
-            |-VariableReferenceNode type=i32
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
               |-NameIdentifierNode="a"
           |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=1 type=i32
-            |-VariableReferenceNode type=i32
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
               |-NameIdentifierNode="b"
           |-MatchDefaultNode type=i32 annotations=IsValueNode
-            |-FunctionCallNode type=i32
+            |-FunctionCallNode type=i32 annotations=IsValueNode
               |-VariableReferenceNode type=fun(n: i32, a: i32, b: i32) -> i32
                 |-NameIdentifierNode="fibo"
               |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
@@ -49,13 +49,13 @@
     |-NameIdentifierNode="fibo" type=fun(n: i32, a: i32, b: i32) -> i32
   |-OverloadedFunctionNode type=fun(n: i32) -> i32
     |-FunDirectiveNode type=fun(n: i32) -> i32
-      |-FunctionNode type=fun(n: i32) -> i32
+      |-FunctionNode type=i32
         |-ParameterNode
           |-NameIdentifierNode="n" type=i32
-          |-TypeReferenceNode="i32"
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="fib"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="fib" type=fun(n: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-FunctionCallNode type=i32 annotations=IsValueNode
           |-VariableReferenceNode type=fun(n: i32, a: i32, b: i32) -> i32

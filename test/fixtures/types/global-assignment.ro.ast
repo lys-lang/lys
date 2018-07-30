@@ -11,8 +11,8 @@
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="addOne"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="addOne" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-BlockNode type=i32 annotations=IsValueNode
           |-VarDeclarationNode type=void
@@ -35,8 +35,8 @@
   |-OverloadedFunctionNode type=fun() -> void
     |-FunDirectiveNode type=fun() -> void
       |-FunctionNode type=fun() -> void
-        |-NameIdentifierNode="addOneNoReturn"
-        |-TypeReferenceNode="void"
+        |-NameIdentifierNode="addOneNoReturn" type=fun() -> void
+        |-TypeReferenceNode="void" type=void
           |-NameIdentifierNode="void"
         |-BlockNode type=void
           |-AssignmentNode type=i32

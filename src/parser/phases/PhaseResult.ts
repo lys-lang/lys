@@ -1,7 +1,7 @@
-import { AstNodeError } from '../NodeError';
+import { IErrorPositionCapable } from '../NodeError';
 
 export abstract class PhaseResult {
-  errors: AstNodeError[] = [];
+  errors: IErrorPositionCapable[] = [];
 
   isSuccess() {
     return this.errors.length === 0;

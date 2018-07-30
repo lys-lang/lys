@@ -6,20 +6,20 @@
     |-FunDirectiveNode type=fun(a: i32) -> i32
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
-          |-NameIdentifierNode="a" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="a" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="innerFunctionArgs"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="innerFunctionArgs" type=fun(a: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-VariableReferenceNode type=i32 annotations=IsValueNode
           |-NameIdentifierNode="a"
     |-NameIdentifierNode="innerFunctionArgs" type=fun(a: i32) -> i32
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="innerFunction"
-        |-TypeReferenceNode="i32"
+      |-FunctionNode type=i32
+        |-NameIdentifierNode="innerFunction" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-FunctionCallNode type=i32 annotations=IsValueNode
           |-VariableReferenceNode type=fun(a: i32) -> i32
@@ -29,27 +29,27 @@
   |-OverloadedFunctionNode type=fun() -> i32 & fun(a: i32) -> i32
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="over"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="over" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-FunDirectiveNode type=fun(a: i32) -> i32
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
-          |-NameIdentifierNode="a" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="a" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="over"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="over" type=fun(a: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-VariableReferenceNode type=i32 annotations=IsValueNode
           |-NameIdentifierNode="a"
     |-NameIdentifierNode="over" type=fun() -> i32 & fun(a: i32) -> i32
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="outerFunction"
-        |-TypeReferenceNode="i32"
+      |-FunctionNode type=i32
+        |-NameIdentifierNode="outerFunction" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
           |-FunctionCallNode type=i32

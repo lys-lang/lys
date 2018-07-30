@@ -7,17 +7,17 @@
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode="i32"
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="x"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="x" type=fun(a: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-VariableReferenceNode type=i32 annotations=IsValueNode
           |-NameIdentifierNode="a"
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="x"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="x" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="x" type=fun(a: i32) -> i32 & fun() -> i32

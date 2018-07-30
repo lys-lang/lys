@@ -8,31 +8,31 @@
     |-FunDirectiveNode type=fun(x: i32) -> i32
       |-FunctionNode type=fun(x: i32) -> i32
         |-ParameterNode
-          |-NameIdentifierNode="x" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="x" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="x"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="x" type=fun(x: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-VariableReferenceNode type=i32 annotations=IsValueNode
           |-NameIdentifierNode="x"
     |-FunDirectiveNode type=fun(x: f32) -> f32
       |-FunctionNode type=fun(x: f32) -> f32
         |-ParameterNode
-          |-NameIdentifierNode="x" type=TypeRef(f32)
-          |-TypeReferenceNode="f32"
+          |-NameIdentifierNode="x" type=f32
+          |-TypeReferenceNode="f32" type=f32
             |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="x"
-        |-TypeReferenceNode="f32"
+        |-NameIdentifierNode="x" type=fun(x: f32) -> f32
+        |-TypeReferenceNode="f32" type=f32
           |-NameIdentifierNode="f32"
         |-VariableReferenceNode type=f32 annotations=IsValueNode
           |-NameIdentifierNode="x"
     |-NameIdentifierNode="x" type=fun(x: i32) -> i32 & fun(x: f32) -> f32
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="outer"
-        |-TypeReferenceNode="i32"
+      |-FunctionNode type=i32
+        |-NameIdentifierNode="outer" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-FunctionCallNode type=i32 annotations=IsValueNode
           |-VariableReferenceNode type=fun(x: i32) -> i32 & fun(x: f32) -> f32

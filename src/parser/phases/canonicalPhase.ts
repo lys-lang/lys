@@ -107,7 +107,7 @@ const visitor = {
       ret.isExported = true;
     }
 
-    child; // this is the type kind
+    child; // this is the type kind "type, rectype, cotype"
 
     child = children.shift(); // this is the NameIdentifier
 
@@ -267,6 +267,20 @@ const visitor = {
     ret.rhs = visit(x.children[2]);
     return ret;
   },
+  CaseIs(x: IToken) {
+    const ret = new Nodes.MatchCaseIsNode(x);
+    ret.declaredName = visitChildTypeOrNull(x, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    ret.typeReference = visitChildTypeOrNull(x, 'TypeReference') as Nodes.TypeReferenceNode;
+
+    const deconstruct = findChildrenType(x, 'DeconstructStruct');
+
+    if (deconstruct) {
+      ret.deconstructorNames = deconstruct.children.map($ => visit($));
+    }
+
+    ret.rhs = visitLastChild(x);
+    return ret;
+  },
   CaseElse(x: IToken) {
     const ret = new Nodes.MatchDefaultNode(x);
     ret.rhs = visit(x.children[0]);
@@ -278,6 +292,29 @@ const visitor = {
     } else {
       return new Nodes.IntegerLiteral(x);
     }
+  },
+  StringLiteral(x: IToken) {
+    const ret = new Nodes.StringLiteral(x);
+    ret.value = x.text; // TODO: Parse string correctly
+    return ret;
+  },
+  BinNegExpression(x: IToken) {
+    const ret = new Nodes.UnaryExpressionNode(x);
+    ret.rhs = visit(x.children[0]);
+    ret.operator = '~';
+    return ret;
+  },
+  NegExpression(x: IToken) {
+    const ret = new Nodes.UnaryExpressionNode(x);
+    ret.rhs = visit(x.children[0]);
+    ret.operator = '!';
+    return ret;
+  },
+  UnaryMinus(x: IToken) {
+    const ret = new Nodes.UnaryExpressionNode(x);
+    ret.rhs = visit(x.children[0]);
+    ret.operator = '-';
+    return ret;
   },
   BooleanLiteral(x: IToken) {
     return new Nodes.BooleanLiteral(x);
@@ -302,8 +339,23 @@ const visitor = {
   SyntaxError(_: IToken) {
     return null;
   },
+  StructDeclaration(astNode: IToken) {
+    const ret = new Nodes.StructDeclarationNode(astNode);
+
+    ret.declaredName = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    const params = findChildrenType(astNode, 'FunctionParamsList');
+    if (params) {
+      ret.parameters = params.children.map($ => visit($));
+    } else {
+      ret.parameters = [];
+    }
+
+    return ret;
+  },
   TypeDeclaration(astNode: IToken) {
-    const ret = new Nodes.UnionTypeNode(astNode);
+    const ret = new Nodes.TypeDeclarationNode(astNode);
+    const typeDeclElements = findChildrenType(astNode, 'TypeDeclElements');
+    ret.declarations = typeDeclElements.children.map($ => visit($));
     // TODO
     return ret;
   },

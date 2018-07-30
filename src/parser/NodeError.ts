@@ -41,6 +41,15 @@ export class InvalidOverload extends AstNodeError {
   }
 }
 
+export class InvalidCall extends AstNodeError {
+  constructor(public expectedTypes: Type[], public givenTypes: Type[], node: Nodes.Node) {
+    super(
+      `Invalid signature. Expecting arguments type (${expectedTypes.join(', ')}) but got (${givenTypes.join(', ')})`,
+      node
+    );
+  }
+}
+
 export class NotAFunction extends AstNodeError {
   constructor(public givenType: Type, node: Nodes.Node) {
     super(`Type mismatch: Type "${givenType}" is not a function`, node);

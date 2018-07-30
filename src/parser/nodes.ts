@@ -1,6 +1,6 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure } from './closure';
-import { Type, NativeTypes, FunctionType } from './types';
+import { Type, NativeTypes, FunctionType, StructType } from './types';
 import { BinaryOperation } from '../compiler/languageOperations';
 import { Annotation, IAnnotationConstructor } from './annotations';
 
@@ -445,11 +445,15 @@ export namespace Nodes {
     value: null = null;
   }
 
+  export class StringLiteral extends LiteralNode<string> {
+    value: string;
+  }
+
   export class FunctionCallNode extends ExpressionNode {
     isInfix: boolean = false;
     functionNode: ExpressionNode;
     argumentsNode: ExpressionNode[];
-    resolvedFunctionType: FunctionType;
+    resolvedFunctionType: FunctionType | StructType;
   }
 
   export class BinaryExpressionNode extends ExpressionNode {
@@ -473,14 +477,6 @@ export namespace Nodes {
     }
   }
 
-  export class BooleanNegNode extends ExpressionNode {
-    lhs: ExpressionNode;
-  }
-
-  export class NumberNegNode extends ExpressionNode {
-    lhs: ExpressionNode;
-  }
-
   export abstract class MatcherNode extends ExpressionNode {
     rhs: ExpressionNode;
   }
@@ -496,6 +492,12 @@ export namespace Nodes {
     condition: ExpressionNode;
   }
 
+  export class MatchCaseIsNode extends MatcherNode {
+    declaredName: NameIdentifierNode;
+    typeReference: TypeReferenceNode;
+    deconstructorNames: NameIdentifierNode[];
+  }
+
   export class MatchLiteralNode extends MatcherNode {
     literal: LiteralNode<any>;
   }
@@ -508,7 +510,15 @@ export namespace Nodes {
     of: TypeNode[];
   }
 
-  export class TypeDeclarationNode extends Node {}
+  export class StructDeclarationNode extends TypeNode {
+    internalIdentifier: string;
+    declaredName: NameIdentifierNode;
+    parameters: ParameterNode[];
+  }
+
+  export class TypeDeclarationNode extends TypeNode {
+    declarations: StructDeclarationNode[];
+  }
 
   export class EffectDeclarationNode extends Node {
     name: NameIdentifierNode;

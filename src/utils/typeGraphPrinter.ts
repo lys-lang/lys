@@ -6,7 +6,7 @@ export function print(graph: TypeGraph, code: string = '', name: string = 'Docum
   const writer: StringCodeWriter = new StringCodeWriter();
   writer.println(`digraph ${name.replace(/"/g, "'")} {`);
   writer.indent();
-  writer.println('  node [fixedsize=shape fontsize=10]');
+  writer.println('  node [shape=box,fixedsize=shape fontsize=10]');
   printNodes(writer, graph);
 
   let i = 0;
@@ -16,7 +16,7 @@ export function print(graph: TypeGraph, code: string = '', name: string = 'Docum
     i++;
     writer.indent();
     writer.printIndent();
-    writer.println('node [style=filled];');
+    writer.println('node [style=filled, fillcolor=grey];');
     printNodes(writer, graph);
     printEdges(writer, graph);
     writer.dedent();
@@ -31,6 +31,8 @@ export function print(graph: TypeGraph, code: string = '', name: string = 'Docum
   writer.dedent();
   writer.println('}');
 
+  resetPrint(graph);
+
   return writer.codeContent();
 }
 
@@ -39,26 +41,35 @@ export function printEdges(writer: StringCodeWriter, graph: TypeGraph): void {
     node.outgoingEdges().forEach(edge => {
       writer.printIndent();
       writer.print(`${id(edge.source, graph)} -> ${id(edge.target, graph)}`);
+      const color = edge.error() == null ? 'blue' : edge.error() == true ? 'red' : 'black';
+
       writer.println(
         '[taillabel=' +
           '"' +
           edgeLabel(edge).replace(/"/g, "'") +
           '"' +
-          ' labeldistance="1" fontname="times  italic" fontsize = 10 ' +
-          (edge.error() ? 'color="red"' : '') +
-          ' ];'
+          ' labeldistance="1" fontname="times  italic" fontsize = 10 color="' +
+          color +
+          '" ];'
       );
     });
   });
 }
 
-const printedNodes = new Set<TypeNode>();
-
 export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
+  const printedNodes = getPrintedNodes(graph);
   graph.nodes.forEach(node => {
     if (!printedNodes.has(node)) {
       writer.printIndent();
-      writer.println(`${id(node, graph)} [label="${nodeLabel(node).replace(/"/g, "'")}"];`);
+      const label =
+        nodeLabel(node) +
+        '\\n' +
+        node.typeResolver.constructor.name +
+        (node.resultType() ? '\\n⟨' + node.resultType().toString() + '⟩' : '');
+
+      writer.println(
+        `${id(node, graph)} [label="${label.replace(/"/g, "'")}"${!node.resultType() ? ', color=red' : ''}];`
+      );
       printedNodes.add(node);
     }
   });
@@ -78,30 +89,48 @@ export function edgeLabel(edge: Edge): string {
 
 export function nodeLabel(node: TypeNode): string {
   if (node.astNode instanceof Nodes.VariableReferenceNode) {
-    return `Var:\\n${node.astNode.variable.name}`;
+    return `Var: ${node.astNode.variable.name}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
-    return `Name:\\n${node.astNode.name}`;
+    return `Name: ${node.astNode.name}`;
+  } else if (node.astNode instanceof Nodes.TypeReferenceNode) {
+    return `TypeRef: ${node.astNode.name.name}`;
   } else if (node.astNode instanceof Nodes.IntegerLiteral) {
-    return `Int:\\n${node.astNode.value}`;
+    return `Int: ${node.astNode.value}`;
   } else if (node.astNode instanceof Nodes.FloatLiteral) {
-    return `Float:\\n${node.astNode.value.toFixed(5)}`;
+    return `Float: ${node.astNode.value.toFixed(5)}`;
   } else if (node.astNode instanceof Nodes.ValDeclarationNode) {
-    return `Val Decl:\\n${node.astNode.variableName.name}`;
+    return `ValDecl: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.VarDeclarationNode) {
-    return `Var Decl:\\n${node.astNode.variableName.name}`;
+    return `VarDecl: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.OverloadedFunctionNode) {
-    return `OverloadedFun:\\n${node.astNode.functionName.name}`;
+    return `FunOverload: ${node.astNode.functionName.name}`;
   } else if (node.astNode instanceof Nodes.FunctionNode) {
-    return `Fun:\\n${node.astNode.functionName.name}`;
+    return `FunNode: ${node.astNode.functionName.name}`;
   } else if (node.astNode instanceof Nodes.TypeDirectiveNode) {
-    return `TypeDirective:\\n${node.astNode.variableName.name}`;
+    return `TypeDirective: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.FunDirectiveNode) {
-    return `fun ${node.astNode.functionNode.functionName.name}`;
+    return `FunDirective: ${node.astNode.functionNode.functionName.name}`;
   }
   return node.astNode ? node.astNode.nodeName + node.astNode.text : '<no node>';
 }
 
 const idSymbol = Symbol('id');
+const printedSymbol = Symbol('printed');
+
+export function resetPrint(typeGraph: TypeGraph) {
+  while (typeGraph.parentGraph) {
+    typeGraph = typeGraph.parentGraph;
+  }
+  typeGraph[idSymbol] = new Map();
+  typeGraph[printedSymbol] = new Set();
+}
+
+export function getPrintedNodes(typeGraph: TypeGraph) {
+  while (typeGraph.parentGraph) {
+    typeGraph = typeGraph.parentGraph;
+  }
+  return typeGraph[printedSymbol] || (typeGraph[printedSymbol] = new Set());
+}
 
 export function id(node: TypeNode, typeGraph: TypeGraph): string {
   while (typeGraph.parentGraph) {

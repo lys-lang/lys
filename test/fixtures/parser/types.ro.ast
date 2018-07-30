@@ -4,7 +4,13 @@
     |-NameIdentifierNode="bool"
   |-TypeDirectiveNode
     |-NameIdentifierNode="Color"
-    |-UnionTypeNode
+    |-TypeDeclarationNode
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Red"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Green"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Blue"
   |-TypeDirectiveNode
     |-NameIdentifierNode="theFn1"
     |-FunctionTypeNode
@@ -235,3 +241,32 @@
           |-TypeReferenceNode="i32"
             |-NameIdentifierNode="i32"
       |-IntegerLiteral=1
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Number"
+    |-TypeDeclarationNode
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Infinity"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="NDet"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Real"
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode="f32"
+            |-NameIdentifierNode="f32"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Natural"
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode="i32"
+            |-NameIdentifierNode="i32"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Complex"
+        |-ParameterNode
+          |-NameIdentifierNode="real"
+          |-TypeReferenceNode="f32"
+            |-NameIdentifierNode="f32"
+        |-ParameterNode
+          |-NameIdentifierNode="imaginary"
+          |-TypeReferenceNode="f32"
+            |-NameIdentifierNode="f32"

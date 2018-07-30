@@ -93,19 +93,16 @@ RelExpression     ::= ShiftExpression (WS* RelOperator WS* ShiftExpression)* {si
 ShiftExpression   ::= AddExpression (WS* ShiftOperator WS* AddExpression)* {simplifyWhenOneChildren=true}
 AddExpression     ::= MulExpression (WS* AddOperator WS* MulExpression)* {simplifyWhenOneChildren=true}
 MulExpression     ::= UnaryExpression (WS* MulOperator WS* UnaryExpression)* {simplifyWhenOneChildren=true}
-UnaryExpression   ::= NegExpression | UnaryMinus | IfExpression | FunctionCallExpression  {simplifyWhenOneChildren=true}
+UnaryExpression   ::= NegExpression | BinNegExpression | UnaryMinus | IfExpression | FunctionCallExpression  {simplifyWhenOneChildren=true}
 
 NegExpression     ::= '!' OrExpression {pin=1}
+BinNegExpression  ::= '~' OrExpression {pin=1}
 UnaryMinus        ::= !NumberLiteral '-' OrExpression {pin=2}
-
-RefPointerOperator::= '*' | '&'
-RefExpression     ::= RefPointerOperator VariableReference
 
 FunctionCallExpression
                   ::= Value (WS* &'(' CallArguments)? {simplifyWhenOneChildren=true}
 
 Value             ::= ( Literal
-                      | RefExpression
                       | VariableReference
                       | &'(' ParenExpression
                       | &'{' CodeBlock
@@ -122,11 +119,15 @@ CodeBlock         ::= '{' WS* (Statement (NEW_LINE WS* Statement)* WS*)? '}' {pi
 /* Pattern matching */
 MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
 
-MatchElements     ::= (CaseCondition | CaseLiteral | CaseElse) WS*  {fragment=true}
+MatchElements     ::= (CaseCondition | CaseIs | CaseLiteral | CaseElse) WS*  {fragment=true}
 
 CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression WS* '->' WS* Expression {pin=5}
 CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
+CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ TypeReference WS* DeconstructStruct? '->' WS* Expression {pin=4}
 CaseElse          ::= ELSE_KEYWORD WS* '->' WS* Expression {pin=3}
+
+DeconstructStruct ::= '(' (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
+NthNameIdentifier ::= ',' WS* NameIdentifier WS* {fragment=true}
 
 /* Function call */
 CallArguments     ::= OPEN_PAREN Arguments? CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
@@ -152,7 +153,7 @@ Literal           ::= ( StringLiteral
                       | NullLiteral
                       ) {fragment=true}
 
-NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])*
+NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])* ('::' [A-Za-z_]([A-Za-z0-9_])+)*
 
 /* Keywords */
 
@@ -182,7 +183,7 @@ RESERVED_WORDS    ::= ( 'async' | 'await' | 'defer'
                       | 'class' | 'export' | 'public' | 'protected' | 'extends'
                       | 'import' | 'from' | 'abstract'
                       | 'finally' | 'new' | 'native' | 'enum' | 'type'
-                      | 'yield' | 'for' | 'do' | 'while' | 'try'
+                      | 'yield' | 'for' | 'do' | 'while' | 'try' | 'is'
                       ) WS+
 
 TRUE_KEYWORD      ::= 'true'   ![A-Za-z0-9_]

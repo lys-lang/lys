@@ -4,17 +4,17 @@
     |-NameIdentifierNode="i32" type=i32
   |-OverloadedFunctionNode type=fun(x: i32, y: i32) -> i32
     |-FunDirectiveNode type=fun(x: i32, y: i32) -> i32
-      |-FunctionNode type=fun(x: i32, y: i32) -> i32
+      |-FunctionNode type=i32
         |-ParameterNode
-          |-NameIdentifierNode="x" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="x" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
         |-ParameterNode
-          |-NameIdentifierNode="y" type=TypeRef(i32)
-          |-TypeReferenceNode="i32"
+          |-NameIdentifierNode="y" type=i32
+          |-TypeReferenceNode="i32" type=i32
             |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="gcd"
-        |-TypeReferenceNode="i32"
+        |-NameIdentifierNode="gcd" type=fun(x: i32, y: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-BlockNode type=i32 annotations=IsValueNode
           |-IfNode type=i32 annotations=IsValueNode
@@ -57,9 +57,9 @@
     |-NameIdentifierNode="gcd" type=fun(x: i32, y: i32) -> i32
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test"
-        |-TypeReferenceNode="i32"
+      |-FunctionNode type=i32
+        |-NameIdentifierNode="test" type=fun() -> i32
+        |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-BlockNode type=i32 annotations=IsValueNode
           |-FunctionCallNode type=i32 annotations=IsValueNode

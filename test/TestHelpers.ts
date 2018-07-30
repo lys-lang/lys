@@ -52,7 +52,10 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
     let result: T;
 
     try {
-      result = phases(txt);
+      const x: any = (result = phases(txt));
+      if (x.document) {
+        x.document.file = itName;
+      }
     } catch (e) {
       if (customTest) {
         await customTest(result, e);

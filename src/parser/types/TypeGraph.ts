@@ -1,24 +1,9 @@
 import { Nodes } from '../nodes';
-import { Type, toConcreteType } from '../types';
+import { Type } from '../types';
 import { TypeResolutionContext } from './TypePropagator';
-import { TypeMismatch } from '../NodeError';
-
-function exists<T>(set: Array<T>, delegate: (T) => boolean): boolean {
-  if (set.length == 0) return false;
-
-  for (let entry of set) {
-    if (delegate(entry)) return true;
-  }
-
-  return false;
-}
 
 export abstract class TypeResolver {
   abstract execute(node: TypeNode, ctx: TypeResolutionContext): Type | null;
-
-  supportsPartialResolution(): boolean {
-    return false;
-  }
 }
 
 export class LiteralTypeResolver extends TypeResolver {
@@ -98,7 +83,7 @@ export class TypeNode {
   parentGraph: TypeGraph | null = null;
 
   execute(ctx: TypeResolutionContext): void {
-    if (this.typeResolver.supportsPartialResolution() || this.allDependenciesResolved()) {
+    if (this.allDependenciesResolved()) {
       if (this.amount < this.MAX_ATTEMPTS) {
         this.amount = this.amount + 1;
         let resultType: Type | null = this.typeResolver.execute(this, ctx);
@@ -106,18 +91,18 @@ export class TypeNode {
         if (resultType) {
           if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
             // We only add one if the type is new
-            const newType =
-              this.astNode instanceof Nodes.VariableReferenceNode ? toConcreteType(resultType, ctx) : resultType;
+            const newType = resultType;
+            // this.astNode instanceof Nodes.VariableReferenceNode ? toConcreteType(resultType, ctx) : resultType;
 
             this.astNode.ofType = newType;
-
-            this._outgoingEdges.forEach(edge => {
-              edge.propagateType(newType, ctx);
-            });
           }
+
+          this._outgoingEdges.forEach(edge => {
+            edge.propagateType(this.astNode.ofType, ctx);
+          });
         }
       } else {
-        ctx.parsingContext.warning(
+        ctx.parsingContext.messageCollector.warning(
           `Unable to infer type as recursion didn't stabilize after ${this.MAX_ATTEMPTS} attempts.`,
           this.astNode
         );
@@ -137,7 +122,7 @@ export class TypeNode {
     return (
       this.incomingEdges().length == 0 ||
       this.typeResolver instanceof LiteralTypeResolver ||
-      !exists(this.incomingEdges(), $ => !$.incomingTypeDefined())
+      !this.incomingEdges().some($ => !$.incomingTypeDefined())
     );
   }
 
@@ -168,14 +153,9 @@ export class TypeNode {
 
 export class Edge {
   private _incomingType: Type | null = null;
-  private _error = false;
+  private _error: boolean | null = null;
 
-  constructor(
-    public source: TypeNode,
-    public target: TypeNode,
-    public label: string = '',
-    public expected: Type | null = null
-  ) {
+  constructor(public source: TypeNode, public target: TypeNode, public label: string = '') {
     source.addOutgoingEdge(this);
     target.addIncomingEdge(this);
   }
@@ -203,23 +183,9 @@ export class Edge {
   }
 
   propagateType(actualType: Type, ctx: TypeResolutionContext): void {
-    actualType = toConcreteType(actualType, ctx);
-
-    if (this.expected) {
-      const expectedType: Type = toConcreteType(this.expected, ctx);
-
-      if (!actualType.canBeAssignedTo(expectedType)) {
-        this._error = true;
-        this._incomingType = actualType;
-        ctx.parsingContext.error(new TypeMismatch(actualType, expectedType, this.source.astNode));
-      } else {
-        this._incomingType = actualType;
-        ctx.currentExecutor.scheduleNode(this.target);
-      }
-    } else {
-      this._incomingType = actualType;
-      ctx.currentExecutor.scheduleNode(this.target);
-    }
+    this._error = false;
+    this._incomingType = actualType;
+    ctx.currentExecutor.scheduleNode(this.target);
   }
 
   mayBeIncomingType(): Type | null {
@@ -227,7 +193,9 @@ export class Edge {
   }
 
   incomingType(): Type | null {
-    if (!this._incomingType) throw new Error('Type not defined');
+    if (!this._incomingType) {
+      throw new Error('Type not defined');
+    }
     return this._incomingType;
   }
 

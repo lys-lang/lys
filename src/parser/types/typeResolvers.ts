@@ -3,21 +3,19 @@ import { TypeResolutionContext, resolveReturnType } from './TypePropagator';
 import {
   VoidType,
   UnionType,
-  i32,
-  f32,
   FunctionType,
   Type,
   IntersectionType,
-  bool,
   toConcreteType,
-  InvalidType
+  InvalidType,
+  StructType,
+  bool
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
-import { fromTypeNode } from './TypeGraphBuilder';
 import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
 import { last } from '../helpers';
-import { TypeMismatch, InvalidOverload, NotAFunction } from '../NodeError';
+import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall } from '../NodeError';
 
 declare var console;
 
@@ -35,16 +33,19 @@ export const EdgeLabels = {
   LHS: 'LHS',
   RHS: 'RHS',
   STATEMENTS: 'STATEMENTS',
-  PATTERN_MATCHING_VALUE: 'PATTERN_MATCHING_VALUE'
+  PATTERN_MATCHING_VALUE: 'PATTERN_MATCHING_VALUE',
+  SUPER_TYPE: 'SUPER_TYPE',
+  RETURN_TYPE: '#RETURN_TYPE',
+  DEFAULT_VALUE: 'DEFAULT_VALUE'
 };
 
 export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   if (astNode instanceof Nodes.IntegerLiteral) {
-    return new LiteralTypeResolver(new i32());
+    return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.FloatLiteral) {
-    return new LiteralTypeResolver(new f32());
+    return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.BooleanLiteral) {
-    return new LiteralTypeResolver(new bool());
+    return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.IfNode) {
     return new IfElseTypeResolver();
   } else if (astNode instanceof Nodes.DocumentNode) {
@@ -61,8 +62,14 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new FunctionTypeResolver();
   } else if (astNode instanceof Nodes.VariableReferenceNode) {
     return new VariableReferenceResolver();
+  } else if (astNode instanceof Nodes.StructDeclarationNode) {
+    return new StructTypeResolver();
   } else if (astNode instanceof Nodes.TypeReferenceNode) {
     return new TypeReferenceResolver();
+  } else if (astNode instanceof Nodes.UnionTypeNode) {
+    return new UnionTypeResolver();
+  } else if (astNode instanceof Nodes.IntersectionTypeNode) {
+    return new IntersectionTypeResolver();
   } else if (astNode instanceof Nodes.BinaryExpressionNode) {
     return new BinaryOpTypeResolver();
   } else if (astNode instanceof Nodes.BlockNode) {
@@ -75,18 +82,31 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new MatchDefaultTypeResolver();
   } else if (astNode instanceof Nodes.MatchLiteralNode) {
     return new MatchLiteralTypeResolver();
+  } else if (astNode instanceof Nodes.MatchCaseIsNode) {
+    return new MatchCaseIsTypeResolver();
   } else if (astNode instanceof Nodes.AssignmentNode) {
     return new AssignmentNodeTypeResolver();
   }
+
+  // if (astNode instanceof Nodes.TypeNode) {
+  //   return new TypeTypeResolver();
+  // }
 
   console.log(`Node ${astNode.nodeName} has no type resolver`);
 
   return new UnknownTypeResolver();
 }
 
+export class TypeTypeResolver extends TypeResolver {
+  execute(_node: TypeNode, _ctx: TypeResolutionContext): Type {
+    debugger;
+    return INVALID_TYPE;
+  }
+}
+
 export class UnknownTypeResolver extends TypeResolver {
   execute(_node: TypeNode, _ctx: TypeResolutionContext) {
-    return null;
+    return INVALID_TYPE;
   }
 }
 
@@ -110,6 +130,41 @@ export class PassThroughTypeResolver extends TypeResolver {
   }
 }
 
+export class FunctionArgumentTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const [defaultValue] = node.incomingEdgesByName(EdgeLabels.DEFAULT_VALUE);
+    const [parameterType] = node.incomingEdges().filter($ => $ != defaultValue);
+
+    if (defaultValue) {
+      if (!defaultValue.incomingType().canBeAssignedTo(parameterType.incomingType())) {
+        ctx.parsingContext.messageCollector.error(
+          new TypeMismatch(defaultValue.incomingType(), parameterType.incomingType(), defaultValue.source.astNode)
+        );
+      }
+    }
+
+    return parameterType.incomingType();
+  }
+}
+
+export class VarDeclarationTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const [defaultValue] = node.incomingEdgesByName(EdgeLabels.DEFAULT_VALUE);
+    const [parameterType] = node.incomingEdges().filter($ => $ != defaultValue);
+
+    if (parameterType) {
+      if (!defaultValue.incomingType().canBeAssignedTo(parameterType.incomingType())) {
+        ctx.parsingContext.messageCollector.error(
+          new TypeMismatch(defaultValue.incomingType(), parameterType.incomingType(), defaultValue.source.astNode)
+        );
+      }
+      return parameterType.incomingType();
+    }
+
+    return defaultValue.incomingType();
+  }
+}
+
 export class AssignmentNodeTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext) {
     const assignmentNode = node.astNode as Nodes.AssignmentNode;
@@ -118,11 +173,13 @@ export class AssignmentNodeTypeResolver extends TypeResolver {
     const rhs = node.incomingEdgesByName(EdgeLabels.RHS)[0];
 
     if (!rhs.incomingType().canBeAssignedTo(lhs.incomingType())) {
-      ctx.parsingContext.error(new TypeMismatch(rhs.incomingType(), lhs.incomingType(), assignmentNode.value));
+      ctx.parsingContext.messageCollector.error(
+        new TypeMismatch(rhs.incomingType(), lhs.incomingType(), assignmentNode.value)
+      );
     }
 
     if (rhs.incomingType().equals(VoidType.instance)) {
-      ctx.parsingContext.error(
+      ctx.parsingContext.messageCollector.error(
         'The expression returns a void value, which cannot be assigned to any variable',
         assignmentNode.value
       );
@@ -143,14 +200,14 @@ export class IfElseTypeResolver extends TypeResolver {
       const condition = conditionEdge.incomingType();
 
       if (!condition.canBeAssignedTo(bool.instance)) {
-        _ctx.parsingContext.error(new TypeMismatch(condition, bool.instance, ifNode.condition));
+        _ctx.parsingContext.messageCollector.error(new TypeMismatch(condition, bool.instance, ifNode.condition));
       }
 
       if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
         const ifExpr = ifEdge.incomingTypeDefined() ? ifEdge.incomingType() : VoidType.instance;
 
         if (!elseEdge) {
-          _ctx.parsingContext.error('A ternary operation requires an else branch', node.astNode);
+          _ctx.parsingContext.messageCollector.error('A ternary operation requires an else branch', node.astNode);
           return INVALID_TYPE;
         }
 
@@ -162,12 +219,21 @@ export class IfElseTypeResolver extends TypeResolver {
         return VoidType.instance;
       }
     }
+    return INVALID_TYPE;
   }
 }
 
-export class UnifiedTypeResolver extends TypeResolver {
+export class UnionTypeResolver extends TypeResolver {
   execute(node: TypeNode, _ctx: TypeResolutionContext) {
     const type = new UnionType();
+    type.of = node.incomingEdges().map($ => $.incomingType());
+    return type.simplify();
+  }
+}
+
+export class IntersectionTypeResolver extends TypeResolver {
+  execute(node: TypeNode, _ctx: TypeResolutionContext) {
+    const type = new IntersectionType();
     type.of = node.incomingEdges().map($ => $.incomingType());
     return type.simplify();
   }
@@ -182,10 +248,6 @@ export class PatternMatcherTypeResolver extends TypeResolver {
       .map($ => $.incomingType());
     return type.simplify();
   }
-
-  supportsPartialResolution() {
-    return true;
-  }
 }
 
 export class OverloadedFunctionTypeResolver extends TypeResolver {
@@ -199,7 +261,7 @@ export class OverloadedFunctionTypeResolver extends TypeResolver {
       if (incomingType instanceof FunctionType) {
         incomingFunctionTypes.push(incomingType);
       } else {
-        ctx.parsingContext.error(
+        ctx.parsingContext.messageCollector.error(
           `All members of an overloaded function should be functions, but found ${incomingType}`,
           node.astNode
         );
@@ -230,10 +292,10 @@ export class BinaryOpTypeResolver extends TypeResolver {
 
       return ret.outputType;
     } catch (e) {
-      ctx.currentParsingContext.error(e.toString(), node.astNode);
+      ctx.currentParsingContext.messageCollector.error(e.toString(), node.astNode);
     }
 
-    return null;
+    // return INVALID_TYPE;
   }
 }
 
@@ -246,9 +308,9 @@ export class BlockTypeResolver extends TypeResolver {
       }
 
       return last(edges).incomingType();
-    } else {
-      return VoidType.instance;
     }
+
+    return VoidType.instance;
   }
 }
 
@@ -260,16 +322,60 @@ export class MatchLiteralTypeResolver extends TypeResolver {
 
     if (!literal.incomingType().canBeAssignedTo(matched.incomingType())) {
       const astNode = node.astNode as Nodes.MatchLiteralNode;
-      ctx.currentParsingContext.error(
+      ctx.currentParsingContext.messageCollector.error(
         new TypeMismatch(literal.incomingType(), matched.incomingType(), astNode.literal)
       );
     }
 
     if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
       return result.incomingType();
-    } else {
-      return VoidType.instance;
     }
+
+    return VoidType.instance;
+  }
+}
+
+export class StructDeconstructorTypeResolver extends TypeResolver {
+  constructor(public parameterIndex: number) {
+    super();
+  }
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
+    const structType = node.incomingEdges()[0].incomingType() as StructType;
+
+    if (
+      !structType.parameterTypes ||
+      structType.parameterTypes.length == 0 ||
+      this.parameterIndex >= structType.parameterTypes.length
+    ) {
+      ctx.currentParsingContext.messageCollector.error(
+        `Invalid number of arguments. The type ${structType} only accpets ${structType.parameterTypes.length} `,
+        node.astNode
+      );
+      return INVALID_TYPE;
+    }
+
+    return structType.parameterTypes[this.parameterIndex];
+  }
+}
+
+export class MatchCaseIsTypeResolver extends TypeResolver {
+  execute(node: TypeNode, _ctx: TypeResolutionContext): Type {
+    // const matched = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0];
+    // const literal = node.incomingEdgesByName(EdgeLabels.LHS)[0];
+    const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
+
+    // if (!literal.incomingType().canBeAssignedTo(matched.incomingType())) {
+    //   const astNode = node.astNode as Nodes.MatchLiteralNode;
+    //   ctx.currentParsingContext.error(
+    //     new TypeMismatch(literal.incomingType(), matched.incomingType(), astNode.literal)
+    //   );
+    // }
+
+    if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
+      return result.incomingType();
+    }
+
+    return VoidType.instance;
   }
 }
 
@@ -279,9 +385,9 @@ export class MatchDefaultTypeResolver extends TypeResolver {
 
     if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
       return result.incomingType();
-    } else {
-      return VoidType.instance;
     }
+
+    return VoidType.instance;
   }
 }
 
@@ -295,6 +401,7 @@ export class FunctionTypeResolver extends TypeResolver {
         return node.incomingEdgesByName($.parameterName.name)[0].incomingType();
       })
       .map($ => toConcreteType($, ctx));
+
     fnType.parameterNames = functionNode.parameters.map($ => $.parameterName.name);
 
     fnType.parameterTypes.forEach(($, $$) => {
@@ -302,14 +409,15 @@ export class FunctionTypeResolver extends TypeResolver {
     });
 
     if (functionNode.functionReturnType) {
-      fnType.returnType = toConcreteType(fromTypeNode(functionNode.functionReturnType), ctx);
+      const returnType = node.incomingEdgesByName(EdgeLabels.RETURN_TYPE)[0].incomingType();
+      fnType.returnType = returnType;
     }
 
     const inferedReturnType = resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
 
     if (!inferedReturnType) {
       if (!fnType.returnType) {
-        ctx.parsingContext.error(`Cannot infer return type`, functionNode.body);
+        ctx.parsingContext.messageCollector.error(`Cannot infer return type`, functionNode.body);
         fnType.returnType = INVALID_TYPE;
       }
 
@@ -323,12 +431,32 @@ export class FunctionTypeResolver extends TypeResolver {
         fnType.returnType = inferedReturnType;
       } else {
         if (!inferedReturnType.canBeAssignedTo(fnType.returnType)) {
-          ctx.parsingContext.error(
+          ctx.parsingContext.messageCollector.error(
             new TypeMismatch(inferedReturnType, fnType.returnType, functionNode.functionReturnType)
           );
         }
       }
     }
+
+    return fnType;
+  }
+}
+
+export class StructTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
+    const structNode: Nodes.StructDeclarationNode = node.astNode as Nodes.StructDeclarationNode;
+
+    const superType = node.incomingEdgesByName(EdgeLabels.SUPER_TYPE)[0].incomingType();
+
+    const fnType = new StructType(structNode.internalIdentifier, structNode.declaredName.name, superType);
+
+    fnType.parameterTypes = structNode.parameters
+      .map($ => {
+        return node.incomingEdgesByName($.parameterName.name)[0].incomingType();
+      })
+      .map($ => toConcreteType($, ctx));
+
+    fnType.parameterNames = structNode.parameters.map($ => $.parameterName.name);
 
     return fnType;
   }
@@ -348,8 +476,11 @@ export class VariableReferenceResolver extends TypeResolver {
 
 export class TypeReferenceResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const type = node.resultType();
-    return toConcreteType(type, ctx);
+    const type = node.incomingEdges()[0].incomingType();
+
+    const ret = toConcreteType(type, ctx);
+
+    return ret || INVALID_TYPE;
   }
 }
 
@@ -367,20 +498,36 @@ export class FunctionCallResolver extends TypeResolver {
             return fun.returnType;
           }
         } else {
-          ctx.parsingContext.error(new NotAFunction(fun, functionCallNode.functionNode));
+          ctx.parsingContext.messageCollector.error(new NotAFunction(fun, functionCallNode.functionNode));
           return INVALID_TYPE;
         }
       }
 
-      ctx.parsingContext.error(new InvalidOverload(incommingType, argTypes, functionCallNode.functionNode));
-      return null;
+      ctx.parsingContext.messageCollector.error(
+        new InvalidOverload(incommingType, argTypes, functionCallNode.functionNode)
+      );
+
+      return INVALID_TYPE;
     } else if (incommingType instanceof FunctionType) {
       if (incommingType.acceptsTypes(argTypes)) {
         functionCallNode.resolvedFunctionType = incommingType;
         return incommingType.returnType;
+      } else {
+        ctx.parsingContext.messageCollector.error(
+          new InvalidCall(incommingType.parameterTypes, argTypes, functionCallNode.functionNode)
+        );
+      }
+    } else if (incommingType instanceof StructType) {
+      if (incommingType.acceptsTypes(argTypes)) {
+        functionCallNode.resolvedFunctionType = incommingType;
+        return incommingType;
+      } else {
+        ctx.parsingContext.messageCollector.error(
+          new InvalidCall(incommingType.parameterTypes, argTypes, functionCallNode.functionNode)
+        );
       }
     } else {
-      ctx.parsingContext.error(new NotAFunction(incommingType, functionCallNode.functionNode));
+      ctx.parsingContext.messageCollector.error(new NotAFunction(incommingType, functionCallNode.functionNode));
       return INVALID_TYPE;
     }
 
