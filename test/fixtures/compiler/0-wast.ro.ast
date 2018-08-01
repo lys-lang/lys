@@ -1,0 +1,45 @@
+
+|-DocumentNode
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32" type=i32
+  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32
+    |-FunDirectiveNode type=fun(a: i32, b: i32) -> i32
+      |-FunctionNode type=fun(a: i32, b: i32) -> i32
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=i32
+          |-TypeReferenceNode="i32" type=i32
+            |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=i32
+          |-TypeReferenceNode="i32" type=i32
+            |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="add" type=fun(a: i32, b: i32) -> i32
+        |-TypeReferenceNode="i32" type=i32
+          |-NameIdentifierNode="i32"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-NameIdentifierNode="$t"
+            |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-NameIdentifierNode="$t"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=3
+          |-WasmAtomNode=i32.mul
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-NameIdentifierNode="$a"
+              |-WasmAtomNode=get_local
+                |-NameIdentifierNode="$b"
+            |-WasmAtomNode=get_local
+              |-NameIdentifierNode="$t"
+    |-NameIdentifierNode="add" type=fun(a: i32, b: i32) -> i32
+  |-OverloadedFunctionNode type=fun() -> i32
+    |-FunDirectiveNode type=fun() -> i32
+      |-FunctionNode type=i32
+        |-NameIdentifierNode="main" type=fun() -> i32
+        |-FunctionCallNode type=i32 annotations=IsValueNode
+          |-VariableReferenceNode type=fun(a: i32, b: i32) -> i32
+            |-NameIdentifierNode="add"
+          |-IntegerLiteral=1 type=i32 annotations=IsValueNode
+          |-IntegerLiteral=2 type=i32 annotations=IsValueNode
+    |-NameIdentifierNode="main" type=fun() -> i32

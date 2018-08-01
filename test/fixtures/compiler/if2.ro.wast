@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "gcd" (func $gcd))
   (export "test" (func $test))
   (func $gcd (param $x i32) (param $y i32) (result i32)

@@ -432,6 +432,17 @@ export namespace Nodes {
     }
   }
 
+  export class HexLiteral extends IntegerLiteral {
+    // TODO: support bignumber here
+
+    get value(): number {
+      return parseInt(this.astNode.text, 16);
+    }
+    set value(value: number) {
+      this.astNode.text = value.toString(16);
+    }
+  }
+
   export class BooleanLiteral extends LiteralNode<boolean> {
     get value(): boolean {
       return this.astNode.text.trim() == 'true';
@@ -475,6 +486,19 @@ export namespace Nodes {
     get text() {
       return JSON.stringify(this.operator);
     }
+  }
+
+  export class WasmAtomNode extends ExpressionNode {
+    arguments: ExpressionNode[] = [];
+    symbol: string;
+
+    get text() {
+      return this.symbol;
+    }
+  }
+
+  export class WasmExpressionNode extends ExpressionNode {
+    atoms: WasmAtomNode[];
   }
 
   export abstract class MatcherNode extends ExpressionNode {

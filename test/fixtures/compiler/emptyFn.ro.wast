@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "main" (func $main))
   (func $main
     (block $unknown_block_1

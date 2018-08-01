@@ -157,6 +157,20 @@ describe('Types', function() {
     checkMainType`
       type i32
 
+
+      fun malloc(size: i32): i32 = %wasm {
+        (get_local $size)
+      }
+
+      fun main() = malloc(1)
+      ---
+      fun(size: i32) -> i32
+      fun() -> i32
+    `;
+
+    checkMainType`
+      type i32
+
       type Boolean {
         True()
         False()

@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "outerFunction" (func $outerFunction))
   (func $innerFunctionArgs (param $a i32) (result i32)
     (get_local $a)

@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "testInt" (func $testInt))
   (export "testFloat" (func $testFloat))
   (func $sum (param $a f32) (param $b f32) (result f32)

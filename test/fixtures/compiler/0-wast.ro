@@ -1,0 +1,10 @@
+type i32
+
+private fun add(a: i32, b: i32): i32 = %wasm {
+  (local $t i32)
+  (set_local $t (i32.const 3))
+  (i32.mul (i32.add (get_local $a) (get_local $b)) (get_local $t))
+}
+
+
+fun main() = add(1, 2)

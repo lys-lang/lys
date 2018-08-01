@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "fib" (func $fib))
   (export "test" (func $test))
   (func $fibo (param $n i32) (param $x1 i32) (param $x2 i32) (result i32)

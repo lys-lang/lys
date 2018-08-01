@@ -9,7 +9,8 @@ import {
   toConcreteType,
   InvalidType,
   StructType,
-  bool
+  bool,
+  UnknownType
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -49,7 +50,7 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   } else if (astNode instanceof Nodes.IfNode) {
     return new IfElseTypeResolver();
   } else if (astNode instanceof Nodes.DocumentNode) {
-    return new UnknownTypeResolver();
+    return new UnhandledTypeResolver();
   } else if (astNode instanceof Nodes.NameIdentifierNode) {
     return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.FunDirectiveNode) {
@@ -86,6 +87,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new MatchCaseIsTypeResolver();
   } else if (astNode instanceof Nodes.AssignmentNode) {
     return new AssignmentNodeTypeResolver();
+  } else if (astNode instanceof Nodes.WasmExpressionNode) {
+    return new UnknownTypeResolver();
   }
 
   // if (astNode instanceof Nodes.TypeNode) {
@@ -94,7 +97,7 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
 
   console.log(`Node ${astNode.nodeName} has no type resolver`);
 
-  return new UnknownTypeResolver();
+  return new UnhandledTypeResolver();
 }
 
 export class TypeTypeResolver extends TypeResolver {
@@ -104,9 +107,15 @@ export class TypeTypeResolver extends TypeResolver {
   }
 }
 
-export class UnknownTypeResolver extends TypeResolver {
+export class UnhandledTypeResolver extends TypeResolver {
   execute(_node: TypeNode, _ctx: TypeResolutionContext) {
     return INVALID_TYPE;
+  }
+}
+
+export class UnknownTypeResolver extends TypeResolver {
+  execute(_node: TypeNode, _ctx: TypeResolutionContext) {
+    return UnknownType.instance;
   }
 }
 

@@ -11,10 +11,10 @@ const phases = function(txt: string): CanonicalPhaseResult {
 };
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/parser/*.ro', phases, result => printAST(result.document), '.ast');
+  folderBasedTest('test/fixtures/canonical/*.ro', phases, result => printAST(result.document), '.ast');
 });
 
-describe('Canonical', function() {
+describe.only('Canonical', function() {
   function test(literals, ...placeholders) {
     let result = '';
 
@@ -31,6 +31,9 @@ describe('Canonical', function() {
 
   test`var a = 1`;
   test`var a: Number = 1`;
+  test`var a: Number = 0x0`;
+  test`var a: Number = 0x1facbeda0192830190238019283`;
+  test`var a: Number = -0x1facbeda0192830190238019283`;
   test`var a = null`;
 
   test`

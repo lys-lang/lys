@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "gcd" (func $gcd))
   (export "test" (func $test))
   (export "ifWithoutElse" (func $ifWithoutElse))

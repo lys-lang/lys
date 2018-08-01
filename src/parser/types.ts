@@ -106,6 +106,22 @@ export class VoidType extends Type {
   static instance = new VoidType();
 }
 
+export class UnknownType extends VoidType {
+  toString() {
+    return 'UNKNOWN';
+  }
+
+  equals(_: Type) {
+    return false;
+  }
+
+  canBeAssignedTo(_: Type) {
+    return true;
+  }
+
+  static instance = new UnknownType();
+}
+
 export class InvalidType extends VoidType {
   toString() {
     return 'INVALID_TYPE';

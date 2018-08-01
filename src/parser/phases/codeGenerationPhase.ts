@@ -145,11 +145,37 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
   }
 }
 
+function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
+  if (node instanceof Nodes.NameIdentifierNode) {
+    if (node.name.startsWith('$')) {
+      return t.identifier(node.name.replace(/^\$/, ''));
+    } else {
+      return t.valtypeLiteral(node.name);
+    }
+  }
+
+  if (node instanceof Nodes.HexLiteral) {
+    return t.numberLiteralFromRaw(node.astNode.text);
+  }
+
+  if (node instanceof Nodes.IntegerLiteral) {
+    return t.numberLiteralFromRaw(node.value);
+  }
+
+  if (node instanceof Nodes.FloatLiteral) {
+    return t.numberLiteralFromRaw(node.value);
+  }
+
+  return t.instruction(node.symbol, (node.arguments || []).map($ => emitWast($ as any, document)));
+}
+
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
     // try {
     if (node instanceof Nodes.FunctionCallNode) {
       return emitFunctionCall(node, document);
+    } else if (node instanceof Nodes.WasmExpressionNode) {
+      return flatten(node.atoms.map($ => emitWast($, document)));
     } else if (node instanceof Nodes.IntegerLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
@@ -315,7 +341,9 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       });
     });
 
-    const module = t.module(null, [...exportedFunctions, ...createdFunctions]);
+    const memory = t.memory(t.limit(1), t.indexLiteral(0));
+
+    const module = t.module(null, [memory, ...exportedFunctions, ...createdFunctions]);
 
     this.programAST = t.program([module]);
 

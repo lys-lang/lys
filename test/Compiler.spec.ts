@@ -28,7 +28,7 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
   return new CodeGenerationPhaseResult(compiler);
 };
 
-describe('Compiler', function() {
+describe.only('Compiler', function() {
   describe('AST', () => {
     folderBasedTest('**/compiler/*.ro', phases, async result => printAST(result.document), '.ast');
   });

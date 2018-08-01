@@ -14,7 +14,7 @@ Directive         ::= ( FunctionDirective
                       | EffectDirective
                       ) {fragment=true}
 
-FunctionDirective ::= PrivateModifier? FunDeclaration {pin=2}
+FunctionDirective ::= PrivateModifier? InlineModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
@@ -22,6 +22,7 @@ EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,r
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
+InlineModifier    ::= INLINE_KEYWORD
 
 TypeKind          ::= TYPE_KEYWORD
 
@@ -36,6 +37,7 @@ TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
 TypeParameters     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
 AssignExpression  ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
+FunAssignExpression ::= '=' WS* (Expression | UnknownExpression | WasmExpression) {pin=1,fragment=true}
 AssignStatement   ::= VariableReference WS* '=' !('=') WS* Expression {pin=3}
 OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
@@ -52,7 +54,7 @@ EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunDeclaration    ::= FUN_KEYWORD NameIdentifier WS* TypeParameters? FunctionParamsList OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD NameIdentifier WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
 EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
@@ -145,19 +147,27 @@ EqOperator        ::= '==' | '!='
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NullLiteral       ::= NULL_KEYWORD
-NumberLiteral     ::= "-"? ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=2}
+NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
+HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
 StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
 Literal           ::= ( StringLiteral
+                      | HexLiteral
                       | NumberLiteral
                       | BooleanLiteral
                       | NullLiteral
                       ) {fragment=true}
 
-NameIdentifier    ::= !KEYWORD [A-Za-z_]([A-Za-z0-9_])* ('::' [A-Za-z_]([A-Za-z0-9_])+)*
+NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])* ('::' [A-Za-z_]([A-Za-z0-9_])+)*
+
+WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?
+WASM_KEYWORD      ::= '%wasm'
+SExpression       ::= '(' WS* SSymbol SAtom* WS* ')'
+SAtom             ::= WS* (NameIdentifier | StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
+SSymbol           ::= [a-zA-Z][a-zA-Z0-9_.]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
 
 /* Tokens */
 
@@ -173,17 +183,38 @@ TYPE_KEYWORD      ::= ( 'type'
 
 STRUCT_KEYWORD    ::= 'struct' WS+
 PRIVATE_KEYWORD   ::= 'private' WS+
+INLINE_KEYWORD    ::= 'inline' WS+
 
-RESERVED_WORDS    ::= ( 'async' | 'await' | 'defer'
-                      | 'package' | 'declare'
+RESERVED_WORDS    ::= ( 'async'
+                      | 'await'
+                      | 'defer'
+                      | 'package'
+                      | 'declare'
                       | 'using'
                       | 'delete'
-                      | 'break' | 'continue'
-                      | 'let' | 'const'
-                      | 'class' | 'export' | 'public' | 'protected' | 'extends'
-                      | 'import' | 'from' | 'abstract'
-                      | 'finally' | 'new' | 'native' | 'enum' | 'type'
-                      | 'yield' | 'for' | 'do' | 'while' | 'try' | 'is'
+                      | 'break'
+                      | 'continue'
+                      | 'let'
+                      | 'const'
+                      | 'class'
+                      | 'export'
+                      | 'public'
+                      | 'protected'
+                      | 'extends'
+                      | 'import'
+                      | 'from'
+                      | 'abstract'
+                      | 'finally'
+                      | 'new'
+                      | 'native'
+                      | 'enum'
+                      | 'type'
+                      | 'yield'
+                      | 'for'
+                      | 'do'
+                      | 'while'
+                      | 'try'
+                      | 'is'
                       ) WS+
 
 TRUE_KEYWORD      ::= 'true'   ![A-Za-z0-9_]

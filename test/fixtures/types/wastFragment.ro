@@ -1,0 +1,9 @@
+type i32
+
+
+fun malloc(size: i32): i32 = %wasm {
+  (get_local $size)
+}
+
+
+fun main() = malloc(1)

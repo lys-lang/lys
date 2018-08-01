@@ -1,4 +1,5 @@
 (module
+  (memory 0 1)
   (export "test" (func $test))
   (export "test2" (func $test2))
   (func $test (param $a i32) (result i32)

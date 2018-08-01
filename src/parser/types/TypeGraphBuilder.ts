@@ -229,6 +229,8 @@ export class TypeGraphBuilder {
         // new Edge(, target, EdgeLabels.LHS);
       }
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.WasmExpressionNode) {
+      // noop
     } else if (node instanceof Nodes.MatchDefaultNode) {
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else this.traverseChildren(node, target);

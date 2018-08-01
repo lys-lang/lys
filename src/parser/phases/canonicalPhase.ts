@@ -293,6 +293,9 @@ const visitor = {
       return new Nodes.IntegerLiteral(x);
     }
   },
+  HexLiteral(x: IToken) {
+    return new Nodes.HexLiteral(x);
+  },
   StringLiteral(x: IToken) {
     const ret = new Nodes.StringLiteral(x);
     ret.value = x.text; // TODO: Parse string correctly
@@ -372,6 +375,23 @@ const visitor = {
   TypeParen(astNode: IToken) {
     const ret = visit(astNode.children[0]);
     ret.hasParentheses = true;
+    return ret;
+  },
+  WasmExpression(astNode: IToken) {
+    const ret = new Nodes.WasmExpressionNode(astNode);
+    ret.atoms = astNode.children.map($ => visit($));
+    return ret;
+  },
+  SExpression(astNode: IToken) {
+    const ret = new Nodes.WasmAtomNode(astNode);
+    const children = astNode.children.slice();
+    const symbol = children.shift();
+
+    ret.symbol = symbol.text;
+
+    const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
+    ret.arguments = ret.arguments.concat(newChildren);
+
     return ret;
   }
 };
