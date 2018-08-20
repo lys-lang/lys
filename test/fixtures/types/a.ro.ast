@@ -67,9 +67,9 @@
         |-TypeReferenceNode="f32" type=f32
           |-NameIdentifierNode="f32"
         |-BinaryExpressionNode="+" type=f32 annotations=IsValueNode
-          |-VariableReferenceNode type=f32
+          |-VariableReferenceNode type=f32 annotations=IsValueNode
             |-NameIdentifierNode="a"
-          |-VariableReferenceNode type=f32
+          |-VariableReferenceNode type=f32 annotations=IsValueNode
             |-NameIdentifierNode="b"
     |-NameIdentifierNode="addFloat" type=fun(a: f32, b: f32) -> f32
   |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32
@@ -87,9 +87,9 @@
         |-TypeReferenceNode="i32" type=i32
           |-NameIdentifierNode="i32"
         |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-          |-VariableReferenceNode type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="a"
-          |-VariableReferenceNode type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="b"
     |-NameIdentifierNode="addInts" type=fun(a: i32, b: i32) -> i32
   |-OverloadedFunctionNode type=fun(width: f32, height: f32) -> f32
@@ -107,10 +107,10 @@
         |-TypeReferenceNode="f32" type=f32
           |-NameIdentifierNode="f32"
         |-BinaryExpressionNode="*" type=f32 annotations=IsValueNode
-          |-BinaryExpressionNode="+" type=f32
-            |-VariableReferenceNode type=f32
+          |-BinaryExpressionNode="+" type=f32 annotations=IsValueNode
+            |-VariableReferenceNode type=f32 annotations=IsValueNode
               |-NameIdentifierNode="width"
-            |-FloatLiteral=1 type=f32
-          |-VariableReferenceNode type=f32
+            |-FloatLiteral=1 type=f32 annotations=IsValueNode
+          |-VariableReferenceNode type=f32 annotations=IsValueNode
             |-NameIdentifierNode="height"
     |-NameIdentifierNode="x" type=fun(width: f32, height: f32) -> f32

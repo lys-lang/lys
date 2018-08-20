@@ -22,22 +22,22 @@
           |-NameIdentifierNode="i32"
         |-IfNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
-            |-VariableReferenceNode type=i32
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
               |-NameIdentifierNode="n"
-            |-IntegerLiteral=0 type=i32
+            |-IntegerLiteral=0 type=i32 annotations=IsValueNode
           |-FunctionCallNode type=i32 annotations=IsValueNode
             |-VariableReferenceNode type=fun(n: i32, x1: i32, x2: i32) -> i32
               |-NameIdentifierNode="fibo"
             |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
-              |-VariableReferenceNode type=i32
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="n"
-              |-IntegerLiteral=1 type=i32
+              |-IntegerLiteral=1 type=i32 annotations=IsValueNode
             |-VariableReferenceNode type=i32 annotations=IsValueNode
               |-NameIdentifierNode="x2"
             |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-              |-VariableReferenceNode type=i32
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="x1"
-              |-VariableReferenceNode type=i32
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="x2"
           |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="x1"

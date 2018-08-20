@@ -19,26 +19,26 @@
         |-BlockNode type=i32 annotations=IsValueNode
           |-IfNode type=i32 annotations=IsValueNode
             |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
-              |-VariableReferenceNode type=i32
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="x"
-              |-VariableReferenceNode type=i32
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="y"
             |-BlockNode type=i32 annotations=IsValueNode
               |-FunctionCallNode type=i32 annotations=IsValueNode
                 |-VariableReferenceNode type=fun(x: i32, y: i32) -> i32
                   |-NameIdentifierNode="gcd"
                 |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
-                  |-VariableReferenceNode type=i32
+                  |-VariableReferenceNode type=i32 annotations=IsValueNode
                     |-NameIdentifierNode="x"
-                  |-VariableReferenceNode type=i32
+                  |-VariableReferenceNode type=i32 annotations=IsValueNode
                     |-NameIdentifierNode="y"
                 |-VariableReferenceNode type=i32 annotations=IsValueNode
                   |-NameIdentifierNode="y"
             |-IfNode type=i32 annotations=IsValueNode
               |-BinaryExpressionNode="<" type=boolean annotations=IsValueNode
-                |-VariableReferenceNode type=i32
+                |-VariableReferenceNode type=i32 annotations=IsValueNode
                   |-NameIdentifierNode="x"
-                |-VariableReferenceNode type=i32
+                |-VariableReferenceNode type=i32 annotations=IsValueNode
                   |-NameIdentifierNode="y"
               |-BlockNode type=i32 annotations=IsValueNode
                 |-FunctionCallNode type=i32 annotations=IsValueNode
@@ -47,9 +47,9 @@
                   |-VariableReferenceNode type=i32 annotations=IsValueNode
                     |-NameIdentifierNode="x"
                   |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
-                    |-VariableReferenceNode type=i32
+                    |-VariableReferenceNode type=i32 annotations=IsValueNode
                       |-NameIdentifierNode="y"
-                    |-VariableReferenceNode type=i32
+                    |-VariableReferenceNode type=i32 annotations=IsValueNode
                       |-NameIdentifierNode="x"
               |-BlockNode type=i32 annotations=IsValueNode
                 |-VariableReferenceNode type=i32 annotations=IsValueNode

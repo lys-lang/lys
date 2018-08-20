@@ -14,9 +14,9 @@
           |-NameIdentifierNode="i32"
         |-PatternMatcherNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=i32
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
               |-NameIdentifierNode="a"
-            |-IntegerLiteral=1 type=i32
+            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
           |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=1 type=i32
             |-IntegerLiteral=0 type=i32 annotations=IsValueNode
@@ -35,11 +35,11 @@
           |-NameIdentifierNode="i32"
         |-IfNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
-            |-BinaryExpressionNode="+" type=i32
-              |-VariableReferenceNode type=i32
+            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="a"
-              |-IntegerLiteral=1 type=i32
-            |-IntegerLiteral=1 type=i32
+              |-IntegerLiteral=1 type=i32 annotations=IsValueNode
+            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
           |-IntegerLiteral=0 type=i32 annotations=IsValueNode
           |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test2" type=fun(a: i32) -> i32

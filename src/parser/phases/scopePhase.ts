@@ -38,6 +38,11 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     }
   }
 
+  if (node instanceof Nodes.BinaryExpressionNode) {
+    node.lhs.annotate(new annotations.IsValueNode());
+    node.rhs.annotate(new annotations.IsValueNode());
+  }
+
   if (node instanceof Nodes.IfNode) {
     node.condition.annotate(new annotations.IsValueNode());
 

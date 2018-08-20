@@ -186,6 +186,27 @@ describe('execution tests', () => {
     );
 
     test(
+      'sum 2',
+      `
+      type i32
+      type f32
+
+      fun add(a: i32, b: i32): i32 = {{{a}} + {{{b}}}}
+
+      fun add2(a: f32, b: f32): f32 = {{
+        {a} + {b}
+      }}
+    `,
+      async x => {
+        expect(x.exports.add(1, 2)).to.eq(3);
+        expect(x.exports.add(-1, 2)).to.eq(1);
+        expect(x.exports.add2(1, 2)).to.eq(3);
+        expect(x.exports.add2(0.2, 0.3)).to.eq(0.5);
+        expect(x.exports.add2(-1, 2)).to.eq(1);
+      }
+    );
+
+    test(
       'fibo',
       `
       type i32

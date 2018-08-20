@@ -19,9 +19,9 @@
         |-NameIdentifierNode="i32"
       |-BlockNode type=i32 annotations=IsValueNode
         |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
-          |-VariableReferenceNode type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="bc"
-          |-VariableReferenceNode type=i32
+          |-VariableReferenceNode type=i32 annotations=IsValueNode
             |-NameIdentifierNode="x"
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
@@ -34,10 +34,10 @@
             |-VariableReferenceNode type=i32
               |-NameIdentifierNode="x"
             |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
-              |-BinaryExpressionNode="+" type=i32
-                |-VariableReferenceNode type=i32
+              |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
+                |-VariableReferenceNode type=i32 annotations=IsValueNode
                   |-NameIdentifierNode="x"
-                |-IntegerLiteral=1 type=i32
-              |-VariableReferenceNode type=i32
+                |-IntegerLiteral=1 type=i32 annotations=IsValueNode
+              |-VariableReferenceNode type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="a"
     |-NameIdentifierNode="main" type=fun() -> i32
