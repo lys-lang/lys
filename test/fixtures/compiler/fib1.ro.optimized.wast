@@ -2,7 +2,7 @@
  (type $0 (func (param i32 i32 i32) (result i32)))
  (type $1 (func (param i32) (result i32)))
  (export "fib" (func $1))
- (func $0 (; 0 ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+ (func $0 (; 0 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
   (block $label$1 (result i32)
    (block $label$2
@@ -41,7 +41,7 @@
    (get_local $1)
   )
  )
- (func $1 (; 1 ;) (type $1) (param $0 i32) (result i32)
+ (func $1 (; 1 ;) (; has Stack IR ;) (type $1) (param $0 i32) (result i32)
   (call $0
    (get_local $0)
    (i32.const 0)

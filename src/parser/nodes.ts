@@ -137,6 +137,7 @@ export namespace Nodes {
 
   export class VariableReferenceNode extends ExpressionNode {
     variable: NameIdentifierNode;
+    isLocal: boolean = false;
   }
 
   export class BlockNode extends ExpressionNode {

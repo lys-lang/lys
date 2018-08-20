@@ -1,8 +1,14 @@
 type i32
 type void
 
-var x = 0
+var x = 2
+
+val bc = 1
+
+var a: i32 = {
+  bc - x
+}
 
 fun main(): i32 = {
-  x = x + 1
+  x = x + 1 - a
 }

@@ -14,7 +14,7 @@ describe('FileBasedCanonical', () => {
   folderBasedTest('test/fixtures/canonical/*.ro', phases, result => printAST(result.document), '.ast');
 });
 
-describe.only('Canonical', function() {
+describe('Canonical', function() {
   function test(literals, ...placeholders) {
     let result = '';
 

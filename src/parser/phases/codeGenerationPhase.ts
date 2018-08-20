@@ -13,6 +13,7 @@ import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
 
+const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
 
 const secSymbol = Symbol('secuentialId');
@@ -21,6 +22,16 @@ function getModuleSecuentialId(module) {
   num++;
   module[secSymbol] = num;
   return num;
+}
+
+function getStarterFunction(statements: any[]) {
+  const fnType = t.signature([], []);
+
+  return t.func(
+    starterName, // name
+    fnType, //signature
+    statements // body
+  );
 }
 
 function getTypeForFunction(fn: Nodes.FunctionNode) {
@@ -189,7 +200,26 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
-      return t.instruction('set_local', [t.identifier(node.variable.variable.name), emit(node.value, document)]);
+      const isLocal = node.variable.isLocal;
+      const isValueNode = node.hasAnnotation(annotations.IsValueNode);
+
+      if (isLocal) {
+        const instr = isValueNode ? 'tee_local' : 'set_local';
+        return t.instruction(instr, [t.identifier(node.variable.variable.name), emit(node.value, document)]);
+      } else {
+        if (isValueNode) {
+          return t.blockInstruction(
+            t.identifier('tee_global_' + getModuleSecuentialId(document)),
+            [
+              t.instruction('set_global', [t.identifier(node.variable.variable.name), emit(node.value, document)]),
+              t.instruction('get_global', [t.identifier(node.variable.variable.name)])
+            ],
+            node.value.ofType.binaryenType
+          );
+        } else {
+          return t.instruction('set_global', [t.identifier(node.variable.variable.name), emit(node.value, document)]);
+        }
+      }
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'unknown_block_' + getModuleSecuentialId(document));
@@ -216,9 +246,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       return node.binaryOperation.generateCode(emit(node.lhs, document), emit(node.rhs, document));
     } else if (node instanceof Nodes.VariableReferenceNode) {
-      // const decl = node.closure.getVariable(node.variable.name).node;
-
-      return t.instruction('get_local', [t.identifier(node.variable.name)]);
+      const instr = node.isLocal ? 'get_local' : 'get_global';
+      return t.instruction(instr, [t.identifier(node.variable.name)]);
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
@@ -316,6 +345,25 @@ export class CodeGenerationPhaseResult extends PhaseResult {
   }
 
   protected execute() {
+    const globals = findNodesByType(this.document, Nodes.VarDirectiveNode);
+
+    const starters = [];
+
+    const createdGlobals = globals.map($ => {
+      const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
+      const nativeType = $.decl.variableName.ofType.binaryenType;
+
+      starters.push(
+        t.instruction('set_global', [t.identifier($.decl.variableName.name), ...emitList($.decl.value, this.document)])
+      );
+
+      return t.global(
+        t.globalType(nativeType, mut),
+        [t.objectInstruction('const', nativeType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, this.document),
+        t.identifier($.decl.variableName.name)
+      );
+    });
+
     const functions = findNodesByType(this.document, Nodes.OverloadedFunctionNode);
 
     const createdFunctions = [];
@@ -343,7 +391,15 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     const memory = t.memory(t.limit(1), t.indexLiteral(0));
 
-    const module = t.module(null, [memory, ...exportedFunctions, ...createdFunctions]);
+    const moduleParts = [memory, ...createdGlobals, ...exportedFunctions, ...createdFunctions];
+
+    if (starters.length) {
+      const starter = getStarterFunction(starters);
+      moduleParts.push(starter);
+      moduleParts.push(t.start(starterName));
+    }
+
+    const module = t.module(null, moduleParts);
 
     this.programAST = t.program([module]);
 

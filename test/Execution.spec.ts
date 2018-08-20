@@ -29,21 +29,73 @@ describe('execution tests', () => {
     );
   });
 
+  describe('injected wasm', () => {
+    test(
+      'x + 44',
+      `
+      type i32
+      fun main(x: i32): i32 = %wasm { (i32.add (get_local $x) (i32.const 44)) }
+    `,
+      async x => {
+        expect(x.exports.main(1)).to.eq(45);
+        expect(x.exports.main(2)).to.eq(46);
+      }
+    );
+  });
+
   describe('mutability', () => {
+    test(
+      'mutable global',
+      `
+        type i32
+        type void
+
+        val bc = 1
+
+        var a: i32 = {
+          bc - 2
+        }
+
+        fun retMinusOne() = 0 - 1
+
+        fun main(x: i32): void = {
+          if (x < 0) {
+            a = 0
+          } else {
+            a = x
+          }
+        }
+
+        fun getValue() = a
+      `,
+      async x => {
+        expect(x.exports.getValue()).to.eq(-1);
+
+        expect(x.exports.main(1)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(1);
+        expect(x.exports.main(3)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(3);
+        expect(x.exports.main(-3)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(0);
+        expect(x.exports.main(30)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(30);
+      }
+    );
+
     test(
       'void return',
       `
-      type i32
-      fun main(x: i32): i32 = {
-        var a: i32 = 1
+        type i32
+        fun main(x: i32): i32 = {
+          var a: i32 = 1
 
-        if (x == 1) {
-          a = 3
-        } else {}
+          if (x == 1) {
+            a = 3
+          } else {}
 
-        a
-      }
-    `,
+          a
+        }
+      `,
       async x => {
         expect(x.exports.main(1)).to.eq(3);
         expect(x.exports.main(3)).to.eq(1);

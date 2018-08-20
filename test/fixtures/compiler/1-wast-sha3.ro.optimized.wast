@@ -5,7 +5,7 @@
  (type $3 (func (param i32 i32 i32 i32) (result i32)))
  (memory $0 0 1)
  (export "keccak" (func $12))
- (func $0 (; 0 ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $0 (; 0 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (set_local $3
    (i32.add
@@ -43,7 +43,7 @@
    )
   )
  )
- (func $1 (; 1 ;) (type $1) (param $0 i32)
+ (func $1 (; 1 ;) (; has Stack IR ;) (type $1) (param $0 i32)
   (local $1 i64)
   (local $2 i64)
   (local $3 i64)
@@ -656,7 +656,7 @@
    )
   )
  )
- (func $2 (; 2 ;) (type $2) (param $0 i32) (param $1 i32)
+ (func $2 (; 2 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32)
   (local $2 i32)
   (local $3 i32)
   (block $label$1
@@ -702,7 +702,7 @@
    )
   )
  )
- (func $3 (; 3 ;) (type $1) (param $0 i32)
+ (func $3 (; 3 ;) (; has Stack IR ;) (type $1) (param $0 i32)
   (local $1 i64)
   (set_local $1
    (i64.load
@@ -996,7 +996,7 @@
    (get_local $1)
   )
  )
- (func $4 (; 4 ;) (type $1) (param $0 i32)
+ (func $4 (; 4 ;) (; has Stack IR ;) (type $1) (param $0 i32)
   (local $1 i32)
   (local $2 i64)
   (local $3 i64)
@@ -1267,7 +1267,7 @@
    )
   )
  )
- (func $5 (; 5 ;) (type $1) (param $0 i32)
+ (func $5 (; 5 ;) (; has Stack IR ;) (type $1) (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -1331,7 +1331,7 @@
    )
   )
  )
- (func $6 (; 6 ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $6 (; 6 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
   (i64.store
    (get_local $2)
    (i64.xor
@@ -1667,7 +1667,7 @@
    (get_local $2)
   )
  )
- (func $7 (; 7 ;) (type $1) (param $0 i32)
+ (func $7 (; 7 ;) (; has Stack IR ;) (type $1) (param $0 i32)
   (local $1 i32)
   (call $8
    (get_local $0)
@@ -2015,7 +2015,7 @@
    (i32.const 14)
   )
  )
- (func $8 (; 8 ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $8 (; 8 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (set_local $3
    (i32.add
@@ -2047,7 +2047,7 @@
    )
   )
  )
- (func $10 (; 9 ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $10 (; 9 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
@@ -2175,7 +2175,7 @@
    )
   )
  )
- (func $11 (; 10 ;) (type $2) (param $0 i32) (param $1 i32)
+ (func $11 (; 10 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -2280,7 +2280,7 @@
    )
   )
  )
- (func $12 (; 11 ;) (type $3) (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
+ (func $12 (; 11 ;) (; has Stack IR ;) (type $3) (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (call $7
    (get_local $0)
   )

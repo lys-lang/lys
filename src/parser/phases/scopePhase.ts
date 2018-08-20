@@ -135,11 +135,14 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
   }
 });
 
-const resolveVariables = walkPreOrder((node: Nodes.Node) => {
+const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (!node.closure.canResolveName(node.variable.name)) {
       throw new AstNodeError(`Cannot resolve variable "${node.variable.name}"`, node.variable);
     }
+    const resolved = node.closure.get(node.variable.name);
+    const isGlobal = !resolved.isLocalReference || resolved.scope == phaseResult.document.closure;
+    node.isLocal = !isGlobal;
     node.closure.incrementUsage(node.variable.name);
   }
   if (node instanceof Nodes.TypeReferenceNode) {
