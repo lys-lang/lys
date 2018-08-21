@@ -16,6 +16,9 @@ import { AstNodeError } from '../NodeError';
 const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
 
+(binaryen as any).setOptimizeLevel(3);
+(binaryen as any).setShrinkLevel(3);
+
 const secSymbol = Symbol('secuentialId');
 function getModuleSecuentialId(module) {
   let num = module[secSymbol] || 0;
@@ -346,28 +349,31 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
   protected execute() {
     const globals = findNodesByType(this.document, Nodes.VarDirectiveNode);
+    const functions = findNodesByType(this.document, Nodes.OverloadedFunctionNode);
 
     const starters = [];
+    const exportedElements = [];
+    const createdFunctions = [];
 
     const createdGlobals = globals.map($ => {
+      // TODO: If the value is a literal, do not defer initialization to starters
+
       const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
       const nativeType = $.decl.variableName.ofType.binaryenType;
+      const identifier = t.identifier($.decl.variableName.name);
 
-      starters.push(
-        t.instruction('set_global', [t.identifier($.decl.variableName.name), ...emitList($.decl.value, this.document)])
-      );
+      starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, this.document)]));
+
+      // if ($.isExported) {
+      //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));
+      // }
 
       return t.global(
         t.globalType(nativeType, mut),
         [t.objectInstruction('const', nativeType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, this.document),
-        t.identifier($.decl.variableName.name)
+        identifier
       );
     });
-
-    const functions = findNodesByType(this.document, Nodes.OverloadedFunctionNode);
-
-    const createdFunctions = [];
-    const exportedFunctions = [];
 
     functions.forEach($ => {
       const canBeExported = $.functions.length === 1;
@@ -376,7 +382,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
         createdFunctions.push(emitFunction(fun.functionNode, this.document, this));
         if (fun.isExported) {
           if (canBeExported) {
-            exportedFunctions.push(
+            exportedElements.push(
               t.moduleExport(
                 fun.functionNode.functionName.name,
                 t.moduleExportDescr('Func', t.identifier(fun.functionNode.internalIdentifier))
@@ -391,7 +397,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     const memory = t.memory(t.limit(1), t.indexLiteral(0));
 
-    const moduleParts = [memory, ...createdGlobals, ...exportedFunctions, ...createdFunctions];
+    const moduleParts = [memory, ...createdGlobals, ...exportedElements, ...createdFunctions];
 
     if (starters.length) {
       const starter = getStarterFunction(starters);

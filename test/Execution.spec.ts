@@ -232,6 +232,29 @@ describe('execution tests', () => {
         expect(x.exports.test()).to.eq(1836311903);
       }
     );
+    test(
+      'fibo pattern matchin',
+      `
+        type i32
+
+        private fun fibo(n: i32, a: i32, b: i32): i32 =
+          n match {
+            case 0 -> a
+            case 1 -> b
+            else   -> fibo(n - 1, b, a + b)
+          }
+
+        fun fib(n: i32): i32 = fibo(n, 0, 1)
+
+        fun test(): i32 = {
+          fib(46) // must be 1836311903
+        }
+      `,
+      async x => {
+        expect(x.exports.fib(46)).to.eq(1836311903);
+        expect(x.exports.test()).to.eq(1836311903);
+      }
+    );
 
     test(
       'fibo w/o types',

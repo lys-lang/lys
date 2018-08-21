@@ -23,7 +23,7 @@
      (br $label$1
       (call $0
        (i32.sub
-        (get_local $0)
+        (get_local $3)
         (i32.const 1)
        )
        (get_local $2)
