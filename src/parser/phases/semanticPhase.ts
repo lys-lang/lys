@@ -1,6 +1,6 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { ParsingContext, Closure } from '../closure';
+import { Closure, ParsingContext } from '../closure';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
@@ -17,8 +17,7 @@ const overloadFunctions = function(document: Nodes.DocumentNode, phase: Semantic
         x.functions.push(node);
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
-        overloaded.functionName = new Nodes.NameIdentifierNode();
-        overloaded.functionName.name = functionName;
+        overloaded.functionName = Nodes.NameIdentifierNode.fromString(functionName);
         overloadedFunctions.set(functionName, overloaded);
         overloaded.functions = [node];
       }
@@ -63,13 +62,18 @@ export class SemanticPhaseResult extends PhaseResult {
     return this.canonicalPhaseResult.document;
   }
 
-  constructor(public canonicalPhaseResult: CanonicalPhaseResult, public parsingContext = new ParsingContext()) {
+  get parsingContext(): ParsingContext {
+    return this.canonicalPhaseResult.parsingContext;
+  }
+
+  constructor(public canonicalPhaseResult: CanonicalPhaseResult, public readonly moduleName: string) {
     super();
     this.execute();
+    this.document.moduleName = moduleName;
   }
 
   protected execute() {
-    this.document.closure = new Closure(this.parsingContext);
+    this.document.closure = new Closure(this.parsingContext, null, this.moduleName);
 
     overloadFunctions(this.document, this);
     checkDuplicatedNames(this.document, this);

@@ -7,6 +7,7 @@
   "bin": "dist/bin.js",
   "scripts": {
     "test": "mocha --reporter list",
+    "prof": "node --prof ./node_modules/mocha/bin/_mocha --timeout 999999",
     "test-travis": "npm run lint && npm run build && npm run coverage && npm run test",
     "preversion": "npm run build && npm test",
     "coverage": "(`npm bin`/istanbul cover `npm bin`/_mocha || true)",
@@ -31,6 +32,7 @@
     "printWidth": 120
   },
   "dependencies": {
+    "@types/node": "^10.9.2",
     "@webassemblyjs/ast": "^1.7.5",
     "@webassemblyjs/validation": "^1.7.5",
     "@webassemblyjs/wast-printer": "^1.7.5",
@@ -48,6 +50,7 @@
     "glob": "^7.1.2",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
+    "mocha-performance": "^0.1.1",
     "tslint": "^5.11.0",
     "typescript": "^2.9.2"
   }

@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32"
   |-TypeDirectiveNode
@@ -17,37 +21,44 @@
         |-NameIdentifierNode="Real"
         |-ParameterNode
           |-NameIdentifierNode="number"
-          |-TypeReferenceNode="f32"
-            |-NameIdentifierNode="f32"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
       |-StructDeclarationNode
         |-NameIdentifierNode="Natural"
         |-ParameterNode
           |-NameIdentifierNode="number"
-          |-TypeReferenceNode="i32"
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
       |-StructDeclarationNode
         |-NameIdentifierNode="Complex"
         |-ParameterNode
           |-NameIdentifierNode="real"
-          |-TypeReferenceNode="f32"
-            |-NameIdentifierNode="f32"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
         |-ParameterNode
           |-NameIdentifierNode="imaginary"
-          |-TypeReferenceNode="f32"
-            |-NameIdentifierNode="f32"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="a"
-          |-TypeReferenceNode="i32"
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="test"
-        |-TypeReferenceNode="boolean"
-          |-NameIdentifierNode="boolean"
+        |-TypeReferenceNode=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
         |-PatternMatcherNode annotations=IsValueNode
           |-VariableReferenceNode annotations=IsValueNode
-            |-NameIdentifierNode="a"
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
           |-MatchLiteralNode annotations=IsValueNode
             |-IntegerLiteral=1
             |-BooleanLiteral=true annotations=IsValueNode
@@ -59,42 +70,51 @@
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="number"
-          |-TypeReferenceNode="Number"
-            |-NameIdentifierNode="Number"
+          |-TypeReferenceNode=Number
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
         |-NameIdentifierNode="isComplex"
-        |-TypeReferenceNode="boolean"
-          |-NameIdentifierNode="boolean"
+        |-TypeReferenceNode=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
         |-PatternMatcherNode annotations=IsValueNode
           |-VariableReferenceNode annotations=IsValueNode
-            |-NameIdentifierNode="number"
+            |-QNameNode=number
+              |-NameIdentifierNode="number"
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="x"
-            |-TypeReferenceNode="Real"
-              |-NameIdentifierNode="Real"
+            |-TypeReferenceNode=Real
+              |-QNameNode=Real
+                |-NameIdentifierNode="Real"
             |-NameIdentifierNode="_"
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="x"
-            |-TypeReferenceNode="Infinity"
-              |-NameIdentifierNode="Infinity"
+            |-TypeReferenceNode=Infinity
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
-            |-TypeReferenceNode="Infinity"
-              |-NameIdentifierNode="Infinity"
+            |-TypeReferenceNode=Infinity
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
-            |-TypeReferenceNode="Natural"
-              |-NameIdentifierNode="Natural"
+            |-TypeReferenceNode=Natural
+              |-QNameNode=Natural
+                |-NameIdentifierNode="Natural"
             |-NameIdentifierNode="_"
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
-            |-TypeReferenceNode="Complex"
-              |-NameIdentifierNode="Complex"
+            |-TypeReferenceNode=Complex
+              |-QNameNode=Complex
+                |-NameIdentifierNode="Complex"
             |-NameIdentifierNode="_"
             |-NameIdentifierNode="imaginary"
             |-BinaryExpressionNode="!=" annotations=IsValueNode
               |-VariableReferenceNode annotations=IsValueNode
-                |-NameIdentifierNode="imaginary"
+                |-QNameNode=imaginary
+                  |-NameIdentifierNode="imaginary"
               |-FloatLiteral=0 annotations=IsValueNode
           |-MatchDefaultNode annotations=IsValueNode
             |-BooleanLiteral=false annotations=IsValueNode

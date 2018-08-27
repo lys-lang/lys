@@ -77,6 +77,29 @@ describe('Parser', () => {
       testEquivalence(`var x = 1 - -test - 3`, `var x = (1 - (-test)) - 3`);
     });
 
+    describe('imports', () => {
+      test`
+        import * from module
+        import * from module2
+        import * from module::submodule
+        import * from github::menduz::aureum
+      `;
+
+      test`
+        import module
+        import module2
+        import module::submodule
+        import github::menduz::aureum
+      `;
+
+      test`
+        import module as X
+        import module2 as Y
+        import module::submodule as Z
+        import github::menduz::aureum as W
+      `;
+    });
+
     describe('code blocks', () => {
       test`
         fun main(): void = {}
@@ -92,6 +115,7 @@ describe('Parser', () => {
         }
       `;
     });
+
     describe('WasmExpression', () => {
       test`
         private inline fun test() = %wasm {

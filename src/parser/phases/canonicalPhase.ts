@@ -3,6 +3,7 @@ import { Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ParsingPhaseResult } from './parsingPhase';
+import { ParsingContext } from '../closure';
 
 function binaryOpVisitor(astNode: IToken) {
   let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode;
@@ -19,6 +20,12 @@ function binaryOpVisitor(astNode: IToken) {
 }
 
 const visitor = {
+  ImportDirective(astNode: IToken) {
+    const ret = new Nodes.ImportDirectiveNode(astNode);
+    ret.module = visitChildTypeOrNull(astNode, 'QName') as Nodes.QNameNode;
+    ret.alias = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    return ret;
+  },
   VarDirective(astNode: IToken) {
     const ret = new Nodes.VarDirectiveNode(astNode);
 
@@ -193,8 +200,11 @@ const visitor = {
           const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
           x.isInfix = true;
           const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
-          vrn.variable = new Nodes.NameIdentifierNode(astNode.children[i]);
-          vrn.variable.name = astNode.children[i].text;
+          vrn.variable = new Nodes.QNameNode(astNode.children[i]);
+          const varName = new Nodes.NameIdentifierNode(astNode.children[i]);
+          vrn.variable.names = [varName];
+
+          varName.name = astNode.children[i].text;
 
           x.argumentsNode = [oldRet, ...astNode.children[i + 1].children.map($ => visit($))];
         } else {
@@ -207,12 +217,17 @@ const visitor = {
   },
   VariableReference(astNode: IToken) {
     const ret = new Nodes.VariableReferenceNode(astNode);
-    ret.variable = visit(findChildrenType(astNode, 'NameIdentifier'));
+    ret.variable = visit(astNode.children[0]);
     return ret;
   },
   NameIdentifier(astNode: IToken) {
     const ret = new Nodes.NameIdentifierNode(astNode);
     ret.name = astNode.text.trim();
+    return ret;
+  },
+  QName(astNode: IToken) {
+    const ret = new Nodes.QNameNode(astNode);
+    ret.names = astNode.children.map(visit) as any;
     return ret;
   },
   FunctionTypeParameter(astNode: IToken) {
@@ -226,9 +241,9 @@ const visitor = {
   TypeAlias(astNode: IToken) {
     return visitChildTypeOrNull(astNode, 'Type');
   },
-  TypeReference(child: IToken) {
-    const ret = new Nodes.TypeReferenceNode(child);
-    ret.name = visit(findChildrenType(child, 'NameIdentifier'));
+  TypeReference(astNode: IToken) {
+    const ret = new Nodes.TypeReferenceNode(astNode);
+    ret.variable = visit(astNode.children[0]);
     // ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
     // ret.isArray = !!findChildrenType(astNode, 'IsArray');
     return ret;
@@ -422,6 +437,10 @@ function visitLastChild(token: IToken) {
 export class CanonicalPhaseResult extends PhaseResult {
   document: Nodes.DocumentNode;
 
+  get parsingContext(): ParsingContext {
+    return this.parsingPhaseResult.parsingContext;
+  }
+
   constructor(public parsingPhaseResult: ParsingPhaseResult) {
     super();
     this.execute();
@@ -429,7 +448,7 @@ export class CanonicalPhaseResult extends PhaseResult {
 
   protected execute() {
     this.document = visit(this.parsingPhaseResult.document);
-
+    this.document.file = this.parsingPhaseResult.fileName;
     failIfErrors('Canonical phase', this.document, this);
   }
 }

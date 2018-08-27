@@ -12,6 +12,13 @@ import { FunctionType } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
+import { ParsingContext } from '../closure';
+
+type CompilationModuleResult = {
+  compilationPhase: CompilationPhaseResult;
+  moduleParts: any[];
+  starters: any[];
+};
 
 const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
@@ -52,7 +59,7 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
   );
 }
 
-function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode, _: CodeGenerationPhaseResult) {
+function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   const fnType = getTypeForFunction(fn);
 
   const locals = fn.additionalLocals.map($ =>
@@ -160,11 +167,11 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
 }
 
 function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
-  if (node instanceof Nodes.NameIdentifierNode) {
-    if (node.name.startsWith('$')) {
-      return t.identifier(node.name.replace(/^\$/, ''));
+  if (node instanceof Nodes.QNameNode) {
+    if (node.text.startsWith('$')) {
+      return t.identifier(node.text.replace(/^\$/, ''));
     } else {
-      return t.valtypeLiteral(node.name);
+      return t.valtypeLiteral(node.text);
     }
   }
 
@@ -208,19 +215,19 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       if (isLocal) {
         const instr = isValueNode ? 'tee_local' : 'set_local';
-        return t.instruction(instr, [t.identifier(node.variable.variable.name), emit(node.value, document)]);
+        return t.instruction(instr, [t.identifier(node.variable.variable.text), emit(node.value, document)]);
       } else {
         if (isValueNode) {
           return t.blockInstruction(
             t.identifier('tee_global_' + getModuleSecuentialId(document)),
             [
-              t.instruction('set_global', [t.identifier(node.variable.variable.name), emit(node.value, document)]),
-              t.instruction('get_global', [t.identifier(node.variable.variable.name)])
+              t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]),
+              t.instruction('get_global', [t.identifier(node.variable.variable.text)])
             ],
             node.value.ofType.binaryenType
           );
         } else {
-          return t.instruction('set_global', [t.identifier(node.variable.variable.name), emit(node.value, document)]);
+          return t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]);
         }
       }
     } else if (node instanceof Nodes.BlockNode) {
@@ -250,7 +257,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return node.binaryOperation.generateCode(emit(node.lhs, document), emit(node.rhs, document));
     } else if (node instanceof Nodes.VariableReferenceNode) {
       const instr = node.isLocal ? 'get_local' : 'get_global';
-      return t.instruction(instr, [t.identifier(node.variable.name)]);
+      return t.instruction(instr, [t.identifier(node.variable.text)]);
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
@@ -285,6 +292,10 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return this.compilationPhaseResult.document;
   }
 
+  get parsingContext(): ParsingContext {
+    return this.compilationPhaseResult.parsingContext;
+  }
+
   constructor(public compilationPhaseResult: CompilationPhaseResult) {
     super();
     this.execute();
@@ -305,6 +316,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
+      console.log(this.parsingContext.modulesInContext);
       console.log(text);
       this.errors.push(e);
       throw e;
@@ -347,9 +359,9 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return new WebAssembly.Instance(compiled, imports);
   }
 
-  protected execute() {
-    const globals = findNodesByType(this.document, Nodes.VarDirectiveNode);
-    const functions = findNodesByType(this.document, Nodes.OverloadedFunctionNode);
+  generatePhase(compilationPhase: CompilationPhaseResult, exports: boolean): CompilationModuleResult {
+    const globals = findNodesByType(compilationPhase.document, Nodes.VarDirectiveNode);
+    const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
 
     const starters = [];
     const exportedElements = [];
@@ -362,7 +374,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const nativeType = $.decl.variableName.ofType.binaryenType;
       const identifier = t.identifier($.decl.variableName.name);
 
-      starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, this.document)]));
+      starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 
       // if ($.isExported) {
       //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));
@@ -370,7 +382,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       return t.global(
         t.globalType(nativeType, mut),
-        [t.objectInstruction('const', nativeType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, this.document),
+        [t.objectInstruction('const', nativeType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, compilationPhase.document),
         identifier
       );
     });
@@ -379,8 +391,8 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const canBeExported = $.functions.length === 1;
 
       $.functions.forEach(fun => {
-        createdFunctions.push(emitFunction(fun.functionNode, this.document, this));
-        if (fun.isExported) {
+        createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
+        if (fun.isExported && exports) {
           if (canBeExported) {
             exportedElements.push(
               t.moduleExport(
@@ -389,21 +401,52 @@ export class CodeGenerationPhaseResult extends PhaseResult {
               )
             );
           } else {
-            throw new AstNodeError('You cannot export overloaded functions', fun.functionNode.functionName);
+            throw new AstNodeError(
+              `You cannot export overloaded functions (${fun.functionNode.functionName.text})`,
+              fun.functionNode.functionName
+            );
           }
         }
       });
     });
 
+    return {
+      compilationPhase,
+      moduleParts: [...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
+      starters
+    };
+  }
+
+  protected execute() {
     const memory = t.memory(t.limit(1), t.indexLiteral(0));
 
-    const moduleParts = [memory, ...createdGlobals, ...exportedElements, ...createdFunctions];
+    const exportList = [this.compilationPhaseResult];
+
+    this.parsingContext.modulesInContext.forEach($ => {
+      const compilation = this.parsingContext.getCompilationPhase($);
+
+      if (!exportList.includes(compilation)) {
+        exportList.push(compilation);
+      }
+    });
+
+    const generatedModules = exportList.map($ => this.generatePhase($, $ == this.compilationPhaseResult));
+
+    const starters = [];
+    const moduleParts = [];
+
+    generatedModules.reverse().forEach(ret => {
+      moduleParts.push(...ret.moduleParts);
+      starters.push(...ret.starters);
+    });
 
     if (starters.length) {
       const starter = getStarterFunction(starters);
       moduleParts.push(starter);
       moduleParts.push(t.start(starterName));
     }
+
+    moduleParts.unshift(memory);
 
     const module = t.module(null, moduleParts);
 

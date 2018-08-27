@@ -13,7 +13,7 @@ import { expect } from 'chai';
 const phases = function(txt: string): ScopePhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
+  const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   return scope;
 };
@@ -85,6 +85,57 @@ describe('Types', function() {
   }
 
   describe('unit', () => {
+    describe('imports', () => {
+      checkMainType`
+        import * from system::random
+
+        fun main(): f32 = nextInt()
+        ---
+        fun() -> f32
+        ---
+        Type "i32" is not assignable to "f32"
+      `;
+
+      checkMainType`
+        fun testBool(i: i32): boolean = i match {
+          case 0 -> true
+          case 1 -> true
+          case 2 -> true
+          case 3 -> true
+          case 4 -> true
+          case 5 -> true
+          case 6 -> true
+          case 7 -> true
+          case 8 -> true
+          case 9 -> true
+          case 10 -> true
+          case 11 -> true
+          case 12 -> true
+          else ->    true
+        }
+        ---
+        fun(i: i32) -> boolean
+      `;
+
+      checkMainType`
+        fun main(): f32 = system::random::nextInt()
+        ---
+        fun() -> f32
+        ---
+        Type "i32" is not assignable to "f32"
+      `;
+      checkMainType`
+        fun matcher(x: i32) =
+          x match {
+            case 1.5 -> 1
+            else -> 2
+          }
+        ---
+        fun(x: i32) -> i32
+        ---
+        Type "f32" is not assignable to "i32"
+      `;
+    });
     checkMainType`
       type i32
 

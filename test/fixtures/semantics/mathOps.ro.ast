@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
@@ -30,7 +34,8 @@
         |-NameIdentifierNode="x2"
         |-UnaryExpressionNode="~" annotations=IsValueNode
           |-VariableReferenceNode
-            |-NameIdentifierNode="x"
+            |-QNameNode=x
+              |-NameIdentifierNode="x"
     |-NameIdentifierNode="x2"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
@@ -40,7 +45,8 @@
         |-NameIdentifierNode="x3"
         |-UnaryExpressionNode="-" annotations=IsValueNode
           |-VariableReferenceNode
-            |-NameIdentifierNode="x"
+            |-QNameNode=x
+              |-NameIdentifierNode="x"
     |-NameIdentifierNode="x3"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
@@ -57,10 +63,12 @@
         |-NameIdentifierNode="x5"
         |-FunctionCallNode annotations=IsValueNode
           |-VariableReferenceNode
-            |-NameIdentifierNode="x"
+            |-QNameNode=x
+              |-NameIdentifierNode="x"
           |-UnaryExpressionNode="~" annotations=IsValueNode
             |-VariableReferenceNode
-              |-NameIdentifierNode="test"
+              |-QNameNode=test
+                |-NameIdentifierNode="test"
     |-NameIdentifierNode="x5"
   |-OverloadedFunctionNode
     |-FunDirectiveNode

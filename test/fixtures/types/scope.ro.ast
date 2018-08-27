@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=i32
   |-TypeDirectiveNode
@@ -14,7 +18,8 @@
             |-FloatLiteral=1 type=f32 annotations=IsValueNode
           |-FunctionCallNode type=f32 annotations=IsValueNode
             |-VariableReferenceNode type=fun() -> f32
-              |-NameIdentifierNode="Y"
+              |-QNameNode=Y
+                |-NameIdentifierNode="Y"
     |-NameIdentifierNode="x1" type=fun() -> f32
   |-OverloadedFunctionNode type=fun() -> i32
     |-FunDirectiveNode type=fun() -> i32
@@ -27,8 +32,10 @@
           |-FunctionNode type=i32
             |-NameIdentifierNode="Y" type=fun() -> i32
             |-VariableReferenceNode type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="n"
+              |-QNameNode=n
+                |-NameIdentifierNode="n"
           |-FunctionCallNode type=i32 annotations=IsValueNode
             |-VariableReferenceNode type=fun() -> i32
-              |-NameIdentifierNode="Y"
+              |-QNameNode=Y
+                |-NameIdentifierNode="Y"
     |-NameIdentifierNode="x2" type=fun() -> i32

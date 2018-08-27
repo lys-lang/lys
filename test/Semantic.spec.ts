@@ -9,7 +9,6 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
-import { printErrors } from '../dist/utils/errorPrinter';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -20,7 +19,7 @@ describe('Semantic', function() {
   const phases = function(txt: string): ScopePhaseResult {
     const parsing = new ParsingPhaseResult('test.ro', txt);
     const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical);
+    const semantic = new SemanticPhaseResult(canonical, 'test');
     const scope = new ScopePhaseResult(semantic);
     return scope;
   };
@@ -221,39 +220,119 @@ describe('Semantic', function() {
     );
   });
 
+  describe('module resolution', () => {
+    testParseToken(
+      `
+        fun a(): void = {}
+      `,
+      'Document',
+      async (x, e) => {
+        if (e) throw e;
+        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+      },
+      phases
+    );
+
+    testParseToken(
+      `
+        import system::core
+        import * from system::random
+
+        fun a(): void = {}
+      `,
+      'Document',
+      async (x, e) => {
+        if (e) throw e;
+        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(x.document.closure.importedModules.has('system::random')).toEqual(true);
+      },
+      phases
+    );
+
+    testParseToken(
+      `
+        fun a(): i32 = system::random::nextInt()
+      `,
+      'Document',
+      async (x, e) => {
+        if (e) throw e;
+        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+      },
+      phases
+    );
+
+    testParseToken(
+      `
+        fun hash(): i32 = system::hash::sha3::keccak(1,1,1,1)
+      `,
+      'Document',
+      async (x, e) => {
+        if (e) throw e;
+        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+      },
+      phases
+    );
+  });
+
   describe('scope resolution', () => {
     testParseToken(
-      `type i32  var a = 1 fun x(a: i32) = a`,
+      `
+        fun x(a: i32) = a
+      `,
       'Document',
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
         const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.get(refs[0].variable.name);
+        const resolved = refs[0].closure.getQName(refs[0].variable);
+        expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
+      },
+      phases
+    );
+
+    testParseToken(
+      `
+        type i32
+        var a = 1
+        fun x(a: i32) = a
+      `,
+      'Document',
+      async (x, e) => {
+        if (e) throw e;
+        fixParents(x.document);
+        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
+        const resolved = refs[0].closure.getQName(refs[0].variable);
         expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
       },
       phases
     );
     testParseToken(
-      `val c = 1 var a = c`,
+      `
+        val c = 1
+        var a = c
+      `,
       'Document',
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
         const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.get(refs[0].variable.name);
+        const resolved = refs[0].closure.getQName(refs[0].variable);
         expect(resolved.referencedNode.parent.astNode.type).toBe('ValDeclaration');
       },
       phases
     );
     testParseToken(
-      `type i32  var a = 1 fun x(b: i32) = a`,
+      `
+        type i32
+        var a = 1
+        fun x(b: i32) = a
+      `,
       'Document',
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
         const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.get(refs[0].variable.name);
+        const resolved = refs[0].closure.getQName(refs[0].variable);
         expect(resolved.referencedNode.parent.astNode.type).toBe('VarDeclaration');
       },
       phases
@@ -293,7 +372,7 @@ describe('Semantic', function() {
 
     test`type i32  var a: i32 = 1`;
 
-    testToFail`var a: i32 = 1`;
+    testToFail`var a: i32a = 1`;
 
     testToFail`var b = 1 var a: b = 1`;
     test`var i32 = 1`;

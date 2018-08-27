@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=i32
   |-OverloadedFunctionNode type=fun() -> i32
@@ -12,6 +16,7 @@
             |-IntegerLiteral=1 type=i32 annotations=IsValueNode
           |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
             |-VariableReferenceNode type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="test"
+              |-QNameNode=test
+                |-NameIdentifierNode="test"
             |-IntegerLiteral=2 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test" type=fun() -> i32

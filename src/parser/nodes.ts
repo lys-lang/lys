@@ -99,6 +99,26 @@ export namespace Nodes {
     get text() {
       return JSON.stringify(this.name);
     }
+
+    static fromString(name: string) {
+      const r = new NameIdentifierNode();
+      r.name = name;
+      return r;
+    }
+  }
+
+  export class QNameNode extends Node {
+    names: NameIdentifierNode[];
+
+    get text() {
+      return this.names.map($ => $.name).join('::');
+    }
+
+    static fromString(name: string): QNameNode {
+      const r = new QNameNode();
+      r.names = name.split('::').map($ => NameIdentifierNode.fromString($));
+      return r;
+    }
   }
 
   export class TypeNode extends Node {
@@ -108,10 +128,10 @@ export namespace Nodes {
 
   export class TypeReferenceNode extends TypeNode {
     /** Name of the referenced type */
-    name: NameIdentifierNode;
+    variable: QNameNode;
 
     get text() {
-      return JSON.stringify(this.name.name);
+      return this.variable.text;
     }
 
     isPointer: number = 0;
@@ -136,7 +156,7 @@ export namespace Nodes {
   }
 
   export class VariableReferenceNode extends ExpressionNode {
-    variable: NameIdentifierNode;
+    variable: QNameNode;
     isLocal: boolean = false;
   }
 
@@ -153,6 +173,7 @@ export namespace Nodes {
     directives: DirectiveNode[];
     errors: TokenError[] = [];
     file?: string;
+    moduleName?: string;
     textContent: string;
   }
 
@@ -362,6 +383,12 @@ export namespace Nodes {
       this.parameters = baseFunction.parameters;
       this.body = baseFunction.body;
     }
+  }
+
+  export class ImportDirectiveNode extends DirectiveNode {
+    allItems: boolean = true;
+    module: QNameNode;
+    alias: NameIdentifierNode | null = null;
   }
 
   export class FunDirectiveNode extends DirectiveNode {

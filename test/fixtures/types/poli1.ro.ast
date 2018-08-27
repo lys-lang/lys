@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=i32
   |-TypeDirectiveNode
@@ -16,36 +20,43 @@
       |-FunctionNode type=fun(x: i32) -> Boolean
         |-ParameterNode
           |-NameIdentifierNode="x" type=i32
-          |-TypeReferenceNode="i32" type=i32
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="gt0" type=fun(x: i32) -> Boolean
         |-IfNode type=Boolean annotations=IsValueNode
           |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
             |-VariableReferenceNode type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="x"
+              |-QNameNode=x
+                |-NameIdentifierNode="x"
             |-IntegerLiteral=0 type=i32 annotations=IsValueNode
           |-FunctionCallNode type=True annotations=IsValueNode
             |-VariableReferenceNode type=True
-              |-NameIdentifierNode="True"
+              |-QNameNode=True
+                |-NameIdentifierNode="True"
           |-FunctionCallNode type=False annotations=IsValueNode
             |-VariableReferenceNode type=False
-              |-NameIdentifierNode="False"
+              |-QNameNode=False
+                |-NameIdentifierNode="False"
     |-NameIdentifierNode="gt0" type=fun(x: i32) -> Boolean
-  |-OverloadedFunctionNode type=fun(a: Boolean) -> Boolean
-    |-FunDirectiveNode type=fun(a: Boolean) -> Boolean
-      |-FunctionNode type=fun(a: Boolean) -> Boolean
+  |-OverloadedFunctionNode type=fun(a: Boolean) -> boolean
+    |-FunDirectiveNode type=fun(a: Boolean) -> boolean
+      |-FunctionNode type=fun(a: Boolean) -> boolean
         |-ParameterNode
           |-NameIdentifierNode="a" type=Boolean
-          |-TypeReferenceNode="Boolean" type=Boolean
-            |-NameIdentifierNode="Boolean"
-        |-NameIdentifierNode="isTrue" type=fun(a: Boolean) -> Boolean
-        |-PatternMatcherNode type=Boolean annotations=IsValueNode
+          |-TypeReferenceNode=Boolean type=Boolean
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
+        |-NameIdentifierNode="isTrue" type=fun(a: Boolean) -> boolean
+        |-PatternMatcherNode type=boolean annotations=IsValueNode
           |-VariableReferenceNode type=Boolean annotations=IsValueNode
-            |-NameIdentifierNode="a"
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
           |-MatchCaseIsNode type=boolean annotations=IsValueNode
-            |-TypeReferenceNode="True"
-              |-NameIdentifierNode="True"
+            |-TypeReferenceNode=True
+              |-QNameNode=True
+                |-NameIdentifierNode="True"
             |-BooleanLiteral=true type=boolean annotations=IsValueNode
           |-MatchDefaultNode type=boolean annotations=IsValueNode
             |-BooleanLiteral=false type=boolean annotations=IsValueNode
-    |-NameIdentifierNode="isTrue" type=fun(a: Boolean) -> Boolean
+    |-NameIdentifierNode="isTrue" type=fun(a: Boolean) -> boolean

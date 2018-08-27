@@ -89,11 +89,11 @@ export function edgeLabel(edge: Edge): string {
 
 export function nodeLabel(node: TypeNode): string {
   if (node.astNode instanceof Nodes.VariableReferenceNode) {
-    return `Var: ${node.astNode.variable.name}`;
+    return `Var: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
     return `Name: ${node.astNode.name}`;
   } else if (node.astNode instanceof Nodes.TypeReferenceNode) {
-    return `TypeRef: ${node.astNode.name.name}`;
+    return `TypeRef: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.IntegerLiteral) {
     return `Int: ${node.astNode.value}`;
   } else if (node.astNode instanceof Nodes.FloatLiteral) {
@@ -118,24 +118,20 @@ const idSymbol = Symbol('id');
 const printedSymbol = Symbol('printed');
 
 export function resetPrint(typeGraph: TypeGraph) {
-  while (typeGraph.parentGraph) {
-    typeGraph = typeGraph.parentGraph;
-  }
+  typeGraph = typeGraph.rootGraph;
+
   typeGraph[idSymbol] = new Map();
   typeGraph[printedSymbol] = new Set();
 }
 
 export function getPrintedNodes(typeGraph: TypeGraph) {
-  while (typeGraph.parentGraph) {
-    typeGraph = typeGraph.parentGraph;
-  }
+  typeGraph = typeGraph.rootGraph;
+
   return typeGraph[printedSymbol] || (typeGraph[printedSymbol] = new Set());
 }
 
 export function id(node: TypeNode, typeGraph: TypeGraph): string {
-  while (typeGraph.parentGraph) {
-    typeGraph = typeGraph.parentGraph;
-  }
+  typeGraph = typeGraph.rootGraph;
 
   let map: Map<TypeNode, string>;
 

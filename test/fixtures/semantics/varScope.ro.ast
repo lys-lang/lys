@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="a"
@@ -8,7 +12,8 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="b"
       |-VariableReferenceNode annotations=IsValueNode
-        |-NameIdentifierNode="a"
+        |-QNameNode=a
+          |-NameIdentifierNode="a"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="c"
@@ -17,7 +22,8 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="d"
       |-VariableReferenceNode annotations=IsValueNode
-        |-NameIdentifierNode="c"
+        |-QNameNode=c
+          |-NameIdentifierNode="c"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
@@ -28,7 +34,8 @@
             |-IntegerLiteral=1 annotations=IsValueNode
           |-FunctionCallNode annotations=IsValueNode
             |-VariableReferenceNode
-              |-NameIdentifierNode="Y"
+              |-QNameNode=Y
+                |-NameIdentifierNode="Y"
     |-NameIdentifierNode="x1"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
@@ -41,8 +48,10 @@
           |-FunctionNode
             |-NameIdentifierNode="Y"
             |-VariableReferenceNode annotations=IsValueNode
-              |-NameIdentifierNode="n"
+              |-QNameNode=n
+                |-NameIdentifierNode="n"
           |-FunctionCallNode annotations=IsValueNode
             |-VariableReferenceNode
-              |-NameIdentifierNode="Y"
+              |-QNameNode=Y
+                |-NameIdentifierNode="Y"
     |-NameIdentifierNode="x2"

@@ -253,7 +253,7 @@ export class PatternMatcherTypeResolver extends TypeResolver {
     const type = new UnionType();
     type.of = node
       .incomingEdges()
-      .filter($ => $.incomingTypeDefined())
+      .filter($ => $.incomingTypeDefined() && $.source.astNode instanceof Nodes.MatcherNode)
       .map($ => $.incomingType());
     return type.simplify();
   }
@@ -473,13 +473,11 @@ export class StructTypeResolver extends TypeResolver {
 
 export class VariableReferenceResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const varReference = node.astNode as Nodes.VariableReferenceNode;
-    const reference = varReference.closure.get(varReference.variable.name);
-    if (!reference) {
-      throw new Error('This should never happen');
-    }
-    const typeNode = ctx.currentGraph.findNode(reference.referencedNode);
-    return typeNode.resultType();
+    const type = node.incomingEdges()[0].incomingType();
+
+    const ret = toConcreteType(type, ctx);
+
+    return ret || INVALID_TYPE;
   }
 }
 

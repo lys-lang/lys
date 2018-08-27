@@ -4,9 +4,9 @@ import { ScopePhaseResult } from './scopePhase';
 import { TypeResolutionContext } from '../types/TypePropagator';
 import { TypeGraph } from '../types/TypeGraph';
 import { TypeGraphBuilder } from '../types/TypeGraphBuilder';
-import { AstNodeError } from '../NodeError';
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
+import { ParsingContext } from '../closure';
 
 const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
   node.parent = parent;
@@ -20,12 +20,8 @@ export class TypePhaseResult extends PhaseResult {
     return this.scopePhaseResult.document;
   }
 
-  get errors() {
-    return this.scopePhaseResult.semanticPhaseResult.parsingContext.messageCollector.errors;
-  }
-
-  set errors(val: AstNodeError[]) {
-    if (val.length) throw new Error('cannot set errors property');
+  get parsingContext(): ParsingContext {
+    return this.scopePhaseResult.parsingContext;
   }
 
   constructor(public scopePhaseResult: ScopePhaseResult) {
@@ -58,6 +54,5 @@ export class TypePhaseResult extends PhaseResult {
     );
 
     executor.run();
-    // failWithErrors('Type phase', this.scopePhaseResult.semanticPhaseResult.parsingContext.errors, this);
   }
 }

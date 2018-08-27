@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=i32
   |-VarDirectiveNode
@@ -11,5 +15,6 @@
       |-FunctionNode type=i32
         |-NameIdentifierNode="getX" type=fun() -> i32
         |-VariableReferenceNode type=i32 annotations=IsValueNode
-          |-NameIdentifierNode="x"
+          |-QNameNode=x
+            |-NameIdentifierNode="x"
     |-NameIdentifierNode="getX" type=fun() -> i32

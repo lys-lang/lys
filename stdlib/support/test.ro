@@ -1,0 +1,12 @@
+
+fun identity(x: i32): i32 = x
+fun identity(x: f32): f32 = x
+fun identity(x: f64): f64 = x
+fun identity(x: f32): f32 = x
+
+fun assert(x: boolean): void =
+  if (x == false) {
+    panic()
+  }
+
+fun panic() = %wasm { (unreachable) }

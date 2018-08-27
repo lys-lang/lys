@@ -24,7 +24,13 @@ export class TypeGraph {
   }
 
   get rootGraph(): TypeGraph {
-    return this.parentGraph;
+    let typeGraph: TypeGraph = this;
+
+    while (typeGraph.parentGraph) {
+      typeGraph = typeGraph.parentGraph;
+    }
+
+    return typeGraph;
   }
 
   addSubGraph(subGraph: TypeGraph, name: string): void {
@@ -49,22 +55,6 @@ export class TypeGraph {
       (this.parentGraph && this.parentGraph.findNode(astNode)) ||
       null
     );
-  }
-
-  findNodeInSubGraphs(astNode: Nodes.Node): TypeNode | null {
-    let ret = this.findNode(astNode);
-    if (!ret) {
-      const sg = this.subGraphs.entries();
-      for (let x of sg) {
-        const foundNode = x[0].findNodeInSubGraphs(astNode);
-        if (foundNode) {
-          ret = foundNode;
-          break;
-        }
-      }
-      return ret;
-    }
-    return ret;
   }
 }
 

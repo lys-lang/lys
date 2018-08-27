@@ -76,7 +76,7 @@ export abstract class Type {
 
   equals(_otherType: Type) {
     if (!_otherType) return false;
-    return _otherType && this.nativeType == _otherType.nativeType && this.binaryenType == _otherType.binaryenType;
+    return _otherType && _otherType instanceof this.constructor;
   }
 
   canBeAssignedTo(_otherType: Type) {
@@ -282,6 +282,7 @@ export class UnionType extends Type {
   }
 
   toString() {
+    if (this.of.length == 0) return '(empty union)';
     return this.of.map($ => $.toString()).join(' | ');
   }
 

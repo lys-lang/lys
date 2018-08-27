@@ -95,6 +95,7 @@ export class TypeGraphBuilder {
       if (referencedType) {
         new Edge(referencedType, result);
       } else {
+        // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
         throw new Error(
           'Unable to resolve reference to ' +
             reference.referencedNode.name +
@@ -107,16 +108,14 @@ export class TypeGraphBuilder {
   }
 
   resolveReferenceNode(referenceNode: Reference): TypeNode | null {
-    //If no parent is a local reference else is a reference to another module.
+    // If no parent is a local reference else is a reference to another module.
     if (referenceNode.isLocalReference) {
       return this.findNode(referenceNode.referencedNode);
+    } else {
+      const typePhase = this.parsingContext.getTypePhase(referenceNode.moduleSource);
+      const typeNode = typePhase.typeGraph.findNode(referenceNode.referencedNode);
+      return typeNode;
     }
-    return null;
-    // else {
-    //   const parent: Nodes.NameIdentifierNode = referenceNode.moduleSource
-    //   const module: PhaseResult[TypeCheckingResult[ModuleNode]] = parsingContext.getTypeCheckingForModule(parent.get)
-    //   module.getResult().typeGraph.findNode(referenceNode.referencedNode)
-    // }
   }
 
   private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode): void {
@@ -131,8 +130,16 @@ export class TypeGraphBuilder {
     }
   }
 
-  private resolveVariable(node: Nodes.NameIdentifierNode, result: TypeNode): void {
-    this.resolveVariableByName(node, node.name, result);
+  private resolveVariable(node: Nodes.QNameNode, result: TypeNode): void {
+    const reference = node.closure.getQName(node);
+
+    if (reference) {
+      if (!this._referenceNode.some($ => $.reference === reference && $.result == result)) {
+        this._referenceNode.push({ reference, result });
+      }
+    } else {
+      this.messageCollector.error(`Invalid reference ${node.text}` /* InvalidReferenceMessage */, node);
+    }
   }
 
   private traverse(node: Nodes.Node): TypeNode {
@@ -177,7 +184,7 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.variable), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.value), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.TypeReferenceNode) {
-      this.resolveVariable(node.name, target);
+      this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.IntegerLiteral) {
       this.resolveVariableByName(node, 'i32', target);
     } else if (node instanceof Nodes.FloatLiteral) {

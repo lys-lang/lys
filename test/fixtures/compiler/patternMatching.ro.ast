@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=i32
   |-TypeDirectiveNode
@@ -9,14 +13,17 @@
       |-FunctionNode type=fun(a: i32) -> boolean
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode="i32" type=i32
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="test" type=fun(a: i32) -> boolean
-        |-TypeReferenceNode="boolean" type=boolean
-          |-NameIdentifierNode="boolean"
-        |-PatternMatcherNode type=i32 annotations=IsValueNode
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-PatternMatcherNode type=boolean annotations=IsValueNode
           |-VariableReferenceNode type=i32 annotations=IsValueNode
-            |-NameIdentifierNode="a"
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
           |-MatchLiteralNode type=boolean annotations=IsValueNode
             |-IntegerLiteral=1 type=i32
             |-BooleanLiteral=true type=boolean annotations=IsValueNode
@@ -28,14 +35,17 @@
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode="i32" type=i32
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="test2" type=fun(a: i32) -> i32
-        |-TypeReferenceNode="i32" type=i32
-          |-NameIdentifierNode="i32"
+        |-TypeReferenceNode=i32 type=i32
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
         |-PatternMatcherNode type=i32 annotations=IsValueNode
           |-VariableReferenceNode type=i32 annotations=IsValueNode
-            |-NameIdentifierNode="a"
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
           |-MatchLiteralNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=10 type=i32
             |-IntegerLiteral=1 type=i32 annotations=IsValueNode

@@ -11,9 +11,11 @@ Directive         ::= ( FunctionDirective
                       | VarDirective
                       | StructDirective
                       | TypeDirective
+                      | ImportDirective
                       | EffectDirective
                       ) {fragment=true}
 
+ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
 FunctionDirective ::= PrivateModifier? InlineModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
@@ -68,7 +70,7 @@ UnionType         ::= IntersectionType (WS* '|' WS* IntersectionType)* {simplify
 IntersectionType  ::= AtomType (WS* '&' WS* AtomType)* {simplifyWhenOneChildren=true}
 AtomType          ::= TypeParen | FunctionTypeLiteral | TypeReference {fragment=true}
 TypeParen         ::= '(' WS* Type WS* ')' {pin=1}
-TypeReference     ::= NameIdentifier
+TypeReference     ::= QName
 
 FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* '->' WS* Type {pin=1}
 FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,recoverUntil=PAREN_RECOVERY}
@@ -136,8 +138,7 @@ CallArguments     ::= OPEN_PAREN Arguments? CLOSE_PAREN {pin=1,recoverUntil=PARE
 Arguments         ::= WS* Expression WS* NthArgument* {fragment=true}
 NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
-
-VariableReference ::= NameIdentifier
+VariableReference ::= QName
 
 MulOperator       ::= '**' | '*' | '/' | '%'
 AddOperator       ::= '+' | '-'
@@ -157,17 +158,18 @@ Literal           ::= ( StringLiteral
                       | NullLiteral
                       ) {fragment=true}
 
-NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])* ('::' [A-Za-z_]([A-Za-z0-9_])+)*
+NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])*
+QName             ::= NameIdentifier ('::' NameIdentifier)*
 
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?
 WASM_KEYWORD      ::= '%wasm'
 SExpression       ::= '(' WS* SSymbol SAtom* WS* ')'
-SAtom             ::= WS* (NameIdentifier | StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
+SAtom             ::= WS* (QName | StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
 SSymbol           ::= [a-zA-Z][a-zA-Z0-9_.]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
 
 /* Tokens */
 
@@ -175,6 +177,7 @@ FUN_KEYWORD       ::= 'fun'    WS+
 VAL_KEYWORD       ::= 'val'    WS+
 VAR_KEYWORD       ::= 'var'    WS+
 EFFECT_KEYWORD    ::= 'effect' WS+
+IMPORT_KEYWORD    ::= 'import' WS+
 
 TYPE_KEYWORD      ::= ( 'type'
                       | 'cotype'

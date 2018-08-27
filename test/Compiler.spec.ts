@@ -19,7 +19,7 @@ const writeToFile = process.env.UPDATE_AST === 'true';
 const phases = function(txt: string): CodeGenerationPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
+  const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
   types.execute();
@@ -28,7 +28,7 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
   return new CodeGenerationPhaseResult(compiler);
 };
 
-describe('Compiler', function() {
+describe.only('Compiler', function() {
   describe('AST', () => {
     folderBasedTest('**/compiler/*.ro', phases, async result => printAST(result.document), '.ast');
   });

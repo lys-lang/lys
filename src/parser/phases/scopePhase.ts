@@ -4,7 +4,8 @@ import { annotations } from '../annotations';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
-import { IErrorPositionCapable, AstNodeError } from '../NodeError';
+import { AstNodeError } from '../NodeError';
+import { ParsingContext } from '../closure';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
@@ -30,7 +31,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
 
     if (node.functionReturnType) {
       returnsVoidValue =
-        node.functionReturnType instanceof Nodes.TypeReferenceNode && node.functionReturnType.name.name === 'void';
+        node.functionReturnType instanceof Nodes.TypeReferenceNode && node.functionReturnType.variable.text === 'void';
     }
 
     if (!returnsVoidValue) {
@@ -132,7 +133,6 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
 
       node.parameters.forEach($ => {
         node.closure.set($.parameterName);
-        node.closure.localsMap.set($, node.closure.localsMap.size);
       });
 
       node.processParameters();
@@ -142,33 +142,53 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
 
 const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
-    if (!node.closure.canResolveName(node.variable.name)) {
-      throw new AstNodeError(`Cannot resolve variable "${node.variable.name}"`, node.variable);
+    if (!node.closure.canResolveQName(node.variable)) {
+      throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
     }
-    const resolved = node.closure.get(node.variable.name);
+    const resolved = node.closure.getQName(node.variable);
     const isGlobal = !resolved.isLocalReference || resolved.scope == phaseResult.document.closure;
     node.isLocal = !isGlobal;
-    node.closure.incrementUsage(node.variable.name);
-  }
-  if (node instanceof Nodes.TypeReferenceNode) {
-    if (!node.closure.canResolveName(node.name.name)) {
-      throw new AstNodeError(`Cannot resolve type named "${node.name.name}"`, node.name);
+    node.closure.incrementUsageQName(node.variable);
+  } else if (node instanceof Nodes.TypeReferenceNode) {
+    if (!node.closure.canResolveQName(node.variable)) {
+      throw new AstNodeError(`Cannot resolve type named "${node.variable.text}"`, node.variable);
     }
-    node.closure.incrementUsage(node.name.name);
+    node.closure.incrementUsageQName(node.variable);
   }
 });
+
+const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.VariableReferenceNode) {
+    if (node.variable.names.length > 1) {
+      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+    }
+  } else if (node instanceof Nodes.TypeReferenceNode) {
+    if (node.variable.names.length > 1) {
+      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+    }
+  }
+});
+
+function injectCoreImport(document: Nodes.DocumentNode) {
+  // TODO: Fix this horrible hack
+
+  if (document.file && document.file.endsWith('stdlib/system/core.ro')) return;
+
+  const coreModuleImport = new Nodes.ImportDirectiveNode();
+
+  coreModuleImport.allItems = true;
+  coreModuleImport.module = Nodes.QNameNode.fromString('system::core');
+
+  document.directives.unshift(coreModuleImport);
+}
 
 export class ScopePhaseResult extends PhaseResult {
   get document() {
     return this.semanticPhaseResult.document;
   }
 
-  get errors() {
-    return this.semanticPhaseResult.parsingContext.messageCollector.errors;
-  }
-
-  set errors(val: IErrorPositionCapable[]) {
-    if (val.length) throw new Error('cannot set errors property');
+  get parsingContext(): ParsingContext {
+    return this.semanticPhaseResult.parsingContext;
   }
 
   constructor(public semanticPhaseResult: SemanticPhaseResult) {
@@ -176,8 +196,23 @@ export class ScopePhaseResult extends PhaseResult {
     this.execute();
   }
 
+  private registerImportedModules() {
+    this.document.directives
+      .filter($ => $ instanceof Nodes.ImportDirectiveNode)
+      .forEach(($: Nodes.ImportDirectiveNode) => {
+        const importAll = new Set('*');
+        $.closure.registerImport($.module.text, importAll);
+      });
+  }
+
   protected execute() {
+    injectCoreImport(this.document);
     createClosures(this.document, this, null);
+
+    this.registerImportedModules();
+
+    findImplicitImports(this.document, this, null);
+
     resolveVariables(this.document, this, null);
     findValueNodes(this.document, this, null);
 
