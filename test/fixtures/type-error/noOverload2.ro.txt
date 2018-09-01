@@ -1,4 +1,4 @@
-(unknown file)
+test/fixtures/type-error/noOverload2.ro
     1│ type i32
     2│ 
     3│ private fun x(): i32 = 1
@@ -6,4 +6,5 @@
     5│ 
     6│ fun test(): i32 = x(1.0)
      │                   ^ Could not find a valid overload for function of type fun() -> i32 & fun(a: i32) -> i32 with the arguments of type (f32)
+     │             ^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "i32"
     7│ 

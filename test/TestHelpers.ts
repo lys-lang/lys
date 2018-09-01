@@ -46,13 +46,18 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
   debug?: boolean,
   itName?: string
 ) {
-  it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async () => {
+  it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async function() {
+    this.timeout(10000);
+
     debug && console.log('      ---------------------------------------------------');
 
     let result: T;
 
     try {
-      result = phases(txt);
+      const x: any = (result = phases(txt));
+      if (x.document) {
+        x.document.file = itName;
+      }
     } catch (e) {
       if (customTest) {
         await customTest(result, e);

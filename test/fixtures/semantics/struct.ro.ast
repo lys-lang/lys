@@ -1,0 +1,128 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="f32"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="boolean"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Number"
+    |-TypeDeclarationNode
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Infinity"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="NDet"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Real"
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Natural"
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Complex"
+        |-ParameterNode
+          |-NameIdentifierNode="real"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-ParameterNode
+          |-NameIdentifierNode="imaginary"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode=Number
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+        |-NameIdentifierNode="isComplex"
+        |-TypeReferenceNode=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-PatternMatcherNode annotations=IsValueNode
+          |-VariableReferenceNode annotations=IsValueNode
+            |-QNameNode=number
+              |-NameIdentifierNode="number"
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode=Real
+              |-QNameNode=Real
+                |-NameIdentifierNode="Real"
+            |-NameIdentifierNode="_"
+            |-BooleanLiteral=false annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode=Natural
+              |-QNameNode=Natural
+                |-NameIdentifierNode="Natural"
+            |-NameIdentifierNode="_"
+            |-BooleanLiteral=false annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode=Complex
+              |-QNameNode=Complex
+                |-NameIdentifierNode="Complex"
+            |-NameIdentifierNode="_"
+            |-NameIdentifierNode="imaginary"
+            |-BinaryExpressionNode="!=" annotations=IsValueNode
+              |-VariableReferenceNode annotations=IsValueNode
+                |-QNameNode=imaginary
+                  |-NameIdentifierNode="imaginary"
+              |-FloatLiteral=0 annotations=IsValueNode
+          |-MatchDefaultNode annotations=IsValueNode
+            |-BooleanLiteral=false annotations=IsValueNode
+    |-NameIdentifierNode="isComplex"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="main"
+        |-BlockNode annotations=IsValueNode
+          |-FunctionCallNode
+            |-VariableReferenceNode
+              |-QNameNode=isComplex
+                |-NameIdentifierNode="isComplex"
+            |-VariableReferenceNode annotations=IsValueNode
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
+          |-FunctionCallNode
+            |-VariableReferenceNode
+              |-QNameNode=isComplex
+                |-NameIdentifierNode="isComplex"
+            |-FunctionCallNode annotations=IsValueNode
+              |-VariableReferenceNode
+                |-QNameNode=Real
+                  |-NameIdentifierNode="Real"
+              |-FloatLiteral=0 annotations=IsValueNode
+          |-FunctionCallNode
+            |-VariableReferenceNode
+              |-QNameNode=isComplex
+                |-NameIdentifierNode="isComplex"
+            |-FunctionCallNode annotations=IsValueNode
+              |-VariableReferenceNode
+                |-QNameNode=Natural
+                  |-NameIdentifierNode="Natural"
+              |-IntegerLiteral=123 annotations=IsValueNode
+          |-FunctionCallNode annotations=IsValueNode
+            |-VariableReferenceNode
+              |-QNameNode=isComplex
+                |-NameIdentifierNode="isComplex"
+            |-FunctionCallNode annotations=IsValueNode
+              |-VariableReferenceNode
+                |-QNameNode=Complex
+                  |-NameIdentifierNode="Complex"
+              |-FloatLiteral=0 annotations=IsValueNode
+              |-FloatLiteral=99.1 annotations=IsValueNode
+    |-NameIdentifierNode="main"

@@ -13,7 +13,7 @@ import { expect } from 'chai';
 const phases = function(txt: string): ScopePhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
+  const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   return scope;
 };
@@ -35,11 +35,19 @@ describe('Types', function() {
 
         const typePhase = new TypePhaseResult(phaseResult);
 
+        try {
+          typePhase.execute();
+        } catch (e) {
+          console.log(print(typePhase.typeGraph));
+          throw e;
+        }
+
         const expectedResult = normalizeResult(expectedType);
         const givenResult = normalizeResult(typePhase.document.directives.map($ => $.ofType).join('\n'));
 
         try {
           expect(givenResult).to.eq(expectedResult);
+
           if (expectedError) {
             try {
               typePhase.ensureIsValid();
@@ -77,6 +85,74 @@ describe('Types', function() {
   }
 
   describe('unit', () => {
+    describe('imports', () => {
+      checkMainType`
+        import * from system::random
+
+        fun main(): f32 = nextInt()
+        ---
+        fun() -> f32
+        ---
+        Type "i32" is not assignable to "f32"
+      `;
+
+      checkMainType`
+        fun testBool(i: i32): boolean = i match {
+          case 0 -> true
+          case 1 -> true
+          case 2 -> true
+          case 3 -> true
+          case 4 -> true
+          case 5 -> true
+          case 6 -> true
+          case 7 -> true
+          case 8 -> true
+          case 9 -> true
+          case 10 -> true
+          case 11 -> true
+          case 12 -> true
+          else ->    true
+        }
+        ---
+        fun(i: i32) -> boolean
+      `;
+
+      checkMainType`
+        fun main(): f32 = system::random::nextInt()
+        ---
+        fun() -> f32
+        ---
+        Type "i32" is not assignable to "f32"
+      `;
+      checkMainType`
+        fun matcher(x: i32) =
+          x match {
+            case 1.5 -> 1
+            else -> 2
+          }
+        ---
+        fun(x: i32) -> i32
+        ---
+        Type "f32" is not assignable to "i32"
+      `;
+    });
+    checkMainType`
+      type i32
+
+      private fun innerFunctionArgs(a: i32): i32 = a
+      private fun innerFunction(): i32 = innerFunctionArgs(3)
+
+      private fun over(): i32 = 1
+      private fun over(a: i32): i32 = a
+
+      fun outerFunction(): i32 = innerFunction() + over()
+      ---
+      fun(a: i32) -> i32
+      fun() -> i32
+      fun() -> i32 & fun(a: i32) -> i32
+      fun() -> i32
+    `;
+
     checkMainType`
       type i32
 
@@ -91,6 +167,7 @@ describe('Types', function() {
 
     checkMainType`
       type i32
+      type f32
 
       fun matcher(x: i32) =
         x match {
@@ -109,6 +186,58 @@ describe('Types', function() {
       fun matcher() = {}
       ---
       fun() -> void
+    `;
+
+    checkMainType`
+      type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      fun gt0(x: i32): Boolean =
+        if (x > 0)
+          True()
+        else
+          False()
+      ---
+      fun(x: i32) -> Boolean
+    `;
+
+    checkMainType`
+      type i32
+
+
+      fun malloc(size: i32): i32 = %wasm {
+        (get_local $size)
+      }
+
+      fun main() = malloc(1)
+      ---
+      fun(size: i32) -> i32
+      fun() -> i32
+    `;
+
+    checkMainType`
+      type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      type Boolean2 {
+        True2()
+      }
+
+      fun gt0(x: i32) =
+        if (x > 0)
+          True()
+        else
+          True2()
+      ---
+      fun(x: i32) -> True | True2
     `;
 
     checkMainType`
@@ -137,6 +266,70 @@ describe('Types', function() {
 
     checkMainType`
       type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      type Boolean2 {
+        True2()
+      }
+
+      fun gt0(x: i32): True | Boolean2 =
+        if (x > 0)
+          True()
+        else
+          True2()
+      ---
+      fun(x: i32) -> True | Boolean2
+    `;
+
+    checkMainType`
+      type i32
+
+      type Boolean {
+        True()
+        False()
+      }
+
+      fun gt0(x: i32) =
+        if (x > 0)
+          True()
+        else
+          False()
+      ---
+      fun(x: i32) -> Boolean
+    `;
+
+    checkMainType`
+      type i32
+      type f32
+
+      fun x1() = {
+        fun Y() = 1.0
+        Y()
+      }
+
+      fun x2() = {
+        var n = 1
+        fun Y() = n
+        Y()
+      }
+
+      fun x3() = {
+        x2()
+        x1() + x1()
+      }
+      ---
+      fun() -> f32
+      fun() -> i32
+      fun() -> f32
+    `;
+
+    checkMainType`
+      type i32
+      type f32
 
       fun matcher(x: i32) =
         x match {
@@ -385,6 +578,26 @@ describe('Types', function() {
       ---
       fun() -> void
     `;
+
+    checkMainType`
+      type i32
+      type void
+
+      var x = 1
+
+      fun addOne(): i32 = {
+        var y = x
+        y = y + 1
+        x = y
+      }
+
+      fun addOneNoReturn(): void = {
+        x = x + 1
+      }
+      ---
+      fun() -> i32
+      fun() -> void
+    `;
   });
 
   describe('Resolution', () => {
@@ -394,12 +607,8 @@ describe('Types', function() {
       async (result, e) => {
         if (e) throw e;
         const typePhase = new TypePhaseResult(result);
-
-        try {
-          typePhase.ensureIsValid();
-        } catch (e) {
-          console.log(printErrors(typePhase.document, typePhase.errors, false));
-        }
+        typePhase.execute();
+        typePhase.ensureIsValid();
 
         return print(typePhase.typeGraph);
       },
@@ -412,10 +621,21 @@ describe('Types', function() {
       '**/types/*.ro',
       phases,
       async (result, e) => {
-        if (e) throw e;
-        const typePhase = new TypePhaseResult(result);
+        if (e) {
+          if (result) {
+            console.log(printErrors(result.document, [e as any]));
+          }
+          throw e;
+        }
 
-        return printAST(typePhase.document);
+        try {
+          const typePhase = new TypePhaseResult(result);
+          typePhase.execute();
+          return printAST(typePhase.document);
+        } catch (e) {
+          console.log(printErrors(result.document, [e]));
+          throw e;
+        }
       },
       '.ast'
     );
@@ -431,6 +651,7 @@ describe('Types', function() {
         const typePhase = new TypePhaseResult(result);
 
         try {
+          typePhase.execute();
           typePhase.ensureIsValid();
           debugger;
         } catch (e) {

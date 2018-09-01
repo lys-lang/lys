@@ -29,21 +29,181 @@ describe('execution tests', () => {
     );
   });
 
+  describe('injected wasm', () => {
+    test(
+      'x + 44',
+      `
+      type i32
+      fun main(x: i32): i32 = %wasm { (i32.add (get_local $x) (i32.const 44)) }
+    `,
+      async x => {
+        expect(x.exports.main(1)).to.eq(45);
+        expect(x.exports.main(2)).to.eq(46);
+      }
+    );
+  });
+
+  describe('imports', () => {
+    test(
+      'panic',
+      `
+      fun test(): void = {
+        support::test::assert((1 > 0)  == true)
+        support::test::assert((0 > 0)  == false)
+        support::test::assert((0 > 1)  == false)
+        support::test::assert((0 >= 0) == true)
+        support::test::assert((1 < 0)  == false)
+        support::test::assert((0 < 0)  == false)
+        support::test::assert((0 < 1)  == true)
+        support::test::assert((0 <= 1) == true)
+      }
+
+      fun testBool(i: i32): boolean = i match {
+        case 0 -> testBool0()
+        case 1 -> testBool1()
+        case 2 -> testBool2()
+        case 3 -> testBool3()
+        case 4 -> testBool4()
+        case 5 -> testBool5()
+        case 6 -> testBool6()
+        case 7 -> testBool7()
+        case 8 -> testBool8()
+        case 9 -> testBool9()
+        case 10 -> testBool10()
+        case 11 -> testBool11()
+        case 12 -> testBool12()
+        else ->    testBool99()
+      }
+
+      fun testBool0():  boolean = 1 > 0  // true
+      fun testBool1():  boolean = 0 > 0  // false
+      fun testBool2():  boolean = 0 > 1  // false
+      fun testBool3():  boolean = 1 >= 0 // true
+      fun testBool4():  boolean = 0 >= 0 // true
+      fun testBool5():  boolean = 0 >= 1 // false
+      fun testBool6():  boolean = 1 < 0  // false
+      fun testBool7():  boolean = 0 < 0  // false
+      fun testBool8():  boolean = 0 < 1  // true
+      fun testBool9():  boolean = 1 <= 0 // false
+      fun testBool10(): boolean = 0 <= 0  // true
+      fun testBool11(): boolean = 0 <= 1  // true
+      fun testBool12(): boolean = false   // false
+      fun testBool99(): boolean = true    // true
+
+      fun testPanic1(): void = {
+        support::test::assert((0 > 0) == true)
+      }
+
+      fun testPanic2(): void = {
+        support::test::assert(0 > 0)
+      }
+    `,
+      async x => {
+        x.exports.test();
+
+        expect(
+          [
+            !!x.exports.testBool0(),
+            !!x.exports.testBool1(),
+            !!x.exports.testBool2(),
+            !!x.exports.testBool3(),
+            !!x.exports.testBool4(),
+            !!x.exports.testBool5(),
+            !!x.exports.testBool6(),
+            !!x.exports.testBool7(),
+            !!x.exports.testBool8(),
+            !!x.exports.testBool9(),
+            !!x.exports.testBool10(),
+            !!x.exports.testBool11(),
+            !!x.exports.testBool12(),
+            !!x.exports.testBool99()
+          ].map(($, $$) => `fn ${$$} -> ${$}`),
+          'fn compare'
+        ).to.deep.eq(
+          [true, false, false, true, true, false, false, false, true, false, true, true, false, true].map(
+            ($, $$) => `fn ${$$} -> ${$}`
+          )
+        );
+
+        expect(
+          [
+            x.exports.testBool(0),
+            x.exports.testBool(1),
+            x.exports.testBool(2),
+            x.exports.testBool(3),
+            x.exports.testBool(4),
+            x.exports.testBool(5),
+            x.exports.testBool(6),
+            x.exports.testBool(7),
+            x.exports.testBool(8),
+            x.exports.testBool(9),
+            x.exports.testBool(10),
+            x.exports.testBool(11),
+            x.exports.testBool(12),
+            x.exports.testBool(99)
+          ].map(($, $$) => `${$$} -> ${$}`),
+          'match compare'
+        ).to.deep.eq([1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, -1].map(($, $$) => `${$$} -> ${$}`));
+
+        expect(() => x.exports.testPanic1(), 'testPanic1').to.throw();
+        expect(() => x.exports.testPanic2(), 'testPanic2').to.throw();
+      }
+    );
+  });
+
   describe('mutability', () => {
+    test(
+      'mutable global',
+      `
+        type i32
+        type void
+
+        val bc = 1
+
+        var a: i32 = {
+          bc - 2
+        }
+
+        fun retMinusOne() = 0 - 1
+
+        fun main(x: i32): void = {
+          if (x < 0) {
+            a = 0
+          } else {
+            a = x
+          }
+        }
+
+        fun getValue() = a
+      `,
+      async x => {
+        expect(x.exports.getValue()).to.eq(-1);
+
+        expect(x.exports.main(1)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(1);
+        expect(x.exports.main(3)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(3);
+        expect(x.exports.main(-3)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(0);
+        expect(x.exports.main(30)).to.eq(undefined);
+        expect(x.exports.getValue()).to.eq(30);
+      }
+    );
+
     test(
       'void return',
       `
-      type i32
-      fun main(x: i32): i32 = {
-        var a: i32 = 1
+        type i32
+        fun main(x: i32): i32 = {
+          var a: i32 = 1
 
-        if (x == 1) {
-          a = 3
-        } else {}
+          if (x == 1) {
+            a = 3
+          } else {}
 
-        a
-      }
-    `,
+          a
+        }
+      `,
       async x => {
         expect(x.exports.main(1)).to.eq(3);
         expect(x.exports.main(3)).to.eq(1);
@@ -134,6 +294,27 @@ describe('execution tests', () => {
     );
 
     test(
+      'sum 2',
+      `
+      type i32
+      type f32
+
+      fun add(a: i32, b: i32): i32 = {{{a}} + {{{b}}}}
+
+      fun add2(a: f32, b: f32): f32 = {{
+        {a} + {b}
+      }}
+    `,
+      async x => {
+        expect(x.exports.add(1, 2)).to.eq(3);
+        expect(x.exports.add(-1, 2)).to.eq(1);
+        expect(x.exports.add2(1, 2)).to.eq(3);
+        expect(x.exports.add2(0.2, 0.3)).to.eq(0.5);
+        expect(x.exports.add2(-1, 2)).to.eq(1);
+      }
+    );
+
+    test(
       'fibo',
       `
       type i32
@@ -154,6 +335,29 @@ describe('execution tests', () => {
         fib(46) // must be 1836311903
       }
     `,
+      async x => {
+        expect(x.exports.fib(46)).to.eq(1836311903);
+        expect(x.exports.test()).to.eq(1836311903);
+      }
+    );
+    test(
+      'fibo pattern matchin',
+      `
+        type i32
+
+        private fun fibo(n: i32, a: i32, b: i32): i32 =
+          n match {
+            case 0 -> a
+            case 1 -> b
+            else   -> fibo(n - 1, b, a + b)
+          }
+
+        fun fib(n: i32): i32 = fibo(n, 0, 1)
+
+        fun test(): i32 = {
+          fib(46) // must be 1836311903
+        }
+      `,
       async x => {
         expect(x.exports.fib(46)).to.eq(1836311903);
         expect(x.exports.test()).to.eq(1836311903);

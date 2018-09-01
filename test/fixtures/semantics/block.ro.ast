@@ -1,5 +1,9 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32"
   |-TypeDirectiveNode
@@ -9,8 +13,9 @@
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="x"
-          |-TypeReferenceNode="i32"
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="main"
         |-BlockNode annotations=IsValueNode
           |-VarDeclarationNode
@@ -18,35 +23,43 @@
             |-IntegerLiteral=0 annotations=IsValueNode
           |-AssignmentNode
             |-VariableReferenceNode
-              |-NameIdentifierNode="test"
+              |-QNameNode=test
+                |-NameIdentifierNode="test"
             |-BinaryExpressionNode="+" annotations=IsValueNode
-              |-IntegerLiteral=1
-              |-VariableReferenceNode
-                |-NameIdentifierNode="x"
+              |-IntegerLiteral=1 annotations=IsValueNode
+              |-VariableReferenceNode annotations=IsValueNode
+                |-QNameNode=x
+                  |-NameIdentifierNode="x"
           |-VariableReferenceNode annotations=IsValueNode
-            |-NameIdentifierNode="test"
+            |-QNameNode=test
+              |-NameIdentifierNode="test"
     |-NameIdentifierNode="main"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="x"
-          |-TypeReferenceNode="i32"
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="main2"
-        |-TypeReferenceNode="void"
-          |-NameIdentifierNode="void"
+        |-TypeReferenceNode=void
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
         |-BlockNode
           |-VarDeclarationNode
             |-NameIdentifierNode="test"
             |-IntegerLiteral=0 annotations=IsValueNode
           |-AssignmentNode
             |-VariableReferenceNode
-              |-NameIdentifierNode="test"
+              |-QNameNode=test
+                |-NameIdentifierNode="test"
             |-BinaryExpressionNode="+" annotations=IsValueNode
-              |-IntegerLiteral=1
-              |-VariableReferenceNode
-                |-NameIdentifierNode="x"
+              |-IntegerLiteral=1 annotations=IsValueNode
+              |-VariableReferenceNode annotations=IsValueNode
+                |-QNameNode=x
+                  |-NameIdentifierNode="x"
           |-VariableReferenceNode
-            |-NameIdentifierNode="test"
+            |-QNameNode=test
+              |-NameIdentifierNode="test"
     |-NameIdentifierNode="main2"

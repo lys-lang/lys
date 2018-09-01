@@ -1,23 +1,28 @@
 digraph Document {
-  node [fixedsize=shape fontsize=10]
-  1 [label="Name:\ni32"];
-  2 [label="OverloadedFun:\ngetX"];
-  3 [label="fun getX"];
-  4 [label="Fun:\ngetX"];
-  5 [label="Name:\nx"];
-  6 [label="Name:\ngetX"];
+  node [shape=box,fixedsize=shape fontsize=10]
+  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
+  2 [label="FunOverload: getX\nOverloadedFunctionTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+  3 [label="FunDirective: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+  4 [label="FunNode: getX\nFunctionTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+  5 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
+  6 [label="Name: x\nPassThroughTypeResolver\n⟨i32⟩"];
+  7 [label="Name: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+  8 [label="Name: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
   subgraph cluster0 {
-    node [style=filled];
-    7 [label="Name:\nx"];
-    8 [label="Var:\nx"];
-    9 [label="Fun:\ngetX"];
-    7 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    8 -> 9[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    node [style=filled, fillcolor=grey];
+    9 [label="Name: x\nLiteralTypeResolver\n⟨i32⟩"];
+    10 [label="Var: x\nVariableReferenceResolver\n⟨i32⟩"];
+    11 [label="FunNode: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+    9 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    10 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "getX(i32)";
 }
-  2 -> 6[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-  3 -> 2[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-  4 -> 3[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  1 -> 5[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 8[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 2[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 7[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 3[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

@@ -1,3 +1,5 @@
+import { print } from '@webassemblyjs/wast-printer';
+
 import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
@@ -11,9 +13,10 @@ declare var it;
 const phases = function(txt: string): CodeGenerationPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
+  const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
+  types.execute();
   types.ensureIsValid();
   const compilation = new CompilationPhaseResult(types);
   return new CodeGenerationPhaseResult(compilation);
@@ -34,13 +37,27 @@ export function test(name: string, src: string, customTest?: (document: any, err
       if (!instance) throw new Error('Invalid compilation');
 
       if (customTest) {
-        await customTest(instance);
+        try {
+          await customTest(instance);
+        } catch (e) {
+          console.error('NON OPTIMIZED VERSION');
+          console.log(print(compilationPhaseResult.programAST));
+          await compilationPhaseResult.validate(true);
+          console.log(compilationPhaseResult.module.emitText());
+          throw e;
+        }
       }
 
       await compilationPhaseResult.validate(true);
 
       if (customTest) {
-        await customTest(await compilationPhaseResult.toInstance());
+        try {
+          await customTest(await compilationPhaseResult.toInstance());
+        } catch (e) {
+          console.error('OPTIMIZED VERSION');
+          console.log(print(compilationPhaseResult.programAST));
+          throw e;
+        }
       }
     } catch (e) {
       if (customTest && customTest.length >= 2) {

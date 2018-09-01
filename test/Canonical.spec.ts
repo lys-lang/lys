@@ -1,10 +1,8 @@
-declare var describe, it, require, console;
+declare var describe;
 
-import { testParseToken, printAST, testParseTokenFailsafe, folderBasedTest } from './TestHelpers';
+import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
-
-let inspect = require('util').inspect;
 
 const phases = function(txt: string): CanonicalPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
@@ -13,7 +11,7 @@ const phases = function(txt: string): CanonicalPhaseResult {
 };
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/parser/*.ro', phases, result => printAST(result.document), '.ast');
+  folderBasedTest('test/fixtures/canonical/*.ro', phases, result => printAST(result.document), '.ast');
 });
 
 describe('Canonical', function() {
@@ -33,6 +31,9 @@ describe('Canonical', function() {
 
   test`var a = 1`;
   test`var a: Number = 1`;
+  test`var a: Number = 0x0`;
+  test`var a: Number = 0x1facbeda0192830190238019283`;
+  test`var a: Number = -0x1facbeda0192830190238019283`;
   test`var a = null`;
 
   test`

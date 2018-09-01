@@ -4,8 +4,8 @@ import { annotations } from '../annotations';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
-import { fromTypeNode } from '../types/TypeGraphBuilder';
-import { TypeReference } from '../types';
+import { AstNodeError } from '../NodeError';
+import { ParsingContext } from '../closure';
 
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
@@ -30,13 +30,18 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     let returnsVoidValue = false;
 
     if (node.functionReturnType) {
-      const type = fromTypeNode(node.functionReturnType);
-      returnsVoidValue = type && type instanceof TypeReference && type.referencedName === 'void';
+      returnsVoidValue =
+        node.functionReturnType instanceof Nodes.TypeReferenceNode && node.functionReturnType.variable.text === 'void';
     }
 
     if (!returnsVoidValue) {
       node.body.annotate(new annotations.IsValueNode());
     }
+  }
+
+  if (node instanceof Nodes.BinaryExpressionNode) {
+    node.lhs.annotate(new annotations.IsValueNode());
+    node.rhs.annotate(new annotations.IsValueNode());
   }
 
   if (node instanceof Nodes.IfNode) {
@@ -53,7 +58,10 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.PatternMatcherNode) {
     node.lhs.annotate(new annotations.IsValueNode());
     if (node.hasAnnotation(annotations.IsValueNode)) {
-      node.matchingSet.forEach($ => $.annotate(new annotations.IsValueNode()));
+      node.matchingSet.forEach($ => {
+        $.annotate(new annotations.IsValueNode());
+        $.rhs.annotate(new annotations.IsValueNode());
+      });
     }
   }
 
@@ -70,32 +78,53 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = parent.closure;
     }
 
-    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.PatternMatcherNode) {
-      const innerClosure = node.closure.newChildClosure();
-      innerClosure.set(node.declaredName, parent.lhs);
+    if (node instanceof Nodes.MatchCaseIsNode) {
+      node.rhs.closure = node.closure.newChildClosure();
+
+      if (node.declaredName) {
+        node.rhs.closure.set(node.declaredName);
+      }
+
+      if (node.deconstructorNames) {
+        node.deconstructorNames.forEach($ => {
+          if ($.name !== '_') {
+            node.rhs.closure.set($);
+          }
+        });
+      }
     }
 
-    // if (node instanceof Nodes.MatchConditionNode) {
-    //   node.rhs.closure = node.closure.newChildClosure();
-    //   node.closure.setVariable(node.declaredName.name, node);
-    // }
+    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.PatternMatcherNode) {
+      node.rhs.closure = node.closure.newChildClosure();
+      node.rhs.closure.set(node.declaredName);
+    }
 
     if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure.set(node.functionName, node);
+      node.closure.set(node.functionName);
     }
 
     if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
-      node.closure.set(node.variableName, node);
+      node.closure.set(node.variableName);
+    }
+
+    if (node instanceof Nodes.TypeDirectiveNode) {
+      node.closure.set(node.variableName);
+    }
+
+    if (node instanceof Nodes.TypeDeclarationNode) {
+      node.declarations.forEach($ => {
+        node.closure.set($.declaredName);
+      });
     }
 
     if (node instanceof Nodes.FunctionNode) {
       if (!node.body) {
-        throw new Error('Function has no value');
+        throw new AstNodeError('Function has no value', node);
       }
 
       if (!(parent instanceof Nodes.DirectiveNode)) {
-        node.closure.set(node.functionName, node);
+        node.closure.set(node.functionName);
       }
 
       node.internalIdentifier = node.closure.getInternalIdentifier(node);
@@ -103,37 +132,63 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = node.closure.newChildClosure();
 
       node.parameters.forEach($ => {
-        node.closure.set($.parameterName, $);
-        node.closure.localsMap.set($, node.closure.localsMap.size);
+        node.closure.set($.parameterName);
       });
 
       node.processParameters();
     }
-
-    if (node instanceof Nodes.TypeDirectiveNode) {
-      node.closure.set(node.variableName, node);
-    }
   }
 });
 
-const resolveVariables = walkPreOrder((node: Nodes.Node) => {
+const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
-    if (!node.closure.canResolveName(node.variable.name)) {
-      throw new Error(`Cannot resolve variable "${node.variable.name}"`);
+    if (!node.closure.canResolveQName(node.variable)) {
+      throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
     }
-    node.closure.incrementUsage(node.variable.name);
-  }
-  if (node instanceof Nodes.TypeReferenceNode) {
-    if (!node.closure.canResolveName(node.name.name)) {
-      throw new Error(`Cannot resolve type named "${node.name.name}"`);
+    const resolved = node.closure.getQName(node.variable);
+    const isGlobal = !resolved.isLocalReference || resolved.scope == phaseResult.document.closure;
+    node.isLocal = !isGlobal;
+    node.closure.incrementUsageQName(node.variable);
+  } else if (node instanceof Nodes.TypeReferenceNode) {
+    if (!node.closure.canResolveQName(node.variable)) {
+      throw new AstNodeError(`Cannot resolve type named "${node.variable.text}"`, node.variable);
     }
-    node.closure.incrementUsage(node.name.name);
+    node.closure.incrementUsageQName(node.variable);
   }
 });
+
+const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.VariableReferenceNode) {
+    if (node.variable.names.length > 1) {
+      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+    }
+  } else if (node instanceof Nodes.TypeReferenceNode) {
+    if (node.variable.names.length > 1) {
+      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+    }
+  }
+});
+
+function injectCoreImport(document: Nodes.DocumentNode) {
+  // TODO: Fix this horrible hack
+
+  if (document.file && document.file.endsWith('stdlib/system/core.ro')) return;
+
+  const coreModuleImport = new Nodes.ImportDirectiveNode();
+
+  coreModuleImport.allItems = true;
+  coreModuleImport.module = Nodes.QNameNode.fromString('system::core');
+
+  document.directives.unshift(coreModuleImport);
+}
 
 export class ScopePhaseResult extends PhaseResult {
   get document() {
     return this.semanticPhaseResult.document;
+  }
+
+  get parsingContext(): ParsingContext {
+    return this.semanticPhaseResult.parsingContext;
   }
 
   constructor(public semanticPhaseResult: SemanticPhaseResult) {
@@ -141,10 +196,25 @@ export class ScopePhaseResult extends PhaseResult {
     this.execute();
   }
 
+  private registerImportedModules() {
+    this.document.directives
+      .filter($ => $ instanceof Nodes.ImportDirectiveNode)
+      .forEach(($: Nodes.ImportDirectiveNode) => {
+        const importAll = new Set('*');
+        $.closure.registerImport($.module.text, importAll);
+      });
+  }
+
   protected execute() {
-    findValueNodes(this.document, this, null);
+    injectCoreImport(this.document);
     createClosures(this.document, this, null);
+
+    this.registerImportedModules();
+
+    findImplicitImports(this.document, this, null);
+
     resolveVariables(this.document, this, null);
+    findValueNodes(this.document, this, null);
 
     failIfErrors('Scope phase', this.document, this);
   }

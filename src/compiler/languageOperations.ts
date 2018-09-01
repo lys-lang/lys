@@ -21,10 +21,18 @@ export const binaryOperations: BinaryOperation[] = [
     outputType: booleanType,
     operator: 'and',
     generateCode: (lhs, rhs) =>
-      ast.instruction('i32.ne', [
-        ast.instruction('i32.and', [lhs, rhs]),
-        ast.objectInstruction('const', 'i32', [ast.numberLiteralFromRaw(0)])
+      ast.instruction('i32.and', [
+        ast.instruction('i32.ne', [lhs, ast.objectInstruction('const', 'i32', [ast.numberLiteralFromRaw(0)])]),
+        ast.instruction('i32.ne', [rhs, ast.objectInstruction('const', 'i32', [ast.numberLiteralFromRaw(0)])])
       ])
+  },
+  {
+    lhsType: booleanType,
+    rhsType: booleanType,
+    outputType: booleanType,
+    operator: '==',
+    generateCode: (lhs, rhs) =>
+      ast.instruction('i32.eq', [ast.instruction('i32.eqz', [lhs]), ast.instruction('i32.eqz', [rhs])])
   },
   {
     lhsType: booleanType,
@@ -32,9 +40,9 @@ export const binaryOperations: BinaryOperation[] = [
     outputType: booleanType,
     operator: 'or',
     generateCode: (lhs, rhs) =>
-      ast.instruction('i32.ne', [
-        ast.instruction('i32.or', [lhs, rhs]),
-        ast.objectInstruction('const', 'i32', [ast.numberLiteralFromRaw(0)])
+      ast.instruction('i32.or', [
+        ast.instruction('i32.ne', [lhs, ast.objectInstruction('const', 'i32', [ast.numberLiteralFromRaw(0)])]),
+        ast.instruction('i32.ne', [rhs, ast.objectInstruction('const', 'i32', [ast.numberLiteralFromRaw(0)])])
       ])
   },
 
@@ -155,7 +163,7 @@ export function findBuiltInTypedBinaryOperation(
 ): BinaryOperation | null {
   const subset = binaryOperations.filter($ => $.operator == operator);
 
-  const ret = subset.find($ => lhsType.equals($.lhsType) && rhsType.equals($.rhsType));
+  const ret = subset.find($ => $.lhsType.equals(lhsType) && $.rhsType.equals(rhsType));
 
   if (!ret) throw new Error(`Cannot resolve type of ${lhsType} (${operator}) ${rhsType}`);
 

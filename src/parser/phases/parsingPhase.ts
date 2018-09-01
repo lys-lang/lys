@@ -3,7 +3,7 @@ import { IToken } from 'ebnf';
 import { parser } from '../../grammar';
 import { walkPreOrder } from '../walker';
 import { failWithErrors } from './findAllErrors';
-import { AstNodeError } from '../NodeError';
+import { ParsingContext } from '../closure';
 
 const process = walkPreOrder((token: IToken, result: PhaseResult) => {
   if (token.errors && token.errors.length) {
@@ -17,9 +17,16 @@ const process = walkPreOrder((token: IToken, result: PhaseResult) => {
 
 export class ParsingPhaseResult extends PhaseResult {
   document: IToken;
-  errors: AstNodeError[] = [];
 
-  constructor(public fileName: string, public content: string) {
+  get parsingContext(): ParsingContext {
+    return this._parsingContext;
+  }
+
+  constructor(
+    public fileName: string,
+    public content: string,
+    private _parsingContext: ParsingContext = new ParsingContext()
+  ) {
     super();
     this.execute();
   }

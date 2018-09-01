@@ -1,7 +1,26 @@
-type i32 
-type boolean 
+type i32
+type f32
+type boolean
 
 fun test(a: i32): boolean = a match {
   case 1 -> true
   else -> false
 }
+
+type Number {
+  Infinity
+  NDet
+  Real(number: f32)
+  Natural(number: i32)
+  Complex(real: f32, imaginary: f32)
+}
+
+fun isComplex(number: Number): boolean =
+  number match {
+    case x is Real(_) -> false
+    case x is Infinity -> false
+    case is Infinity -> false
+    case is Natural(_) -> false
+    case is Complex(_, imaginary) -> imaginary != 0.0
+    else -> false
+  }

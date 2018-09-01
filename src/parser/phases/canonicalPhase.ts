@@ -3,6 +3,7 @@ import { Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ParsingPhaseResult } from './parsingPhase';
+import { ParsingContext } from '../closure';
 
 function binaryOpVisitor(astNode: IToken) {
   let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode;
@@ -19,6 +20,12 @@ function binaryOpVisitor(astNode: IToken) {
 }
 
 const visitor = {
+  ImportDirective(astNode: IToken) {
+    const ret = new Nodes.ImportDirectiveNode(astNode);
+    ret.module = visitChildTypeOrNull(astNode, 'QName') as Nodes.QNameNode;
+    ret.alias = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    return ret;
+  },
   VarDirective(astNode: IToken) {
     const ret = new Nodes.VarDirectiveNode(astNode);
 
@@ -107,7 +114,7 @@ const visitor = {
       ret.isExported = true;
     }
 
-    child; // this is the type kind
+    child; // this is the type kind "type, rectype, cotype"
 
     child = children.shift(); // this is the NameIdentifier
 
@@ -193,8 +200,11 @@ const visitor = {
           const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
           x.isInfix = true;
           const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
-          vrn.variable = new Nodes.NameIdentifierNode(astNode.children[i]);
-          vrn.variable.name = astNode.children[i].text;
+          vrn.variable = new Nodes.QNameNode(astNode.children[i]);
+          const varName = new Nodes.NameIdentifierNode(astNode.children[i]);
+          vrn.variable.names = [varName];
+
+          varName.name = astNode.children[i].text;
 
           x.argumentsNode = [oldRet, ...astNode.children[i + 1].children.map($ => visit($))];
         } else {
@@ -207,12 +217,17 @@ const visitor = {
   },
   VariableReference(astNode: IToken) {
     const ret = new Nodes.VariableReferenceNode(astNode);
-    ret.variable = visit(findChildrenType(astNode, 'NameIdentifier'));
+    ret.variable = visit(astNode.children[0]);
     return ret;
   },
   NameIdentifier(astNode: IToken) {
     const ret = new Nodes.NameIdentifierNode(astNode);
     ret.name = astNode.text.trim();
+    return ret;
+  },
+  QName(astNode: IToken) {
+    const ret = new Nodes.QNameNode(astNode);
+    ret.names = astNode.children.map(visit) as any;
     return ret;
   },
   FunctionTypeParameter(astNode: IToken) {
@@ -226,9 +241,9 @@ const visitor = {
   TypeAlias(astNode: IToken) {
     return visitChildTypeOrNull(astNode, 'Type');
   },
-  TypeReference(child: IToken) {
-    const ret = new Nodes.TypeReferenceNode(child);
-    ret.name = visit(findChildrenType(child, 'NameIdentifier'));
+  TypeReference(astNode: IToken) {
+    const ret = new Nodes.TypeReferenceNode(astNode);
+    ret.variable = visit(astNode.children[0]);
     // ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
     // ret.isArray = !!findChildrenType(astNode, 'IsArray');
     return ret;
@@ -267,6 +282,20 @@ const visitor = {
     ret.rhs = visit(x.children[2]);
     return ret;
   },
+  CaseIs(x: IToken) {
+    const ret = new Nodes.MatchCaseIsNode(x);
+    ret.declaredName = visitChildTypeOrNull(x, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    ret.typeReference = visitChildTypeOrNull(x, 'TypeReference') as Nodes.TypeReferenceNode;
+
+    const deconstruct = findChildrenType(x, 'DeconstructStruct');
+
+    if (deconstruct) {
+      ret.deconstructorNames = deconstruct.children.map($ => visit($));
+    }
+
+    ret.rhs = visitLastChild(x);
+    return ret;
+  },
   CaseElse(x: IToken) {
     const ret = new Nodes.MatchDefaultNode(x);
     ret.rhs = visit(x.children[0]);
@@ -278,6 +307,32 @@ const visitor = {
     } else {
       return new Nodes.IntegerLiteral(x);
     }
+  },
+  HexLiteral(x: IToken) {
+    return new Nodes.HexLiteral(x);
+  },
+  StringLiteral(x: IToken) {
+    const ret = new Nodes.StringLiteral(x);
+    ret.value = x.text; // TODO: Parse string correctly
+    return ret;
+  },
+  BinNegExpression(x: IToken) {
+    const ret = new Nodes.UnaryExpressionNode(x);
+    ret.rhs = visit(x.children[0]);
+    ret.operator = '~';
+    return ret;
+  },
+  NegExpression(x: IToken) {
+    const ret = new Nodes.UnaryExpressionNode(x);
+    ret.rhs = visit(x.children[0]);
+    ret.operator = '!';
+    return ret;
+  },
+  UnaryMinus(x: IToken) {
+    const ret = new Nodes.UnaryExpressionNode(x);
+    ret.rhs = visit(x.children[0]);
+    ret.operator = '-';
+    return ret;
   },
   BooleanLiteral(x: IToken) {
     return new Nodes.BooleanLiteral(x);
@@ -302,8 +357,23 @@ const visitor = {
   SyntaxError(_: IToken) {
     return null;
   },
+  StructDeclaration(astNode: IToken) {
+    const ret = new Nodes.StructDeclarationNode(astNode);
+
+    ret.declaredName = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    const params = findChildrenType(astNode, 'FunctionParamsList');
+    if (params) {
+      ret.parameters = params.children.map($ => visit($));
+    } else {
+      ret.parameters = [];
+    }
+
+    return ret;
+  },
   TypeDeclaration(astNode: IToken) {
-    const ret = new Nodes.UnionTypeNode(astNode);
+    const ret = new Nodes.TypeDeclarationNode(astNode);
+    const typeDeclElements = findChildrenType(astNode, 'TypeDeclElements');
+    ret.declarations = typeDeclElements.children.map($ => visit($));
     // TODO
     return ret;
   },
@@ -320,6 +390,23 @@ const visitor = {
   TypeParen(astNode: IToken) {
     const ret = visit(astNode.children[0]);
     ret.hasParentheses = true;
+    return ret;
+  },
+  WasmExpression(astNode: IToken) {
+    const ret = new Nodes.WasmExpressionNode(astNode);
+    ret.atoms = astNode.children.map($ => visit($));
+    return ret;
+  },
+  SExpression(astNode: IToken) {
+    const ret = new Nodes.WasmAtomNode(astNode);
+    const children = astNode.children.slice();
+    const symbol = children.shift();
+
+    ret.symbol = symbol.text;
+
+    const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
+    ret.arguments = ret.arguments.concat(newChildren);
+
     return ret;
   }
 };
@@ -350,6 +437,10 @@ function visitLastChild(token: IToken) {
 export class CanonicalPhaseResult extends PhaseResult {
   document: Nodes.DocumentNode;
 
+  get parsingContext(): ParsingContext {
+    return this.parsingPhaseResult.parsingContext;
+  }
+
   constructor(public parsingPhaseResult: ParsingPhaseResult) {
     super();
     this.execute();
@@ -357,7 +448,7 @@ export class CanonicalPhaseResult extends PhaseResult {
 
   protected execute() {
     this.document = visit(this.parsingPhaseResult.document);
-
+    this.document.file = this.parsingPhaseResult.fileName;
     failIfErrors('Canonical phase', this.document, this);
   }
 }

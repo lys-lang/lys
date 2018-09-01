@@ -1,31 +1,35 @@
 digraph Document {
-  node [fixedsize=shape fontsize=10]
-  1 [label="Name:\ni32"];
-  2 [label="OverloadedFun:\ntest"];
-  3 [label="fun test"];
-  4 [label="Fun:\ntest"];
-  5 [label="Name:\ntest"];
+  node [shape=box,fixedsize=shape fontsize=10]
+  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
+  2 [label="FunOverload: test\nOverloadedFunctionTypeResolver\n⟨fun() -> i32⟩"];
+  3 [label="FunDirective: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+  4 [label="FunNode: test\nFunctionTypeResolver\n⟨fun() -> i32⟩"];
+  5 [label="Name: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+  6 [label="Name: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
   subgraph cluster0 {
-    node [style=filled];
-    6 [label="BlockNode"];
-    7 [label="Val Decl:\ntest"];
-    8 [label="Name:\ntest"];
-    9 [label="Int:\n1"];
-    10 [label="BinaryExpressionNode'+'"];
-    11 [label="Var:\ntest"];
-    12 [label="Int:\n2"];
-    13 [label="Fun:\ntest"];
-    6 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    7 -> 6[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    8 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    9 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    10 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    11 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-    12 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+    node [style=filled, fillcolor=grey];
+    7 [label="BlockNode\nBlockTypeResolver\n⟨i32⟩"];
+    8 [label="ValDecl: test\nLiteralTypeResolver\n⟨void⟩"];
+    9 [label="Name: test\nVarDeclarationTypeResolver\n⟨i32⟩"];
+    10 [label="Int: 1\nPassThroughTypeResolver\n⟨i32⟩"];
+    11 [label="BinaryExpressionNode'+'\nBinaryOpTypeResolver\n⟨i32⟩"];
+    12 [label="Var: test\nVariableReferenceResolver\n⟨i32⟩"];
+    13 [label="Int: 2\nPassThroughTypeResolver\n⟨i32⟩"];
+    14 [label="FunNode: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+    7 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    8 -> 7[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    9 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    10 -> 9[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    11 -> 7[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    12 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    13 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "test()";
 }
-  2 -> 5[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-  3 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
-  4 -> 3[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10  ];
+  1 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 6[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 5[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 3[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

@@ -1,6 +1,6 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure } from './closure';
-import { Type, NativeTypes, FunctionType } from './types';
+import { Type, NativeTypes, FunctionType, StructType } from './types';
 import { BinaryOperation } from '../compiler/languageOperations';
 import { Annotation, IAnnotationConstructor } from './annotations';
 
@@ -99,6 +99,26 @@ export namespace Nodes {
     get text() {
       return JSON.stringify(this.name);
     }
+
+    static fromString(name: string) {
+      const r = new NameIdentifierNode();
+      r.name = name;
+      return r;
+    }
+  }
+
+  export class QNameNode extends Node {
+    names: NameIdentifierNode[];
+
+    get text() {
+      return this.names.map($ => $.name).join('::');
+    }
+
+    static fromString(name: string): QNameNode {
+      const r = new QNameNode();
+      r.names = name.split('::').map($ => NameIdentifierNode.fromString($));
+      return r;
+    }
   }
 
   export class TypeNode extends Node {
@@ -108,10 +128,10 @@ export namespace Nodes {
 
   export class TypeReferenceNode extends TypeNode {
     /** Name of the referenced type */
-    name: NameIdentifierNode;
+    variable: QNameNode;
 
     get text() {
-      return JSON.stringify(this.name.name);
+      return this.variable.text;
     }
 
     isPointer: number = 0;
@@ -136,7 +156,8 @@ export namespace Nodes {
   }
 
   export class VariableReferenceNode extends ExpressionNode {
-    variable: NameIdentifierNode;
+    variable: QNameNode;
+    isLocal: boolean = false;
   }
 
   export class BlockNode extends ExpressionNode {
@@ -152,6 +173,7 @@ export namespace Nodes {
     directives: DirectiveNode[];
     errors: TokenError[] = [];
     file?: string;
+    moduleName?: string;
     textContent: string;
   }
 
@@ -363,6 +385,12 @@ export namespace Nodes {
     }
   }
 
+  export class ImportDirectiveNode extends DirectiveNode {
+    allItems: boolean = true;
+    module: QNameNode;
+    alias: NameIdentifierNode | null = null;
+  }
+
   export class FunDirectiveNode extends DirectiveNode {
     functionNode: FunctionNode;
   }
@@ -432,6 +460,17 @@ export namespace Nodes {
     }
   }
 
+  export class HexLiteral extends IntegerLiteral {
+    // TODO: support bignumber here
+
+    get value(): number {
+      return parseInt(this.astNode.text, 16);
+    }
+    set value(value: number) {
+      this.astNode.text = value.toString(16);
+    }
+  }
+
   export class BooleanLiteral extends LiteralNode<boolean> {
     get value(): boolean {
       return this.astNode.text.trim() == 'true';
@@ -445,11 +484,15 @@ export namespace Nodes {
     value: null = null;
   }
 
+  export class StringLiteral extends LiteralNode<string> {
+    value: string;
+  }
+
   export class FunctionCallNode extends ExpressionNode {
     isInfix: boolean = false;
     functionNode: ExpressionNode;
     argumentsNode: ExpressionNode[];
-    resolvedFunctionType: FunctionType;
+    resolvedFunctionType: FunctionType | StructType;
   }
 
   export class BinaryExpressionNode extends ExpressionNode {
@@ -473,12 +516,17 @@ export namespace Nodes {
     }
   }
 
-  export class BooleanNegNode extends ExpressionNode {
-    lhs: ExpressionNode;
+  export class WasmAtomNode extends ExpressionNode {
+    arguments: ExpressionNode[] = [];
+    symbol: string;
+
+    get text() {
+      return this.symbol;
+    }
   }
 
-  export class NumberNegNode extends ExpressionNode {
-    lhs: ExpressionNode;
+  export class WasmExpressionNode extends ExpressionNode {
+    atoms: WasmAtomNode[];
   }
 
   export abstract class MatcherNode extends ExpressionNode {
@@ -496,6 +544,12 @@ export namespace Nodes {
     condition: ExpressionNode;
   }
 
+  export class MatchCaseIsNode extends MatcherNode {
+    declaredName: NameIdentifierNode;
+    typeReference: TypeReferenceNode;
+    deconstructorNames: NameIdentifierNode[];
+  }
+
   export class MatchLiteralNode extends MatcherNode {
     literal: LiteralNode<any>;
   }
@@ -508,7 +562,15 @@ export namespace Nodes {
     of: TypeNode[];
   }
 
-  export class TypeDeclarationNode extends Node {}
+  export class StructDeclarationNode extends TypeNode {
+    internalIdentifier: string;
+    declaredName: NameIdentifierNode;
+    parameters: ParameterNode[];
+  }
+
+  export class TypeDeclarationNode extends TypeNode {
+    declarations: StructDeclarationNode[];
+  }
 
   export class EffectDeclarationNode extends Node {
     name: NameIdentifierNode;

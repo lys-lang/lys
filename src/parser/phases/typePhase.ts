@@ -4,8 +4,13 @@ import { ScopePhaseResult } from './scopePhase';
 import { TypeResolutionContext } from '../types/TypePropagator';
 import { TypeGraph } from '../types/TypeGraph';
 import { TypeGraphBuilder } from '../types/TypeGraphBuilder';
-import { AstNodeError } from '../NodeError';
 import { Nodes } from '../nodes';
+import { walkPreOrder } from '../walker';
+import { ParsingContext } from '../closure';
+
+const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
+  node.parent = parent;
+});
 
 export class TypePhaseResult extends PhaseResult {
   typeGraph: TypeGraph;
@@ -15,16 +20,14 @@ export class TypePhaseResult extends PhaseResult {
     return this.scopePhaseResult.document;
   }
 
-  get errors() {
-    return this.scopePhaseResult.semanticPhaseResult.parsingContext.errors;
-  }
-
-  set errors(val: AstNodeError[]) {
-    if (val.length) throw new Error('cannot set errors property');
+  get parsingContext(): ParsingContext {
+    return this.scopePhaseResult.parsingContext;
   }
 
   constructor(public scopePhaseResult: ScopePhaseResult) {
     super();
+
+    fixParents(this.document, this);
 
     const graphBuilder = new TypeGraphBuilder(this.scopePhaseResult.semanticPhaseResult.parsingContext);
 
@@ -33,7 +36,17 @@ export class TypePhaseResult extends PhaseResult {
       this.typeGraph,
       this.scopePhaseResult.semanticPhaseResult.parsingContext
     );
+  }
 
+  ensureIsValid() {
+    failWithErrors(
+      'Type phase',
+      this.scopePhaseResult.semanticPhaseResult.parsingContext.messageCollector.errors,
+      this
+    );
+  }
+
+  execute() {
     const executor = this.typeResolutionContext.newExecutorWithContext(
       this.document.closure,
       this.typeGraph,
@@ -41,15 +54,5 @@ export class TypePhaseResult extends PhaseResult {
     );
 
     executor.run();
-
-    this.execute();
-  }
-
-  ensureIsValid() {
-    failWithErrors('Type phase', this.scopePhaseResult.semanticPhaseResult.parsingContext.errors, this);
-  }
-
-  protected execute() {
-    // failWithErrors('Type phase', this.scopePhaseResult.semanticPhaseResult.parsingContext.errors, this);
   }
 }

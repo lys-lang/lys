@@ -140,3 +140,36 @@ fun safediv(x: i32, y: i32): i32 =
   else
     x / y
 ```
+
+##
+
+```
+type i32
+type f32
+type boolean
+
+type Number {
+  Infinity
+  NDet
+  Real(number: f32)
+  Natural(number: i32)
+  Complex(real: f32, imaginary: f32)
+}
+
+// type Number = Infinity | NDet | Real(f32) | Natural(i32) | Complex(f32, f32)
+
+fun isComplex(number: Number): boolean =
+  number match {
+    case is Real(_) -> false
+    case is Natural(_) -> false
+    case is Complex(_, imaginary) -> imaginary != 0.0
+    else -> false
+  }
+
+fun main() = {
+  isComplex(Infinity)
+  isComplex(Real(0.0))
+  isComplex(Natural(123))
+  isComplex(Complex(0.0, 99.1))
+}
+```

@@ -1,6 +1,10 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { PhaseResult } from './PhaseResult';
+import { printErrors } from '../../utils/errorPrinter';
+import { IErrorPositionCapable } from '../NodeError';
+
+declare var console;
 
 function indent(str: string, indentation: string = '  ') {
   return str.replace(/^(.*)$/gm, indentation + '$1');
@@ -35,8 +39,14 @@ export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, ph
   failWithErrors(phaseName, phase.errors, phase);
 }
 
-export function failWithErrors(phaseName: string, errors: Error[], phase: PhaseResult) {
+export function failWithErrors(phaseName: string, errors: IErrorPositionCapable[], phase: PhaseResult) {
   if (errors.length === 0) return;
+
+  if (phase && phase.errors.length && 'document' in (phase as any)) {
+    try {
+      console.log(printErrors((phase as any).document, errors));
+    } catch {}
+  }
 
   throw Object.assign(
     new Error(

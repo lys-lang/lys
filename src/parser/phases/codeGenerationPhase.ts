@@ -12,8 +12,19 @@ import { FunctionType } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
+import { ParsingContext } from '../closure';
 
+type CompilationModuleResult = {
+  compilationPhase: CompilationPhaseResult;
+  moduleParts: any[];
+  starters: any[];
+};
+
+const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
+
+(binaryen as any).setOptimizeLevel(3);
+(binaryen as any).setShrinkLevel(3);
 
 const secSymbol = Symbol('secuentialId');
 function getModuleSecuentialId(module) {
@@ -23,8 +34,18 @@ function getModuleSecuentialId(module) {
   return num;
 }
 
+function getStarterFunction(statements: any[]) {
+  const fnType = t.signature([], []);
+
+  return t.func(
+    starterName, // name
+    fnType, //signature
+    statements // body
+  );
+}
+
 function getTypeForFunction(fn: Nodes.FunctionNode) {
-  const fnType = fn.ofType as FunctionType;
+  const fnType = fn.functionName.ofType as FunctionType;
   const ret = fnType.returnType;
 
   const retType = ret.binaryenType ? [ret.binaryenType] : [];
@@ -38,7 +59,7 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
   );
 }
 
-function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode, _: CodeGenerationPhaseResult) {
+function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   const fnType = getTypeForFunction(fn);
 
   const locals = fn.additionalLocals.map($ =>
@@ -145,11 +166,37 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
   }
 }
 
+function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
+  if (node instanceof Nodes.QNameNode) {
+    if (node.text.startsWith('$')) {
+      return t.identifier(node.text.replace(/^\$/, ''));
+    } else {
+      return t.valtypeLiteral(node.text);
+    }
+  }
+
+  if (node instanceof Nodes.HexLiteral) {
+    return t.numberLiteralFromRaw(node.astNode.text);
+  }
+
+  if (node instanceof Nodes.IntegerLiteral) {
+    return t.numberLiteralFromRaw(node.value);
+  }
+
+  if (node instanceof Nodes.FloatLiteral) {
+    return t.numberLiteralFromRaw(node.value);
+  }
+
+  return t.instruction(node.symbol, (node.arguments || []).map($ => emitWast($ as any, document)));
+}
+
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
     // try {
     if (node instanceof Nodes.FunctionCallNode) {
       return emitFunctionCall(node, document);
+    } else if (node instanceof Nodes.WasmExpressionNode) {
+      return flatten(node.atoms.map($ => emitWast($, document)));
     } else if (node instanceof Nodes.IntegerLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
@@ -163,7 +210,26 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
-      return t.instruction('set_local', [t.identifier(node.variable.variable.name), emit(node.value, document)]);
+      const isLocal = node.variable.isLocal;
+      const isValueNode = node.hasAnnotation(annotations.IsValueNode);
+
+      if (isLocal) {
+        const instr = isValueNode ? 'tee_local' : 'set_local';
+        return t.instruction(instr, [t.identifier(node.variable.variable.text), emit(node.value, document)]);
+      } else {
+        if (isValueNode) {
+          return t.blockInstruction(
+            t.identifier('tee_global_' + getModuleSecuentialId(document)),
+            [
+              t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]),
+              t.instruction('get_global', [t.identifier(node.variable.variable.text)])
+            ],
+            node.value.ofType.binaryenType
+          );
+        } else {
+          return t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]);
+        }
+      }
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'unknown_block_' + getModuleSecuentialId(document));
@@ -190,12 +256,11 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       return node.binaryOperation.generateCode(emit(node.lhs, document), emit(node.rhs, document));
     } else if (node instanceof Nodes.VariableReferenceNode) {
-      // const decl = node.closure.getVariable(node.variable.name).node;
-
-      return t.instruction('get_local', [t.identifier(node.variable.name)]);
+      const instr = node.isLocal ? 'get_local' : 'get_global';
+      return t.instruction(instr, [t.identifier(node.variable.text)]);
     }
 
-    throw new Error(`This node cannot be emited ${node.nodeName}`);
+    throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
     // } catch (e) {
     //   node.errors.push(e);
     // }
@@ -203,7 +268,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
   const generatedNode = _emit();
 
-  if (!generatedNode) throw new Error(`Could not emit any code for node ${node.nodeName}`);
+  if (!generatedNode) throw new AstNodeError(`Could not emit any code for node ${node.nodeName}`, node);
 
   const retAnnotation = node.getAnnotation(annotations.IsReturnExpression);
 
@@ -227,6 +292,10 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return this.compilationPhaseResult.document;
   }
 
+  get parsingContext(): ParsingContext {
+    return this.compilationPhaseResult.parsingContext;
+  }
+
   constructor(public compilationPhaseResult: CompilationPhaseResult) {
     super();
     this.execute();
@@ -247,6 +316,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
+      console.log(this.parsingContext.modulesInContext);
       console.log(text);
       this.errors.push(e);
       throw e;
@@ -289,33 +359,96 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return new WebAssembly.Instance(compiled, imports);
   }
 
-  protected execute() {
-    const functions = findNodesByType(this.document, Nodes.OverloadedFunctionNode);
+  generatePhase(compilationPhase: CompilationPhaseResult, exports: boolean): CompilationModuleResult {
+    const globals = findNodesByType(compilationPhase.document, Nodes.VarDirectiveNode);
+    const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
 
+    const starters = [];
+    const exportedElements = [];
     const createdFunctions = [];
-    const exportedFunctions = [];
+
+    const createdGlobals = globals.map($ => {
+      // TODO: If the value is a literal, do not defer initialization to starters
+
+      const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
+      const nativeType = $.decl.variableName.ofType.binaryenType;
+      const identifier = t.identifier($.decl.variableName.name);
+
+      starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
+
+      // if ($.isExported) {
+      //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));
+      // }
+
+      return t.global(
+        t.globalType(nativeType, mut),
+        [t.objectInstruction('const', nativeType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, compilationPhase.document),
+        identifier
+      );
+    });
 
     functions.forEach($ => {
       const canBeExported = $.functions.length === 1;
 
       $.functions.forEach(fun => {
-        createdFunctions.push(emitFunction(fun.functionNode, this.document, this));
-        if (fun.isExported) {
+        createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
+        if (fun.isExported && exports) {
           if (canBeExported) {
-            exportedFunctions.push(
+            exportedElements.push(
               t.moduleExport(
                 fun.functionNode.functionName.name,
                 t.moduleExportDescr('Func', t.identifier(fun.functionNode.internalIdentifier))
               )
             );
           } else {
-            throw new Error('You cannot export overloaded functions');
+            throw new AstNodeError(
+              `You cannot export overloaded functions (${fun.functionNode.functionName.text})`,
+              fun.functionNode.functionName
+            );
           }
         }
       });
     });
 
-    const module = t.module(null, [...exportedFunctions, ...createdFunctions]);
+    return {
+      compilationPhase,
+      moduleParts: [...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
+      starters
+    };
+  }
+
+  protected execute() {
+    const memory = t.memory(t.limit(1), t.indexLiteral(0));
+
+    const exportList = [this.compilationPhaseResult];
+
+    this.parsingContext.modulesInContext.forEach($ => {
+      const compilation = this.parsingContext.getCompilationPhase($);
+
+      if (!exportList.includes(compilation)) {
+        exportList.push(compilation);
+      }
+    });
+
+    const generatedModules = exportList.map($ => this.generatePhase($, $ == this.compilationPhaseResult));
+
+    const starters = [];
+    const moduleParts = [];
+
+    generatedModules.reverse().forEach(ret => {
+      moduleParts.push(...ret.moduleParts);
+      starters.push(...ret.starters);
+    });
+
+    if (starters.length) {
+      const starter = getStarterFunction(starters);
+      moduleParts.push(starter);
+      moduleParts.push(t.start(starterName));
+    }
+
+    moduleParts.unshift(memory);
+
+    const module = t.module(null, moduleParts);
 
     this.programAST = t.program([module]);
 

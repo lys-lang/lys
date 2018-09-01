@@ -1,25 +1,121 @@
 
 |-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32"
   |-TypeDirectiveNode
+    |-NameIdentifierNode="f32"
+  |-TypeDirectiveNode
     |-NameIdentifierNode="boolean"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Number"
+    |-TypeDeclarationNode
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Infinity"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="NDet"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Real"
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Natural"
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+      |-StructDeclarationNode
+        |-NameIdentifierNode="Complex"
+        |-ParameterNode
+          |-NameIdentifierNode="real"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-ParameterNode
+          |-NameIdentifierNode="imaginary"
+          |-TypeReferenceNode=f32
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
   |-OverloadedFunctionNode
     |-FunDirectiveNode
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="a"
-          |-TypeReferenceNode="i32"
-            |-NameIdentifierNode="i32"
+          |-TypeReferenceNode=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="test"
-        |-TypeReferenceNode="boolean"
-          |-NameIdentifierNode="boolean"
+        |-TypeReferenceNode=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
         |-PatternMatcherNode annotations=IsValueNode
           |-VariableReferenceNode annotations=IsValueNode
-            |-NameIdentifierNode="a"
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
           |-MatchLiteralNode annotations=IsValueNode
             |-IntegerLiteral=1
-            |-BooleanLiteral=true
+            |-BooleanLiteral=true annotations=IsValueNode
           |-MatchDefaultNode annotations=IsValueNode
-            |-BooleanLiteral=false
+            |-BooleanLiteral=false annotations=IsValueNode
     |-NameIdentifierNode="test"
+  |-OverloadedFunctionNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="number"
+          |-TypeReferenceNode=Number
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+        |-NameIdentifierNode="isComplex"
+        |-TypeReferenceNode=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-PatternMatcherNode annotations=IsValueNode
+          |-VariableReferenceNode annotations=IsValueNode
+            |-QNameNode=number
+              |-NameIdentifierNode="number"
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-NameIdentifierNode="x"
+            |-TypeReferenceNode=Real
+              |-QNameNode=Real
+                |-NameIdentifierNode="Real"
+            |-NameIdentifierNode="_"
+            |-BooleanLiteral=false annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-NameIdentifierNode="x"
+            |-TypeReferenceNode=Infinity
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
+            |-BooleanLiteral=false annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode=Infinity
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
+            |-BooleanLiteral=false annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode=Natural
+              |-QNameNode=Natural
+                |-NameIdentifierNode="Natural"
+            |-NameIdentifierNode="_"
+            |-BooleanLiteral=false annotations=IsValueNode
+          |-MatchCaseIsNode annotations=IsValueNode
+            |-TypeReferenceNode=Complex
+              |-QNameNode=Complex
+                |-NameIdentifierNode="Complex"
+            |-NameIdentifierNode="_"
+            |-NameIdentifierNode="imaginary"
+            |-BinaryExpressionNode="!=" annotations=IsValueNode
+              |-VariableReferenceNode annotations=IsValueNode
+                |-QNameNode=imaginary
+                  |-NameIdentifierNode="imaginary"
+              |-FloatLiteral=0 annotations=IsValueNode
+          |-MatchDefaultNode annotations=IsValueNode
+            |-BooleanLiteral=false annotations=IsValueNode
+    |-NameIdentifierNode="isComplex"

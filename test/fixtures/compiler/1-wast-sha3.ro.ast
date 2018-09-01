@@ -1,0 +1,54 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-OverloadedFunctionNode type=fun(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32) -> i32
+    |-FunDirectiveNode type=fun(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32) -> i32
+      |-FunctionNode type=fun(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32) -> i32
+        |-ParameterNode
+          |-NameIdentifierNode="context_offset" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="input_offset" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="input_length" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="output_offset" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="keccak" type=fun(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32) -> i32
+        |-TypeReferenceNode=i32 type=i32
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-BlockNode type=i32 annotations=IsValueNode
+          |-FunctionCallNode type=i32 annotations=IsValueNode
+            |-VariableReferenceNode type=fun(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32) -> i32
+              |-QNameNode=system::hash::sha3::keccak
+                |-NameIdentifierNode="system"
+                |-NameIdentifierNode="hash"
+                |-NameIdentifierNode="sha3"
+                |-NameIdentifierNode="keccak"
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-QNameNode=context_offset
+                |-NameIdentifierNode="context_offset"
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-QNameNode=input_offset
+                |-NameIdentifierNode="input_offset"
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-QNameNode=input_length
+                |-NameIdentifierNode="input_length"
+            |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-QNameNode=output_offset
+                |-NameIdentifierNode="output_offset"
+    |-NameIdentifierNode="keccak" type=fun(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32) -> i32

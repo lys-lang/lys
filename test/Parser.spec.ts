@@ -1,11 +1,15 @@
 declare var describe, it, require, console;
 
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
-import { folderBasedTest, testParseToken } from './TestHelpers';
+import { folderBasedTest, testParseToken, printAST } from './TestHelpers';
+import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { expect } from 'chai';
 
 describe('Parser', () => {
-  const phases = function(txt: string): ParsingPhaseResult {
-    return new ParsingPhaseResult('test.ro', txt);
+  const phases = function(txt: string): CanonicalPhaseResult {
+    const x = new ParsingPhaseResult('test.ro', txt);
+
+    return new CanonicalPhaseResult(x);
   };
   describe('Failing examples', () => {
     folderBasedTest(
@@ -37,6 +41,65 @@ describe('Parser', () => {
       testParseToken(result, 'Document', null, phases);
     }
 
+    function testEquivalence(a: string, b: string) {
+      let aDocument: CanonicalPhaseResult = null;
+
+      testParseToken(
+        a,
+        'Document',
+        async (doc, err) => {
+          if (err) throw err;
+          aDocument = doc;
+        },
+        phases
+      );
+      testParseToken(
+        b,
+        'Document',
+        async (doc, err) => {
+          if (err) throw err;
+          expect(printAST(aDocument.document)).to.eq(printAST(doc.document));
+        },
+        phases
+      );
+    }
+
+    describe.skip('operator precedence', () => {
+      testEquivalence(`var x = 1 + 2`, `var x = (1 + 2)`);
+      testEquivalence(`var x = 1 + 2 * 3`, `var x = (1 + (2 * 3))`);
+      testEquivalence(`var x = 1 + 2 * 3 - 4`, `var x = (1 + (2 * 3)) - 4`);
+      testEquivalence(`var x = 1 + 2 * 3 - 4 / 5`, `var x = (1 + (2 * 3)) - (4 / 5)`);
+      testEquivalence(`var x = 1 + 2 * 3 - 4 / 5`, `var x = (1 + (2 * 3)) - (4 / 5)`);
+      testEquivalence(`var x = -test.a().b()`, `var x = -((test.a()).b())`);
+      testEquivalence(`var x = -test.a() - 3`, `var x = (-(test.a())) - 3`);
+      testEquivalence(`var x = ~test.a() - 3`, `var x = (~(test.a())) - 3`);
+      testEquivalence(`var x = ~test - 3`, `var x = (~test) - 3`);
+      testEquivalence(`var x = 1 - -test - 3`, `var x = (1 - (-test)) - 3`);
+    });
+
+    describe('imports', () => {
+      test`
+        import * from module
+        import * from module2
+        import * from module::submodule
+        import * from github::menduz::aureum
+      `;
+
+      test`
+        import module
+        import module2
+        import module::submodule
+        import github::menduz::aureum
+      `;
+
+      test`
+        import module as X
+        import module2 as Y
+        import module::submodule as Z
+        import github::menduz::aureum as W
+      `;
+    });
+
     describe('code blocks', () => {
       test`
         fun main(): void = {}
@@ -50,6 +113,75 @@ describe('Parser', () => {
           a = 5
           a
         }
+      `;
+    });
+
+    describe('WasmExpression', () => {
+      test`
+        private inline fun test() = %wasm {
+
+        }
+
+        private inline fun test() = %wasm { }
+        private inline fun test() =%wasm{}
+
+        var freeblock = 0
+
+        fun malloc(size: i32): i32 = %wasm {
+          (local $address i32)
+          (set_local $address (get_global freeblock))
+          (set_global
+            $freeblock
+            (i32.add
+              (get_local $address)
+              (get_local $size)
+            )
+          )
+          (get_local $address)
+        }
+
+        fun strAdd(a: i32, b: i32): i32 = %wasm {
+          (local $sum i32)
+          (local $aSize i32)
+          (local $newStr i32)
+          (return
+            (set_local $aSize (i32.load8_u a))
+            (set_local $sum
+              (i32.sub
+                (i32.add
+                  (get_local $aSize)
+                  (i32.load8_u b)
+                )
+                (i32.const 1)
+              )
+            )
+            (set_local $newStr
+              (call malloc
+                (i32.add
+                  (get_local $sum)
+                  (i32.const 1)
+                )
+              )
+            )
+            (i32.store8
+              (get_local $newStr)
+              (get_local $sum)
+            )
+            (call string_copy (get_local $a) (get_local $newStr))
+            (call string_copy
+              (get_local $b)
+              (i32.sub
+                (i32.add
+                  (get_local $newStr)
+                  (get_local $aSize)
+                )
+                (i32.const 1)
+              )
+            )
+            (get_local $newStr)
+          )
+        }
+
       `;
     });
     describe('Types', () => {
@@ -244,8 +376,6 @@ describe('Parser', () => {
     fun getTest() = test
     `;
 
-    test`var test = 1    fun pointerOfTest() = &test    `;
-
     test`var test: Entity = 1 fun valueOfTest() = test`;
 
     test`var test: Struct = 1`;
@@ -343,10 +473,10 @@ describe('Parser', () => {
       var x =
         if (x)
           elseifo()
-            .elsiso(3)
-        else
+          .elsiso(3)
+          else
           ifa()
-    `;
+          `;
 
     test`val test = 1 match { case x if x < 1 and x < 10 -> true }`;
     test`var a = (x match { else -> 1 }).map(1 * 2)`;

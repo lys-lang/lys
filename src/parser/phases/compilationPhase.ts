@@ -4,6 +4,7 @@ import { findParentType } from './helpers';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { TypePhaseResult } from './typePhase';
+import { ParsingContext } from '../closure';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -165,6 +166,10 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
 // }
 
 export class CompilationPhaseResult extends PhaseResult {
+  get parsingContext(): ParsingContext {
+    return this.typePhaseResult.parsingContext;
+  }
+
   get document() {
     return this.typePhaseResult.document;
   }

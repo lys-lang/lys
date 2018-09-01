@@ -1,0 +1,35 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32" type=i32
+  |-OverloadedFunctionNode type=fun(size: i32) -> i32
+    |-FunDirectiveNode type=fun(size: i32) -> i32
+      |-FunctionNode type=fun(size: i32) -> i32
+        |-ParameterNode
+          |-NameIdentifierNode="size" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="malloc" type=fun(size: i32) -> i32
+        |-TypeReferenceNode=i32 type=i32
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$size
+              |-NameIdentifierNode="$size"
+    |-NameIdentifierNode="malloc" type=fun(size: i32) -> i32
+  |-OverloadedFunctionNode type=fun() -> i32
+    |-FunDirectiveNode type=fun() -> i32
+      |-FunctionNode type=i32
+        |-NameIdentifierNode="main" type=fun() -> i32
+        |-FunctionCallNode type=i32 annotations=IsValueNode
+          |-VariableReferenceNode type=fun(size: i32) -> i32
+            |-QNameNode=malloc
+              |-NameIdentifierNode="malloc"
+          |-IntegerLiteral=1 type=i32 annotations=IsValueNode
+    |-NameIdentifierNode="main" type=fun() -> i32
