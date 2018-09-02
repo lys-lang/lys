@@ -143,6 +143,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
 const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (!node.closure.canResolveQName(node.variable)) {
+      node.closure.canResolveQName(node.variable);
       throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
     }
     const resolved = node.closure.getQName(node.variable);
@@ -170,7 +171,8 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
 });
 
 function injectCoreImport(document: Nodes.DocumentNode) {
-  // TODO: Fix this horrible hack
+  // TODO: Fix this horrible hack, check correctly if we are in a stdlib
+  // context. If so, do not inject the system::core import
 
   if (document.file && document.file.endsWith('stdlib/system/core.ro')) return;
 

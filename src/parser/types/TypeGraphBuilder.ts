@@ -93,7 +93,7 @@ export class TypeGraphBuilder {
     this._referenceNode.forEach(({ result, reference }) => {
       const referencedType: TypeNode = this.resolveReferenceNode(reference);
       if (referencedType) {
-        new Edge(referencedType, result);
+        new Edge(referencedType, result, EdgeLabels.NAME);
       } else {
         // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
         throw new Error(
@@ -199,6 +199,8 @@ export class TypeGraphBuilder {
         new Edge(this.traverse(node.falsePart), target, EdgeLabels.FALSE_PART);
       }
     } else if (node instanceof Nodes.BinaryExpressionNode) {
+      this.resolveVariableByName(node.operator, node.operator.name, target);
+
       new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.BlockNode) {
@@ -223,6 +225,7 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.MatchLiteralNode) {
+      this.resolveVariableByName(node.literal, '==', target);
       new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MatchCaseIsNode) {

@@ -84,6 +84,38 @@ describe('Types', function() {
     test(parts[0], parts[1], parts[2]);
   }
 
+  describe('operators', () => {
+    checkMainType`
+      fun (+)(x: boolean, y: i32): f32 = 1.0
+
+      fun main() = true + 3
+      ---
+      fun(x: boolean, y: i32) -> f32
+      fun() -> f32
+    `;
+
+    checkMainType`
+      fun (+)(x: boolean, y: i32): i32 = 1
+      fun (+)(x: i32, y: f32): f32 = 1.0
+
+      fun main(): f32 = true + 3 + 1.0
+      ---
+      fun(x: boolean, y: i32) -> i32 & fun(x: i32, y: f32) -> f32
+      fun() -> f32
+    `;
+
+    checkMainType`
+      fun (+)(x: boolean, y: i32): i32 = 1
+
+      fun main(): f32 = true + 3
+      ---
+      fun(x: boolean, y: i32) -> i32
+      fun() -> f32
+      ---
+      Type "i32" is not assignable to "f32"
+    `;
+  });
+
   describe('unit', () => {
     describe('imports', () => {
       checkMainType`
@@ -94,6 +126,17 @@ describe('Types', function() {
         fun() -> f32
         ---
         Type "i32" is not assignable to "f32"
+      `;
+      checkMainType`
+        private var lastPtr: i32 = 0
+
+        fun malloc(size: i32) = {
+          val ptr = lastPtr
+          lastPtr = lastPtr + size
+          ptr
+        }
+        ---
+        fun(size: i32) -> i32
       `;
 
       checkMainType`

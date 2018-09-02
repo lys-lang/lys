@@ -1,12 +1,12 @@
 (module
- (type $0 (func (result i32)))
- (type $1 (func (param i32) (result i32)))
- (export "main" (func $0))
- (export "main2" (func $1))
- (func $0 (; 0 ;) (; has Stack IR ;) (type $0) (result i32)
+ (type $4 (func (result i32)))
+ (type $5 (func (param i32) (result i32)))
+ (export "main" (func $55))
+ (export "main2" (func $56))
+ (func $55 (; 0 ;) (; has Stack IR ;) (type $4) (result i32)
   (i32.const 2)
  )
- (func $1 (; 1 ;) (; has Stack IR ;) (type $1) (param $0 i32) (result i32)
+ (func $56 (; 1 ;) (; has Stack IR ;) (type $5) (param $0 i32) (result i32)
   (local $1 i32)
   (set_local $1
    (i32.const 1)

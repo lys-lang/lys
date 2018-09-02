@@ -6,5 +6,6 @@ test/fixtures/type-error/global-assignment.ro
     5│ 
     6│ fun addOne(): i32 = {
     7│   x = x + 1.0
-     │       ^^^^^^^ Error: Cannot resolve type of i32 (+) f32
+     │       ^^^^^^^ Could not find a valid overload for function of type fun(lhs: u32, rhs: u32) -> u32 & fun(lhs: i32, rhs: i32) -> i32 & fun(lhs: u64, rhs: u64) -> u64 & fun(lhs: i64, rhs: i64) -> i64 & fun(lhs: f32, rhs: f32) -> f32 with the arguments of type (i32, f32)
+     │       ^^^^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "i32"
     8│ }

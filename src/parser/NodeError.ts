@@ -50,6 +50,12 @@ export class InvalidCall extends AstNodeError {
   }
 }
 
+export class UnreachableCode extends AstNodeError {
+  constructor(node: Nodes.Node) {
+    super(`Unreachable code`, node);
+  }
+}
+
 export class NotAFunction extends AstNodeError {
   constructor(public givenType: Type, node: Nodes.Node) {
     super(`Type mismatch: Type "${givenType}" is not a function`, node);

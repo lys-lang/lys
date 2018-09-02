@@ -64,7 +64,20 @@ describe('Parser', () => {
       );
     }
 
-    describe.skip('operator precedence', () => {
+    describe('operator precedence', () => {
+      testEquivalence(
+        `var x = if (a) 1 else b match { else -> 1 }`,
+        `var x = (   if(a) (1) else ((b) match { else -> 1 })   )`
+      );
+      testEquivalence(`var x = a as int`, `var x = (a) as int`);
+      testEquivalence(`var x = a is int`, `var x = (a) is int`);
+      testEquivalence(`var x = -1 as int`, `var x = (-1) as int`);
+      testEquivalence(`var x = -1 is int`, `var x = (-1) is int`);
+      testEquivalence(`var x = -a as int`, `var x = (-a) as int`);
+      testEquivalence(`var x = ~a as int`, `var x = (~a) as int`);
+      testEquivalence(`var x = ~a is int`, `var x = (~a) is int`);
+      testEquivalence(`var x = 123 + a as int`, `var x = 123 + (a as int)`);
+      testEquivalence(`var x = 123 + a is int`, `var x = 123 + (a is int)`);
       testEquivalence(`var x = 1 + 2`, `var x = (1 + 2)`);
       testEquivalence(`var x = 1 + 2 * 3`, `var x = (1 + (2 * 3))`);
       testEquivalence(`var x = 1 + 2 * 3 - 4`, `var x = (1 + (2 * 3)) - 4`);
@@ -99,7 +112,27 @@ describe('Parser', () => {
         import github::menduz::aureum as W
       `;
     });
-
+    describe('operator definition', () => {
+      test`
+        fun (as)(x: i32, y: boolean): void = {}
+        fun (is)(x: i32, y: boolean): void = {}
+        fun (+)(x: i32, y: boolean): void = {}
+        fun (-)(x: i32, y: boolean): void = {}
+        fun (>>)(x: i32, y: boolean): void = {}
+        fun (<<)(x: i32, y: boolean): void = {}
+        fun (==)(x: i32, y: boolean): void = {}
+        fun (!=)(x: i32, y: boolean): void = {}
+        fun (+)(x: i32, y: boolean): void = {}
+        fun (*)(x: i32, y: boolean): void = {}
+        fun (**)(x: i32, y: boolean): void = {}
+        fun (/)(x: i32, y: boolean): void = {}
+        fun (%)(x: i32, y: boolean): void = {}
+        fun (>)(x: i32, y: boolean): void = {}
+        fun (<)(x: i32, y: boolean): void = {}
+        fun (>=)(x: i32, y: boolean): void = {}
+        fun (<=)(x: i32, y: boolean): void = {}
+      `;
+    });
     describe('code blocks', () => {
       test`
         fun main(): void = {}

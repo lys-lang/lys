@@ -6,9 +6,241 @@ type u16
 type i32
 type u32
 
+type i64
+type u64
+
 type f32
 type f64
 
 type void
 
 type boolean
+
+fun (and)(lhs: boolean, rhs: boolean): boolean = %wasm {
+  (i32.and
+    (i32.ne (get_local $lhs) (i32.const 0))
+    (i32.ne (get_local $rhs) (i32.const 0))
+  )
+}
+
+fun (==)(lhs: boolean, rhs: boolean): boolean = %wasm {
+  (i32.eq
+    (i32.eqz (get_local $lhs))
+    (i32.eqz (get_local $rhs))
+  )
+}
+
+fun (or)(lhs: boolean, rhs: boolean): boolean = %wasm {
+  (i32.or
+    (i32.ne (get_local $lhs) (i32.const 0))
+    (i32.ne (get_local $rhs) (i32.const 0))
+  )
+}
+
+fun (+)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.add (get_local $lhs) (get_local $rhs))
+}
+
+fun (-)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.sub (get_local $lhs) (get_local $rhs))
+}
+
+fun (*)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.mul (get_local $lhs) (get_local $rhs))
+}
+
+fun (/)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.div_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (<<)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.shl (get_local $lhs) (get_local $rhs))
+}
+
+fun (^)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.xor (get_local $lhs) (get_local $rhs))
+}
+
+fun (==)(lhs: u32, rhs: u32): boolean = %wasm {
+  (i32.eq (get_local $lhs) (get_local $rhs))
+}
+
+fun (>=)(lhs: u32, rhs: u32): boolean = %wasm {
+  (i32.ge_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (<=)(lhs: u32, rhs: u32): boolean = %wasm {
+  (i32.le_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (>)(lhs: u32, rhs: u32): boolean = %wasm {
+  (i32.gt_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (<)(lhs: u32, rhs: u32): boolean = %wasm {
+  (i32.lt_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (!=)(lhs: u32, rhs: u32): boolean = %wasm {
+  (i32.ne (get_local $lhs) (get_local $rhs))
+}
+
+fun (+)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.add (get_local $lhs) (get_local $rhs))
+}
+
+fun (-)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.sub (get_local $lhs) (get_local $rhs))
+}
+
+fun (*)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.mul (get_local $lhs) (get_local $rhs))
+}
+
+fun (/)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.div_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (<<)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.shl (get_local $lhs) (get_local $rhs))
+}
+
+fun (^)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.xor (get_local $lhs) (get_local $rhs))
+}
+
+fun (==)(lhs: i32, rhs: i32): boolean = %wasm {
+  (i32.eq (get_local $lhs) (get_local $rhs))
+}
+
+fun (>=)(lhs: i32, rhs: i32): boolean = %wasm {
+  (i32.ge_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (<=)(lhs: i32, rhs: i32): boolean = %wasm {
+  (i32.le_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (>)(lhs: i32, rhs: i32): boolean = %wasm {
+  (i32.gt_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (<)(lhs: i32, rhs: i32): boolean = %wasm {
+  (i32.lt_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (!=)(lhs: i32, rhs: i32): boolean = %wasm {
+  (i32.ne (get_local $lhs) (get_local $rhs))
+}
+
+fun (+)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.add (get_local $lhs) (get_local $rhs))
+}
+
+fun (-)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.sub (get_local $lhs) (get_local $rhs))
+}
+
+fun (*)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.mul (get_local $lhs) (get_local $rhs))
+}
+
+fun (/)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.div_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (<<)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.shl (get_local $lhs) (get_local $rhs))
+}
+
+fun (^)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.xor (get_local $lhs) (get_local $rhs))
+}
+
+fun (==)(lhs: u64, rhs: u64): boolean = %wasm {
+  (i64.eq (get_local $lhs) (get_local $rhs))
+}
+
+fun (>=)(lhs: u64, rhs: u64): boolean = %wasm {
+  (i64.ge_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (<=)(lhs: u64, rhs: u64): boolean = %wasm {
+  (i64.le_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (>)(lhs: u64, rhs: u64): boolean = %wasm {
+  (i64.gt_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (<)(lhs: u64, rhs: u64): boolean = %wasm {
+  (i64.lt_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (!=)(lhs: u64, rhs: u64): boolean = %wasm {
+  (i64.ne (get_local $lhs) (get_local $rhs))
+}
+
+fun (+)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.add (get_local $lhs) (get_local $rhs))
+}
+
+fun (-)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.sub (get_local $lhs) (get_local $rhs))
+}
+
+fun (*)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.mul (get_local $lhs) (get_local $rhs))
+}
+
+fun (/)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.div_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (<<)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.shl (get_local $lhs) (get_local $rhs))
+}
+
+fun (^)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.xor (get_local $lhs) (get_local $rhs))
+}
+
+fun (==)(lhs: i64, rhs: i64): boolean = %wasm {
+  (i64.eq (get_local $lhs) (get_local $rhs))
+}
+
+fun (>=)(lhs: i64, rhs: i64): boolean = %wasm {
+  (i64.ge_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (<=)(lhs: i64, rhs: i64): boolean = %wasm {
+  (i64.le_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (>)(lhs: i64, rhs: i64): boolean = %wasm {
+  (i64.gt_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (<)(lhs: i64, rhs: i64): boolean = %wasm {
+  (i64.lt_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (!=)(lhs: i64, rhs: i64): boolean = %wasm {
+  (i64.ne (get_local $lhs) (get_local $rhs))
+}
+
+fun (+)(lhs: f32, rhs: f32): f32 = %wasm {
+  (f32.add (get_local $lhs) (get_local $rhs))
+}
+
+fun (-)(lhs: f32, rhs: f32): f32 = %wasm {
+  (f32.sub (get_local $lhs) (get_local $rhs))
+}
+
+fun (*)(lhs: f32, rhs: f32): f32 = %wasm {
+  (f32.mul (get_local $lhs) (get_local $rhs))
+}
+
+fun (/)(lhs: f32, rhs: f32): f32 = %wasm {
+  (f32.div (get_local $lhs) (get_local $rhs))
+}

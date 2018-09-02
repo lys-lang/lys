@@ -14,9 +14,8 @@ import {
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
-import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
 import { last } from '../helpers';
-import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall } from '../NodeError';
+import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall, AstNodeError, UnreachableCode } from '../NodeError';
 
 declare var console;
 
@@ -37,7 +36,8 @@ export const EdgeLabels = {
   PATTERN_MATCHING_VALUE: 'PATTERN_MATCHING_VALUE',
   SUPER_TYPE: 'SUPER_TYPE',
   RETURN_TYPE: '#RETURN_TYPE',
-  DEFAULT_VALUE: 'DEFAULT_VALUE'
+  DEFAULT_VALUE: 'DEFAULT_VALUE',
+  NAME: 'NAME'
 };
 
 export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
@@ -289,22 +289,26 @@ export class BinaryOpTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.BinaryExpressionNode;
 
+    const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+
+    const argTypes = [
+      node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(),
+      node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
+    ];
     try {
-      const ret = findBuiltInTypedBinaryOperation(
-        opNode.operator,
-        node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(),
-        node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
-      );
+      const fun = findFunctionOverload(incommingType, argTypes, opNode);
 
-      const binaryOp = node.astNode as Nodes.BinaryExpressionNode;
-      binaryOp.binaryOperation = ret;
-
-      return ret.outputType;
+      if (fun instanceof FunctionType) {
+        opNode.resolvedFunctionType = fun;
+        return fun.returnType;
+      } else if (fun instanceof StructType) {
+        ctx.parsingContext.messageCollector.error(`Cannot use a type as operator ${opNode.operator.text}`, opNode);
+      }
     } catch (e) {
-      ctx.currentParsingContext.messageCollector.error(e.toString(), node.astNode);
+      ctx.parsingContext.messageCollector.error(e);
     }
 
-    // return INVALID_TYPE;
+    return INVALID_TYPE;
   }
 }
 
@@ -325,15 +329,32 @@ export class BlockTypeResolver extends TypeResolver {
 
 export class MatchLiteralTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const matched = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0];
-    const literal = node.incomingEdgesByName(EdgeLabels.LHS)[0];
     const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
 
-    if (!literal.incomingType().canBeAssignedTo(matched.incomingType())) {
-      const astNode = node.astNode as Nodes.MatchLiteralNode;
-      ctx.currentParsingContext.messageCollector.error(
-        new TypeMismatch(literal.incomingType(), matched.incomingType(), astNode.literal)
-      );
+    {
+      // Find the operator ==
+      const opNode = node.astNode as Nodes.MatchLiteralNode;
+
+      const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+
+      const argTypes = [
+        node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType(),
+        node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()
+      ];
+
+      try {
+        const fun = findFunctionOverload(incommingType, argTypes, opNode);
+
+        if (fun instanceof FunctionType) {
+          opNode.resolvedFunctionType = fun;
+          // TODO: can fun.returnType beAssignedTo boolean?
+        } else if (fun instanceof StructType) {
+          ctx.parsingContext.messageCollector.error(`Cannot use a type as operator '=='`, opNode);
+        }
+      } catch (e) {
+        ctx.parsingContext.messageCollector.error(new TypeMismatch(argTypes[1], argTypes[0], opNode.literal));
+        ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+      }
     }
 
     if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
@@ -497,47 +518,50 @@ export class FunctionCallResolver extends TypeResolver {
     const incommingType = node.incomingEdges()[0].incomingType();
     const argTypes = node.incomingEdgesByName(EdgeLabels.PARAMETER).map($ => $.incomingType());
 
-    if (incommingType instanceof IntersectionType) {
-      for (let fun of incommingType.of) {
-        if (fun instanceof FunctionType) {
-          if (fun.acceptsTypes(argTypes)) {
-            functionCallNode.resolvedFunctionType = fun;
-            return fun.returnType;
-          }
-        } else {
-          ctx.parsingContext.messageCollector.error(new NotAFunction(fun, functionCallNode.functionNode));
-          return INVALID_TYPE;
-        }
-      }
+    try {
+      const fun = findFunctionOverload(incommingType, argTypes, functionCallNode.functionNode);
 
-      ctx.parsingContext.messageCollector.error(
-        new InvalidOverload(incommingType, argTypes, functionCallNode.functionNode)
-      );
-
-      return INVALID_TYPE;
-    } else if (incommingType instanceof FunctionType) {
-      if (incommingType.acceptsTypes(argTypes)) {
-        functionCallNode.resolvedFunctionType = incommingType;
-        return incommingType.returnType;
-      } else {
-        ctx.parsingContext.messageCollector.error(
-          new InvalidCall(incommingType.parameterTypes, argTypes, functionCallNode.functionNode)
-        );
+      if (fun instanceof FunctionType) {
+        functionCallNode.resolvedFunctionType = fun;
+        return fun.returnType;
+      } else if (fun instanceof StructType) {
+        functionCallNode.resolvedFunctionType = fun;
+        return fun;
       }
-    } else if (incommingType instanceof StructType) {
-      if (incommingType.acceptsTypes(argTypes)) {
-        functionCallNode.resolvedFunctionType = incommingType;
-        return incommingType;
-      } else {
-        ctx.parsingContext.messageCollector.error(
-          new InvalidCall(incommingType.parameterTypes, argTypes, functionCallNode.functionNode)
-        );
-      }
-    } else {
-      ctx.parsingContext.messageCollector.error(new NotAFunction(incommingType, functionCallNode.functionNode));
-      return INVALID_TYPE;
+    } catch (e) {
+      ctx.parsingContext.messageCollector.error(e);
     }
 
     return INVALID_TYPE;
+  }
+}
+
+function findFunctionOverload(incommingType: Type, argTypes: Type[], errorNode: Nodes.Node) {
+  if (incommingType instanceof IntersectionType) {
+    for (let fun of incommingType.of) {
+      if (fun instanceof FunctionType) {
+        if (fun.acceptsTypes(argTypes)) {
+          return fun;
+        }
+      } else {
+        throw new NotAFunction(fun, errorNode);
+      }
+    }
+
+    throw new InvalidOverload(incommingType, argTypes, errorNode);
+  } else if (incommingType instanceof FunctionType) {
+    if (incommingType.acceptsTypes(argTypes)) {
+      return incommingType;
+    } else {
+      throw new InvalidCall(incommingType.parameterTypes, argTypes, errorNode);
+    }
+  } else if (incommingType instanceof StructType) {
+    if (incommingType.acceptsTypes(argTypes)) {
+      return incommingType;
+    } else {
+      throw new InvalidCall(incommingType.parameterTypes, argTypes, errorNode);
+    }
+  } else {
+    throw new NotAFunction(incommingType, errorNode);
   }
 }

@@ -1,7 +1,7 @@
 (module
  (type $0 (func (param i32 i32) (result i32)))
- (export "test" (func $0))
- (func $0 (; 0 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (result i32)
+ (export "test" (func $55))
+ (func $55 (; 0 ;) (; has Stack IR ;) (type $0) (param $0 i32) (param $1 i32) (result i32)
   (i32.and
    (i32.ne
     (get_local $0)

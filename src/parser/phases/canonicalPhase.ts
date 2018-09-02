@@ -6,13 +6,23 @@ import { ParsingPhaseResult } from './parsingPhase';
 import { ParsingContext } from '../closure';
 
 function binaryOpVisitor(astNode: IToken) {
-  let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode;
+  let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode | Nodes.AsExpressionNode | Nodes.IsExpressionNode;
 
   for (let i = 1; i < astNode.children.length; i += 2) {
     const oldRet = ret;
-    ret = new Nodes.BinaryExpressionNode(astNode);
+    const opertator = astNode.children[i].text;
+
+    if (opertator === 'as') {
+      ret = new Nodes.AsExpressionNode(astNode);
+    } else if (opertator === 'is') {
+      ret = new Nodes.IsExpressionNode(astNode);
+    } else {
+      ret = new Nodes.BinaryExpressionNode(astNode);
+      ret.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
+      ret.operator.name = opertator;
+    }
+
     ret.lhs = oldRet;
-    ret.operator = astNode.children[i].text;
     ret.rhs = visit(astNode.children[i + 1]);
   }
 
@@ -131,7 +141,7 @@ const visitor = {
   FunDeclaration(astNode: IToken) {
     const fun = new Nodes.FunctionNode(astNode);
 
-    fun.functionName = visit(findChildrenType(astNode, 'NameIdentifier'));
+    fun.functionName = visit(findChildrenType(astNode, 'FunctionName').children[0]);
     fun.functionReturnType = visit(findChildrenType(astNode, 'Type'));
 
     const params = findChildrenType(astNode, 'FunctionParamsList');
@@ -175,6 +185,8 @@ const visitor = {
   AddExpression: binaryOpVisitor,
   OrExpression: binaryOpVisitor,
   AndExpression: binaryOpVisitor,
+  AsExpression: binaryOpVisitor,
+  IsExpression: binaryOpVisitor,
   RelExpression: binaryOpVisitor,
   EqExpression: binaryOpVisitor,
   ShiftExpression: binaryOpVisitor,
@@ -182,6 +194,32 @@ const visitor = {
   ParenExpression(astNode: IToken) {
     const ret = visitLastChild(astNode);
     ret.hasParentheses = true;
+    return ret;
+  },
+  AtomicExpression(astNode: IToken) {
+    let ret = visit(astNode.children[0]);
+
+    for (let i = 1; i < astNode.children.length; i += 2) {
+      const oldRet = ret;
+
+      const doesItHaveCallArguments = !!astNode.children[i + 1];
+
+      if (doesItHaveCallArguments) {
+        const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
+        x.isInfix = true;
+        const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
+        vrn.variable = new Nodes.QNameNode(astNode.children[i]);
+        const varName = new Nodes.NameIdentifierNode(astNode.children[i]);
+        vrn.variable.names = [varName];
+
+        varName.name = astNode.children[i].text;
+
+        x.argumentsNode = [oldRet, ...astNode.children[i + 1].children.map($ => visit($))];
+      } else {
+        // it is a member selection
+      }
+    }
+
     return ret;
   },
   Expression(astNode: IToken) {
@@ -218,6 +256,12 @@ const visitor = {
   VariableReference(astNode: IToken) {
     const ret = new Nodes.VariableReferenceNode(astNode);
     ret.variable = visit(astNode.children[0]);
+    return ret;
+  },
+  FunOperator(astNode: IToken) {
+    const ret = new Nodes.NameIdentifierNode(astNode);
+    ret.name = astNode.text.trim();
+    ret.hasParentheses = true;
     return ret;
   },
   NameIdentifier(astNode: IToken) {

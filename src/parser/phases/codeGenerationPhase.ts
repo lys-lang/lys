@@ -2,7 +2,6 @@ import * as t from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
 import * as binaryen from 'binaryen';
 import * as wabt from 'wabt';
-import { findBuiltInTypedBinaryOperation } from '../../compiler/languageOperations';
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { findNodesByType, Nodes } from '../nodes';
@@ -121,14 +120,16 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const body = emit(node.rhs, document);
         return { condition: null, body, type: node.rhs.ofType.binaryenType };
       } else if (node instanceof Nodes.MatchLiteralNode) {
-        const condition = findBuiltInTypedBinaryOperation('==', node.literal.ofType, match.lhs.ofType);
+        const ofType = node.resolvedFunctionType;
+
+        const condition = t.callInstruction(t.identifier(ofType.internalName), [
+          emit(node.literal, document),
+          t.instruction('get_local', [t.identifier(match.local.name)])
+        ]);
 
         const body = emit(node.rhs, document);
         return {
-          condition: condition.generateCode(
-            emit(node.literal, document),
-            t.instruction('get_local', [t.identifier(match.local.name)])
-          ),
+          condition,
           body,
           type: node.rhs.ofType.binaryenType
         };
@@ -254,7 +255,9 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         node.falsePart ? emitList(node.falsePart, document) : []
       );
     } else if (node instanceof Nodes.BinaryExpressionNode) {
-      return node.binaryOperation.generateCode(emit(node.lhs, document), emit(node.rhs, document));
+      const ofType = node.resolvedFunctionType;
+
+      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document), emit(node.rhs, document)]);
     } else if (node instanceof Nodes.VariableReferenceNode) {
       const instr = node.isLocal ? 'get_local' : 'get_global';
       return t.instruction(instr, [t.identifier(node.variable.text)]);

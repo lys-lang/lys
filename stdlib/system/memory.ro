@@ -1,3 +1,31 @@
+/** Number of alignment bits. */
+val AL_BITS: i32 = 3
+
+/** Number of possible alignment values. */
+val AL_SIZE: i32 = 1 << AL_BITS
+
+/** Mask to obtain just the alignment bits. */
+val AL_MASK: i32 = AL_SIZE - 1
+
+/** Maximum 32-bit allocation size. */
+val MAX_SIZE_32: i32 = 1 << 30 // 1G
+
+private var lastPtr: i32 = 0
+
+private fun growMemory(pages: i32): i32 = %wasm {
+  (grow_memory (get_local $pages))
+}
+
+private fun memorySize(): i32 = %wasm {
+  (current_memory)
+}
+
+fun malloc(size: i32): i32 = {
+  val ptr = lastPtr
+  lastPtr = lastPtr + size
+  ptr
+}
+
 fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
   (local $end i32)
   (set_local $end (i32.add (get_local $from) (get_local $len)))

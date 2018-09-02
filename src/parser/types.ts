@@ -52,22 +52,25 @@ export abstract class Type {
   }
   get binaryenType(): Valtype {
     switch (this.nativeType) {
-      case NativeTypes.i32:
-        return 'i32';
-      case NativeTypes.u32:
-        return 'i32';
-      case NativeTypes.f32:
-        return 'f32';
-      case NativeTypes.f64:
-        return 'f64';
-
       case NativeTypes.boolean:
       case NativeTypes.u8:
       case NativeTypes.i8:
       case NativeTypes.u16:
       case NativeTypes.i16:
-      case NativeTypes.func:
+      case NativeTypes.i32:
+      case NativeTypes.u32:
         return 'i32';
+
+      case NativeTypes.f32:
+        return 'f32';
+
+      case NativeTypes.f64:
+        return 'f64';
+
+      case NativeTypes.func:
+      case NativeTypes.i64:
+      case NativeTypes.u64:
+        return 'i64';
 
       case NativeTypes.void:
         return undefined;
@@ -383,9 +386,15 @@ export class f64 extends NativeType {
   }
 }
 
-export class pointer extends NativeType {
+export class i64 extends NativeType {
   constructor() {
-    super(NativeTypes.anyfunc);
+    super(NativeTypes.i64);
+  }
+}
+
+export class u64 extends NativeType {
+  constructor() {
+    super(NativeTypes.u64);
   }
 }
 
@@ -394,11 +403,12 @@ export const InjectableTypes = {
   boolean: bool,
   i32,
   u32,
+  i64,
+  u64,
   i16,
   u16,
   f32,
   f64,
-  pointer,
   void: VoidType
 };
 

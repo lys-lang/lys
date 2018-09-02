@@ -16,7 +16,7 @@ let inspect = require('util').inspect;
 
 const writeToFile = process.env.UPDATE_AST === 'true';
 
-const phases = function(txt: string): CodeGenerationPhaseResult {
+const compilationPhases = function(txt: string): CompilationPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');
@@ -25,10 +25,28 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
   types.execute();
   types.ensureIsValid();
   const compiler = new CompilationPhaseResult(types);
+  compiler.isSuccess();
+  return compiler;
+};
+
+const phases = function(txt: string): CodeGenerationPhaseResult {
+  const compiler = compilationPhases(txt);
   return new CodeGenerationPhaseResult(compiler);
 };
 
-describe.only('Compiler', function() {
+describe('Compiler', function() {
+  describe('Core lib', () => {
+    folderBasedTest(
+      'stdlib/**/*.ro',
+      compilationPhases,
+      async (_result, e) => {
+        if (e) throw e;
+        return null;
+      },
+      null
+    );
+  });
+
   describe('AST', () => {
     folderBasedTest('**/compiler/*.ro', phases, async result => printAST(result.document), '.ast');
   });

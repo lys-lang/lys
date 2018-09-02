@@ -4,6 +4,46 @@ import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
 describe('execution tests', () => {
+  describe('operators', () => {
+    test(
+      'single addition, overrides core',
+      `
+      private fun (+)(a: f32, b: i32): i32 = 0
+      private fun (+)(a: i32, b: i32): i32 = 1
+      private fun (+)(a: i32, b: f32): i32 = 4
+
+      fun main1(a: i32, b: f32): i32 = {
+        a + b
+      }
+
+      fun main2(a: i32, b: f32): i32 = {
+        b + a
+      }
+
+      fun main3(a: i32, b: i32): i32 = {
+        b + a
+      }
+    `,
+      async x => {
+        expect(x.exports.main1(1, 1.0)).to.eq(4);
+        expect(x.exports.main2(1, 1.0)).to.eq(0);
+        expect(x.exports.main3(1, 1)).to.eq(1);
+      }
+    );
+
+    test(
+      'operators',
+      `
+        fun main(a: i32, b: i32): i32 = {
+          a + b
+        }
+      `,
+      async x => {
+        expect(x.exports.main(1, 1)).to.eq(2);
+      }
+    );
+  });
+
   describe('return types', () => {
     test(
       'void return',

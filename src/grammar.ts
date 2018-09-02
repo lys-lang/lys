@@ -56,7 +56,23 @@ EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunDeclaration    ::= FUN_KEYWORD NameIdentifier WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD FunctionName  WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunctionName      ::= (NameIdentifier | '(' FunOperator ')')
+
+FunOperator       ::= ( AsKeyword
+                      | IsKeyword
+                      | MulOperator
+                      | AddOperator
+                      | ShiftOperator
+                      | RelOperator
+                      | EqOperator
+                      | BitAndOperator
+                      | BitXorOperator
+                      | BitOrOperator
+                      | AndKeyword
+                      | OrKeyword
+                      )
+
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
 EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
@@ -79,7 +95,7 @@ FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 IsPointer         ::= '*'
 IsArray           ::= '[]'
 
-Expression        ::= OrExpression (WS* (MatchExpression | BinaryExpression))* {simplifyWhenOneChildren=true}
+Expression        ::= IfExpression | OrExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
 
 Statement         ::= ValDeclaration
                     | VarDeclaration
@@ -88,6 +104,7 @@ Statement         ::= ValDeclaration
                     | Expression {fragment=true}
 
 MatchExpression   ::= MatchKeyword WS* MatchBody WS* {pin=1,fragment=true}
+
 BinaryExpression  ::= '.' NameIdentifier CallArguments? {pin=2,fragment=true}
 
 OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
@@ -96,15 +113,18 @@ EqExpression      ::= RelExpression (WS* EqOperator WS* RelExpression)* {simplif
 RelExpression     ::= ShiftExpression (WS* RelOperator WS* ShiftExpression)* {simplifyWhenOneChildren=true}
 ShiftExpression   ::= AddExpression (WS* ShiftOperator WS* AddExpression)* {simplifyWhenOneChildren=true}
 AddExpression     ::= MulExpression (WS* AddOperator WS* MulExpression)* {simplifyWhenOneChildren=true}
-MulExpression     ::= UnaryExpression (WS* MulOperator WS* UnaryExpression)* {simplifyWhenOneChildren=true}
-UnaryExpression   ::= NegExpression | BinNegExpression | UnaryMinus | IfExpression | FunctionCallExpression  {simplifyWhenOneChildren=true}
-
-NegExpression     ::= '!' OrExpression {pin=1}
-BinNegExpression  ::= '~' OrExpression {pin=1}
-UnaryMinus        ::= !NumberLiteral '-' OrExpression {pin=2}
-
+MulExpression     ::= IsExpression (WS* MulOperator WS* IsExpression)* {simplifyWhenOneChildren=true}
+IsExpression      ::= AsExpression (WS* IsKeyword WS* Type)* {simplifyWhenOneChildren=true}
+AsExpression      ::= UnaryExpression (WS* AsKeyword WS* Type)* {simplifyWhenOneChildren=true}
+UnaryExpression   ::= NegExpression | BinNegExpression | UnaryMinus | AtomicExpression {simplifyWhenOneChildren=true}
+AtomicExpression  ::= FunctionCallExpression (WS* BinaryExpression)* {simplifyWhenOneChildren=true}
 FunctionCallExpression
                   ::= Value (WS* &'(' CallArguments)? {simplifyWhenOneChildren=true}
+
+NegExpression     ::= '!' AtomicExpression {pin=1}
+BinNegExpression  ::= '~' AtomicExpression {pin=1}
+UnaryMinus        ::= !NumberLiteral '-' AtomicExpression {pin=2}
+
 
 Value             ::= ( Literal
                       | VariableReference
@@ -140,11 +160,7 @@ NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=N
 
 VariableReference ::= QName
 
-MulOperator       ::= '**' | '*' | '/' | '%'
-AddOperator       ::= '+' | '-'
-ShiftOperator     ::= '>>>' | '>>' | '<<'
-RelOperator       ::= '>=' | '<=' | '>' | '<'
-EqOperator        ::= '==' | '!='
+
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NullLiteral       ::= NULL_KEYWORD
@@ -220,15 +236,29 @@ RESERVED_WORDS    ::= ( 'async'
                       | 'is'
                       ) WS+
 
-TRUE_KEYWORD      ::= 'true'   ![A-Za-z0-9_]
-FALSE_KEYWORD     ::= 'false'  ![A-Za-z0-9_]
-NULL_KEYWORD      ::= 'null'   ![A-Za-z0-9_]
-IF_KEYWORD        ::= 'if'     ![A-Za-z0-9_]
-ELSE_KEYWORD      ::= 'else'   ![A-Za-z0-9_]
-CASE_KEYWORD      ::= 'case'   ![A-Za-z0-9_]
-MatchKeyword      ::= 'match'  ![A-Za-z0-9_]
-AndKeyword        ::= 'and'    ![A-Za-z0-9_]
-OrKeyword         ::= 'or'     ![A-Za-z0-9_]
+TRUE_KEYWORD      ::= 'true'    ![A-Za-z0-9_]
+FALSE_KEYWORD     ::= 'false'   ![A-Za-z0-9_]
+NULL_KEYWORD      ::= 'null'    ![A-Za-z0-9_]
+IF_KEYWORD        ::= 'if'      ![A-Za-z0-9_]
+ELSE_KEYWORD      ::= 'else'    ![A-Za-z0-9_]
+CASE_KEYWORD      ::= 'case'    ![A-Za-z0-9_]
+MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
+
+/* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
+
+AsKeyword         ::= 'as'      ![A-Za-z0-9_]
+IsKeyword         ::= 'is'      ![A-Za-z0-9_]
+MulOperator       ::= '**' | '*' | '/' | '%'
+AddOperator       ::= '+' | '-'
+ShiftOperator     ::= '>>>' | '>>' | '<<'
+RelOperator       ::= '>=' | '<=' | '>' | '<'
+EqOperator        ::= '==' | '!='
+BitAndOperator    ::= '&'
+BitXorOperator    ::= '^'
+BitOrOperator     ::= '|'
+AndKeyword        ::= 'and'     ![A-Za-z0-9_]
+OrKeyword         ::= 'or'      ![A-Za-z0-9_]
+
 
 DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')

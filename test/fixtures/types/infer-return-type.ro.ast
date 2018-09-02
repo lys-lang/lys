@@ -33,7 +33,9 @@
               |-NameIdentifierNode="i32"
         |-NameIdentifierNode="test" type=fun(a: i32) -> i32
         |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
+          |-NameIdentifierNode="-"
           |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
+            |-NameIdentifierNode="+"
             |-IntegerLiteral=99 type=i32 annotations=IsValueNode
             |-IntegerLiteral=55 type=i32 annotations=IsValueNode
           |-IntegerLiteral=22 type=i32 annotations=IsValueNode
@@ -44,6 +46,7 @@
         |-NameIdentifierNode="test2" type=fun() -> i32
         |-IfNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
+            |-NameIdentifierNode=">"
             |-IntegerLiteral=1 type=i32 annotations=IsValueNode
             |-IntegerLiteral=2 type=i32 annotations=IsValueNode
           |-IntegerLiteral=1 type=i32 annotations=IsValueNode

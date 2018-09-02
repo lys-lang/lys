@@ -126,13 +126,15 @@ export function folderBasedTest<T extends PhaseResult>(
 
         let result = await fn(resultNode, err);
 
-        const compareToFileName = file + extension;
-        const compareFileExists = existsSync(compareToFileName);
-        const compareTo = compareFileExists ? readFileSync(compareToFileName).toString() : '';
-        if (writeToFile || !compareFileExists) {
-          writeFileSync(compareToFileName, result);
+        if (extension !== null) {
+          const compareToFileName = file + extension;
+          const compareFileExists = existsSync(compareToFileName);
+          const compareTo = compareFileExists ? readFileSync(compareToFileName).toString() : '';
+          if (writeToFile || !compareFileExists) {
+            writeFileSync(compareToFileName, result);
+          }
+          expect(result.trim()).toEqual(compareTo.trim());
         }
-        expect(result.trim()).toEqual(compareTo.trim());
       },
       phases,
       false,

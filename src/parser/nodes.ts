@@ -1,7 +1,6 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure } from './closure';
 import { Type, NativeTypes, FunctionType, StructType } from './types';
-import { BinaryOperation } from '../compiler/languageOperations';
 import { Annotation, IAnnotationConstructor } from './annotations';
 
 export namespace Nodes {
@@ -96,6 +95,7 @@ export namespace Nodes {
 
   export class NameIdentifierNode extends Node {
     name: string;
+
     get text() {
       return JSON.stringify(this.name);
     }
@@ -498,12 +498,35 @@ export namespace Nodes {
   export class BinaryExpressionNode extends ExpressionNode {
     lhs: ExpressionNode;
     rhs: ExpressionNode;
-    operator: string;
-    binaryOperation: BinaryOperation;
+    operator: NameIdentifierNode;
+
+    resolvedFunctionType: FunctionType;
 
     get text() {
       if (!this.operator) throw new Error('BinaryExpressionNode w/o operator');
-      return JSON.stringify(this.operator);
+      return this.operator.text;
+    }
+  }
+
+  export class AsExpressionNode extends ExpressionNode {
+    lhs: ExpressionNode;
+    rhs: TypeNode;
+
+    resolvedFunctionType: FunctionType;
+
+    get text() {
+      return 'as';
+    }
+  }
+
+  export class IsExpressionNode extends ExpressionNode {
+    lhs: ExpressionNode;
+    rhs: TypeNode;
+
+    resolvedFunctionType: FunctionType;
+
+    get text() {
+      return 'is';
     }
   }
 
@@ -552,6 +575,7 @@ export namespace Nodes {
 
   export class MatchLiteralNode extends MatcherNode {
     literal: LiteralNode<any>;
+    resolvedFunctionType: FunctionType;
   }
 
   export class UnionTypeNode extends TypeNode {
