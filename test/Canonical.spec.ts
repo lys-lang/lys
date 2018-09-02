@@ -80,10 +80,10 @@ describe('Canonical', function() {
     fun y(a: Float, b: Float): Float = a + b - 1 * 2 / 3 % 10 << 3 >> 1 >>> 0
   `;
   test`
-    fun gte(a: Float, b: Float) = a >= b and b < a or a > b or 1 <= 3 == 1111 != 3333
+    fun gte(a: Float, b: Float) = a >= b && b < a || a > b || 1 <= 3 == 1111 != 3333
   `;
   test`
-    fun gte(a: Float, b: Float) = a or b or c or d
+    fun gte(a: Float, b: Float) = a || b || c || d
   `;
 
   test`

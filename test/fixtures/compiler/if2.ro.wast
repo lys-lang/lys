@@ -1,6 +1,6 @@
 (module
   (memory 0 1)
-  (func $system::core::and (param $lhs i32) (param $rhs i32) (result i32)
+  (func $system::core::&& (param $lhs i32) (param $rhs i32) (result i32)
     (i32.and (i32.ne (get_local $lhs) (i32.const 0)) (i32.ne (get_local $rhs) (i32.const 0)))
   )
   (func $system::core::== (param $lhs i32) (param $rhs i32) (result i32)
@@ -18,7 +18,7 @@
   (func $system::core::==_4 (param $lhs i64) (param $rhs i64) (result i32)
     (i64.eq (get_local $lhs) (get_local $rhs))
   )
-  (func $system::core::or (param $lhs i32) (param $rhs i32) (result i32)
+  (func $system::core::|| (param $lhs i32) (param $rhs i32) (result i32)
     (i32.or (i32.ne (get_local $lhs) (i32.const 0)) (i32.ne (get_local $rhs) (i32.const 0)))
   )
   (func $system::core::+ (param $lhs i32) (param $rhs i32) (result i32)

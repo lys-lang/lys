@@ -373,7 +373,7 @@ describe('Parser', () => {
     test`val test: Number = 1`;
     test`val test = 1`;
 
-    test`val test = 1 * 1 - 2 / 4 and 1 == 3 or 4 <= 4`;
+    test`val test = 1 * 1 - 2 / 4 && 1 == 3 || 4 <= 4`;
 
     test`val test = 1`;
 
@@ -475,7 +475,7 @@ describe('Parser', () => {
     test`
       val test = 1 match {
         case x if true -> true
-        case x if x < 1 and x < 10 -> true
+        case x if x < 1 && x < 10 -> true
         case 2 -> true
         else -> false
       }
@@ -511,7 +511,7 @@ describe('Parser', () => {
           ifa()
           `;
 
-    test`val test = 1 match { case x if x < 1 and x < 10 -> true }`;
+    test`val test = 1 match { case x if x < 1 && x < 10 -> true }`;
     test`var a = (x match { else -> 1 }).map(1 * 2)`;
 
     test`var a = !x()`;

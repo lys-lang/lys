@@ -15,7 +15,7 @@ import {
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
 import { last } from '../helpers';
-import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall, AstNodeError, UnreachableCode } from '../NodeError';
+import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall, UnreachableCode } from '../NodeError';
 
 declare var console;
 

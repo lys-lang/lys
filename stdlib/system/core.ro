@@ -16,7 +16,7 @@ type void
 
 type boolean
 
-fun (and)(lhs: boolean, rhs: boolean): boolean = %wasm {
+fun (&&)(lhs: boolean, rhs: boolean): boolean = %wasm {
   (i32.and
     (i32.ne (get_local $lhs) (i32.const 0))
     (i32.ne (get_local $rhs) (i32.const 0))
@@ -30,7 +30,7 @@ fun (==)(lhs: boolean, rhs: boolean): boolean = %wasm {
   )
 }
 
-fun (or)(lhs: boolean, rhs: boolean): boolean = %wasm {
+fun (||)(lhs: boolean, rhs: boolean): boolean = %wasm {
   (i32.or
     (i32.ne (get_local $lhs) (i32.const 0))
     (i32.ne (get_local $rhs) (i32.const 0))

@@ -253,11 +253,11 @@ AddOperator       ::= '+' | '-'
 ShiftOperator     ::= '>>>' | '>>' | '<<'
 RelOperator       ::= '>=' | '<=' | '>' | '<'
 EqOperator        ::= '==' | '!='
-BitAndOperator    ::= '&'
+BitAndOperator    ::= '&'       !'&'
 BitXorOperator    ::= '^'
-BitOrOperator     ::= '|'
-AndKeyword        ::= 'and'     ![A-Za-z0-9_]
-OrKeyword         ::= 'or'      ![A-Za-z0-9_]
+BitOrOperator     ::= '|'       !'|'
+AndKeyword        ::= '&&'      ![A-Za-z0-9_]
+OrKeyword         ::= '||'      ![A-Za-z0-9_]
 
 
 DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | RESERVED_WORDS)
