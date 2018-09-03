@@ -61,14 +61,19 @@ export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
   graph.nodes.forEach(node => {
     if (!printedNodes.has(node)) {
       writer.printIndent();
-      const label =
-        nodeLabel(node) +
-        '\\n' +
-        node.typeResolver.constructor.name +
-        (node.resultType() ? '\\n⟨' + node.resultType().toString() + '⟩' : '');
+      let label = nodeLabel(node) + (node.resultType() ? '\\n⟨' + node.resultType().toString() + '⟩' : '');
+
+      let color = 'grey';
+
+      if (node.amount > 5) {
+        label = label + '\nAmount: ' + node.amount.toString();
+        color = 'magenta';
+      }
 
       writer.println(
-        `${id(node, graph)} [label="${label.replace(/"/g, "'")}"${!node.resultType() ? ', color=red' : ''}];`
+        `${id(node, graph)} [label="${label.replace(/"/g, "'")}", fillcolor=${color}${
+          !node.resultType() ? ', color=red' : ''
+        }];`
       );
       printedNodes.add(node);
     }
@@ -89,9 +94,13 @@ export function edgeLabel(edge: Edge): string {
 
 export function nodeLabel(node: TypeNode): string {
   if (node.astNode instanceof Nodes.VariableReferenceNode) {
-    return `Var: ${node.astNode.variable.text}`;
+    return `VarRef: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
     return `Name: ${node.astNode.name}`;
+  } else if (node.astNode instanceof Nodes.BinaryExpressionNode) {
+    return `BinOp: ${node.astNode.operator.text}`;
+  } else if (node.astNode instanceof Nodes.UnaryExpressionNode) {
+    return `Unary: ${node.astNode.operator.text}`;
   } else if (node.astNode instanceof Nodes.TypeReferenceNode) {
     return `TypeRef: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.IntegerLiteral) {

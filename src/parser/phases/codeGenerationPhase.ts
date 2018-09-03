@@ -258,6 +258,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const ofType = node.resolvedFunctionType;
 
       return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document), emit(node.rhs, document)]);
+    } else if (node instanceof Nodes.UnaryExpressionNode) {
+      const ofType = node.resolvedFunctionType;
+
+      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.VariableReferenceNode) {
       const instr = node.isLocal ? 'get_local' : 'get_global';
       return t.instruction(instr, [t.identifier(node.variable.text)]);

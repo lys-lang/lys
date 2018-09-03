@@ -56,10 +56,12 @@ EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunDeclaration    ::= FUN_KEYWORD FunctionName  WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 FunctionName      ::= (NameIdentifier | '(' FunOperator ')')
 
-FunOperator       ::= ( AsKeyword
+FunOperator       ::= ( BitNotPreOperator
+                      | MinusPreOperator
+                      | AsKeyword
                       | IsKeyword
                       | MulOperator
                       | AddOperator
@@ -71,6 +73,7 @@ FunOperator       ::= ( AsKeyword
                       | BitOrOperator
                       | AndKeyword
                       | OrKeyword
+                      | NotPreOperator
                       )
 
 
@@ -108,7 +111,10 @@ MatchExpression   ::= MatchKeyword WS* MatchBody WS* {pin=1,fragment=true}
 BinaryExpression  ::= '.' NameIdentifier CallArguments? {pin=2,fragment=true}
 
 OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
-AndExpression     ::= EqExpression (WS+ AndKeyword WS+ EqExpression)* {simplifyWhenOneChildren=true}
+AndExpression     ::= BitOrExpression (WS+ AndKeyword WS+ BitOrExpression)* {simplifyWhenOneChildren=true}
+BitOrExpression   ::= BitXorExpression (WS+ BitOrOperator WS+ BitXorExpression)* {simplifyWhenOneChildren=true}
+BitXorExpression  ::= BitAndExpression (WS+ BitXorOperator WS+ BitAndExpression)* {simplifyWhenOneChildren=true}
+BitAndExpression  ::= EqExpression (WS+ BitAndOperator WS+ EqExpression)* {simplifyWhenOneChildren=true}
 EqExpression      ::= RelExpression (WS* EqOperator WS* RelExpression)* {simplifyWhenOneChildren=true}
 RelExpression     ::= ShiftExpression (WS* RelOperator WS* ShiftExpression)* {simplifyWhenOneChildren=true}
 ShiftExpression   ::= AddExpression (WS* ShiftOperator WS* AddExpression)* {simplifyWhenOneChildren=true}
@@ -246,6 +252,9 @@ MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
 
 /* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
 
+NotPreOperator    ::= '!'
+BitNotPreOperator ::= '~'
+MinusPreOperator  ::= '-'
 AsKeyword         ::= 'as'      ![A-Za-z0-9_]
 IsKeyword         ::= 'is'      ![A-Za-z0-9_]
 MulOperator       ::= '**' | '*' | '/' | '%'

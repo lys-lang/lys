@@ -53,6 +53,18 @@ fun (/)(lhs: u32, rhs: u32): u32 = %wasm {
   (i32.div_u (get_local $lhs) (get_local $rhs))
 }
 
+fun (~)(rhs: u32): u32 = %wasm {
+  (i32.xor (i32.const 0xFFFFFFFF) (get_local $rhs))
+}
+
+fun (>>>)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.shr_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (>>)(lhs: u32, rhs: u32): u32 = %wasm {
+  (i32.shr_s (get_local $lhs) (get_local $rhs))
+}
+
 fun (<<)(lhs: u32, rhs: u32): u32 = %wasm {
   (i32.shl (get_local $lhs) (get_local $rhs))
 }
@@ -85,6 +97,18 @@ fun (!=)(lhs: u32, rhs: u32): boolean = %wasm {
   (i32.ne (get_local $lhs) (get_local $rhs))
 }
 
+fun (&)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.and (get_local $lhs) (get_local $rhs))
+}
+
+fun (|)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.or (get_local $lhs) (get_local $rhs))
+}
+
+fun (^)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.xor (get_local $lhs) (get_local $rhs))
+}
+
 fun (+)(lhs: i32, rhs: i32): i32 = %wasm {
   (i32.add (get_local $lhs) (get_local $rhs))
 }
@@ -99,6 +123,22 @@ fun (*)(lhs: i32, rhs: i32): i32 = %wasm {
 
 fun (/)(lhs: i32, rhs: i32): i32 = %wasm {
   (i32.div_s (get_local $lhs) (get_local $rhs))
+}
+
+fun (~)(rhs: i32): i32 = %wasm {
+  (i32.xor (i32.const 0xFFFFFFFF) (get_local $rhs))
+}
+
+fun (-)(rhs: i32): i32 = %wasm {
+  (i32.sub (i32.const 0) (get_local $rhs))
+}
+
+fun (>>>)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.shr_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (>>)(lhs: i32, rhs: i32): i32 = %wasm {
+  (i32.shr_s (get_local $lhs) (get_local $rhs))
 }
 
 fun (<<)(lhs: i32, rhs: i32): i32 = %wasm {
@@ -149,6 +189,18 @@ fun (/)(lhs: u64, rhs: u64): u64 = %wasm {
   (i64.div_u (get_local $lhs) (get_local $rhs))
 }
 
+fun (~)(rhs: u64): u64 = %wasm {
+  (i64.xor (i64.const 0xFFFFFFFFFFFFFFFF) (get_local $rhs))
+}
+
+fun (>>>)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.shr_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (>>)(lhs: u64, rhs: u64): u64 = %wasm {
+  (i64.shr_s (get_local $lhs) (get_local $rhs))
+}
+
 fun (<<)(lhs: u64, rhs: u64): u64 = %wasm {
   (i64.shl (get_local $lhs) (get_local $rhs))
 }
@@ -195,6 +247,19 @@ fun (*)(lhs: i64, rhs: i64): i64 = %wasm {
 
 fun (/)(lhs: i64, rhs: i64): i64 = %wasm {
   (i64.div_s (get_local $lhs) (get_local $rhs))
+}
+
+
+fun (~)(rhs: i64): i64 = %wasm {
+  (i64.xor (i64.const 0xFFFFFFFFFFFFFFFF) (get_local $rhs))
+}
+
+fun (>>>)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.shr_u (get_local $lhs) (get_local $rhs))
+}
+
+fun (>>)(lhs: i64, rhs: i64): i64 = %wasm {
+  (i64.shr_s (get_local $lhs) (get_local $rhs))
 }
 
 fun (<<)(lhs: i64, rhs: i64): i64 = %wasm {
@@ -244,3 +309,10 @@ fun (*)(lhs: f32, rhs: f32): f32 = %wasm {
 fun (/)(lhs: f32, rhs: f32): f32 = %wasm {
   (f32.div (get_local $lhs) (get_local $rhs))
 }
+
+fun assert(x: boolean): void =
+  if (x == false) {
+    panic()
+  }
+
+fun panic(): void = %wasm { (unreachable) }

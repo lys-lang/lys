@@ -185,6 +185,9 @@ const visitor = {
   AddExpression: binaryOpVisitor,
   OrExpression: binaryOpVisitor,
   AndExpression: binaryOpVisitor,
+  BitOrExpression: binaryOpVisitor,
+  BitXorExpression: binaryOpVisitor,
+  BitAndExpression: binaryOpVisitor,
   AsExpression: binaryOpVisitor,
   IsExpression: binaryOpVisitor,
   RelExpression: binaryOpVisitor,
@@ -363,19 +366,19 @@ const visitor = {
   BinNegExpression(x: IToken) {
     const ret = new Nodes.UnaryExpressionNode(x);
     ret.rhs = visit(x.children[0]);
-    ret.operator = '~';
+    ret.operator = Nodes.NameIdentifierNode.fromString('~');
     return ret;
   },
   NegExpression(x: IToken) {
     const ret = new Nodes.UnaryExpressionNode(x);
     ret.rhs = visit(x.children[0]);
-    ret.operator = '!';
+    ret.operator = Nodes.NameIdentifierNode.fromString('!');
     return ret;
   },
   UnaryMinus(x: IToken) {
     const ret = new Nodes.UnaryExpressionNode(x);
     ret.rhs = visit(x.children[0]);
-    ret.operator = '-';
+    ret.operator = Nodes.NameIdentifierNode.fromString('-');
     return ret;
   },
   BooleanLiteral(x: IToken) {

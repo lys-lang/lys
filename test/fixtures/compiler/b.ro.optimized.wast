@@ -1,7 +1,7 @@
 (module
- (type $5 (func (result i32)))
- (export "outerFunction" (func $59))
- (func $59 (; 0 ;) (; has Stack IR ;) (type $5) (result i32)
+ (type $8 (func (result i32)))
+ (export "outerFunction" (func $77))
+ (func $77 (; 0 ;) (; has Stack IR ;) (type $8) (result i32)
   (i32.const 4)
  )
 )

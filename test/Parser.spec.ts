@@ -65,9 +65,15 @@ describe('Parser', () => {
     }
 
     describe('operator precedence', () => {
+      testEquivalence(`val z = (HEAP_BASE + AL_MASK) & ~AL_MASK`, `val z = (HEAP_BASE + AL_MASK) & (~AL_MASK)`);
+      testEquivalence(`val z = newPtr > pagesBefore << 16`, `val z = newPtr > (pagesBefore << 16)`);
       testEquivalence(
         `var x = if (a) 1 else b match { else -> 1 }`,
         `var x = (   if(a) (1) else ((b) match { else -> 1 })   )`
+      );
+      testEquivalence(
+        `var x = a | b ^ c & d | e || f && g || h && y && j & 5`,
+        `var x = (a | (b ^ (c & d)) | e) || (f && g) || (h && y && (j & 5))`
       );
       testEquivalence(`var x = a as int`, `var x = (a) as int`);
       testEquivalence(`var x = a is int`, `var x = (a) is int`);

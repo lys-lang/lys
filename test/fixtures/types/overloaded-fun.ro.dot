@@ -1,33 +1,33 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
-  2 [label="FunOverload: x\nOverloadedFunctionTypeResolver\n⟨fun(a: i32) -> i32 & fun() -> i32⟩"];
-  3 [label="FunDirective: x\nPassThroughTypeResolver\n⟨fun(a: i32) -> i32⟩"];
-  4 [label="FunNode: x\nFunctionTypeResolver\n⟨fun(a: i32) -> i32⟩"];
-  5 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  6 [label="Name: a\nPassThroughTypeResolver\n⟨i32⟩"];
-  7 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  8 [label="Name: x\nPassThroughTypeResolver\n⟨fun(a: i32) -> i32⟩"];
-  9 [label="FunDirective: x\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  10 [label="FunNode: x\nFunctionTypeResolver\n⟨fun() -> i32⟩"];
-  11 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  12 [label="Name: x\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  13 [label="Name: x\nPassThroughTypeResolver\n⟨fun(a: i32) -> i32 & fun() -> i32⟩"];
+  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
+  2 [label="FunOverload: x\n⟨fun(a: i32) -> i32 & fun() -> i32⟩", fillcolor=grey];
+  3 [label="FunDirective: x\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
+  4 [label="FunNode: x\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
+  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  6 [label="Name: a\n⟨i32⟩", fillcolor=grey];
+  7 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  8 [label="Name: x\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
+  9 [label="FunDirective: x\n⟨fun() -> i32⟩", fillcolor=grey];
+  10 [label="FunNode: x\n⟨fun() -> i32⟩", fillcolor=grey];
+  11 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  12 [label="Name: x\n⟨fun() -> i32⟩", fillcolor=grey];
+  13 [label="Name: x\n⟨fun(a: i32) -> i32 & fun() -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    14 [label="Name: a\nLiteralTypeResolver\n⟨i32⟩"];
-    15 [label="Var: a\nVariableReferenceResolver\n⟨i32⟩"];
-    16 [label="FunNode: x\nPassThroughTypeResolver\n⟨fun(a: i32) -> i32⟩"];
-    17 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
+    14 [label="Name: a\n⟨i32⟩", fillcolor=grey];
+    15 [label="VarRef: a\n⟨i32⟩", fillcolor=grey];
+    16 [label="FunNode: x\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
+    17 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
     14 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     15 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "x(i32)";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    18 [label="Int: 1\nPassThroughTypeResolver\n⟨i32⟩"];
-    19 [label="FunNode: x\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-    20 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
+    18 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
+    19 [label="FunNode: x\n⟨fun() -> i32⟩", fillcolor=grey];
+    20 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
     18 -> 19[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "x()";
 }

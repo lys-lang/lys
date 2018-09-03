@@ -73,6 +73,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new IntersectionTypeResolver();
   } else if (astNode instanceof Nodes.BinaryExpressionNode) {
     return new BinaryOpTypeResolver();
+  } else if (astNode instanceof Nodes.UnaryExpressionNode) {
+    return new UnaryOpTypeResolver();
   } else if (astNode instanceof Nodes.BlockNode) {
     return new BlockTypeResolver();
   } else if (astNode instanceof Nodes.FunctionCallNode) {
@@ -295,6 +297,31 @@ export class BinaryOpTypeResolver extends TypeResolver {
       node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(),
       node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
     ];
+    try {
+      const fun = findFunctionOverload(incommingType, argTypes, opNode);
+
+      if (fun instanceof FunctionType) {
+        opNode.resolvedFunctionType = fun;
+        return fun.returnType;
+      } else if (fun instanceof StructType) {
+        ctx.parsingContext.messageCollector.error(`Cannot use a type as operator ${opNode.operator.text}`, opNode);
+      }
+    } catch (e) {
+      ctx.parsingContext.messageCollector.error(e);
+    }
+
+    return INVALID_TYPE;
+  }
+}
+
+export class UnaryOpTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
+    const opNode = node.astNode as Nodes.UnaryExpressionNode;
+
+    const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+
+    const argTypes = [node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()];
+
     try {
       const fun = findFunctionOverload(incommingType, argTypes, opNode);
 

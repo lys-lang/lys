@@ -12,10 +12,6 @@ import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
 
-let inspect = require('util').inspect;
-
-const writeToFile = process.env.UPDATE_AST === 'true';
-
 const compilationPhases = function(txt: string): CompilationPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);

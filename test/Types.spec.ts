@@ -84,41 +84,160 @@ describe('Types', function() {
     test(parts[0], parts[1], parts[2]);
   }
 
-  describe('operators', () => {
-    checkMainType`
-      fun (+)(x: boolean, y: i32): f32 = 1.0
-
-      fun main() = true + 3
-      ---
-      fun(x: boolean, y: i32) -> f32
-      fun() -> f32
-    `;
-
-    checkMainType`
-      fun (+)(x: boolean, y: i32): i32 = 1
-      fun (+)(x: i32, y: f32): f32 = 1.0
-
-      fun main(): f32 = true + 3 + 1.0
-      ---
-      fun(x: boolean, y: i32) -> i32 & fun(x: i32, y: f32) -> f32
-      fun() -> f32
-    `;
-
-    checkMainType`
-      fun (+)(x: boolean, y: i32): i32 = 1
-
-      fun main(): f32 = true + 3
-      ---
-      fun(x: boolean, y: i32) -> i32
-      fun() -> f32
-      ---
-      Type "i32" is not assignable to "f32"
-    `;
-  });
-
   describe('unit', () => {
-    describe('imports', () => {
+    describe('operators', () => {
       checkMainType`
+        fun AL_BITS() = 3
+        fun AL_SIZE() = 1 << AL_BITS()
+        fun AL_MASK() = AL_SIZE() - 1
+        fun MAX_SIZE_32() = 1 << 30 // 1G
+        fun HEAP_BASE() = 0
+        fun startOffset() = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
+        fun offset() = startOffset
+        fun max(a: i32, b: i32) = if (a>b) a else b
+        fun currentMemory(): i32 = %wasm {(current_memory)}
+        fun main() = {
+          val ptr = offset()
+          val newPtr = (ptr + 1 + AL_MASK()) & ~(AL_MASK())
+          val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >>> 16
+          val pagesBefore = currentMemory()
+          max(pagesBefore, pagesNeeded)
+        }
+        ---
+        fun() -> i32
+        fun() -> i32
+        fun() -> i32
+        fun() -> i32
+        fun() -> i32
+        fun() -> i32
+        fun() -> i32
+        fun(a: i32, b: i32) -> i32
+        fun() -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        fun max(a: i32, b: i32) = if (a>b) a else b
+        fun currentMemory(): i32 = %wasm {(current_memory)}
+        fun main() = {
+          val pagesNeeded = 1
+          val pagesBefore = currentMemory()
+          max(pagesBefore, pagesNeeded)
+        }
+        ---
+        fun(a: i32, b: i32) -> i32
+        fun() -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        fun (+)(x: boolean, y: i32): f32 = 1.0
+
+        fun main() = true + 3
+        ---
+        fun(x: boolean, y: i32) -> f32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        fun (+)(x: boolean, y: i32): i32 = 1
+        fun (+)(x: i32, y: f32): f32 = 1.0
+
+        fun main(): f32 = true + 3 + 1.0
+        ---
+        fun(x: boolean, y: i32) -> i32 & fun(x: i32, y: f32) -> f32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        fun (+)(x: boolean, y: i32): i32 = 1
+
+        fun main(): f32 = true + 3
+        ---
+        fun(x: boolean, y: i32) -> i32
+        fun() -> f32
+        ---
+        Type "i32" is not assignable to "f32"
+      `;
+
+      checkMainType`
+        fun main() = ~1
+        ---
+        fun() -> i32
+      `;
+
+      checkMainType`
+        fun max(a: i32, b: i32) = if (a>b) a else b
+        fun main() = max(c(), -1)
+        fun c() = 0xffff
+        ---
+        fun(a: i32, b: i32) -> i32
+        fun() -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        /** Number of alignment bits. */
+        val AL_BITS: i32 = 3
+
+        /** Number of possible alignment values. */
+        val AL_SIZE: i32 = 1 << AL_BITS
+
+        /** Mask to obtain just the alignment bits. */
+        val AL_MASK: i32 = AL_SIZE - 1
+
+        /** Maximum 32-bit allocation size. */
+        val MAX_SIZE_32: i32 = 1 << 30 // 1G
+
+        val HEAP_BASE = 0
+
+        private var startOffset: i32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
+        private var offset: i32 = startOffset
+
+        private var lastPtr: i32 = 0
+
+        private fun growMemory(pages: i32): i32 = %wasm {
+          (grow_memory (get_local $pages))
+        }
+
+        private fun currentMemory(): i32 = %wasm {
+          (current_memory)
+        }
+
+        private fun max(a: i32, b: i32): i32 = if (a>b) a else b
+
+        fun malloc(size: i32): i32 = {
+          if (size > 0) {
+            if (size > MAX_SIZE_32) panic()
+            val ptr = offset * currentMemory() - system::memory::malloc(currentMemory())
+            val newPtr1 = (currentMemory() + size + AL_MASK) & ~system::memory::malloc(1)
+            val newPtr = (ptr + newPtr1 + AL_MASK) & ~AL_MASK
+            val pagesBefore = currentMemory()
+            if (newPtr > pagesBefore << 16) {
+              val ptrx = ptr + 0xffff & ~(3 ^ -0xffff + ~(~ptr)) >>> 16
+              val pagesNeeded = ((newPtr - ~ptrx) & ~(3 ^ -0xffff + ~(~ptrx))) >>> 16
+              val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
+              if (growMemory(pagesWanted) < 0) {
+                if (growMemory(pagesNeeded) < 0) {
+                  panic() // out of memory
+                }
+              }
+            }
+            offset = newPtr + system::memory::malloc(system::memory::malloc(size))
+            ptr
+          } else {
+            0
+          }
+        }
+        ---
+        fun(pages: i32) -> i32
+        fun() -> i32
+        fun(a: i32, b: i32) -> i32
+        fun(size: i32) -> i32
+      `;
+
+      describe('imports', () => {
+        checkMainType`
         import * from system::random
 
         fun main(): f32 = nextInt()
@@ -127,7 +246,7 @@ describe('Types', function() {
         ---
         Type "i32" is not assignable to "f32"
       `;
-      checkMainType`
+        checkMainType`
         private var lastPtr: i32 = 0
 
         fun malloc(size: i32) = {
@@ -139,7 +258,7 @@ describe('Types', function() {
         fun(size: i32) -> i32
       `;
 
-      checkMainType`
+        checkMainType`
         fun testBool(i: i32): boolean = i match {
           case 0 -> true
           case 1 -> true
@@ -160,14 +279,14 @@ describe('Types', function() {
         fun(i: i32) -> boolean
       `;
 
-      checkMainType`
+        checkMainType`
         fun main(): f32 = system::random::nextInt()
         ---
         fun() -> f32
         ---
         Type "i32" is not assignable to "f32"
       `;
-      checkMainType`
+        checkMainType`
         fun matcher(x: i32) =
           x match {
             case 1.5 -> 1
@@ -178,8 +297,8 @@ describe('Types', function() {
         ---
         Type "f32" is not assignable to "i32"
       `;
-    });
-    checkMainType`
+      });
+      checkMainType`
       type i32
 
       private fun innerFunctionArgs(a: i32): i32 = a
@@ -196,7 +315,7 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       fun matcher(x: i32) =
@@ -208,7 +327,7 @@ describe('Types', function() {
       fun(x: i32) -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type f32
 
@@ -223,7 +342,7 @@ describe('Types', function() {
       Type "f32" is not assignable to "i32"
     `;
 
-    checkMainType`
+      checkMainType`
       type void
 
       fun matcher() = {}
@@ -231,7 +350,7 @@ describe('Types', function() {
       fun() -> void
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       type Boolean {
@@ -248,7 +367,7 @@ describe('Types', function() {
       fun(x: i32) -> Boolean
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
 
@@ -262,7 +381,7 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       type Boolean {
@@ -283,7 +402,7 @@ describe('Types', function() {
       fun(x: i32) -> True | True2
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
@@ -307,7 +426,7 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       type Boolean {
@@ -328,7 +447,7 @@ describe('Types', function() {
       fun(x: i32) -> True | Boolean2
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       type Boolean {
@@ -345,7 +464,7 @@ describe('Types', function() {
       fun(x: i32) -> Boolean
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type f32
 
@@ -370,7 +489,7 @@ describe('Types', function() {
       fun() -> f32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type f32
 
@@ -383,7 +502,7 @@ describe('Types', function() {
       fun(x: i32) -> i32 | f32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type boolean
       fun gte(x: i32, y: i32) = {
@@ -394,7 +513,7 @@ describe('Types', function() {
       fun(x: i32, y: i32) -> boolean
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type boolean
       fun gte(x: i32, y: i32): i32 = {
@@ -407,7 +526,7 @@ describe('Types', function() {
       Type "boolean" is not assignable to "i32"
     `;
 
-    checkMainType`
+      checkMainType`
       type f32
 
       fun x() =
@@ -421,7 +540,7 @@ describe('Types', function() {
       Type "f32" is not assignable to "boolean"
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type boolean
 
@@ -430,7 +549,7 @@ describe('Types', function() {
       fun() -> boolean
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type boolean
 
@@ -439,7 +558,7 @@ describe('Types', function() {
       fun() -> boolean
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type boolean
 
@@ -451,7 +570,7 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       fun gte(x: i32) = {
@@ -463,7 +582,7 @@ describe('Types', function() {
       fun(x: i32) -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       private fun fibo(n: i32, x1: i32, x2: i32): i32 =
@@ -481,7 +600,7 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       fun gte(x: i32) = {
@@ -493,7 +612,7 @@ describe('Types', function() {
       fun(x: i32) -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
 
       fun gte(x: i32): i32 = {
@@ -505,7 +624,7 @@ describe('Types', function() {
       fun(x: i32) -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       var x = 1
       fun getX() = x
@@ -513,17 +632,17 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    // TYPE ALIAS
-    // checkMainType`
-    //   type i32
-    //   type int = i32
-    //   var x = 1
-    //   fun getX(): int = x
-    //   ---
-    //   fun() -> int
-    // `;
+      // TYPE ALIAS
+      // checkMainType`
+      //   type i32
+      //   type int = i32
+      //   var x = 1
+      //   fun getX(): int = x
+      //   ---
+      //   fun() -> int
+      // `;
 
-    checkMainType`
+      checkMainType`
       type void
       type i32
       fun getX(x: i32) = {}
@@ -531,14 +650,14 @@ describe('Types', function() {
       fun(x: i32) -> void
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       fun getX(x: i32): i32 = x
       ---
       fun(x: i32) -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       fun getX(x: i32): i32 = {
         x
@@ -551,7 +670,7 @@ describe('Types', function() {
       fun(x: i32) -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type f32
       fun getX(): i32 = {
@@ -563,7 +682,7 @@ describe('Types', function() {
       fun() -> i32
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type boolean
       fun gte(x: i32, y: i32) = x >= y
@@ -571,7 +690,7 @@ describe('Types', function() {
       fun(x: i32, y: i32) -> boolean
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type void
 
@@ -583,7 +702,7 @@ describe('Types', function() {
       fun(x: i32) -> void
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type void
 
@@ -596,7 +715,7 @@ describe('Types', function() {
       fun() -> void
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type void
 
@@ -608,7 +727,7 @@ describe('Types', function() {
       fun() -> void
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type void
 
@@ -622,7 +741,7 @@ describe('Types', function() {
       fun() -> void
     `;
 
-    checkMainType`
+      checkMainType`
       type i32
       type void
 
@@ -641,6 +760,7 @@ describe('Types', function() {
       fun() -> i32
       fun() -> void
     `;
+    });
   });
 
   describe('Resolution', () => {

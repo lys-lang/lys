@@ -532,10 +532,12 @@ export namespace Nodes {
 
   export class UnaryExpressionNode extends ExpressionNode {
     rhs: ExpressionNode;
-    operator: string;
+    operator: NameIdentifierNode;
+
+    resolvedFunctionType: FunctionType;
 
     get text() {
-      return JSON.stringify(this.operator);
+      return this.operator.text;
     }
   }
 

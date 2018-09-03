@@ -1,21 +1,21 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
-  2 [label="FunOverload: test\nOverloadedFunctionTypeResolver\n⟨fun() -> i32⟩"];
-  3 [label="FunDirective: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  4 [label="FunNode: test\nFunctionTypeResolver\n⟨fun() -> i32⟩"];
-  5 [label="Name: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  6 [label="Name: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
+  2 [label="FunOverload: test\n⟨fun() -> i32⟩", fillcolor=grey];
+  3 [label="FunDirective: test\n⟨fun() -> i32⟩", fillcolor=grey];
+  4 [label="FunNode: test\n⟨fun() -> i32⟩", fillcolor=grey];
+  5 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
+  6 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    7 [label="BlockNode\nBlockTypeResolver\n⟨i32⟩"];
-    8 [label="ValDecl: test\nLiteralTypeResolver\n⟨void⟩"];
-    9 [label="Name: test\nVarDeclarationTypeResolver\n⟨i32⟩"];
-    10 [label="Int: 1\nPassThroughTypeResolver\n⟨i32⟩"];
-    11 [label="BinaryExpressionNode'+'\nBinaryOpTypeResolver\n⟨i32⟩"];
-    12 [label="Var: test\nVariableReferenceResolver\n⟨i32⟩"];
-    13 [label="Int: 2\nPassThroughTypeResolver\n⟨i32⟩"];
-    14 [label="FunNode: test\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+    7 [label="BlockNode\n⟨i32⟩", fillcolor=grey];
+    8 [label="ValDecl: test\n⟨void⟩", fillcolor=grey];
+    9 [label="Name: test\n⟨i32⟩", fillcolor=grey];
+    10 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
+    11 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
+    12 [label="VarRef: test\n⟨i32⟩", fillcolor=grey];
+    13 [label="Int: 2\n⟨i32⟩", fillcolor=grey];
+    14 [label="FunNode: test\n⟨fun() -> i32⟩", fillcolor=grey];
     7 -> 14[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     8 -> 7[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     9 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

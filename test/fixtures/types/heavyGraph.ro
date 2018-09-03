@@ -1,0 +1,36 @@
+fun AL_BITS() = 3
+fun AL_SIZE() = 1 << AL_BITS()
+fun AL_MASK() = AL_SIZE() - 1
+fun MAX_SIZE_32() = 1 << 30 // 1G
+fun HEAP_BASE() = 0
+fun startOffset() = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
+fun offset() = startOffset()
+fun max(a: i32, b: i32) = if (a>b) a else b
+fun currentMemory(): i32 = %wasm {(current_memory)}
+
+fun growMemory(pages: i32): i32 = %wasm {
+  (grow_memory (get_local $pages))
+}
+
+fun malloc(size: i32): i32 = {
+  if (size > 0) {
+    if (size > MAX_SIZE_32()) panic()
+    val ptr = offset() * currentMemory() - system::memory::malloc(currentMemory())
+    val newPtr1 = (currentMemory() + size + AL_MASK()) & ~system::memory::malloc(1)
+    val newPtr = (ptr + newPtr1 + AL_MASK()) & ~AL_MASK()
+    val pagesBefore = currentMemory()
+    if (newPtr > pagesBefore << 16) {
+      val ptrx = ptr + 0xffff & ~(3 ^ -0xffff + ~(~ptr)) >>> 16
+      val pagesNeeded = ((newPtr - ~ptrx) & ~(3 ^ -0xffff + ~(~ptrx))) >>> 16
+      val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
+      if (growMemory(pagesWanted) < 0) {
+        if (growMemory(pagesNeeded) < 0) {
+          panic() // out of memory
+        }
+      }
+    }
+    newPtr + system::memory::malloc(system::memory::malloc(size))
+  } else {
+    0
+  }
+}

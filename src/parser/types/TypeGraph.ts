@@ -65,10 +65,10 @@ export class TypeNode {
     }
   }
 
-  private MAX_ATTEMPTS = 5;
+  private MAX_ATTEMPTS = 50;
   private _outgoingEdges: Array<Edge> = [];
   private _incomingEdges: Array<Edge> = [];
-  private amount = 0;
+  amount = 0;
 
   parentGraph: TypeGraph | null = null;
 
@@ -86,10 +86,14 @@ export class TypeNode {
 
             this.astNode.ofType = newType;
           }
-
+          if (!this.astNode.ofType) {
+            debugger;
+          }
           this._outgoingEdges.forEach(edge => {
             edge.propagateType(this.astNode.ofType, ctx);
           });
+        } else {
+          debugger;
         }
       } else {
         ctx.parsingContext.messageCollector.warning(

@@ -1,25 +1,25 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
-  2 [label="FunOverload: malloc\nOverloadedFunctionTypeResolver\n⟨fun(size: i32) -> i32⟩"];
-  3 [label="FunDirective: malloc\nPassThroughTypeResolver\n⟨fun(size: i32) -> i32⟩"];
-  4 [label="FunNode: malloc\nFunctionTypeResolver\n⟨fun(size: i32) -> i32⟩"];
-  5 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  6 [label="Name: size\nPassThroughTypeResolver\n⟨i32⟩"];
-  7 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  8 [label="Name: malloc\nPassThroughTypeResolver\n⟨fun(size: i32) -> i32⟩"];
-  9 [label="Name: malloc\nPassThroughTypeResolver\n⟨fun(size: i32) -> i32⟩"];
-  10 [label="FunOverload: main\nOverloadedFunctionTypeResolver\n⟨fun() -> i32⟩"];
-  11 [label="FunDirective: main\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  12 [label="FunNode: main\nFunctionTypeResolver\n⟨i32⟩"];
-  13 [label="Name: main\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  14 [label="Name: main\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
+  2 [label="FunOverload: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+  3 [label="FunDirective: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+  4 [label="FunNode: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  6 [label="Name: size\n⟨i32⟩", fillcolor=grey];
+  7 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  8 [label="Name: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+  9 [label="Name: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+  10 [label="FunOverload: main\n⟨fun() -> i32⟩", fillcolor=grey];
+  11 [label="FunDirective: main\n⟨fun() -> i32⟩", fillcolor=grey];
+  12 [label="FunNode: main\n⟨i32⟩", fillcolor=grey];
+  13 [label="Name: main\n⟨fun() -> i32⟩", fillcolor=grey];
+  14 [label="Name: main\n⟨fun() -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    15 [label="FunctionCallNode\nFunctionCallResolver\n⟨i32⟩"];
-    16 [label="Var: malloc\nVariableReferenceResolver\n⟨fun(size: i32) -> i32⟩"];
-    17 [label="Int: 1\nPassThroughTypeResolver\n⟨i32⟩"];
-    18 [label="FunNode: main\nPassThroughTypeResolver\n⟨i32⟩"];
+    15 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
+    16 [label="VarRef: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+    17 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
+    18 [label="FunNode: main\n⟨i32⟩", fillcolor=grey];
     15 -> 18[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     16 -> 15[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     17 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -27,10 +27,10 @@ digraph Document {
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    19 [label="Name: size\nLiteralTypeResolver\n⟨i32⟩"];
-    20 [label="WasmExpressionNode\nUnknownTypeResolver\n⟨UNKNOWN⟩"];
-    21 [label="FunNode: malloc\nPassThroughTypeResolver\n⟨fun(size: i32) -> i32⟩"];
-    22 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
+    19 [label="Name: size\n⟨i32⟩", fillcolor=grey];
+    20 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    21 [label="FunNode: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+    22 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
     20 -> 21[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "malloc(i32)";
 }

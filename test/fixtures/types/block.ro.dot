@@ -1,27 +1,27 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
-  2 [label="FunOverload: gte\nOverloadedFunctionTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  3 [label="FunDirective: gte\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  4 [label="FunNode: gte\nFunctionTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  5 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  6 [label="Name: x\nPassThroughTypeResolver\n⟨i32⟩"];
-  7 [label="Name: gte\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  8 [label="Name: gte\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
+  2 [label="FunOverload: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  3 [label="FunDirective: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  4 [label="FunNode: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  6 [label="Name: x\n⟨i32⟩", fillcolor=grey];
+  7 [label="Name: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  8 [label="Name: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    9 [label="Name: x\nLiteralTypeResolver\n⟨i32⟩"];
-    10 [label="BlockNode\nBlockTypeResolver\n⟨i32⟩"];
-    11 [label="VarDecl: ttt\nLiteralTypeResolver\n⟨void⟩"];
-    12 [label="Name: ttt\nVarDeclarationTypeResolver\n⟨i32⟩"];
-    13 [label="Int: 0\nPassThroughTypeResolver\n⟨i32⟩"];
-    14 [label="AssignmentNode\nAssignmentNodeTypeResolver\n⟨i32⟩"];
-    15 [label="Var: ttt\nVariableReferenceResolver\n⟨i32⟩"];
-    16 [label="BinaryExpressionNode'+'\nBinaryOpTypeResolver\n⟨i32⟩"];
-    17 [label="Var: ttt\nVariableReferenceResolver\n⟨i32⟩"];
-    18 [label="Var: x\nVariableReferenceResolver\n⟨i32⟩"];
-    19 [label="Var: ttt\nVariableReferenceResolver\n⟨i32⟩"];
-    20 [label="FunNode: gte\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+    9 [label="Name: x\n⟨i32⟩", fillcolor=grey];
+    10 [label="BlockNode\n⟨i32⟩", fillcolor=grey];
+    11 [label="VarDecl: ttt\n⟨void⟩", fillcolor=grey];
+    12 [label="Name: ttt\n⟨i32⟩", fillcolor=grey];
+    13 [label="Int: 0\n⟨i32⟩", fillcolor=grey];
+    14 [label="AssignmentNode\n⟨i32⟩", fillcolor=grey];
+    15 [label="VarRef: ttt\n⟨i32⟩", fillcolor=grey];
+    16 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
+    17 [label="VarRef: ttt\n⟨i32⟩", fillcolor=grey];
+    18 [label="VarRef: x\n⟨i32⟩", fillcolor=grey];
+    19 [label="VarRef: ttt\n⟨i32⟩", fillcolor=grey];
+    20 [label="FunNode: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
     9 -> 18[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     10 -> 20[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     11 -> 10[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

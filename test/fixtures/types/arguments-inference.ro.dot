@@ -1,18 +1,18 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
-  2 [label="FunOverload: getX\nOverloadedFunctionTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  3 [label="FunDirective: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  4 [label="FunNode: getX\nFunctionTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  5 [label="TypeRef: i32\nTypeReferenceResolver\n⟨i32⟩"];
-  6 [label="Name: x\nPassThroughTypeResolver\n⟨i32⟩"];
-  7 [label="Name: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
-  8 [label="Name: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
+  2 [label="FunOverload: getX\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  3 [label="FunDirective: getX\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  4 [label="FunNode: getX\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  6 [label="Name: x\n⟨i32⟩", fillcolor=grey];
+  7 [label="Name: getX\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
+  8 [label="Name: getX\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    9 [label="Name: x\nLiteralTypeResolver\n⟨i32⟩"];
-    10 [label="Var: x\nVariableReferenceResolver\n⟨i32⟩"];
-    11 [label="FunNode: getX\nPassThroughTypeResolver\n⟨fun(x: i32) -> i32⟩"];
+    9 [label="Name: x\n⟨i32⟩", fillcolor=grey];
+    10 [label="VarRef: x\n⟨i32⟩", fillcolor=grey];
+    11 [label="FunNode: getX\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
     9 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     10 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "getX(i32)";

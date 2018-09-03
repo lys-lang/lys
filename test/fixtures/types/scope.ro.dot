@@ -1,25 +1,25 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\nLiteralTypeResolver\n⟨i32⟩"];
-  2 [label="Name: f32\nLiteralTypeResolver\n⟨f32⟩"];
-  3 [label="FunOverload: x1\nOverloadedFunctionTypeResolver\n⟨fun() -> f32⟩"];
-  4 [label="FunDirective: x1\nPassThroughTypeResolver\n⟨fun() -> f32⟩"];
-  5 [label="FunNode: x1\nFunctionTypeResolver\n⟨fun() -> f32⟩"];
-  6 [label="Name: x1\nPassThroughTypeResolver\n⟨fun() -> f32⟩"];
-  7 [label="Name: x1\nPassThroughTypeResolver\n⟨fun() -> f32⟩"];
-  8 [label="FunOverload: x2\nOverloadedFunctionTypeResolver\n⟨fun() -> i32⟩"];
-  9 [label="FunDirective: x2\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  10 [label="FunNode: x2\nFunctionTypeResolver\n⟨fun() -> i32⟩"];
-  11 [label="Name: x2\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-  12 [label="Name: x2\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
+  2 [label="Name: f32\n⟨f32⟩", fillcolor=grey];
+  3 [label="FunOverload: x1\n⟨fun() -> f32⟩", fillcolor=grey];
+  4 [label="FunDirective: x1\n⟨fun() -> f32⟩", fillcolor=grey];
+  5 [label="FunNode: x1\n⟨fun() -> f32⟩", fillcolor=grey];
+  6 [label="Name: x1\n⟨fun() -> f32⟩", fillcolor=grey];
+  7 [label="Name: x1\n⟨fun() -> f32⟩", fillcolor=grey];
+  8 [label="FunOverload: x2\n⟨fun() -> i32⟩", fillcolor=grey];
+  9 [label="FunDirective: x2\n⟨fun() -> i32⟩", fillcolor=grey];
+  10 [label="FunNode: x2\n⟨fun() -> i32⟩", fillcolor=grey];
+  11 [label="Name: x2\n⟨fun() -> i32⟩", fillcolor=grey];
+  12 [label="Name: x2\n⟨fun() -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    13 [label="BlockNode\nBlockTypeResolver\n⟨f32⟩"];
-    14 [label="FunNode: Y\nFunctionTypeResolver\n⟨fun() -> f32⟩"];
-    15 [label="Name: Y\nPassThroughTypeResolver\n⟨fun() -> f32⟩"];
-    16 [label="FunctionCallNode\nFunctionCallResolver\n⟨f32⟩"];
-    17 [label="Var: Y\nVariableReferenceResolver\n⟨fun() -> f32⟩"];
-    18 [label="FunNode: x1\nPassThroughTypeResolver\n⟨fun() -> f32⟩"];
+    13 [label="BlockNode\n⟨f32⟩", fillcolor=grey];
+    14 [label="FunNode: Y\n⟨fun() -> f32⟩", fillcolor=grey];
+    15 [label="Name: Y\n⟨fun() -> f32⟩", fillcolor=grey];
+    16 [label="FunctionCallNode\n⟨f32⟩", fillcolor=grey];
+    17 [label="VarRef: Y\n⟨fun() -> f32⟩", fillcolor=grey];
+    18 [label="FunNode: x1\n⟨fun() -> f32⟩", fillcolor=grey];
     13 -> 18[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     14 -> 15[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     14 -> 13[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -30,22 +30,22 @@ digraph Document {
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    19 [label="Float: 1.00000\nPassThroughTypeResolver\n⟨f32⟩"];
-    20 [label="FunNode: Y\nPassThroughTypeResolver\n⟨fun() -> f32⟩"];
+    19 [label="Float: 1.00000\n⟨f32⟩", fillcolor=grey];
+    20 [label="FunNode: Y\n⟨fun() -> f32⟩", fillcolor=grey];
     19 -> 20[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "Y()";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    21 [label="BlockNode\nBlockTypeResolver\n⟨i32⟩"];
-    22 [label="VarDecl: n\nLiteralTypeResolver\n⟨void⟩"];
-    23 [label="Name: n\nVarDeclarationTypeResolver\n⟨i32⟩"];
-    24 [label="Int: 1\nPassThroughTypeResolver\n⟨i32⟩"];
-    25 [label="FunNode: Y\nFunctionTypeResolver\n⟨i32⟩"];
-    26 [label="Name: Y\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
-    27 [label="FunctionCallNode\nFunctionCallResolver\n⟨i32⟩"];
-    28 [label="Var: Y\nVariableReferenceResolver\n⟨fun() -> i32⟩"];
-    29 [label="FunNode: x2\nPassThroughTypeResolver\n⟨fun() -> i32⟩"];
+    21 [label="BlockNode\n⟨i32⟩", fillcolor=grey];
+    22 [label="VarDecl: n\n⟨void⟩", fillcolor=grey];
+    23 [label="Name: n\n⟨i32⟩", fillcolor=grey];
+    24 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
+    25 [label="FunNode: Y\n⟨i32⟩", fillcolor=grey];
+    26 [label="Name: Y\n⟨fun() -> i32⟩", fillcolor=grey];
+    27 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
+    28 [label="VarRef: Y\n⟨fun() -> i32⟩", fillcolor=grey];
+    29 [label="FunNode: x2\n⟨fun() -> i32⟩", fillcolor=grey];
     21 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     22 -> 21[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     23 -> 30[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -59,8 +59,8 @@ digraph Document {
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
-    30 [label="Var: n\nVariableReferenceResolver\n⟨i32⟩"];
-    31 [label="FunNode: Y\nPassThroughTypeResolver\n⟨i32⟩"];
+    30 [label="VarRef: n\n⟨i32⟩", fillcolor=grey];
+    31 [label="FunNode: Y\n⟨i32⟩", fillcolor=grey];
     30 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "Y()";
 }
