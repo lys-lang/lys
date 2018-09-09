@@ -404,6 +404,16 @@ const visitor = {
   SyntaxError(_: IToken) {
     return null;
   },
+  StructDirective(astNode: IToken) {
+    const ret = new Nodes.TypeDirectiveNode(astNode);
+    const structType = visit(astNode.children[0]) as Nodes.StructDeclarationNode;
+    ret.valueType = structType;
+    ret.variableName = structType.declaredName;
+    return ret;
+  },
+  UnknownExpression(astNode: IToken) {
+    return new Nodes.UnknownExpressionNode(astNode);
+  },
   StructDeclaration(astNode: IToken) {
     const ret = new Nodes.StructDeclarationNode(astNode);
 

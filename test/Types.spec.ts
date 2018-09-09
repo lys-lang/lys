@@ -85,6 +85,216 @@ describe('Types', function() {
   }
 
   describe('unit', () => {
+    describe('types', () => {
+      checkMainType`
+        type BOOLEAN {
+          TRUE
+          FALSE
+          NONE
+        }
+
+        fun test1(a: BOOLEAN): void = { test2(a) }
+        fun test2(a: FALSE): void = ???
+        ---
+        fun(a: BOOLEAN) -> void
+        fun(a: FALSE) -> void
+        ---
+        Expecting arguments type (FALSE) but got (BOOLEAN)
+      `;
+
+      checkMainType`
+        type BOOLEAN {
+          TRUE
+          FALSE
+          NONE
+        }
+
+        fun test1(a: TRUE | FALSE): void = { test2(a) }
+        fun test2(a: FALSE): void = ???
+        ---
+        fun(a: TRUE | FALSE) -> void
+        fun(a: FALSE) -> void
+        ---
+        Expecting arguments type (FALSE) but got (TRUE | FALSE)
+      `;
+
+      checkMainType`
+        type BOOLEAN {
+          TRUE
+          FALSE
+          NONE
+        }
+
+        fun test1(a: TRUE): void = {
+          test2(a)
+        }
+        fun test2(a: FALSE): void = ???
+        ---
+        fun(a: TRUE) -> void
+        fun(a: FALSE) -> void
+        ---
+        Expecting arguments type (FALSE) but got (TRUE)
+      `;
+
+      checkMainType`
+        // Ok, this one is fun. it is actually quite complicated to infer that a UnionType
+        // TRUE | FALSE | NONE satisfies all the subtypes of BOOLEAN.
+        // so, BOOLEAN is not assignable to TRUE | FALSE | NONE. So far.
+
+        type BOOLEAN {
+          TRUE
+          FALSE
+          NONE
+        }
+
+        fun test1(a: BOOLEAN): void = {
+          test5(a)
+        }
+        fun test2(a: FALSE): void = {
+          test1(a)
+          test3(a)
+          test4(a)
+          test5(a)
+        }
+        fun test3(a: TRUE | FALSE): void = {
+          test1(a)
+          test5(a)
+        }
+        fun test4(a: NONE | FALSE): void = {
+          test1(a)
+          test5(a)
+        }
+        fun test5(a: NONE | FALSE | TRUE): void = {
+          test5(a)
+        }
+
+        fun main(): void = {
+          test1(TRUE)
+          test1(FALSE)
+          test1(NONE)
+          test2(FALSE)
+          test3(TRUE)
+          test3(FALSE)
+          test4(NONE)
+          test4(FALSE)
+          test5(TRUE)
+          test5(FALSE)
+          test5(NONE)
+        }
+        ---
+        fun(a: BOOLEAN) -> void
+        fun(a: FALSE) -> void
+        fun(a: TRUE | FALSE) -> void
+        fun(a: NONE | FALSE) -> void
+        fun(a: NONE | FALSE | TRUE) -> void
+        fun() -> void
+        ---
+        Expecting arguments type (NONE | FALSE | TRUE) but got (BOOLEAN)
+      `;
+
+      checkMainType`
+        type BOOLEAN {
+          TRUE
+          FALSE
+          NONE
+        }
+
+        fun test1(a: BOOLEAN): void = ???
+        fun test2(a: FALSE): void = ???
+        fun test3(a: TRUE | FALSE): void = ???
+        fun test4(a: NONE | FALSE): void = ???
+        fun test5(a: NONE | FALSE | TRUE): void = ???
+
+        fun main(): void = {
+          test1(TRUE)
+          test1(FALSE)
+          test1(NONE)
+          test2(FALSE)
+          test3(TRUE)
+          test3(FALSE)
+          test4(NONE)
+          test4(FALSE)
+          test5(TRUE)
+          test5(FALSE)
+          test5(NONE)
+        }
+        ---
+        fun(a: BOOLEAN) -> void
+        fun(a: FALSE) -> void
+        fun(a: TRUE | FALSE) -> void
+        fun(a: NONE | FALSE) -> void
+        fun(a: NONE | FALSE | TRUE) -> void
+        fun() -> void
+      `;
+      return;
+      checkMainType`
+        struct A()
+        fun test(x: ref): boolean = x == A()
+        ---
+        fun(x: ref) -> boolean
+      `;
+
+      checkMainType`
+        struct A()
+
+        fun test1(x: ref): boolean = x == A()
+        fun test2(x: A) = test1(x)
+
+        ---
+        fun(x: ref) -> boolean
+        fun(x: A) -> boolean
+      `;
+
+      checkMainType`
+        struct X()
+
+        type Y {
+          X1
+        }
+
+        fun test1(x1: X1): boolean = x1 == X1()
+        fun test2(x: X1): boolean = test1(x)
+
+        ---
+        fun(x1: X1) -> boolean
+        fun(x: X1) -> boolean
+      `;
+
+      checkMainType`
+        struct X()
+
+        type Y {
+          Z
+        }
+
+        fun test1(x: Z): boolean = x == Z()
+        fun test2(x: X) = test1(x)
+        ---
+        fun(x: Z) -> boolean
+        fun(x: X) -> INVALID_TYPE
+        ---
+        Invalid signature. Expecting arguments type (Z) but got (X)
+      `;
+
+      checkMainType`
+        type BOOLEAN {
+          TRUE
+          FALSE
+          NONE
+        }
+
+        fun test1() = TRUE
+        fun test2() = FALSE
+        fun test3(): BOOLEAN = FALSE
+        fun test4(a: boolean) = if(a) TRUE else FALSE
+
+        ---
+        fun() -> TRUE
+        fun() -> FALSE
+        fun() -> BOOLEAN
+        fun(a: boolean) -> BOOLEAN
+      `;
+    });
     describe('operators', () => {
       checkMainType`
         fun AL_BITS() = 3
@@ -236,6 +446,25 @@ describe('Types', function() {
         fun(size: i32) -> i32
       `;
 
+      describe.skip('assign', () => {
+        checkMainType`
+          fun main() = 1.0
+          ---
+          fun() -> f32
+        `;
+        checkMainType`
+          fun main() = f32
+          ---
+          fun() -> Type<f32>
+        `;
+        checkMainType`
+          fun main(): f32 = f32
+          ---
+          fun() -> f32
+          ---
+          Canno't assign
+        `;
+      });
       describe('imports', () => {
         checkMainType`
         import * from system::random

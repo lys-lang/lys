@@ -12,7 +12,6 @@ export enum NativeTypes {
   f64 = 'f64',
   anyfunc = 'anyfunc',
   func = 'func',
-  block_type = 'block_type',
   void = 'void',
 
   boolean = 'boolean',
@@ -40,8 +39,7 @@ export enum sizeOf {
   i8 = word >> 2,
   i16 = word >> 1,
   anyfunc = word,
-  func = word,
-  block_type = word
+  func = word
 }
 
 export abstract class Type {
@@ -79,12 +77,19 @@ export abstract class Type {
 
   equals(_otherType: Type) {
     if (!_otherType) return false;
-    return _otherType && _otherType instanceof this.constructor;
+
+    return _otherType === this;
   }
 
   canBeAssignedTo(_otherType: Type) {
     if (this.superType && this.superType.canBeAssignedTo(_otherType)) {
       return true;
+    }
+
+    if (_otherType instanceof UnionType) {
+      if (_otherType.of.some($ => this.canBeAssignedTo($))) {
+        return true;
+      }
     }
 
     return this.equals(_otherType); // add supertype logic here
@@ -104,6 +109,11 @@ export class VoidType extends Type {
 
   toString() {
     return 'void';
+  }
+
+  equals(other: Type) {
+    if (!other) return false;
+    return other instanceof VoidType;
   }
 
   static instance = new VoidType();
@@ -130,6 +140,10 @@ export class InvalidType extends VoidType {
     return 'INVALID_TYPE';
   }
 
+  equals(_other: Type) {
+    return false;
+  }
+
   static instance = new InvalidType();
 }
 
@@ -146,7 +160,7 @@ export class FunctionType extends Type {
 
   acceptsTypes(types: Type[]) {
     if (this.parameterTypes.length !== types.length) return false;
-    return types.every(($, $$) => this.parameterTypes[$$].equals($));
+    return types.every(($, $$) => $.canBeAssignedTo(this.parameterTypes[$$]));
   }
 
   equals(type: Type) {
@@ -170,17 +184,29 @@ export class FunctionType extends Type {
   }
 }
 
-export class HeapReferenceType extends Type {
-  nativeType: NativeTypes = NativeTypes.i32;
+export class RefType extends Type {
+  nativeType: NativeTypes = NativeTypes.u64;
+
+  static instance: RefType = new RefType();
 
   toString() {
-    return 'HEAP<???>';
+    return 'ref';
+  }
+
+  equals(other: Type) {
+    if (!other) return false;
+    return other instanceof RefType && other.toString() == 'ref';
   }
 }
 
-export class PolimorphicType extends HeapReferenceType {
+export class PolimorphicType extends RefType {
   constructor(public fqn: string) {
     super();
+  }
+
+  equals(otherType: Type) {
+    if (!otherType) return false;
+    return this === otherType;
   }
 
   toString() {
@@ -188,10 +214,25 @@ export class PolimorphicType extends HeapReferenceType {
   }
 }
 
+export class StringType extends RefType {
+  toString() {
+    return 'string';
+  }
+
+  equals(other: Type) {
+    if (!other) return false;
+    return other instanceof StringType;
+  }
+}
+
 export class StructType extends PolimorphicType {
   constructor(public internalName: string, fqn: string, superType: Type = null) {
     super(fqn);
-    this.superType = superType;
+    if (superType) {
+      this.superType = superType;
+    } else {
+      this.superType = RefType.instance;
+    }
   }
 
   parameterTypes: Type[];
@@ -242,6 +283,12 @@ export class IntersectionType extends Type {
       return newType;
     }
   }
+
+  equals(other: Type) {
+    if (!other) return false;
+    // TODO: flatMap
+    return other instanceof IntersectionType && other.of.every($ => this.of.includes($));
+  }
 }
 
 export class ReferenceType extends Type {
@@ -275,18 +322,35 @@ export class ReferenceType extends Type {
   toString() {
     return `TypeRef(${this.referencedName})`;
   }
+
+  equals(other: Type) {
+    if (!other) return false;
+    return (
+      other instanceof ReferenceType && other.closure.get(other.referencedName) == this.closure.get(this.referencedName)
+    );
+  }
 }
 
 export class UnionType extends Type {
   nativeType: NativeTypes = NativeTypes.anyfunc;
 
-  constructor(public of: Type[] = []) {
+  constructor(public of: Type[] = [], public readonly simplified = false) {
     super();
   }
 
   toString() {
     if (this.of.length == 0) return '(empty union)';
     return this.of.map($ => $.toString()).join(' | ');
+  }
+
+  canBeAssignedTo(otherType: Type) {
+    return this.of.every($ => $.canBeAssignedTo(otherType));
+  }
+
+  equals(other: Type) {
+    if (!other) return false;
+    // TODO: flatMap
+    return other instanceof UnionType && other.of.every($ => this.of.includes($));
   }
 
   simplify() {
@@ -307,14 +371,28 @@ export class UnionType extends Type {
     } else {
       if (superTypes.size == 1) {
         const superType = superTypes.values().next().value;
+
         if (newTypes.every($ => $.canBeAssignedTo(superType))) {
           return superType;
         }
       }
-      const newType = new UnionType();
-      newType.of = newTypes;
-      return newType;
+      return new UnionType(newTypes, true);
     }
+  }
+}
+
+export abstract class TypeType extends Type {
+  constructor(public of: Type) {
+    super();
+  }
+
+  equals(other: Type) {
+    if (!other) return false;
+    return other instanceof TypeType && other.of.equals(this.of);
+  }
+
+  toString() {
+    return `Type<${this.of.toString()}>`;
   }
 }
 
@@ -322,6 +400,12 @@ export abstract class NativeType extends Type {
   constructor(public nativeType: NativeTypes) {
     super();
   }
+
+  equals(other: Type) {
+    if (!other) return false;
+    return other instanceof this.constructor && other.nativeType === this.nativeType;
+  }
+
   toString() {
     return NativeTypes[this.nativeType];
   }
@@ -409,7 +493,9 @@ export const InjectableTypes = {
   u16,
   f32,
   f64,
-  void: VoidType
+  void: VoidType,
+  ref: RefType,
+  string: StringType
 };
 
 export function toConcreteType(type: Type, ctx: TypeResolutionContext) {

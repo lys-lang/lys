@@ -5,7 +5,7 @@
  (type $4 (func (param i32)))
  (type $5 (func (param i32 i32)))
  (type $6 (func (param i32 i32 i32 i32) (result i32)))
- (type $11 (func))
+ (type $14 (func))
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -15,8 +15,8 @@
  (global $global$6 (mut i32) (i32.const 0))
  (global $global$7 (mut i32) (i32.const 0))
  (memory $0 0 1)
- (export "keccak" (func $90))
- (start $91)
+ (export "keccak" (func $107))
+ (start $108)
  (func $4 (; 0 ;) (; has Stack IR ;) (type $3) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (set_local $3
@@ -2292,37 +2292,37 @@
    )
   )
  )
- (func $24 (; 11 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
+ (func $27 (; 11 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.add
    (get_local $0)
    (get_local $1)
   )
  )
- (func $29 (; 12 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
+ (func $33 (; 12 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.sub
    (get_local $0)
    (get_local $1)
   )
  )
- (func $45 (; 13 ;) (; has Stack IR ;) (type $0) (param $0 i32) (result i32)
+ (func $52 (; 13 ;) (; has Stack IR ;) (type $0) (param $0 i32) (result i32)
   (i32.xor
    (get_local $0)
    (i32.const -1)
   )
  )
- (func $57 (; 14 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
+ (func $64 (; 14 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.shl
    (get_local $0)
    (get_local $1)
   )
  )
- (func $86 (; 15 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
+ (func $103 (; 15 ;) (; has Stack IR ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.and
    (get_local $0)
    (get_local $1)
   )
  )
- (func $90 (; 16 ;) (; has Stack IR ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
+ (func $107 (; 16 ;) (; has Stack IR ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
   (call $12
    (tee_local $4
@@ -2340,24 +2340,24 @@
   )
   (get_local $3)
  )
- (func $91 (; 17 ;) (; has Stack IR ;) (type $11)
+ (func $108 (; 17 ;) (; has Stack IR ;) (type $14)
   (set_global $global$0
    (i32.const 3)
   )
   (set_global $global$1
-   (call $57
+   (call $64
     (i32.const 1)
     (get_global $global$0)
    )
   )
   (set_global $global$2
-   (call $29
+   (call $33
     (get_global $global$1)
     (i32.const 1)
    )
   )
   (set_global $global$3
-   (call $57
+   (call $64
     (i32.const 1)
     (i32.const 30)
    )
@@ -2366,12 +2366,12 @@
    (i32.const 0)
   )
   (set_global $global$5
-   (call $86
-    (call $24
+   (call $103
+    (call $27
      (get_global $global$4)
      (get_global $global$2)
     )
-    (call $45
+    (call $52
      (get_global $global$2)
     )
    )

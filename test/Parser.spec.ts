@@ -75,6 +75,7 @@ describe('Parser', () => {
         `var x = a | b ^ c & d | e || f && g || h && y && j & 5`,
         `var x = (a | (b ^ (c & d)) | e) || (f && g) || (h && y && (j & 5))`
       );
+      testEquivalence(`var x = a ~= b !== c == b === c`, `var x = ((((a ~= b) !== c) == b) === c)`);
       testEquivalence(`var x = a as int`, `var x = (a) as int`);
       testEquivalence(`var x = a is int`, `var x = (a) is int`);
       testEquivalence(`var x = -1 as int`, `var x = (-1) as int`);
@@ -137,6 +138,7 @@ describe('Parser', () => {
         fun (<)(x: i32, y: boolean): void = {}
         fun (>=)(x: i32, y: boolean): void = {}
         fun (<=)(x: i32, y: boolean): void = {}
+        fun (~=)(x: i32, y: boolean): void = {}
       `;
     });
     describe('code blocks', () => {

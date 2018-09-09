@@ -252,16 +252,16 @@ MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
 
 /* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
 
-NotPreOperator    ::= '!'
-BitNotPreOperator ::= '~'
-MinusPreOperator  ::= '-'
+NotPreOperator    ::= '!'       !'='
+BitNotPreOperator ::= '~'       !'='
+MinusPreOperator  ::= '-'       !'-'
 AsKeyword         ::= 'as'      ![A-Za-z0-9_]
 IsKeyword         ::= 'is'      ![A-Za-z0-9_]
-MulOperator       ::= '**' | '*' | '/' | '%'
-AddOperator       ::= '+' | '-'
-ShiftOperator     ::= '>>>' | '>>' | '<<'
-RelOperator       ::= '>=' | '<=' | '>' | '<'
-EqOperator        ::= '==' | '!='
+MulOperator       ::= '**'  | '*'   | '/'  | '%'
+AddOperator       ::= '+'   | '-'
+ShiftOperator     ::= '>>>' | '>>'  | '<<'
+RelOperator       ::= '>='  | '<='  | '>'  | '<'
+EqOperator        ::= '===' | '!==' | '~=' | '==' | '!='
 BitAndOperator    ::= '&'       !'&'
 BitXorOperator    ::= '^'
 BitOrOperator     ::= '|'       !'|'

@@ -91,6 +91,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new AssignmentNodeTypeResolver();
   } else if (astNode instanceof Nodes.WasmExpressionNode) {
     return new UnknownTypeResolver();
+  } else if (astNode instanceof Nodes.UnknownExpressionNode) {
+    return new UnknownTypeResolver();
   }
 
   // if (astNode instanceof Nodes.TypeNode) {
@@ -238,7 +240,7 @@ export class UnionTypeResolver extends TypeResolver {
   execute(node: TypeNode, _ctx: TypeResolutionContext) {
     const type = new UnionType();
     type.of = node.incomingEdges().map($ => $.incomingType());
-    return type.simplify();
+    return type;
   }
 }
 
@@ -503,7 +505,9 @@ export class StructTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const structNode: Nodes.StructDeclarationNode = node.astNode as Nodes.StructDeclarationNode;
 
-    const superType = node.incomingEdgesByName(EdgeLabels.SUPER_TYPE)[0].incomingType();
+    const superTypeEdge = node.incomingEdgesByName(EdgeLabels.SUPER_TYPE);
+
+    const superType = ((superTypeEdge.length && superTypeEdge[0].incomingType()) || null) as StructType;
 
     const fnType = new StructType(structNode.internalIdentifier, structNode.declaredName.name, superType);
 
