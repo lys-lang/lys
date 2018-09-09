@@ -5,34 +5,34 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=i32
+    |-NameIdentifierNode="i32" type=Type<i32>
   |-TypeDirectiveNode
-    |-NameIdentifierNode="f32" type=f32
+    |-NameIdentifierNode="f32" type=Type<f32>
   |-TypeDirectiveNode
-    |-NameIdentifierNode="boolean" type=boolean
+    |-NameIdentifierNode="boolean" type=Type<boolean>
   |-TypeDirectiveNode
-    |-NameIdentifierNode="Number" type=Number
+    |-NameIdentifierNode="Number" type=Type<Number>
     |-TypeDeclarationNode
-      |-StructDeclarationNode type=Infinity
-        |-NameIdentifierNode="Infinity" type=Infinity
-      |-StructDeclarationNode type=NDet
-        |-NameIdentifierNode="NDet" type=NDet
-      |-StructDeclarationNode type=Real
-        |-NameIdentifierNode="Real" type=Real
+      |-StructDeclarationNode type=Type<Infinity>
+        |-NameIdentifierNode="Infinity" type=Type<Infinity>
+      |-StructDeclarationNode type=Type<NDet>
+        |-NameIdentifierNode="NDet" type=Type<NDet>
+      |-StructDeclarationNode type=Type<Real>
+        |-NameIdentifierNode="Real" type=Type<Real>
         |-ParameterNode
           |-NameIdentifierNode="number" type=f32
           |-TypeReferenceNode=f32 type=f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-      |-StructDeclarationNode type=Natural
-        |-NameIdentifierNode="Natural" type=Natural
+      |-StructDeclarationNode type=Type<Natural>
+        |-NameIdentifierNode="Natural" type=Type<Natural>
         |-ParameterNode
           |-NameIdentifierNode="number" type=i32
           |-TypeReferenceNode=i32 type=i32
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-      |-StructDeclarationNode type=Complex
-        |-NameIdentifierNode="Complex" type=Complex
+      |-StructDeclarationNode type=Type<Complex>
+        |-NameIdentifierNode="Complex" type=Type<Complex>
         |-ParameterNode
           |-NameIdentifierNode="real" type=f32
           |-TypeReferenceNode=f32 type=f32
@@ -44,9 +44,9 @@
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
   |-TypeDirectiveNode
-    |-StructDeclarationNode type=TestStruct
-      |-NameIdentifierNode="TestStruct" type=TestStruct
-    |-NameIdentifierNode="TestStruct" type=TestStruct
+    |-StructDeclarationNode type=Type<TestStruct>
+      |-NameIdentifierNode="TestStruct" type=Type<TestStruct>
+    |-NameIdentifierNode="TestStruct" type=Type<TestStruct>
   |-OverloadedFunctionNode type=fun(number: Number) -> boolean
     |-FunDirectiveNode type=fun(number: Number) -> boolean
       |-FunctionNode type=fun(number: Number) -> boolean
@@ -107,7 +107,7 @@
               |-QNameNode=isComplex
                 |-NameIdentifierNode="isComplex"
             |-FunctionCallNode type=Real annotations=IsValueNode
-              |-VariableReferenceNode type=Real
+              |-VariableReferenceNode type=Type<Real>
                 |-QNameNode=Real
                   |-NameIdentifierNode="Real"
               |-FloatLiteral=0 type=f32 annotations=IsValueNode
@@ -116,7 +116,7 @@
               |-QNameNode=isComplex
                 |-NameIdentifierNode="isComplex"
             |-FunctionCallNode type=Natural annotations=IsValueNode
-              |-VariableReferenceNode type=Natural
+              |-VariableReferenceNode type=Type<Natural>
                 |-QNameNode=Natural
                   |-NameIdentifierNode="Natural"
               |-IntegerLiteral=123 type=i32 annotations=IsValueNode
@@ -125,7 +125,7 @@
               |-QNameNode=isComplex
                 |-NameIdentifierNode="isComplex"
             |-FunctionCallNode type=Complex annotations=IsValueNode
-              |-VariableReferenceNode type=Complex
+              |-VariableReferenceNode type=Type<Complex>
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-FloatLiteral=0 type=f32 annotations=IsValueNode

@@ -30,6 +30,18 @@ export class TypeMismatch extends AstNodeError {
   }
 }
 
+export class NotAValidType extends AstNodeError {
+  constructor(public variableType: string, node: Nodes.Node) {
+    super(`The variable "${variableType}" is not a type`, node);
+  }
+}
+
+export class UnexpectedType extends AstNodeError {
+  constructor(public type: Type, node: Nodes.Node) {
+    super(`Unexpected type ${type}, a value expression is required.`, node);
+  }
+}
+
 export class InvalidOverload extends AstNodeError {
   constructor(public functionType: IntersectionType, public givenTypes: Type[], node: Nodes.Node) {
     super(

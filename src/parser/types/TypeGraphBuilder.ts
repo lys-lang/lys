@@ -8,7 +8,7 @@ import {
   StructDeconstructorTypeResolver,
   VarDeclarationTypeResolver
 } from './typeResolvers';
-import { Type, InjectableTypes, VoidType, PolimorphicType } from '../types';
+import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType } from '../types';
 import { AstNodeError } from '../NodeError';
 
 export class TypeGraphBuilder {
@@ -185,12 +185,6 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.value), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.TypeReferenceNode) {
       this.resolveVariable(node.variable, target);
-    } else if (node instanceof Nodes.IntegerLiteral) {
-      this.resolveVariableByName(node, 'i32', target);
-    } else if (node instanceof Nodes.FloatLiteral) {
-      this.resolveVariableByName(node, 'f32', target);
-    } else if (node instanceof Nodes.BooleanLiteral) {
-      this.resolveVariableByName(node, 'boolean', target);
     } else if (node instanceof Nodes.IfNode) {
       new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
       new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION);
@@ -302,7 +296,7 @@ export class TypeGraphBuilder {
           directive.variableName,
           this.createNode(
             directive.variableName,
-            new LiteralTypeResolver(new PolimorphicType(directive.variableName.name))
+            new LiteralTypeResolver(TypeType.of(new PolimorphicType(directive.variableName.name)))
           )
         );
         directive.valueType.declarations.forEach($ => this.processStruct($, typeDirective));
@@ -311,7 +305,7 @@ export class TypeGraphBuilder {
       }
     } else {
       if (directive.variableName.name in InjectableTypes) {
-        const type = new InjectableTypes[directive.variableName.name]();
+        const type = InjectableTypes[directive.variableName.name];
         this.createNode(directive.variableName, new LiteralTypeResolver(type));
       } else {
         this.messageCollector.error(

@@ -39,22 +39,26 @@ export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapa
   const printableErrors = new Set<ILocalError>();
 
   errors.forEach(err => {
-    if (err.start === undefined) {
-      return;
-    }
-
-    const start = lineMapper.position(err.start);
-    const end = lineMapper.position(err.end);
-
-    if (start.line >= 0) {
-      errorOnLines[start.line] = errorOnLines[start.line] || new Set();
-
-      const error = { start, end, message: err.message || err.toString() };
-      printableErrors.add(error);
-
-      for (let l = start.line; l <= end.line; l++) {
-        errorOnLines[l].add(error);
+    try {
+      if (err.start === undefined) {
+        return;
       }
+
+      const start = lineMapper.position(err.start);
+      const end = lineMapper.position(err.end);
+
+      if (start.line >= 0) {
+        errorOnLines[start.line] = errorOnLines[start.line] || new Set();
+
+        const error = { start, end, message: err.message || err.toString() };
+        printableErrors.add(error);
+
+        for (let l = start.line; l <= end.line; l++) {
+          errorOnLines[l].add(error);
+        }
+      }
+    } catch (e) {
+      printableErrors.add({ start: null, end: null, message: err.message || err.toString() });
     }
   });
 

@@ -10,12 +10,23 @@ import {
   InvalidType,
   StructType,
   bool,
-  UnknownType
+  UnknownType,
+  TypeType,
+  f32,
+  i32
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
 import { last } from '../helpers';
-import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall, UnreachableCode } from '../NodeError';
+import {
+  TypeMismatch,
+  InvalidOverload,
+  NotAFunction,
+  InvalidCall,
+  UnreachableCode,
+  NotAValidType,
+  UnexpectedType
+} from '../NodeError';
 
 declare var console;
 
@@ -42,11 +53,11 @@ export const EdgeLabels = {
 
 export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   if (astNode instanceof Nodes.IntegerLiteral) {
-    return new PassThroughTypeResolver();
+    return new LiteralTypeResolver(i32.instance);
   } else if (astNode instanceof Nodes.FloatLiteral) {
-    return new PassThroughTypeResolver();
+    return new LiteralTypeResolver(f32.instance);
   } else if (astNode instanceof Nodes.BooleanLiteral) {
-    return new PassThroughTypeResolver();
+    return new LiteralTypeResolver(bool.instance);
   } else if (astNode instanceof Nodes.IfNode) {
     return new IfElseTypeResolver();
   } else if (astNode instanceof Nodes.DocumentNode) {
@@ -482,10 +493,14 @@ export class FunctionTypeResolver extends TypeResolver {
 
       debugger;
 
-      resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
+      // resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
 
       return fnType;
     } else {
+      if (inferedReturnType instanceof TypeType) {
+        ctx.parsingContext.messageCollector.error(new UnexpectedType(inferedReturnType, functionNode.body));
+      }
+
       if (!fnType.returnType) {
         fnType.returnType = inferedReturnType;
       } else {
@@ -507,7 +522,7 @@ export class StructTypeResolver extends TypeResolver {
 
     const superTypeEdge = node.incomingEdgesByName(EdgeLabels.SUPER_TYPE);
 
-    const superType = ((superTypeEdge.length && superTypeEdge[0].incomingType()) || null) as StructType;
+    const superType = (superTypeEdge.length && (superTypeEdge[0].incomingType() as TypeType).of) || null;
 
     const fnType = new StructType(structNode.internalIdentifier, structNode.declaredName.name, superType);
 
@@ -519,7 +534,7 @@ export class StructTypeResolver extends TypeResolver {
 
     fnType.parameterNames = structNode.parameters.map($ => $.parameterName.name);
 
-    return fnType;
+    return TypeType.of(fnType);
   }
 }
 
@@ -528,6 +543,19 @@ export class VariableReferenceResolver extends TypeResolver {
     const type = node.incomingEdges()[0].incomingType();
 
     const ret = toConcreteType(type, ctx);
+
+    if (ret instanceof TypeType) {
+      if (ret.of instanceof StructType) {
+        if (ret.of.parameterTypes.length == 0) {
+          // TODO: set reference to constructor here
+          return ret.of;
+        }
+
+        return ret;
+      }
+      ctx.parsingContext.messageCollector.error(new UnexpectedType(ret, node.astNode));
+      return UnknownType.instance;
+    }
 
     return ret || INVALID_TYPE;
   }
@@ -539,7 +567,12 @@ export class TypeReferenceResolver extends TypeResolver {
 
     const ret = toConcreteType(type, ctx);
 
-    return ret || INVALID_TYPE;
+    if (ret instanceof TypeType) {
+      return ret.of;
+    } else {
+      ctx.parsingContext.messageCollector.error(new NotAValidType(node.astNode.text, node.astNode));
+      return INVALID_TYPE;
+    }
   }
 }
 
@@ -568,6 +601,10 @@ export class FunctionCallResolver extends TypeResolver {
 }
 
 function findFunctionOverload(incommingType: Type, argTypes: Type[], errorNode: Nodes.Node) {
+  if (incommingType instanceof TypeType) {
+    return findFunctionOverload(incommingType.of, argTypes, errorNode);
+  }
+
   if (incommingType instanceof IntersectionType) {
     for (let fun of incommingType.of) {
       if (fun instanceof FunctionType) {

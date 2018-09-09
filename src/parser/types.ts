@@ -100,53 +100,6 @@ export abstract class Type {
   }
 }
 
-export class VoidType extends Type {
-  nativeType: NativeTypes = NativeTypes.void;
-
-  protected constructor() {
-    super();
-  }
-
-  toString() {
-    return 'void';
-  }
-
-  equals(other: Type) {
-    if (!other) return false;
-    return other instanceof VoidType;
-  }
-
-  static instance = new VoidType();
-}
-
-export class UnknownType extends VoidType {
-  toString() {
-    return 'UNKNOWN';
-  }
-
-  equals(_: Type) {
-    return false;
-  }
-
-  canBeAssignedTo(_: Type) {
-    return true;
-  }
-
-  static instance = new UnknownType();
-}
-
-export class InvalidType extends VoidType {
-  toString() {
-    return 'INVALID_TYPE';
-  }
-
-  equals(_other: Type) {
-    return false;
-  }
-
-  static instance = new InvalidType();
-}
-
 export class FunctionType extends Type {
   nativeType: NativeTypes = NativeTypes.func;
 
@@ -381,9 +334,20 @@ export class UnionType extends Type {
   }
 }
 
-export abstract class TypeType extends Type {
-  constructor(public of: Type) {
+export class TypeType extends Type {
+  private constructor(public of: Type) {
     super();
+  }
+
+  static memMap = new WeakMap<Type, TypeType>();
+
+  static of(of: Type) {
+    let ret = this.memMap.get(of);
+    if (!ret) {
+      ret = new TypeType(of);
+      this.memMap.set(of, ret);
+    }
+    return ret;
   }
 
   equals(other: Type) {
@@ -397,7 +361,7 @@ export abstract class TypeType extends Type {
 }
 
 export abstract class NativeType extends Type {
-  constructor(public nativeType: NativeTypes) {
+  protected constructor(public nativeType: NativeTypes) {
     super();
   }
 
@@ -407,95 +371,117 @@ export abstract class NativeType extends Type {
   }
 
   toString() {
-    return NativeTypes[this.nativeType];
+    return NativeTypes[this.nativeType] as string;
   }
+}
+
+export class VoidType extends NativeType {
+  static instance = new VoidType(NativeTypes.void);
 }
 
 export class u8 extends NativeType {
-  constructor() {
-    super(NativeTypes.u8);
-  }
+  static instance = new u8(NativeTypes.u8);
 }
 
 export class bool extends NativeType {
-  static instance = new bool();
-
-  constructor() {
-    super(NativeTypes.i32);
-  }
-
-  equals(_otherType: Type) {
-    if (!_otherType) return false;
-    return _otherType && _otherType instanceof bool;
-  }
-
-  toString() {
-    return NativeTypes.boolean;
-  }
+  static instance = new bool(NativeTypes.boolean);
 }
 
+// export class trueType extends bool {
+//   static instance = new bool(NativeTypes.boolean);
+
+//   canBeAssignedTo(other: Type) {
+//     if (!other) return false;
+//   }
+
+//   equals(other: Type) {
+//     if (!other) return false;
+//     if(other instanceof tue
+//   }
+
+//   toString() {
+//     return 'true';
+//   }
+// }
+
 export class i32 extends NativeType {
-  constructor() {
-    super(NativeTypes.i32);
-  }
+  static instance = new i32(NativeTypes.i32);
 }
 
 export class u32 extends NativeType {
-  constructor() {
-    super(NativeTypes.u32);
-  }
+  static instance = new u32(NativeTypes.u32);
 }
 
 export class i16 extends NativeType {
-  constructor() {
-    super(NativeTypes.i16);
-  }
+  static instance = new i16(NativeTypes.i16);
 }
 
 export class u16 extends NativeType {
-  constructor() {
-    super(NativeTypes.u16);
-  }
+  static instance = new u16(NativeTypes.u16);
 }
 
 export class f32 extends NativeType {
-  constructor() {
-    super(NativeTypes.f32);
-  }
+  static instance = new f32(NativeTypes.f32);
 }
 
 export class f64 extends NativeType {
-  constructor() {
-    super(NativeTypes.f64);
-  }
+  static instance = new f64(NativeTypes.f64);
 }
 
 export class i64 extends NativeType {
-  constructor() {
-    super(NativeTypes.i64);
-  }
+  static instance = new i64(NativeTypes.i64);
 }
 
 export class u64 extends NativeType {
-  constructor() {
-    super(NativeTypes.u64);
-  }
+  static instance = new u64(NativeTypes.u64);
 }
 
-export const InjectableTypes = {
-  u8,
-  boolean: bool,
-  i32,
-  u32,
-  i64,
-  u64,
-  i16,
-  u16,
-  f32,
-  f64,
-  void: VoidType,
-  ref: RefType,
-  string: StringType
+export class UnknownType extends VoidType {
+  toString() {
+    return 'UNKNOWN';
+  }
+
+  equals(_: Type) {
+    return false;
+  }
+
+  canBeAssignedTo(_: Type) {
+    return true;
+  }
+
+  static instance = new UnknownType(NativeTypes.void);
+}
+
+export class InvalidType extends VoidType {
+  toString() {
+    return 'INVALID_TYPE';
+  }
+
+  equals(_other: Type) {
+    return false;
+  }
+
+  canBeAssignedTo(_: any) {
+    return false;
+  }
+
+  static instance = new InvalidType(NativeTypes.void);
+}
+
+export const InjectableTypes: Record<string, Type> = {
+  u8: TypeType.of(u8.instance),
+  boolean: TypeType.of(bool.instance),
+  i32: TypeType.of(i32.instance),
+  u32: TypeType.of(u32.instance),
+  i64: TypeType.of(i64.instance),
+  u64: TypeType.of(u64.instance),
+  i16: TypeType.of(i16.instance),
+  u16: TypeType.of(u16.instance),
+  f32: TypeType.of(f32.instance),
+  f64: TypeType.of(f64.instance),
+  void: TypeType.of(VoidType.instance),
+  ref: TypeType.of(RefType.instance),
+  string: TypeType.of(StringType.instance)
 };
 
 export function toConcreteType(type: Type, ctx: TypeResolutionContext) {

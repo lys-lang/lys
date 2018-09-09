@@ -85,6 +85,84 @@ describe('Types', function() {
   }
 
   describe('unit', () => {
+    describe('assign', () => {
+      checkMainType`
+        fun main() = 1.0
+        ---
+        fun() -> f32
+      `;
+
+      checkMainType`
+        struct TEST()
+
+        fun main() = TEST
+        ---
+        fun() -> TEST
+      `;
+
+      checkMainType`
+        type x {
+          TEST
+          XXX(a: i32)
+        }
+
+        fun main1() = TEST
+        fun main2(): x = TEST
+        fun main3(): x = XXX(1)
+        fun main4() = XXX(1)
+        ---
+        fun() -> TEST
+        fun() -> x
+        fun() -> x
+        fun() -> XXX
+      `;
+
+      checkMainType`
+        struct TEST()
+
+        fun main() = TEST()
+        ---
+        fun() -> TEST
+      `;
+
+      checkMainType`
+        type x {
+          TEST
+        }
+
+        fun main() = TEST()
+        fun main2(): x = TEST()
+        ---
+        fun() -> TEST
+        fun() -> x
+      `;
+
+      checkMainType`
+        private fun test(a: f32) = a
+        private fun main() = test(f32)
+        ---
+        fun(a: f32) -> f32
+        fun() -> f32
+        ---
+        Unexpected type Type<f32>, a value expression is required.
+      `;
+
+      checkMainType`
+        private fun main() = f32
+        ---
+        fun() -> UNKNOWN
+        ---
+        Unexpected type Type<f32>, a value expression is required.
+      `;
+      checkMainType`
+        fun main(): f32 = f32
+        ---
+        fun() -> f32
+        ---
+        Unexpected type Type<f32>, a value expression is required.
+      `;
+    });
+
     describe('types', () => {
       checkMainType`
         type BOOLEAN {
@@ -169,17 +247,17 @@ describe('Types', function() {
         }
 
         fun main(): void = {
-          test1(TRUE)
-          test1(FALSE)
-          test1(NONE)
-          test2(FALSE)
-          test3(TRUE)
-          test3(FALSE)
-          test4(NONE)
-          test4(FALSE)
-          test5(TRUE)
-          test5(FALSE)
-          test5(NONE)
+          test1(TRUE())
+          test1(FALSE())
+          test1(NONE())
+          test2(FALSE())
+          test3(TRUE())
+          test3(FALSE())
+          test4(NONE())
+          test4(FALSE())
+          test5(TRUE())
+          test5(FALSE())
+          test5(NONE())
         }
         ---
         fun(a: BOOLEAN) -> void
@@ -206,17 +284,17 @@ describe('Types', function() {
         fun test5(a: NONE | FALSE | TRUE): void = ???
 
         fun main(): void = {
-          test1(TRUE)
-          test1(FALSE)
-          test1(NONE)
-          test2(FALSE)
-          test3(TRUE)
-          test3(FALSE)
-          test4(NONE)
-          test4(FALSE)
-          test5(TRUE)
-          test5(FALSE)
-          test5(NONE)
+          test1(TRUE())
+          test1(FALSE())
+          test1(NONE())
+          test2(FALSE())
+          test3(TRUE())
+          test3(FALSE())
+          test4(NONE())
+          test4(FALSE())
+          test5(TRUE())
+          test5(FALSE())
+          test5(NONE())
         }
         ---
         fun(a: BOOLEAN) -> void
@@ -283,10 +361,10 @@ describe('Types', function() {
           NONE
         }
 
-        fun test1() = TRUE
-        fun test2() = FALSE
-        fun test3(): BOOLEAN = FALSE
-        fun test4(a: boolean) = if(a) TRUE else FALSE
+        fun test1() = TRUE()
+        fun test2() = FALSE()
+        fun test3(): BOOLEAN = FALSE()
+        fun test4(a: boolean) = if(a) TRUE() else FALSE()
 
         ---
         fun() -> TRUE
@@ -446,25 +524,6 @@ describe('Types', function() {
         fun(size: i32) -> i32
       `;
 
-      describe.skip('assign', () => {
-        checkMainType`
-          fun main() = 1.0
-          ---
-          fun() -> f32
-        `;
-        checkMainType`
-          fun main() = f32
-          ---
-          fun() -> Type<f32>
-        `;
-        checkMainType`
-          fun main(): f32 = f32
-          ---
-          fun() -> f32
-          ---
-          Canno't assign
-        `;
-      });
       describe('imports', () => {
         checkMainType`
         import * from system::random

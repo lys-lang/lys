@@ -1,12 +1,12 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
-  2 [label="Name: boolean\n⟨boolean⟩", fillcolor=grey];
-  3 [label="Name: Boolean\n⟨Boolean⟩", fillcolor=grey];
-  4 [label="StructDeclarationNode\n⟨True⟩", fillcolor=grey];
-  5 [label="Name: True\n⟨True⟩", fillcolor=grey];
-  6 [label="StructDeclarationNode\n⟨False⟩", fillcolor=grey];
-  7 [label="Name: False\n⟨False⟩", fillcolor=grey];
+  1 [label="Name: i32\n⟨Type<i32>⟩", fillcolor=grey];
+  2 [label="Name: boolean\n⟨Type<boolean>⟩", fillcolor=grey];
+  3 [label="Name: Boolean\n⟨Type<Boolean>⟩", fillcolor=grey];
+  4 [label="StructDeclarationNode\n⟨Type<True>⟩", fillcolor=grey];
+  5 [label="Name: True\n⟨Type<True>⟩", fillcolor=grey];
+  6 [label="StructDeclarationNode\n⟨Type<False>⟩", fillcolor=grey];
+  7 [label="Name: False\n⟨Type<False>⟩", fillcolor=grey];
   8 [label="FunOverload: gt0\n⟨fun(x: i32) -> Boolean⟩", fillcolor=grey];
   9 [label="FunDirective: gt0\n⟨fun(x: i32) -> Boolean⟩", fillcolor=grey];
   10 [label="FunNode: gt0\n⟨fun(x: i32) -> Boolean⟩", fillcolor=grey];
@@ -65,17 +65,14 @@ digraph Document {
     38 -> 37[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "isTrue(Boolean)";
 }
-  1 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 28[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 36[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 38[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 4[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 6[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 18[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  4 -> 5[taillabel="True" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 25[taillabel="True" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  6 -> 7[taillabel="False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 30[taillabel="False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 11[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 4[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 6[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 18[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 5[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 25[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 7[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 30[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   8 -> 14[taillabel="fun(x: i32) -> Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   9 -> 8[taillabel="fun(x: i32) -> Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   10 -> 13[taillabel="fun(x: i32) -> Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

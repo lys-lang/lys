@@ -245,7 +245,7 @@ export namespace Nodes {
     /** Gets a free temporary local of the specified type. */
     getTempLocal(type: Type): Local {
       var temps: Local[] | null;
-      switch (type.of) {
+      switch (type.nativeType) {
         case NativeTypes.i32: {
           temps = this.tempI32s;
           break;
@@ -282,7 +282,7 @@ export namespace Nodes {
     freeTempLocal(local: Local): void {
       var temps: Local[];
       if (local.type === null) throw new Error('type is null'); // internal error
-      switch (local.type.of) {
+      switch (local.type.nativeType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
           break;
@@ -309,7 +309,7 @@ export namespace Nodes {
     /** Gets and immediately frees a temporary local of the specified type. */
     getAndFreeTempLocal(type: Type): Local {
       var temps: Local[];
-      switch (type.of) {
+      switch (type.nativeType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
           break;

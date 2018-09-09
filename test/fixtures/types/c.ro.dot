@@ -1,7 +1,7 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
-  2 [label="Name: f32\n⟨f32⟩", fillcolor=grey];
+  1 [label="Name: i32\n⟨Type<i32>⟩", fillcolor=grey];
+  2 [label="Name: f32\n⟨Type<f32>⟩", fillcolor=grey];
   3 [label="FunOverload: x\n⟨fun(x: i32) -> i32 & fun(x: f32) -> f32⟩", fillcolor=grey];
   4 [label="FunDirective: x\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   5 [label="FunNode: x\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
@@ -54,15 +54,14 @@ digraph Document {
     33 -> 34[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "x(f32)";
 }
-  1 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 20[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 26[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 12[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 14[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 35[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 6[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 8[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 20[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 26[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 31[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 12[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 14[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 35[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 16[taillabel="fun(x: i32) -> i32 & fun(x: f32) -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 3[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   5 -> 9[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

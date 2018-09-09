@@ -1,7 +1,7 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\n⟨i32⟩", fillcolor=grey];
-  2 [label="Name: void\n⟨void⟩", fillcolor=grey];
+  1 [label="Name: i32\n⟨Type<i32>⟩", fillcolor=grey];
+  2 [label="Name: void\n⟨Type<void>⟩", fillcolor=grey];
   3 [label="Name: x\n⟨i32⟩", fillcolor=grey];
   4 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
   5 [label="FunOverload: addOne\n⟨fun() -> i32⟩", fillcolor=grey];
@@ -66,13 +66,10 @@ digraph Document {
     36 -> 34[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "addOneNoReturn()";
 }
-  1 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 25[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 30[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 36[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 14[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 38[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 8[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 30[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 14[taillabel="Type<void>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 38[taillabel="Type<void>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 20[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 27[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 33[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
