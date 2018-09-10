@@ -339,7 +339,13 @@ describe('Semantic', function() {
     );
   });
 
-  describe('Closures', () => {
+  describe('Scopes', () => {
+    test`
+      import 
+      val a = true
+      fun test() = a
+    `;
+
     test`
       val a = true
       fun test() = a
@@ -358,6 +364,7 @@ describe('Semantic', function() {
       var a = 1
       fun test(a: i32) = a
     `;
+
     testToFail`var a = a`;
     testToFail`
       type i32

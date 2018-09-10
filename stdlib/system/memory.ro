@@ -29,7 +29,9 @@ private fun max(a: i32, b: i32): i32 = if (a>b) a else b
 
 fun malloc(size: i32): i32 = {
   if (size > 0) {
-    if (size > MAX_SIZE_32) panic()
+    if (size > MAX_SIZE_32) {
+      panic()
+    }
     val ptr = offset
     val newPtr = (ptr + size + AL_MASK) & ~AL_MASK
     val pagesBefore = currentMemory()

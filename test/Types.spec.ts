@@ -18,7 +18,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function() {
+describe.only('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -85,6 +85,67 @@ describe('Types', function() {
   }
 
   describe('unit', () => {
+    describe('scope', () => {
+      checkMainType`
+        import test::test
+
+        var TestingContext = 1
+        fun main() = TestingContext
+        ---
+        fun() -> i32
+      `;
+    });
+    describe('recursive types', () => {
+      checkMainType`
+        type Test {
+          Null
+          Some(x: Test)
+        }
+
+        fun a() = Null
+        fun b() = Some(Some(Null))
+
+        fun c(): Test = Null
+        fun d(): Test = Some(Some(Null))
+        ---
+        fun() -> Null
+        fun() -> Some
+        fun() -> Test
+        fun() -> Test
+      `;
+
+      checkMainType`
+        fun factorial(n: i32) =
+          if (n >= 1)
+            n * factorial(n - 1)
+          else
+            1
+        ---
+        fun(n: i32) -> i32
+      `;
+
+      checkMainType`
+        fun factorial(n: i32) =
+          if (n >= 1)
+            n * factorial(n - 1)
+          else
+            1
+        ---
+        fun(n: i32) -> i32
+      `;
+
+      checkMainType`
+        fun gcd(x: i32, y: i32) =
+          if (x > y)
+            gcd(x - y, y)
+          else if (x < y)
+            gcd(x, y - x)
+          else
+            x
+        ---
+        fun(x: i32, y: i32) -> i32
+      `;
+    });
     describe('assign', () => {
       checkMainType`
         fun main() = 1.0
@@ -154,6 +215,7 @@ describe('Types', function() {
         ---
         Unexpected type Type<f32>, a value expression is required.
       `;
+
       checkMainType`
         fun main(): f32 = f32
         ---

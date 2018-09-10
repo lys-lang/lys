@@ -193,7 +193,7 @@ export class StructType extends PolimorphicType {
 
   acceptsTypes(types: Type[]) {
     if (this.parameterTypes.length !== types.length) return false;
-    return types.every(($, $$) => this.parameterTypes[$$].equals($));
+    return types.every(($, $$) => $.canBeAssignedTo(this.parameterTypes[$$]));
   }
 
   equals(type: Type) {
@@ -312,12 +312,18 @@ export class UnionType extends Type {
     const superTypes = new Set<Type>();
 
     this.of.forEach($ => {
+      if ($ instanceof UnknownType) return;
+
       superTypes.add($.superType);
 
       if (!newTypes.some($1 => $1.equals($))) {
         newTypes.push($);
       }
     });
+
+    if (newTypes.length == 0) {
+      return InvalidType.instance;
+    }
 
     if (newTypes.length === 1) {
       return newTypes[0];

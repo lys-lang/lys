@@ -25,7 +25,8 @@ import {
   InvalidCall,
   UnreachableCode,
   NotAValidType,
-  UnexpectedType
+  UnexpectedType,
+  CannotInferReturnType
 } from '../NodeError';
 
 declare var console;
@@ -487,8 +488,8 @@ export class FunctionTypeResolver extends TypeResolver {
 
     if (!inferedReturnType) {
       if (!fnType.returnType) {
-        ctx.parsingContext.messageCollector.error(`Cannot infer return type`, functionNode.body);
-        fnType.returnType = INVALID_TYPE;
+        ctx.parsingContext.messageCollector.error(new CannotInferReturnType(functionNode.body));
+        fnType.returnType = UnknownType.instance;
       }
 
       debugger;
@@ -503,6 +504,14 @@ export class FunctionTypeResolver extends TypeResolver {
 
       if (!fnType.returnType) {
         fnType.returnType = inferedReturnType;
+
+        const previousError = ctx.parsingContext.messageCollector.errors.findIndex(
+          $ => $ instanceof CannotInferReturnType && $.node === functionNode.body
+        );
+
+        if (previousError != -1) {
+          ctx.parsingContext.messageCollector.errors.splice(previousError, 1);
+        }
       } else {
         if (!inferedReturnType.canBeAssignedTo(fnType.returnType)) {
           ctx.parsingContext.messageCollector.error(
