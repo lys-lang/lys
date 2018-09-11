@@ -183,11 +183,11 @@ Literal           ::= ( StringLiteral
 NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])*
 QName             ::= NameIdentifier ('::' NameIdentifier)*
 
-WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?
-WASM_KEYWORD      ::= '%wasm'
-SExpression       ::= '(' WS* SSymbol SAtom* WS* ')'
-SAtom             ::= WS* (QName | StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
-SSymbol           ::= [a-zA-Z][a-zA-Z0-9_.]*
+WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
+WASM_KEYWORD      ::= '%wasm' {pin=1}
+SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
+SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
+SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 

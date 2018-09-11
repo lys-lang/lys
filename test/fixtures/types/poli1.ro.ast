@@ -15,7 +15,7 @@
         |-NameIdentifierNode="True" type=Type<True>
       |-StructDeclarationNode type=Type<False>
         |-NameIdentifierNode="False" type=Type<False>
-  |-OverloadedFunctionNode type=fun(x: i32) -> Boolean
+  |-OverloadedFunctionNode type=fun(x: i32) -> Boolean annotations=Injected
     |-FunDirectiveNode type=fun(x: i32) -> Boolean
       |-FunctionNode type=fun(x: i32) -> Boolean
         |-ParameterNode
@@ -32,17 +32,17 @@
                 |-NameIdentifierNode="x"
             |-IntegerLiteral=0 type=i32 annotations=IsValueNode
           |-FunctionCallNode type=True annotations=IsValueNode
-            |-VariableReferenceNode type=True
+            |-VariableReferenceNode type=True annotations=ImplicitCall
               |-QNameNode=True
                 |-NameIdentifierNode="True"
           |-FunctionCallNode type=False annotations=IsValueNode
-            |-VariableReferenceNode type=False
+            |-VariableReferenceNode type=False annotations=ImplicitCall
               |-QNameNode=False
                 |-NameIdentifierNode="False"
     |-NameIdentifierNode="gt0" type=fun(x: i32) -> Boolean
-  |-OverloadedFunctionNode type=fun(a: Boolean) -> boolean
+  |-OverloadedFunctionNode type=fun(a: Boolean) -> boolean annotations=Injected
     |-FunDirectiveNode type=fun(a: Boolean) -> boolean
-      |-FunctionNode type=fun(a: Boolean) -> boolean
+      |-FunctionNode type=boolean
         |-ParameterNode
           |-NameIdentifierNode="a" type=Boolean
           |-TypeReferenceNode=Boolean type=Boolean
@@ -54,10 +54,76 @@
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-MatchCaseIsNode type=boolean annotations=IsValueNode
-            |-TypeReferenceNode=True
+            |-TypeReferenceNode=True type=True
               |-QNameNode=True
                 |-NameIdentifierNode="True"
             |-BooleanLiteral=true type=boolean annotations=IsValueNode
           |-MatchDefaultNode type=boolean annotations=IsValueNode
             |-BooleanLiteral=false type=boolean annotations=IsValueNode
     |-NameIdentifierNode="isTrue" type=fun(a: Boolean) -> boolean
+  |-OverloadedFunctionNode type=fun() -> True annotations=Injected
+    |-FunDirectiveNode type=fun() -> True annotations=InjectImport,Injected
+      |-FunctionNode type=fun() -> True
+        |-NameIdentifierNode="TrueAllocator" type=fun() -> True
+        |-TypeReferenceNode=True type=True
+          |-QNameNode=True
+            |-NameIdentifierNode="True"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x100000000
+    |-NameIdentifierNode="TrueAllocator" type=fun() -> True
+  |-OverloadedFunctionNode type=fun(a: True) -> boolean & fun(a: False) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(a: True) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: True) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=True
+          |-TypeReferenceNode=True type=True
+            |-QNameNode=True
+              |-NameIdentifierNode="True"
+        |-NameIdentifierNode="is" type=fun(a: True) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+    |-FunDirectiveNode type=fun(a: False) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: False) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=False
+          |-TypeReferenceNode=False type=False
+            |-QNameNode=False
+              |-NameIdentifierNode="False"
+        |-NameIdentifierNode="is" type=fun(a: False) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+    |-NameIdentifierNode="is" type=fun(a: True) -> boolean & fun(a: False) -> boolean
+  |-OverloadedFunctionNode type=fun() -> False annotations=Injected
+    |-FunDirectiveNode type=fun() -> False annotations=InjectImport,Injected
+      |-FunctionNode type=fun() -> False
+        |-NameIdentifierNode="FalseAllocator" type=fun() -> False
+        |-TypeReferenceNode=False type=False
+          |-QNameNode=False
+            |-NameIdentifierNode="False"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x200000000
+    |-NameIdentifierNode="FalseAllocator" type=fun() -> False

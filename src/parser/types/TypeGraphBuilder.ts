@@ -227,16 +227,21 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MatchCaseIsNode) {
-      node.deconstructorNames.forEach(($, $$) => {
-        if ($.name !== '_') {
-          new Edge(target, this.createNode($, new StructDeconstructorTypeResolver($$)));
-        }
-      });
+      this.resolveVariableByName(node.typeReference, 'is', target);
+      new Edge(this.traverse(node.typeReference), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+
+      if (node.deconstructorNames) {
+        node.deconstructorNames.forEach(($, $$) => {
+          if ($.name !== '_') {
+            new Edge(target, this.createNode($, new StructDeconstructorTypeResolver($$)));
+          }
+        });
+      }
 
       if (node.declaredName) {
         // new Edge(, target, EdgeLabels.LHS);
       }
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.WasmExpressionNode) {
       // noop
     } else if (node instanceof Nodes.MatchDefaultNode) {

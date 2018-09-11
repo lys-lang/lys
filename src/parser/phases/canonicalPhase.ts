@@ -17,9 +17,9 @@ function binaryOpVisitor(astNode: IToken) {
     } else if (opertator === 'is') {
       ret = new Nodes.IsExpressionNode(astNode);
     } else {
-      ret = new Nodes.BinaryExpressionNode(astNode);
-      ret.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
-      ret.operator.name = opertator;
+      const op = (ret = new Nodes.BinaryExpressionNode(astNode));
+      op.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
+      op.operator.name = opertator;
     }
 
     ret.lhs = oldRet;
@@ -507,5 +507,9 @@ export class CanonicalPhaseResult extends PhaseResult {
     this.document = visit(this.parsingPhaseResult.document);
     this.document.file = this.parsingPhaseResult.fileName;
     failIfErrors('Canonical phase', this.document, this);
+  }
+
+  static fromString(code: string) {
+    return new CanonicalPhaseResult(ParsingPhaseResult.fromString(code));
   }
 }

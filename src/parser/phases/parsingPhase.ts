@@ -38,4 +38,8 @@ export class ParsingPhaseResult extends PhaseResult {
 
     failWithErrors('Parsing phase', this.errors, this);
   }
+
+  static fromString(code: string) {
+    return new ParsingPhaseResult('injected code', code);
+  }
 }

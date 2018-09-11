@@ -8,6 +8,7 @@ import { CanonicalPhaseResult } from './phases/canonicalPhase';
 import { ParsingPhaseResult } from './phases/parsingPhase';
 import { TypePhaseResult } from './phases/typePhase';
 import { CompilationPhaseResult } from './phases/compilationPhase';
+import { assert } from 'console';
 
 export interface IDictionary<T> {
   [key: string]: T;
@@ -27,6 +28,7 @@ export interface IOverloadedInfix {
 
 export class ParsingContext {
   programTakenNames = new Set<string>();
+  typeNumbers = new Set<Nodes.StructDeclarationNode | Nodes.TypeDeclarationNode>();
   messageCollector = new MessageCollector();
   modulesInContext: string[] = [];
 
@@ -56,6 +58,37 @@ export class ParsingContext {
     }
 
     return null;
+  }
+
+  getUnusedName(prefix: string): string {
+    let i = 0;
+    while (true) {
+      const newName = `${prefix}${i ? '_' + i : ''}`;
+      if (!this.programTakenNames.has(newName)) {
+        this.programTakenNames.add(newName);
+        return newName;
+      }
+      i++;
+    }
+  }
+
+  registerTypeDeclaration(typeDecl: Nodes.TypeDeclarationNode) {
+    if (this.typeNumbers.has(typeDecl)) return;
+    assert(!typeDecl.typeNumber, `type ${typeDecl} already had a number`);
+    typeDecl.typeNumber = this.typeNumbers.size + 1;
+    this.typeNumbers.add(typeDecl);
+  }
+
+  registerType(struct: Nodes.StructDeclarationNode) {
+    if (struct.parent instanceof Nodes.TypeDeclarationNode) {
+      this.registerTypeDeclaration(struct.parent);
+    }
+
+    if (this.typeNumbers.has(struct)) return;
+    assert(!struct.typeNumber, `type ${struct} already had a number`);
+    struct.typeNumber = this.typeNumbers.size + 1;
+    struct.internalIdentifier = this.getUnusedName(struct.declaredName.name + 'Type');
+    this.typeNumbers.add(struct);
   }
 
   parseModule(moduleName: string) {
@@ -169,8 +202,9 @@ export class Closure {
     return this.importedModules.get(moduleName);
   }
 
-  registerImport(moduleName: string, _names: Set<string>) {
-    this.registerForeginModule(moduleName).add('*');
+  registerImport(moduleName: string, names: Set<string>) {
+    const mod = this.registerForeginModule(moduleName);
+    names.forEach($ => mod.add($));
   }
 
   getInternalIdentifier(node: Nodes.Node) {
@@ -178,17 +212,11 @@ export class Closure {
 
     if (node instanceof Nodes.FunctionNode) {
       prefix = node.functionName.name || 'anonFun';
+    } else if (node instanceof Nodes.StructDeclarationNode) {
+      prefix = node.declaredName.name || 'anonType';
     }
 
-    let i = 0;
-    while (true) {
-      const newName = `${this.moduleName ? this.moduleName + '::' : ''}${prefix}${i ? '_' + i : ''}`;
-      if (!this.parsingContext.programTakenNames.has(newName)) {
-        this.parsingContext.programTakenNames.add(newName);
-        return newName;
-      }
-      i++;
-    }
+    return this.parsingContext.getUnusedName(`${this.moduleName ? this.moduleName + '::' : ''}${prefix}`);
   }
 
   incrementUsage(name: string) {

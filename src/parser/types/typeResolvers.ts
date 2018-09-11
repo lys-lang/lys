@@ -28,6 +28,7 @@ import {
   UnexpectedType,
   CannotInferReturnType
 } from '../NodeError';
+import { MessageCollector } from '../closure';
 
 declare var console;
 
@@ -107,20 +108,9 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new UnknownTypeResolver();
   }
 
-  // if (astNode instanceof Nodes.TypeNode) {
-  //   return new TypeTypeResolver();
-  // }
-
   console.log(`Node ${astNode.nodeName} has no type resolver`);
 
   return new UnhandledTypeResolver();
-}
-
-export class TypeTypeResolver extends TypeResolver {
-  execute(_node: TypeNode, _ctx: TypeResolutionContext): Type {
-    debugger;
-    return INVALID_TYPE;
-  }
 }
 
 export class UnhandledTypeResolver extends TypeResolver {
@@ -215,7 +205,7 @@ export class AssignmentNodeTypeResolver extends TypeResolver {
 }
 
 export class IfElseTypeResolver extends TypeResolver {
-  execute(node: TypeNode, _ctx: TypeResolutionContext) {
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
     const conditionEdge: Edge = node.incomingEdgesByName(EdgeLabels.CONDITION)[0];
     const ifEdge: Edge = node.incomingEdgesByName(EdgeLabels.TRUE_PART)[0];
     const elseEdge: Edge = node.incomingEdgesByName(EdgeLabels.FALSE_PART)[0];
@@ -225,21 +215,21 @@ export class IfElseTypeResolver extends TypeResolver {
       const condition = conditionEdge.incomingType();
 
       if (!condition.canBeAssignedTo(bool.instance)) {
-        _ctx.parsingContext.messageCollector.error(new TypeMismatch(condition, bool.instance, ifNode.condition));
+        ctx.parsingContext.messageCollector.error(new TypeMismatch(condition, bool.instance, ifNode.condition));
       }
 
       if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
         const ifExpr = ifEdge.incomingTypeDefined() ? ifEdge.incomingType() : VoidType.instance;
 
         if (!elseEdge) {
-          _ctx.parsingContext.messageCollector.error('A ternary operation requires an else branch', node.astNode);
-          return INVALID_TYPE;
+          ctx.parsingContext.messageCollector.error('A ternary operation requires an else branch', node.astNode);
+
+          return new UnionType([ifExpr, INVALID_TYPE]).simplify();
         }
 
         const elseExpr = elseEdge.incomingTypeDefined() ? elseEdge.incomingType() : VoidType.instance;
-        const type = new UnionType();
-        type.of = [ifExpr, elseExpr];
-        return type.simplify();
+
+        return new UnionType([ifExpr, elseExpr]).simplify();
       } else {
         return VoidType.instance;
       }
@@ -281,6 +271,7 @@ export class OverloadedFunctionTypeResolver extends TypeResolver {
     const incomingFunctionTypes = new Array<FunctionType>();
 
     // TODO: verify similar overloads
+    // TODO: in fun(a: ref) & fun(a: object) select overload by operator importance
 
     for (let incomingType of incomingTypes) {
       if (incomingType instanceof FunctionType) {
@@ -312,14 +303,14 @@ export class BinaryOpTypeResolver extends TypeResolver {
       node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
     ];
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, opNode);
+      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector);
 
       if (fun instanceof FunctionType) {
         opNode.resolvedFunctionType = fun;
         return fun.returnType;
-      } else if (fun instanceof StructType) {
-        ctx.parsingContext.messageCollector.error(`Cannot use a type as operator ${opNode.operator.text}`, opNode);
       }
+
+      ctx.parsingContext.messageCollector.error(`Error with ${opNode.operator.text}`, opNode.operator);
     } catch (e) {
       ctx.parsingContext.messageCollector.error(e);
     }
@@ -337,7 +328,7 @@ export class UnaryOpTypeResolver extends TypeResolver {
     const argTypes = [node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()];
 
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, opNode);
+      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector);
 
       if (fun instanceof FunctionType) {
         opNode.resolvedFunctionType = fun;
@@ -384,15 +375,20 @@ export class MatchLiteralTypeResolver extends TypeResolver {
       ];
 
       try {
-        const fun = findFunctionOverload(incommingType, argTypes, opNode);
+        const collector = new MessageCollector();
+
+        const fun = findFunctionOverload(incommingType, argTypes, opNode, collector);
 
         if (fun instanceof FunctionType) {
           opNode.resolvedFunctionType = fun;
-          // TODO: can fun.returnType beAssignedTo boolean?
-        } else if (fun instanceof StructType) {
-          ctx.parsingContext.messageCollector.error(`Cannot use a type as operator '=='`, opNode);
+
+          if (!fun.returnType.canBeAssignedTo(bool.instance)) {
+            ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, bool.instance, opNode));
+          }
+        } else {
+          throw 'this is only to fall into the catch hanler';
         }
-      } catch (e) {
+      } catch {
         ctx.parsingContext.messageCollector.error(new TypeMismatch(argTypes[1], argTypes[0], opNode.literal));
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
       }
@@ -430,17 +426,36 @@ export class StructDeconstructorTypeResolver extends TypeResolver {
 }
 
 export class MatchCaseIsTypeResolver extends TypeResolver {
-  execute(node: TypeNode, _ctx: TypeResolutionContext): Type {
-    // const matched = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0];
-    // const literal = node.incomingEdgesByName(EdgeLabels.LHS)[0];
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
 
-    // if (!literal.incomingType().canBeAssignedTo(matched.incomingType())) {
-    //   const astNode = node.astNode as Nodes.MatchLiteralNode;
-    //   ctx.currentParsingContext.error(
-    //     new TypeMismatch(literal.incomingType(), matched.incomingType(), astNode.literal)
-    //   );
-    // }
+    {
+      // Find the operator ==
+      const opNode = node.astNode as Nodes.MatchLiteralNode;
+
+      const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+
+      const argTypes = [node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()];
+
+      try {
+        const collector = new MessageCollector();
+
+        const fun = findFunctionOverload(incommingType, argTypes, opNode, collector);
+
+        if (fun instanceof FunctionType) {
+          opNode.resolvedFunctionType = fun;
+
+          if (!fun.returnType.canBeAssignedTo(bool.instance)) {
+            ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, bool.instance, opNode));
+          }
+        } else {
+          throw 'this is only to fall into the catch hanler';
+        }
+      } catch {
+        ctx.parsingContext.messageCollector.error(new TypeMismatch(argTypes[1], argTypes[0], opNode.literal));
+        ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+      }
+    }
 
     if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
       return result.incomingType();
@@ -556,7 +571,9 @@ export class VariableReferenceResolver extends TypeResolver {
     if (ret instanceof TypeType) {
       if (ret.of instanceof StructType) {
         if (ret.of.parameterTypes.length == 0) {
-          // TODO: set reference to constructor here
+          if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
+            node.astNode.annotate(new annotations.ImplicitCall());
+          }
           return ret.of;
         }
 
@@ -592,7 +609,12 @@ export class FunctionCallResolver extends TypeResolver {
     const argTypes = node.incomingEdgesByName(EdgeLabels.PARAMETER).map($ => $.incomingType());
 
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, functionCallNode.functionNode);
+      const fun = findFunctionOverload(
+        incommingType,
+        argTypes,
+        functionCallNode.functionNode,
+        ctx.parsingContext.messageCollector
+      );
 
       if (fun instanceof FunctionType) {
         functionCallNode.resolvedFunctionType = fun;
@@ -600,6 +622,9 @@ export class FunctionCallResolver extends TypeResolver {
       } else if (fun instanceof StructType) {
         functionCallNode.resolvedFunctionType = fun;
         return fun;
+      } else if (fun instanceof UnionType) {
+        // return type
+        return fun.simplify();
       }
     } catch (e) {
       ctx.parsingContext.messageCollector.error(e);
@@ -609,9 +634,14 @@ export class FunctionCallResolver extends TypeResolver {
   }
 }
 
-function findFunctionOverload(incommingType: Type, argTypes: Type[], errorNode: Nodes.Node) {
+function findFunctionOverload(
+  incommingType: Type,
+  argTypes: Type[],
+  errorNode: Nodes.Node,
+  messageCollector: MessageCollector
+) {
   if (incommingType instanceof TypeType) {
-    return findFunctionOverload(incommingType.of, argTypes, errorNode);
+    return findFunctionOverload(incommingType.of, argTypes, errorNode, messageCollector);
   }
 
   if (incommingType instanceof IntersectionType) {
@@ -625,19 +655,19 @@ function findFunctionOverload(incommingType: Type, argTypes: Type[], errorNode: 
       }
     }
 
-    throw new InvalidOverload(incommingType, argTypes, errorNode);
+    messageCollector.error(new InvalidOverload(incommingType, argTypes, errorNode));
+
+    return new UnionType(incommingType.of.map(($: FunctionType) => $.returnType));
   } else if (incommingType instanceof FunctionType) {
-    if (incommingType.acceptsTypes(argTypes)) {
-      return incommingType;
-    } else {
-      throw new InvalidCall(incommingType.parameterTypes, argTypes, errorNode);
+    if (!incommingType.acceptsTypes(argTypes)) {
+      messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
     }
+    return incommingType;
   } else if (incommingType instanceof StructType) {
-    if (incommingType.acceptsTypes(argTypes)) {
-      return incommingType;
-    } else {
-      throw new InvalidCall(incommingType.parameterTypes, argTypes, errorNode);
+    if (!incommingType.acceptsTypes(argTypes)) {
+      messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
     }
+    return incommingType;
   } else {
     throw new NotAFunction(incommingType, errorNode);
   }

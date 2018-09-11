@@ -36,7 +36,9 @@
             (block $unknown_block_2 (result i32)
                 (if $a_wild_if (call $system::core::>_1 (get_local $size) (get_global $MAX_SIZE_32))
                     (then
-                      (call $system::core::panic)
+                      (block $unknown_block_3
+                          (call $system::core::panic)
+                        )
                     )
                     (else)
                   )
@@ -45,15 +47,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::>_1 (get_local $newPtr) (call $system::core::<<_1 (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_3
+                      (block $unknown_block_4
                           (set_local $pagesNeeded (call $system::core::>>>_1 (call $system::core::& (call $system::core::+_1 (call $system::core::-_1 (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::~_1 (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_4
+                                (block $unknown_block_5
                                     (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_5
+                                          (block $unknown_block_6
                                               (call $system::core::panic)
                                             )
                                         )
@@ -72,7 +74,7 @@
               )
           )
           (else
-            (block $unknown_block_6 (result i32)
+            (block $unknown_block_7 (result i32)
                 (i32.const 0)
               )
           )
@@ -579,6 +581,39 @@
       )
       (else)
     )
+  )
+  (func $system::core::sizeOf (param $lhs i64) (result i32)
+    (i32.const 8)
+  )
+  (func $system::core::sizeOf_1 (param $lhs f64) (result i32)
+    (i32.const 8)
+  )
+  (func $system::core::sizeOf_2 (param $lhs i64) (result i32)
+    (i32.const 8)
+  )
+  (func $system::core::sizeOf_3 (param $lhs i64) (result i32)
+    (i32.const 8)
+  )
+  (func $system::core::sizeOf_4 (param $lhs i32) (result i32)
+    (i32.const 4)
+  )
+  (func $system::core::sizeOf_5 (param $lhs f32) (result i32)
+    (i32.const 4)
+  )
+  (func $system::core::sizeOf_6 (param $lhs i32) (result i32)
+    (i32.const 4)
+  )
+  (func $system::core::sizeOf_7 (param $lhs i32) (result i32)
+    (i32.const 4)
+  )
+  (func $system::core::sizeOf_8 (param $lhs i32) (result i32)
+    (i32.const 2)
+  )
+  (func $system::core::sizeOf_9 (param $lhs i32) (result i32)
+    (i32.const 2)
+  )
+  (func $system::core::sizeOf_10 (param $lhs i32) (result i32)
+    (i32.const 1)
   )
   (func $system::core::panic
     (unreachable)

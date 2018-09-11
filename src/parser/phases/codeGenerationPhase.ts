@@ -7,11 +7,12 @@ import { flatten } from '../helpers';
 import { findNodesByType, Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { findParentType } from './helpers';
-import { FunctionType } from '../types';
+import { FunctionType, StructType } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
 import { ParsingContext } from '../closure';
+import { assert } from 'console';
 
 type CompilationModuleResult = {
   compilationPhase: CompilationPhaseResult;
@@ -22,8 +23,8 @@ type CompilationModuleResult = {
 const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
 
-(binaryen as any).setOptimizeLevel(3);
-(binaryen as any).setShrinkLevel(3);
+(binaryen as any).setOptimizeLevel(5);
+(binaryen as any).setShrinkLevel(5);
 
 const secSymbol = Symbol('secuentialId');
 function getModuleSecuentialId(module) {
@@ -98,6 +99,8 @@ function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.Document
   } else {
     const ofType = node.resolvedFunctionType;
 
+    assert(ofType.internalName, `${ofType}.internalName is falsy`);
+
     return t.callInstruction(t.identifier(ofType.internalName), node.argumentsNode.map($ => emit($, document)));
   }
 }
@@ -124,6 +127,19 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
 
         const condition = t.callInstruction(t.identifier(ofType.internalName), [
           emit(node.literal, document),
+          t.instruction('get_local', [t.identifier(match.local.name)])
+        ]);
+
+        const body = emit(node.rhs, document);
+        return {
+          condition,
+          body,
+          type: node.rhs.ofType.binaryenType
+        };
+      } else if (node instanceof Nodes.MatchCaseIsNode) {
+        const ofType = node.resolvedFunctionType;
+
+        const condition = t.callInstruction(t.identifier(ofType.internalName), [
           t.instruction('get_local', [t.identifier(match.local.name)])
         ]);
 
@@ -201,7 +217,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.IntegerLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
-      return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 0xffffffff : 0)]);
+      return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {
@@ -263,8 +279,21 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       return t.callInstruction(t.identifier(ofType.internalName), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.VariableReferenceNode) {
-      const instr = node.isLocal ? 'get_local' : 'get_global';
-      return t.instruction(instr, [t.identifier(node.variable.text)]);
+      if (node.hasAnnotation(annotations.ImplicitCall)) {
+        const ofType = node.ofType as StructType | FunctionType;
+
+        assert(
+          ofType instanceof StructType || ofType instanceof FunctionType,
+          'implicit call is not a function or struct'
+        );
+
+        assert(ofType.parameterNames.length == 0, 'implicit call only works without parameters');
+
+        return t.callInstruction(t.identifier(ofType.internalName), []);
+      } else {
+        const instr = node.isLocal ? 'get_local' : 'get_global';
+        return t.instruction(instr, [t.identifier(node.variable.text)]);
+      }
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
@@ -399,7 +428,8 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       $.functions.forEach(fun => {
         createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
-        if (fun.isExported && exports) {
+        // TODO: decorate exported functions
+        if (fun.isExported && exports && !fun.hasAnnotation(annotations.Injected)) {
           if (canBeExported) {
             exportedElements.push(
               t.moduleExport(

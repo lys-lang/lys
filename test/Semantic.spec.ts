@@ -341,7 +341,6 @@ describe('Semantic', function() {
 
   describe('Scopes', () => {
     test`
-      import 
       val a = true
       fun test() = a
     `;

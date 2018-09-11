@@ -118,6 +118,12 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       });
     }
 
+    if (node instanceof Nodes.StructDeclarationNode) {
+      if (!node.internalIdentifier) {
+        node.internalIdentifier = node.closure.getInternalIdentifier(node);
+      }
+    }
+
     if (node instanceof Nodes.FunctionNode) {
       if (!node.body) {
         throw new AstNodeError('Function has no value', node);
@@ -127,7 +133,9 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
         node.closure.set(node.functionName);
       }
 
-      node.internalIdentifier = node.closure.getInternalIdentifier(node);
+      if (!node.internalIdentifier) {
+        node.internalIdentifier = node.closure.getInternalIdentifier(node);
+      }
 
       node.closure = node.closure.newChildClosure();
 
@@ -143,7 +151,6 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
 const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (!node.closure.canResolveQName(node.variable)) {
-      node.closure.canResolveQName(node.variable);
       throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
     }
     const resolved = node.closure.getQName(node.variable);
@@ -156,6 +163,16 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhase
     }
     node.closure.incrementUsageQName(node.variable);
   }
+
+  if (node.hasAnnotation(annotations.InjectImport)) {
+    const implicitImport = node.getAnnotation(annotations.InjectImport);
+    implicitImport.names.forEach($ => {
+      const name = implicitImport.module + '::' + $;
+      if (!node.closure.canResolveName(name)) {
+        throw new AstNodeError(`Cannot resolve variable "${name}"`, node);
+      }
+    });
+  }
 });
 
 const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
@@ -167,6 +184,11 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
     if (node.variable.names.length > 1) {
       node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
     }
+  }
+  if (node.hasAnnotation(annotations.InjectImport)) {
+    const implicitImport = node.getAnnotation(annotations.InjectImport);
+
+    node.closure.registerImport(implicitImport.module, implicitImport.names);
   }
 });
 
@@ -202,13 +224,14 @@ export class ScopePhaseResult extends PhaseResult {
     this.document.directives
       .filter($ => $ instanceof Nodes.ImportDirectiveNode)
       .forEach(($: Nodes.ImportDirectiveNode) => {
-        const importAll = new Set('*');
+        const importAll = $.allItems ? new Set(['*']) : new Set();
         $.closure.registerImport($.module.text, importAll);
       });
   }
 
   protected execute() {
     injectCoreImport(this.document);
+
     createClosures(this.document, this, null);
 
     this.registerImportedModules();

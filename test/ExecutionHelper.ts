@@ -23,8 +23,9 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
 };
 
 export function test(name: string, src: string, customTest?: (document: any, error?: Error) => Promise<any>) {
-  it(name, async () => {
-    let result;
+  it(name, async function() {
+    this.timeout(10000);
+
     let compilationPhaseResult: CodeGenerationPhaseResult;
 
     try {

@@ -5,6 +5,9 @@ import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
 import { AstNodeError } from '../NodeError';
+import { assert } from 'console';
+import { printAST } from '../../utils/astPrinter';
+import { annotations } from '../annotations';
 
 const overloadFunctions = function(document: Nodes.DocumentNode, phase: SemanticPhaseResult) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
@@ -17,6 +20,7 @@ const overloadFunctions = function(document: Nodes.DocumentNode, phase: Semantic
         x.functions.push(node);
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
+        overloaded.annotate(new annotations.Injected());
         overloaded.functionName = Nodes.NameIdentifierNode.fromString(functionName);
         overloadedFunctions.set(functionName, overloaded);
         overloaded.functions = [node];
@@ -57,6 +61,79 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
   }
 });
 
+const createTypes = walkPreOrder((node: Nodes.Node, phase: SemanticPhaseResult) => {
+  if (node instanceof Nodes.StructDeclarationNode) {
+    phase.parsingContext.registerType(node);
+
+    assert(node.typeNumber > 0, `typenumber is == 0`);
+
+    const size = 8;
+
+    const allocatorName = node.declaredName.name + 'Allocator';
+
+    let injectedFunctions: CanonicalPhaseResult;
+
+    if (node.parameters.length) {
+      const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.text).join(', ');
+      // TODO: sizeOf
+      injectedFunctions = CanonicalPhaseResult.fromString(
+        `
+          fun ${allocatorName}(${args}): ${node.declaredName.name} = %wasm {
+            (local $_newRef i32)
+            (set_local $_newRef (call $system::memory::malloc (i32.const ${size})))
+            (i64.or
+              (i64.const 0x${node.typeNumber.toString(16)}00000000)
+              (i64.extend_u/i32 (get_local $_newRef))
+            )
+          }
+
+          fun is(a: ${node.declaredName.name}): boolean = %wasm {
+            (i64.eq
+              (i64.and
+                (i64.const 0xffffffff00000000)
+                (get_local $a)
+              )
+              (i64.const 0x${node.typeNumber.toString(16)}00000000)
+            )
+          }
+        `
+      );
+    } else {
+      injectedFunctions = CanonicalPhaseResult.fromString(
+        `
+          fun ${allocatorName}(): ${node.declaredName.name} = %wasm {
+            (i64.const 0x${node.typeNumber.toString(16)}00000000)
+          }
+
+          fun is(a: ${node.declaredName.name}): boolean = %wasm {
+            (i64.eq
+              (i64.and
+                (i64.const 0xffffffff00000000)
+                (get_local $a)
+              )
+              (i64.const 0x${node.typeNumber.toString(16)}00000000)
+            )
+          }
+        `
+      );
+    }
+
+    const allocator: Nodes.FunDirectiveNode = injectedFunctions.document.directives.find(
+      $ => $ instanceof Nodes.FunDirectiveNode && $.functionNode.functionName.name === allocatorName
+    ) as any;
+
+    assert(allocator, 'cannot find allocator ' + printAST(injectedFunctions.document));
+
+    allocator.functionNode.internalIdentifier = node.internalIdentifier;
+
+    allocator.annotate(new annotations.InjectImport('system::memory', new Set(['malloc'])));
+
+    injectedFunctions.document.directives.forEach($ => $.annotate(new annotations.Injected()));
+
+    phase.document.directives.push(...injectedFunctions.document.directives);
+  }
+});
+
 export class SemanticPhaseResult extends PhaseResult {
   get document() {
     return this.canonicalPhaseResult.document;
@@ -75,9 +152,15 @@ export class SemanticPhaseResult extends PhaseResult {
   protected execute() {
     this.document.closure = new Closure(this.parsingContext, null, this.moduleName);
 
+    createTypes(this.document, this);
+
     overloadFunctions(this.document, this);
     checkDuplicatedNames(this.document, this);
 
     failIfErrors('Semantic phase', this.document, this);
+  }
+
+  static fromString(code: string, moduleName: string) {
+    return new SemanticPhaseResult(CanonicalPhaseResult.fromString(code), moduleName);
   }
 }

@@ -4,13 +4,13 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="AL_BITS" type=fun() -> i32
         |-IntegerLiteral=3 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="AL_BITS" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=i32
         |-NameIdentifierNode="AL_SIZE" type=fun() -> i32
@@ -22,7 +22,7 @@
               |-QNameNode=AL_BITS
                 |-NameIdentifierNode="AL_BITS"
     |-NameIdentifierNode="AL_SIZE" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=i32
         |-NameIdentifierNode="AL_MASK" type=fun() -> i32
@@ -34,7 +34,7 @@
                 |-NameIdentifierNode="AL_SIZE"
           |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="AL_MASK" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="MAX_SIZE_32" type=fun() -> i32
@@ -43,13 +43,13 @@
           |-IntegerLiteral=1 type=i32 annotations=IsValueNode
           |-IntegerLiteral=30 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="MAX_SIZE_32" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="HEAP_BASE" type=fun() -> i32
         |-IntegerLiteral=0 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="HEAP_BASE" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=i32
         |-NameIdentifierNode="startOffset" type=fun() -> i32
@@ -72,7 +72,7 @@
                   |-NameIdentifierNode="AL_MASK"
             |-NameIdentifierNode="~"
     |-NameIdentifierNode="startOffset" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=i32
         |-NameIdentifierNode="offset" type=fun() -> i32
@@ -81,7 +81,7 @@
             |-QNameNode=startOffset
               |-NameIdentifierNode="startOffset"
     |-NameIdentifierNode="offset" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32
+  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: i32, b: i32) -> i32
       |-FunctionNode type=fun(a: i32, b: i32) -> i32
         |-ParameterNode
@@ -111,7 +111,7 @@
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="max" type=fun(a: i32, b: i32) -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="currentMemory" type=fun() -> i32
@@ -121,7 +121,7 @@
         |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
           |-WasmAtomNode=current_memory
     |-NameIdentifierNode="currentMemory" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun(pages: i32) -> i32
+  |-OverloadedFunctionNode type=fun(pages: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(pages: i32) -> i32
       |-FunctionNode type=fun(pages: i32) -> i32
         |-ParameterNode
@@ -139,7 +139,7 @@
               |-QNameNode=$pages
                 |-NameIdentifierNode="$pages"
     |-NameIdentifierNode="growMemory" type=fun(pages: i32) -> i32
-  |-OverloadedFunctionNode type=fun(size: i32) -> i32
+  |-OverloadedFunctionNode type=fun(size: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(size: i32) -> i32
       |-FunctionNode type=i32
         |-ParameterNode
@@ -278,7 +278,7 @@
                         |-VariableReferenceNode type=i32 annotations=IsValueNode
                           |-QNameNode=ptr
                             |-NameIdentifierNode="ptr"
-                        |-HexLiteral=65535 type=i32 annotations=IsValueNode
+                        |-HexLiteral=0xffff type=i32 annotations=IsValueNode
                       |-BinaryExpressionNode=">>>" type=i32 annotations=IsValueNode
                         |-NameIdentifierNode=">>>"
                         |-UnaryExpressionNode="~" type=i32 annotations=IsValueNode
@@ -288,7 +288,7 @@
                             |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
                               |-NameIdentifierNode="+"
                               |-UnaryExpressionNode="-" type=i32 annotations=IsValueNode
-                                |-HexLiteral=65535 type=i32
+                                |-HexLiteral=0xffff type=i32
                                 |-NameIdentifierNode="-"
                               |-UnaryExpressionNode="~" type=i32 annotations=IsValueNode
                                 |-UnaryExpressionNode="~" type=i32
@@ -322,7 +322,7 @@
                             |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
                               |-NameIdentifierNode="+"
                               |-UnaryExpressionNode="-" type=i32 annotations=IsValueNode
-                                |-HexLiteral=65535 type=i32
+                                |-HexLiteral=0xffff type=i32
                                 |-NameIdentifierNode="-"
                               |-UnaryExpressionNode="~" type=i32 annotations=IsValueNode
                                 |-UnaryExpressionNode="~" type=i32

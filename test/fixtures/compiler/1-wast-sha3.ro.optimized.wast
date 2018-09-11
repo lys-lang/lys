@@ -5,7 +5,7 @@
  (type $4 (func (param i32)))
  (type $5 (func (param i32 i32)))
  (type $6 (func (param i32 i32 i32 i32) (result i32)))
- (type $14 (func))
+ (type $17 (func))
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -15,8 +15,8 @@
  (global $global$6 (mut i32) (i32.const 0))
  (global $global$7 (mut i32) (i32.const 0))
  (memory $0 0 1)
- (export "keccak" (func $107))
- (start $108)
+ (export "keccak" (func $118))
+ (start $119)
  (func $4 (; 0 ;) (; has Stack IR ;) (type $3) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (set_local $3
@@ -89,229 +89,372 @@
  )
  (func $6 (; 2 ;) (; has Stack IR ;) (type $4) (param $0 i32)
   (local $1 i64)
-  (local $2 i64)
-  (local $3 i64)
-  (local $4 i64)
-  (local $5 i64)
-  (local $6 i64)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $7 i64)
-  (set_local $1
+  (local $8 i32)
+  (local $9 i32)
+  (local $10 i32)
+  (local $11 i32)
+  (local $12 i32)
+  (local $13 i64)
+  (local $14 i32)
+  (local $15 i32)
+  (local $16 i32)
+  (local $17 i32)
+  (local $18 i64)
+  (local $19 i32)
+  (local $20 i32)
+  (local $21 i32)
+  (local $22 i32)
+  (local $23 i32)
+  (local $24 i32)
+  (local $25 i32)
+  (local $26 i32)
+  (local $27 i32)
+  (local $28 i64)
+  (local $29 i64)
+  (set_local $7
    (i64.xor
-    (tee_local $4
-     (i64.xor
-      (i64.load
+    (i64.load
+     (tee_local $2
+      (i32.add
+       (get_local $0)
+       (i32.const 16)
+      )
+     )
+    )
+    (i64.xor
+     (i64.load
+      (tee_local $3
        (i32.add
         (get_local $0)
-        (i32.const 32)
-       )
-      )
-      (i64.xor
-       (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.const 72)
-        )
-       )
-       (i64.xor
-        (i64.load
-         (i32.add
-          (get_local $0)
-          (i32.const 112)
-         )
-        )
-        (i64.xor
-         (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 152)
-          )
-         )
-         (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 192)
-          )
-         )
-        )
+        (i32.const 56)
        )
       )
      )
-    )
-    (i64.rotl
-     (tee_local $2
-      (i64.xor
-       (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.const 8)
-        )
-       )
-       (i64.xor
-        (i64.load
-         (i32.add
-          (get_local $0)
-          (i32.const 48)
-         )
-        )
-        (i64.xor
-         (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 88)
-          )
-         )
-         (i64.xor
-          (i64.load
-           (i32.add
-            (get_local $0)
-            (i32.const 128)
-           )
-          )
-          (i64.load
-           (i32.add
-            (get_local $0)
-            (i32.const 168)
-           )
-          )
-         )
-        )
-       )
-      )
-     )
-     (i64.const 1)
-    )
-   )
-  )
-  (set_local $3
-   (i64.xor
-    (tee_local $5
      (i64.xor
       (i64.load
-       (get_local $0)
+       (tee_local $4
+        (i32.add
+         (get_local $0)
+         (i32.const 96)
+        )
+       )
       )
       (i64.xor
        (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.const 40)
-        )
-       )
-       (i64.xor
-        (i64.load
+        (tee_local $5
          (i32.add
           (get_local $0)
-          (i32.const 80)
+          (i32.const 136)
          )
         )
-        (i64.xor
-         (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 120)
-          )
-         )
-         (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 160)
-          )
+       )
+       (i64.load
+        (tee_local $6
+         (i32.add
+          (get_local $0)
+          (i32.const 176)
          )
         )
        )
       )
      )
-    )
-    (i64.rotl
-     (tee_local $6
-      (i64.xor
-       (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.const 16)
-        )
-       )
-       (i64.xor
-        (i64.load
-         (i32.add
-          (get_local $0)
-          (i32.const 56)
-         )
-        )
-        (i64.xor
-         (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 96)
-          )
-         )
-         (i64.xor
-          (i64.load
-           (i32.add
-            (get_local $0)
-            (i32.const 136)
-           )
-          )
-          (i64.load
-           (i32.add
-            (get_local $0)
-            (i32.const 176)
-           )
-          )
-         )
-        )
-       )
-      )
-     )
-     (i64.const 1)
     )
    )
   )
-  (set_local $2
+  (set_local $13
    (i64.xor
-    (get_local $2)
-    (i64.rotl
-     (tee_local $7
-      (i64.xor
-       (i64.load
+    (i64.load
+     (tee_local $8
+      (i32.add
+       (get_local $0)
+       (i32.const 24)
+      )
+     )
+    )
+    (i64.xor
+     (i64.load
+      (tee_local $9
+       (i32.sub
+        (get_local $0)
+        (i32.const -64)
+       )
+      )
+     )
+     (i64.xor
+      (i64.load
+       (tee_local $10
         (i32.add
          (get_local $0)
-         (i32.const 24)
+         (i32.const 104)
         )
        )
+      )
+      (i64.xor
+       (i64.load
+        (tee_local $11
+         (i32.add
+          (get_local $0)
+          (i32.const 144)
+         )
+        )
+       )
+       (i64.load
+        (tee_local $12
+         (i32.add
+          (get_local $0)
+          (i32.const 184)
+         )
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (set_local $18
+   (i64.xor
+    (i64.load
+     (get_local $0)
+    )
+    (i64.xor
+     (i64.load
+      (tee_local $14
+       (i32.add
+        (get_local $0)
+        (i32.const 40)
+       )
+      )
+     )
+     (i64.xor
+      (i64.load
+       (tee_local $15
+        (i32.add
+         (get_local $0)
+         (i32.const 80)
+        )
+       )
+      )
+      (i64.xor
+       (i64.load
+        (tee_local $16
+         (i32.add
+          (get_local $0)
+          (i32.const 120)
+         )
+        )
+       )
+       (i64.load
+        (tee_local $17
+         (i32.add
+          (get_local $0)
+          (i32.const 160)
+         )
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $0)
+   (i64.xor
+    (i64.load
+     (get_local $0)
+    )
+    (tee_local $1
+     (i64.xor
+      (tee_local $28
        (i64.xor
         (i64.load
-         (i32.sub
-          (get_local $0)
-          (i32.const -64)
+         (tee_local $19
+          (i32.add
+           (get_local $0)
+           (i32.const 32)
+          )
          )
         )
         (i64.xor
          (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.const 104)
+          (tee_local $20
+           (i32.add
+            (get_local $0)
+            (i32.const 72)
+           )
           )
          )
          (i64.xor
           (i64.load
-           (i32.add
-            (get_local $0)
-            (i32.const 144)
+           (tee_local $21
+            (i32.add
+             (get_local $0)
+             (i32.const 112)
+            )
            )
           )
-          (i64.load
-           (i32.add
-            (get_local $0)
-            (i32.const 184)
+          (i64.xor
+           (i64.load
+            (tee_local $22
+             (i32.add
+              (get_local $0)
+              (i32.const 152)
+             )
+            )
+           )
+           (i64.load
+            (tee_local $23
+             (i32.add
+              (get_local $0)
+              (i32.const 192)
+             )
+            )
            )
           )
          )
         )
        )
       )
+      (i64.rotl
+       (tee_local $29
+        (i64.xor
+         (i64.load
+          (tee_local $24
+           (i32.add
+            (get_local $0)
+            (i32.const 8)
+           )
+          )
+         )
+         (i64.xor
+          (i64.load
+           (tee_local $25
+            (i32.add
+             (get_local $0)
+             (i32.const 48)
+            )
+           )
+          )
+          (i64.xor
+           (i64.load
+            (tee_local $26
+             (i32.add
+              (get_local $0)
+              (i32.const 88)
+             )
+            )
+           )
+           (i64.xor
+            (i64.load
+             (tee_local $27
+              (i32.add
+               (get_local $0)
+               (i32.const 128)
+              )
+             )
+            )
+            (i64.load
+             (tee_local $0
+              (i32.add
+               (get_local $0)
+               (i32.const 168)
+              )
+             )
+            )
+           )
+          )
+         )
+        )
+       )
+       (i64.const 1)
+      )
      )
-     (i64.const 1)
     )
+   )
+  )
+  (i64.store
+   (get_local $14)
+   (i64.xor
+    (i64.load
+     (get_local $14)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $15)
+   (i64.xor
+    (i64.load
+     (get_local $15)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $16)
+   (i64.xor
+    (i64.load
+     (get_local $16)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $17)
+   (i64.xor
+    (i64.load
+     (get_local $17)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $24)
+   (i64.xor
+    (i64.load
+     (get_local $24)
+    )
+    (tee_local $1
+     (i64.xor
+      (get_local $18)
+      (i64.rotl
+       (get_local $7)
+       (i64.const 1)
+      )
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $25)
+   (i64.xor
+    (i64.load
+     (get_local $25)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $26)
+   (i64.xor
+    (i64.load
+     (get_local $26)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $27)
+   (i64.xor
+    (i64.load
+     (get_local $27)
+    )
+    (get_local $1)
    )
   )
   (i64.store
@@ -324,232 +467,16 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 40)
-   )
+   (get_local $2)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 40)
-     )
-    )
-    (get_local $1)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 80)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 80)
-     )
-    )
-    (get_local $1)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 120)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 120)
-     )
-    )
-    (get_local $1)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 160)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 160)
-     )
-    )
-    (get_local $1)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 8)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 8)
-     )
-    )
-    (get_local $3)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 48)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 48)
-     )
-    )
-    (get_local $3)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 88)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 88)
-     )
-    )
-    (get_local $3)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 128)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 128)
-     )
-    )
-    (get_local $3)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 168)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 168)
-     )
-    )
-    (get_local $3)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 16)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 16)
-     )
-    )
-    (get_local $2)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 56)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 56)
-     )
-    )
-    (get_local $2)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 96)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 96)
-     )
-    )
-    (get_local $2)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 136)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 136)
-     )
-    )
-    (get_local $2)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 176)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 176)
-     )
-    )
-    (get_local $2)
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 24)
-   )
-   (i64.xor
-    (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 24)
-     )
+     (get_local $2)
     )
     (tee_local $1
      (i64.xor
-      (get_local $6)
+      (get_local $29)
       (i64.rotl
-       (get_local $4)
+       (get_local $13)
        (i64.const 1)
       )
      )
@@ -557,82 +484,52 @@
    )
   )
   (i64.store
-   (i32.sub
-    (get_local $0)
-    (i32.const -64)
-   )
+   (get_local $3)
    (i64.xor
     (i64.load
-     (i32.sub
-      (get_local $0)
-      (i32.const -64)
-     )
+     (get_local $3)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 104)
-   )
+   (get_local $4)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 104)
-     )
+     (get_local $4)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 144)
-   )
+   (get_local $5)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 144)
-     )
+     (get_local $5)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 184)
-   )
+   (get_local $6)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 184)
-     )
+     (get_local $6)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 32)
-   )
+   (get_local $8)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 32)
-     )
+     (get_local $8)
     )
     (tee_local $1
      (i64.xor
       (get_local $7)
       (i64.rotl
-       (get_local $5)
+       (get_local $28)
        (i64.const 1)
       )
      )
@@ -640,61 +537,90 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 72)
-   )
+   (get_local $9)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 72)
-     )
+     (get_local $9)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 112)
-   )
+   (get_local $10)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 112)
-     )
+     (get_local $10)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 152)
-   )
+   (get_local $11)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 152)
-     )
+     (get_local $11)
     )
     (get_local $1)
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 192)
-   )
+   (get_local $12)
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $0)
-      (i32.const 192)
+     (get_local $12)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $19)
+   (i64.xor
+    (i64.load
+     (get_local $19)
+    )
+    (tee_local $1
+     (i64.xor
+      (get_local $13)
+      (i64.rotl
+       (get_local $18)
+       (i64.const 1)
+      )
      )
+    )
+   )
+  )
+  (i64.store
+   (get_local $20)
+   (i64.xor
+    (i64.load
+     (get_local $20)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $21)
+   (i64.xor
+    (i64.load
+     (get_local $21)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $22)
+   (i64.xor
+    (i64.load
+     (get_local $22)
+    )
+    (get_local $1)
+   )
+  )
+  (i64.store
+   (get_local $23)
+   (i64.xor
+    (i64.load
+     (get_local $23)
     )
     (get_local $1)
    )
@@ -747,352 +673,323 @@
   )
  )
  (func $8 (; 4 ;) (; has Stack IR ;) (type $4) (param $0 i32)
-  (local $1 i64)
-  (set_local $1
+  (local $1 i32)
+  (local $2 i64)
+  (set_local $2
    (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 8)
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 8)
+     )
     )
    )
   )
   (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 8)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 48)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 48)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 72)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 72)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 176)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 176)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 112)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 112)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 160)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 160)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 16)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 16)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 96)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 96)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 104)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 104)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 152)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 152)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 184)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 184)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 120)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 120)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 32)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 32)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 192)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 192)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 168)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 168)
-   )
-   (i64.load
-    (i32.sub
-     (get_local $0)
-     (i32.const -64)
-    )
-   )
-  )
-  (i64.store
-   (i32.sub
-    (get_local $0)
-    (i32.const -64)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 128)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 128)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 40)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 40)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 24)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 24)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 144)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 144)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 136)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 136)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 88)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 88)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 56)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 56)
-   )
-   (i64.load
-    (i32.add
-     (get_local $0)
-     (i32.const 80)
-    )
-   )
-  )
-  (i64.store
-   (i32.add
-    (get_local $0)
-    (i32.const 80)
-   )
    (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 48)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 72)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 176)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 112)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 160)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 16)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 96)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 104)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 152)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 184)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 120)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 32)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 192)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 168)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.sub
+      (get_local $0)
+      (i32.const -64)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 128)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 40)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 24)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 144)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 136)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 88)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $1
+     (i32.add
+      (get_local $0)
+      (i32.const 56)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $1)
+   (i64.load
+    (tee_local $0
+     (i32.add
+      (get_local $0)
+      (i32.const 80)
+     )
+    )
+   )
+  )
+  (i64.store
+   (get_local $0)
+   (get_local $2)
   )
  )
  (func $9 (; 5 ;) (; has Stack IR ;) (type $4) (param $0 i32)
   (local $1 i32)
-  (local $2 i64)
-  (local $3 i64)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i64)
+  (local $5 i64)
   (block $label$1
    (loop $label$2
     (br_if $label$1
      (i32.ge_u
-      (get_local $1)
+      (get_local $2)
       (i32.const 25)
      )
     )
-    (set_local $2
+    (set_local $4
      (i64.load
-      (i32.add
-       (get_local $0)
-       (i32.shl
-        (get_local $1)
-        (i32.const 3)
+      (tee_local $1
+       (i32.add
+        (get_local $0)
+        (i32.shl
+         (get_local $2)
+         (i32.const 3)
+        )
        )
       )
      )
     )
     (i64.store
-     (i32.add
-      (get_local $0)
-      (i32.shl
-       (get_local $1)
-       (i32.const 3)
-      )
-     )
+     (get_local $1)
      (i64.xor
       (i64.load
-       (i32.add
-        (get_local $0)
-        (i32.shl
-         (get_local $1)
-         (i32.const 3)
-        )
-       )
+       (get_local $1)
       )
       (i64.and
        (i64.xor
-        (tee_local $3
+        (tee_local $5
          (i64.load
-          (i32.add
-           (get_local $0)
-           (i32.shl
-            (i32.add
-             (get_local $1)
-             (i32.const 1)
+          (tee_local $3
+           (i32.add
+            (get_local $0)
+            (i32.shl
+             (i32.add
+              (get_local $2)
+              (i32.const 1)
+             )
+             (i32.const 3)
             )
-            (i32.const 3)
            )
           )
          )
@@ -1100,210 +997,117 @@
         (i64.const -1)
        )
        (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.shl
-          (i32.add
-           (get_local $1)
-           (i32.const 2)
-          )
-          (i32.const 3)
-         )
-        )
-       )
-      )
-     )
-    )
-    (i64.store
-     (i32.add
-      (get_local $0)
-      (i32.shl
-       (i32.add
-        (get_local $1)
-        (i32.const 1)
-       )
-       (i32.const 3)
-      )
-     )
-     (i64.xor
-      (i64.load
-       (i32.add
-        (get_local $0)
-        (i32.shl
-         (i32.add
-          (get_local $1)
-          (i32.const 1)
-         )
-         (i32.const 3)
-        )
-       )
-      )
-      (i64.and
-       (i64.xor
-        (i64.load
+        (tee_local $1
          (i32.add
           (get_local $0)
           (i32.shl
            (i32.add
-            (get_local $1)
+            (get_local $2)
             (i32.const 2)
            )
            (i32.const 3)
           )
          )
         )
-        (i64.const -1)
-       )
-       (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.shl
-          (i32.add
-           (get_local $1)
-           (i32.const 3)
-          )
-          (i32.const 3)
-         )
-        )
        )
       )
      )
     )
     (i64.store
-     (i32.add
-      (get_local $0)
-      (i32.shl
-       (i32.add
-        (get_local $1)
-        (i32.const 2)
-       )
-       (i32.const 3)
-      )
-     )
+     (get_local $3)
      (i64.xor
       (i64.load
-       (i32.add
-        (get_local $0)
-        (i32.shl
-         (i32.add
-          (get_local $1)
-          (i32.const 2)
-         )
-         (i32.const 3)
-        )
-       )
+       (get_local $3)
       )
       (i64.and
        (i64.xor
         (i64.load
+         (get_local $1)
+        )
+        (i64.const -1)
+       )
+       (i64.load
+        (tee_local $3
          (i32.add
           (get_local $0)
           (i32.shl
            (i32.add
-            (get_local $1)
+            (get_local $2)
             (i32.const 3)
            )
            (i32.const 3)
           )
          )
         )
-        (i64.const -1)
-       )
-       (i64.load
-        (i32.add
-         (get_local $0)
-         (i32.shl
-          (i32.add
-           (get_local $1)
-           (i32.const 4)
-          )
-          (i32.const 3)
-         )
-        )
        )
       )
      )
     )
     (i64.store
-     (i32.add
-      (get_local $0)
-      (i32.shl
-       (i32.add
-        (get_local $1)
-        (i32.const 3)
-       )
-       (i32.const 3)
-      )
-     )
+     (get_local $1)
      (i64.xor
       (i64.load
-       (i32.add
-        (get_local $0)
-        (i32.shl
-         (i32.add
-          (get_local $1)
-          (i32.const 3)
-         )
-         (i32.const 3)
-        )
-       )
+       (get_local $1)
       )
       (i64.and
        (i64.xor
         (i64.load
+         (get_local $3)
+        )
+        (i64.const -1)
+       )
+       (i64.load
+        (tee_local $1
          (i32.add
           (get_local $0)
           (i32.shl
            (i32.add
-            (get_local $1)
+            (get_local $2)
             (i32.const 4)
            )
            (i32.const 3)
           )
          )
         )
-        (i64.const -1)
        )
-       (get_local $2)
       )
      )
     )
     (i64.store
-     (i32.add
-      (get_local $0)
-      (i32.shl
-       (i32.add
-        (get_local $1)
-        (i32.const 4)
-       )
-       (i32.const 3)
-      )
-     )
+     (get_local $3)
      (i64.xor
       (i64.load
-       (i32.add
-        (get_local $0)
-        (i32.shl
-         (i32.add
-          (get_local $1)
-          (i32.const 4)
-         )
-         (i32.const 3)
-        )
-       )
+       (get_local $3)
       )
       (i64.and
        (i64.xor
-        (get_local $2)
+        (i64.load
+         (get_local $1)
+        )
         (i64.const -1)
        )
-       (get_local $3)
+       (get_local $4)
       )
      )
     )
-    (set_local $1
+    (i64.store
+     (get_local $1)
+     (i64.xor
+      (i64.load
+       (get_local $1)
+      )
+      (i64.and
+       (i64.xor
+        (get_local $4)
+        (i64.const -1)
+       )
+       (get_local $5)
+      )
+     )
+    )
+    (set_local $2
      (i32.add
-      (get_local $1)
+      (get_local $2)
       (i32.const 5)
      )
     )
@@ -1388,16 +1192,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 8)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 8)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 8)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1408,16 +1211,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 16)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 16)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 16)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1428,16 +1230,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 24)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 24)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 24)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1448,16 +1249,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 32)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 32)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 32)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1468,16 +1268,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 40)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 40)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 40)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1488,16 +1287,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 48)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 48)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 48)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1508,16 +1306,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 56)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 56)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 56)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1528,36 +1325,34 @@
    )
   )
   (i64.store
-   (i32.sub
-    (get_local $2)
-    (i32.const -64)
+   (tee_local $1
+    (i32.sub
+     (get_local $2)
+     (i32.const -64)
+    )
    )
    (i64.xor
     (i64.load
+     (get_local $1)
+    )
+    (i64.load
      (i32.sub
-      (get_local $2)
+      (get_local $0)
       (i32.const -64)
      )
     )
-    (i64.load
-     (i32.sub
-      (get_local $0)
-      (i32.const -64)
-     )
-    )
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 72)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 72)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 72)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1568,16 +1363,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 80)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 80)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 80)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1588,16 +1382,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 88)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 88)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 88)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1608,16 +1401,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 96)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 96)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 96)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1628,16 +1420,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 104)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 104)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 104)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1648,16 +1439,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 112)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 112)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 112)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1668,16 +1458,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 120)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 120)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 120)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -1688,16 +1477,15 @@
    )
   )
   (i64.store
-   (i32.add
-    (get_local $2)
-    (i32.const 128)
+   (tee_local $1
+    (i32.add
+     (get_local $2)
+     (i32.const 128)
+    )
    )
    (i64.xor
     (i64.load
-     (i32.add
-      (get_local $2)
-      (i32.const 128)
-     )
+     (get_local $1)
     )
     (i64.load
      (i32.add
@@ -2192,14 +1980,14 @@
   (local $3 i32)
   (local $4 i32)
   (call $5
-   (i32.add
-    (tee_local $3
-     (i32.add
-      (get_local $0)
-      (i32.const 208)
+   (tee_local $2
+    (i32.add
+     (tee_local $3
+      (i32.add
+       (get_local $0)
+       (i32.const 208)
+      )
      )
-    )
-    (tee_local $2
      (tee_local $4
       (i32.load
        (i32.add
@@ -2213,16 +2001,11 @@
    (i32.const 0)
    (i32.sub
     (i32.const 136)
-    (get_local $2)
+    (get_local $4)
    )
   )
   (i32.store8
-   (tee_local $2
-    (i32.add
-     (get_local $3)
-     (get_local $4)
-    )
-   )
+   (get_local $2)
    (i32.or
     (i32.load8_u
      (get_local $2)
@@ -2322,25 +2105,22 @@
    (get_local $1)
   )
  )
- (func $107 (; 16 ;) (; has Stack IR ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
-  (local $4 i32)
+ (func $118 (; 16 ;) (; has Stack IR ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (call $12
-   (tee_local $4
-    (get_local $0)
-   )
+   (get_local $0)
   )
   (call $14
-   (get_local $4)
+   (get_local $0)
    (get_local $1)
    (get_local $2)
   )
   (call $15
-   (get_local $4)
+   (get_local $0)
    (get_local $3)
   )
   (get_local $3)
  )
- (func $108 (; 17 ;) (; has Stack IR ;) (type $14)
+ (func $119 (; 17 ;) (; has Stack IR ;) (type $17)
   (set_global $global$0
    (i32.const 3)
   )

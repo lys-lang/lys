@@ -133,6 +133,10 @@ export function folderBasedTest<T extends PhaseResult>(
           if (writeToFile || !compareFileExists) {
             writeFileSync(compareToFileName, result);
           }
+          expect(compareTo.trim().length > 0 || !compareFileExists).toEqual(
+            true,
+            'comparing against blank file: ' + compareToFileName
+          );
           expect(result.trim()).toEqual(compareTo.trim());
         }
       },

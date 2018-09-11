@@ -6,7 +6,7 @@
       |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=Type<i32>
-  |-OverloadedFunctionNode type=fun(size: i32) -> i32
+  |-OverloadedFunctionNode type=fun(size: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(size: i32) -> i32
       |-FunctionNode type=fun(size: i32) -> i32
         |-ParameterNode
@@ -23,7 +23,7 @@
             |-QNameNode=$size
               |-NameIdentifierNode="$size"
     |-NameIdentifierNode="malloc" type=fun(size: i32) -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=i32
         |-NameIdentifierNode="main" type=fun() -> i32

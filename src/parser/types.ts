@@ -10,6 +10,7 @@ export enum NativeTypes {
   i64 = 'i64',
   f32 = 'f32',
   f64 = 'f64',
+
   anyfunc = 'anyfunc',
   func = 'func',
   void = 'void',
