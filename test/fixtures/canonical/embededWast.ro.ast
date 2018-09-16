@@ -37,11 +37,13 @@
           |-QNameNode=$address
             |-NameIdentifierNode="$address"
           |-WasmAtomNode=get_global
+            |-VariableReferenceNode
+              |-QNameNode=freeblock
+                |-NameIdentifierNode="freeblock"
+        |-WasmAtomNode=set_global
+          |-VariableReferenceNode
             |-QNameNode=freeblock
               |-NameIdentifierNode="freeblock"
-        |-WasmAtomNode=set_global
-          |-QNameNode=$freeblock
-            |-NameIdentifierNode="$freeblock"
           |-WasmAtomNode=i32.add
             |-WasmAtomNode=get_local
               |-QNameNode=$address
@@ -108,8 +110,9 @@
             |-QNameNode=$newStr
               |-NameIdentifierNode="$newStr"
             |-WasmAtomNode=call
-              |-QNameNode=malloc
-                |-NameIdentifierNode="malloc"
+              |-VariableReferenceNode
+                |-QNameNode=malloc
+                  |-NameIdentifierNode="malloc"
               |-WasmAtomNode=i32.add
                 |-WasmAtomNode=get_local
                   |-QNameNode=$sum
@@ -124,8 +127,9 @@
               |-QNameNode=$sum
                 |-NameIdentifierNode="$sum"
           |-WasmAtomNode=call
-            |-QNameNode=string_copy
-              |-NameIdentifierNode="string_copy"
+            |-VariableReferenceNode
+              |-QNameNode=string_copy
+                |-NameIdentifierNode="string_copy"
             |-WasmAtomNode=get_local
               |-QNameNode=$a
                 |-NameIdentifierNode="$a"
@@ -133,8 +137,9 @@
               |-QNameNode=$newStr
                 |-NameIdentifierNode="$newStr"
           |-WasmAtomNode=call
-            |-QNameNode=string_copy
-              |-NameIdentifierNode="string_copy"
+            |-VariableReferenceNode
+              |-QNameNode=string_copy
+                |-NameIdentifierNode="string_copy"
             |-WasmAtomNode=get_local
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"

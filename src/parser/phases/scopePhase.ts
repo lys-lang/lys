@@ -103,6 +103,14 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure.set(node.functionName);
     }
 
+    if (node instanceof Nodes.VariableReferenceNode) {
+      node.closure = node.closure.newChildClosure();
+    }
+
+    if (node instanceof Nodes.TypeReferenceNode) {
+      node.closure = node.closure.newChildClosure();
+    }
+
     if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
       node.closure.set(node.variableName);
@@ -163,32 +171,21 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhase
     }
     node.closure.incrementUsageQName(node.variable);
   }
-
-  if (node.hasAnnotation(annotations.InjectImport)) {
-    const implicitImport = node.getAnnotation(annotations.InjectImport);
-    implicitImport.names.forEach($ => {
-      const name = implicitImport.module + '::' + $;
-      if (!node.closure.canResolveName(name)) {
-        throw new AstNodeError(`Cannot resolve variable "${name}"`, node);
-      }
-    });
-  }
 });
 
-const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
+const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (node.variable.names.length > 1) {
-      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+      const { moduleName, variable } = node.variable.deconstruct();
+      node.closure.registerImport(moduleName, new Set([variable]));
+      scopePhaseResult.importedModules.add(moduleName);
     }
   } else if (node instanceof Nodes.TypeReferenceNode) {
     if (node.variable.names.length > 1) {
-      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+      const { moduleName, variable } = node.variable.deconstruct();
+      node.closure.registerImport(moduleName, new Set([variable]));
+      scopePhaseResult.importedModules.add(moduleName);
     }
-  }
-  if (node.hasAnnotation(annotations.InjectImport)) {
-    const implicitImport = node.getAnnotation(annotations.InjectImport);
-
-    node.closure.registerImport(implicitImport.module, implicitImport.names);
   }
 });
 
@@ -207,6 +204,8 @@ function injectCoreImport(document: Nodes.DocumentNode) {
 }
 
 export class ScopePhaseResult extends PhaseResult {
+  importedModules = new Set<string>();
+
   get document() {
     return this.semanticPhaseResult.document;
   }
@@ -225,7 +224,8 @@ export class ScopePhaseResult extends PhaseResult {
       .filter($ => $ instanceof Nodes.ImportDirectiveNode)
       .forEach(($: Nodes.ImportDirectiveNode) => {
         const importAll = $.allItems ? new Set(['*']) : new Set();
-        $.closure.registerImport($.module.text, importAll);
+        this.importedModules.add($.module.text);
+        this.document.closure.registerImport($.module.text, importAll);
       });
   }
 

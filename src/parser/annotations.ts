@@ -26,12 +26,6 @@ export namespace annotations {
 
   export class IsValueNode extends Annotation {}
 
-  export class InjectImport extends Annotation {
-    constructor(public module: string, public names: Set<string>) {
-      super();
-    }
-  }
-
   export class IsReturnExpression extends Annotation {
     targetLocal: null | Local = null;
 

@@ -30,13 +30,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_1 (result i32)
+    (block $unknown_block_36 (result i32)
       (if $a_wild_if (result i32) (call $system::core::>_1 (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_2 (result i32)
+            (block $unknown_block_37 (result i32)
                 (if $a_wild_if (call $system::core::>_1 (get_local $size) (get_global $MAX_SIZE_32))
                     (then
-                      (block $unknown_block_3
+                      (block $unknown_block_38
                           (call $system::core::panic)
                         )
                     )
@@ -47,15 +47,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::>_1 (get_local $newPtr) (call $system::core::<<_1 (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_4
+                      (block $unknown_block_39
                           (set_local $pagesNeeded (call $system::core::>>>_1 (call $system::core::& (call $system::core::+_1 (call $system::core::-_1 (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::~_1 (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_5
+                                (block $unknown_block_40
                                     (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_6
+                                          (block $unknown_block_41
                                               (call $system::core::panic)
                                             )
                                         )
@@ -74,7 +74,7 @@
               )
           )
           (else
-            (block $unknown_block_7 (result i32)
+            (block $unknown_block_42 (result i32)
                 (i32.const 0)
               )
           )
@@ -264,7 +264,7 @@
     (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 23)) (i32.const 14))
   )
   (func $system::hash::sha3::keccak_reset (param $context_offset i32)
-    (block $unknown_block_1
+    (block $unknown_block_3
       (call $system::memory::memset (get_local $context_offset) (i32.const 0) (i32.const 400))
     )
   )
@@ -301,7 +301,7 @@
     (i64.store (i32.add (get_local $output_offset) (i32.const 24)) (i64.load (i32.add (get_local $context_offset) (i32.const 24))))
   )
   (func $system::hash::sha3::keccak (param $context_offset i32) (param $input_offset i32) (param $input_length i32) (param $output_offset i32) (result i32)
-    (block $unknown_block_2 (result i32)
+    (block $unknown_block_4 (result i32)
       (call $system::hash::sha3::keccak_init (get_local $context_offset))
       (call $system::hash::sha3::keccak_update (get_local $context_offset) (get_local $input_offset) (get_local $input_length))
       (call $system::hash::sha3::keccak_finish (get_local $context_offset) (get_local $output_offset))
@@ -575,7 +575,7 @@
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_1
+        (block $unknown_block_22
             (call $system::core::panic)
           )
       )
@@ -614,6 +614,9 @@
   )
   (func $system::core::sizeOf_10 (param $lhs i32) (result i32)
     (i32.const 1)
+  )
+  (func $system::core::addressFromRef (param $pointer i64) (result i32)
+    (i32.wrap/i64 (get_local $pointer))
   )
   (func $system::core::panic
     (unreachable)

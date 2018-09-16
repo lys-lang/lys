@@ -201,7 +201,7 @@
               |-BooleanLiteral=false type=boolean annotations=IsValueNode
     |-NameIdentifierNode="testColors" type=fun() -> void
   |-OverloadedFunctionNode type=fun() -> Red annotations=Injected
-    |-FunDirectiveNode type=fun() -> Red annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun() -> Red annotations=Injected
       |-FunctionNode type=fun() -> Red
         |-NameIdentifierNode="RedAllocator" type=fun() -> Red
         |-TypeReferenceNode=Red type=Red
@@ -298,7 +298,7 @@
               |-HexLiteral=0x400000000
     |-NameIdentifierNode="is" type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean
   |-OverloadedFunctionNode type=fun() -> Green annotations=Injected
-    |-FunDirectiveNode type=fun() -> Green annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun() -> Green annotations=Injected
       |-FunctionNode type=fun() -> Green
         |-NameIdentifierNode="GreenAllocator" type=fun() -> Green
         |-TypeReferenceNode=Green type=Green
@@ -309,7 +309,7 @@
             |-HexLiteral=0x200000000
     |-NameIdentifierNode="GreenAllocator" type=fun() -> Green
   |-OverloadedFunctionNode type=fun() -> Blue annotations=Injected
-    |-FunDirectiveNode type=fun() -> Blue annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun() -> Blue annotations=Injected
       |-FunctionNode type=fun() -> Blue
         |-NameIdentifierNode="BlueAllocator" type=fun() -> Blue
         |-TypeReferenceNode=Blue type=Blue
@@ -320,7 +320,7 @@
             |-HexLiteral=0x300000000
     |-NameIdentifierNode="BlueAllocator" type=fun() -> Blue
   |-OverloadedFunctionNode type=fun(r: i32, g: i32, b: i32) -> Custom annotations=Injected
-    |-FunDirectiveNode type=fun(r: i32, g: i32, b: i32) -> Custom annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun(r: i32, g: i32, b: i32) -> Custom annotations=Injected
       |-FunctionNode type=fun(r: i32, g: i32, b: i32) -> Custom
         |-ParameterNode
           |-NameIdentifierNode="r" type=i32
@@ -351,10 +351,11 @@
             |-QNameNode=$_newRef
               |-NameIdentifierNode="$_newRef"
             |-WasmAtomNode=call
-              |-QNameNode=$system::memory::malloc
-                |-NameIdentifierNode="$system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
               |-WasmAtomNode=i32.const
                 |-IntegerLiteral=8
           |-WasmAtomNode=i64.or

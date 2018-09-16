@@ -61,6 +61,19 @@ const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
   }
 });
 
+const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
+  if (node instanceof Nodes.WasmAtomNode) {
+    if (node.symbol == 'call' || node.symbol == 'get_global' || node.symbol == 'set_global') {
+      if (!node.arguments[0]) {
+        throw new AstNodeError(`Missing name`, node);
+      }
+      if (node.arguments[0] instanceof Nodes.VariableReferenceNode == false) {
+        throw new AstNodeError(`Here you need a fully qualified name starting with $`, node.arguments[0]);
+      }
+    }
+  }
+});
+
 const createTypes = walkPreOrder((node: Nodes.Node, phase: SemanticPhaseResult) => {
   if (node instanceof Nodes.StructDeclarationNode) {
     phase.parsingContext.registerType(node);
@@ -125,9 +138,6 @@ const createTypes = walkPreOrder((node: Nodes.Node, phase: SemanticPhaseResult) 
     assert(allocator, 'cannot find allocator ' + printAST(injectedFunctions.document));
 
     allocator.functionNode.internalIdentifier = node.internalIdentifier;
-
-    allocator.annotate(new annotations.InjectImport('system::memory', new Set(['malloc'])));
-
     injectedFunctions.document.directives.forEach($ => $.annotate(new annotations.Injected()));
 
     phase.document.directives.push(...injectedFunctions.document.directives);
@@ -156,6 +166,7 @@ export class SemanticPhaseResult extends PhaseResult {
 
     overloadFunctions(this.document, this);
     checkDuplicatedNames(this.document, this);
+    validateInjectedWasm(this.document, this);
 
     failIfErrors('Semantic phase', this.document, this);
   }

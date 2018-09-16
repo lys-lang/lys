@@ -169,9 +169,12 @@ export class TypePropagator {
   }
 
   run(): void {
-    this.scheduleNodes();
-    this.start();
-    this.ctx.endContext();
+    try {
+      this.scheduleNodes();
+      this.start();
+    } finally {
+      this.ctx.endContext();
+    }
   }
 }
 

@@ -76,24 +76,24 @@ export abstract class Type {
     }
   }
 
-  equals(_otherType: Type) {
-    if (!_otherType) return false;
+  equals(otherType: Type) {
+    if (!otherType) return false;
 
-    return _otherType === this;
+    return otherType === this;
   }
 
-  canBeAssignedTo(_otherType: Type) {
-    if (this.superType && this.superType.canBeAssignedTo(_otherType)) {
+  canBeAssignedTo(otherType: Type) {
+    if (this.superType && this.superType.canBeAssignedTo(otherType)) {
       return true;
     }
 
-    if (_otherType instanceof UnionType) {
-      if (_otherType.of.some($ => this.canBeAssignedTo($))) {
+    if (otherType instanceof UnionType) {
+      if (otherType.of.some($ => this.canBeAssignedTo($))) {
         return true;
       }
     }
 
-    return this.equals(_otherType); // add supertype logic here
+    return this.equals(otherType); // add supertype logic here
   }
 
   toString() {
@@ -145,6 +145,10 @@ export class RefType extends Type {
 
   toString() {
     return 'ref';
+  }
+
+  canBeAssignedTo(other: Type) {
+    return super.canBeAssignedTo(other) || (other instanceof RefType && other.toString() == 'ref');
   }
 
   equals(other: Type) {
@@ -464,11 +468,11 @@ export class InvalidType extends VoidType {
     return 'INVALID_TYPE';
   }
 
-  equals(_other: Type) {
+  equals(_: Type) {
     return false;
   }
 
-  canBeAssignedTo(_: any) {
+  canBeAssignedTo(_: Type) {
     return false;
   }
 

@@ -312,7 +312,9 @@ export class BinaryOpTypeResolver extends TypeResolver {
 
       ctx.parsingContext.messageCollector.error(`Error with ${opNode.operator.text}`, opNode.operator);
     } catch (e) {
-      ctx.parsingContext.messageCollector.error(e);
+      if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
+        ctx.parsingContext.messageCollector.error(e);
+      }
     }
 
     return INVALID_TYPE;
@@ -337,7 +339,9 @@ export class UnaryOpTypeResolver extends TypeResolver {
         ctx.parsingContext.messageCollector.error(`Cannot use a type as operator ${opNode.operator.text}`, opNode);
       }
     } catch (e) {
-      ctx.parsingContext.messageCollector.error(e);
+      if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
+        ctx.parsingContext.messageCollector.error(e);
+      }
     }
 
     return INVALID_TYPE;
@@ -627,7 +631,9 @@ export class FunctionCallResolver extends TypeResolver {
         return fun.simplify();
       }
     } catch (e) {
-      ctx.parsingContext.messageCollector.error(e);
+      if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
+        ctx.parsingContext.messageCollector.error(e);
+      }
     }
 
     return INVALID_TYPE;

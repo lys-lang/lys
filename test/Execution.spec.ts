@@ -6,7 +6,7 @@ import { expect } from 'chai';
 describe('execution tests', () => {
   describe('struct', () => {
     test(
-      'single addition, overrides core',
+      'type alloc and basic pattern match',
       `
         type Color {
           Red
@@ -32,6 +32,29 @@ describe('execution tests', () => {
           support::test::assert(Green.isRed() == false)
           support::test::assert(Blue.isRed() == false)
           support::test::assert(Custom(5,5,5).isRed() == false)
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testColors();
+      }
+    );
+
+    test(
+      'store values',
+      `
+        type x {
+          Custom(r: i32, g: i32, b: i32)
+        }
+
+        fun testColors(): void = {
+          val x = Custom(1,2,3)
+
+          support::test::assert(system::i32::load(x) == 0)
+
+          system::i32::store(x, 3)
+
+          support::test::assert(system::i32::load(x) == 3)
         }
       `,
       async (x, err) => {

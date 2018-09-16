@@ -83,11 +83,16 @@ export namespace Nodes {
       this.annotations.add(annotation);
     }
 
-    getAnnotations() {
-      if (!this.annotations) {
-        this.annotations = new Set();
+    getAnnotations(): Annotation[];
+    getAnnotations<T extends Annotation>(klass: IAnnotationConstructor<T>): T[];
+    getAnnotations<T extends Annotation>(klass?: IAnnotationConstructor<T>): T[] {
+      const ret = [];
+      if (this.annotations) {
+        this.annotations.forEach($ => {
+          if (!klass || $ instanceof klass) ret.push($);
+        });
       }
-      return this.annotations;
+      return ret;
     }
   }
 
@@ -110,8 +115,21 @@ export namespace Nodes {
   export class QNameNode extends Node {
     names: NameIdentifierNode[];
 
+    deconstruct() {
+      const moduleName = this.names
+        .slice(0, -1)
+        .map($ => $.name)
+        .join('::');
+      const variable = this.names[this.names.length - 1].name;
+      return { moduleName, variable };
+    }
+
     get text() {
       return this.names.map($ => $.name).join('::');
+    }
+
+    toString() {
+      return this.text;
     }
 
     static fromString(name: string): QNameNode {

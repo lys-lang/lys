@@ -27,11 +27,11 @@ export interface IOverloadedInfix {
 }
 
 export class ParsingContext {
-  programTakenNames = new Set<string>();
-  typeNumbers = new Set<Nodes.StructDeclarationNode | Nodes.TypeDeclarationNode>();
   messageCollector = new MessageCollector();
-  modulesInContext: string[] = [];
 
+  private typeNumbers = new Set<Nodes.StructDeclarationNode | Nodes.TypeDeclarationNode>();
+  private programTakenNames = new Set<string>();
+  private modulesInContext: string[] = [];
   private moduleScopes = new Map<string, ScopePhaseResult>();
   private moduleTypes = new Map<string, TypePhaseResult>();
   private moduleCompilation = new Map<string, CompilationPhaseResult>();
@@ -41,6 +41,12 @@ export class ParsingContext {
       this.modulesInContext.push(moduleName);
       this.parseModule(moduleName);
     }
+  }
+
+  reset() {
+    this.typeNumbers.clear();
+    this.programTakenNames.clear();
+    this.messageCollector.errors.length = 0;
   }
 
   private resolveModule(moduleName: string) {
@@ -169,6 +175,10 @@ export class MessageCollector {
     }
   }
 
+  hasErrorFor(node: Nodes.Node): any {
+    return this.errors.some($ => $.node === node);
+  }
+
   hasErrors() {
     return this.errors.some($ => !$.warning);
   }
@@ -187,6 +197,7 @@ export class Closure {
   localScopeDeclares: Set<string> = new Set();
   nameMappings: IDictionary<Reference> = {};
   localUsages: IDictionary<number> = {};
+
   importedModules = new Map<string, Set<string>>();
 
   constructor(

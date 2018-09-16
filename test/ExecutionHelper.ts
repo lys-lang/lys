@@ -7,11 +7,15 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
+import { ParsingContext } from '../dist/parser/closure';
 
 declare var it;
 
+const parsingContext = new ParsingContext();
+
 const phases = function(txt: string): CodeGenerationPhaseResult {
-  const parsing = new ParsingPhaseResult('test.ro', txt);
+  parsingContext.reset();
+  const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
@@ -44,7 +48,7 @@ export function test(name: string, src: string, customTest?: (document: any, err
           console.error('NON OPTIMIZED VERSION');
           console.log(print(compilationPhaseResult.programAST));
           await compilationPhaseResult.validate(true);
-          console.log(compilationPhaseResult.module.emitText());
+          console.log(compilationPhaseResult.emitText());
           throw e;
         }
       }

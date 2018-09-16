@@ -11,9 +11,13 @@ import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
+import { ParsingContext } from '../dist/parser/closure';
+
+const parsingContext = new ParsingContext();
 
 const phases = function(txt: string): ScopePhaseResult {
-  const parsing = new ParsingPhaseResult('test.ro', txt);
+  parsingContext.reset();
+  const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
@@ -184,7 +188,17 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun gcd(x: i32, y: i32) =
+        struct Custom(r: i32)
+
+        fun a() = Custom(1)
+        fun b(i: i32) = Custom(i)
+        ---
+        fun() -> Custom
+        fun(i: i32) -> Custom
+      `;
+
+      checkMainType`
+        fun gcd(x: i32, y: i32): i32 =
           if (x > y)
             gcd(x - y, y)
           else if (x < y)
@@ -196,13 +210,13 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun factorial(n: i32) =
+        fun factorial(n: i32): i32 =
           if (n >= 1)
             n * factorial(n - 1)
           else
             1
 
-        fun gcd(x: i32, y: i32) =
+        fun gcd(x: i32, y: i32): i32 =
           if (x > y)
             gcd(x - y, y)
           else if (x < y)
@@ -210,6 +224,7 @@ describe('Types', function() {
           else
             factorial(x)
         ---
+        fun(n: i32) -> i32
         fun(x: i32, y: i32) -> i32
       `;
     });
@@ -218,6 +233,75 @@ describe('Types', function() {
         fun main() = 1.0
         ---
         fun() -> f32
+      `;
+
+      checkMainType`
+        type x {
+          Nila
+          Custom(r: i32)
+        }
+
+        fun qq(x: ref): void = ???
+        fun qq(x: x): f32 = ???
+        fun qq(x: Custom): i32 = ???
+
+        fun a(): i32 = qq(Custom(1))
+        fun b(t: Custom): i32 = qq(t)
+        fun c(t: x): f32 = qq(t)
+        fun d(i: i32): i32 = qq(Custom(i))
+        fun e(t: Nila): f32 = qq(t)
+        fun f(): f32 = qq(Nila)
+        ---
+        fun() -> i32
+        fun(t: Custom) -> i32
+        fun(t: x) -> f32
+        fun(i: i32) -> i32
+        fun(t: Nila) -> f32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        type x {
+          Nila
+          Custom(r: i32)
+        }
+
+        fun qq(x: Custom): i32 = ???
+        fun qq(x: ref): void = ???
+        fun qq(x: x): f32 = ???
+
+        fun a(): i32 = qq(Custom(1))
+        fun b(t: Custom): i32 = qq(t)
+        fun c(t: x): f32 = qq(t)
+        fun d(i: i32): i32 = qq(Custom(i))
+        fun e(t: Nila): f32 = qq(t)
+        fun f(): f32 = qq(Nila)
+        ---
+        fun() -> i32
+        fun(t: Custom) -> i32
+        fun(t: x) -> f32
+        fun(i: i32) -> i32
+        fun(t: Nila) -> f32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        type x {
+          Custom(r: i32)
+        }
+
+        fun QQ(x: ref): void = ???
+
+        fun a(): void = QQ(Custom(1))
+        fun b(t: Custom): void = QQ(t)
+        fun c(t: x): void = QQ(t)
+        fun d(i: i32): void = QQ(Custom(i))
+        ---
+        fun(x: ref) -> void
+        fun() -> void
+        fun(t: Custom) -> void
+        fun(t: x) -> void
+        fun(i: i32) -> void
       `;
 
       checkMainType`
@@ -272,7 +356,7 @@ describe('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Unexpected type Type<f32>, a value expression is required.
+        Type<f32> is not a value, constructor or function.
       `;
 
       checkMainType`
@@ -280,7 +364,7 @@ describe('Types', function() {
         ---
         fun() -> UNKNOWN
         ---
-        Unexpected type Type<f32>, a value expression is required.
+        Type<f32> is not a value, constructor or function.
       `;
 
       checkMainType`
@@ -288,7 +372,7 @@ describe('Types', function() {
         ---
         fun() -> f32
         ---
-        Unexpected type Type<f32>, a value expression is required.
+        Type<f32> is not a value, constructor or function.
       `;
     });
 

@@ -6,6 +6,15 @@
       |-NameIdentifierNode="core"
   |-TypeDirectiveNode
     |-NameIdentifierNode="i32" type=Type<i32>
+  |-OverloadedFunctionNode type=fun() -> void annotations=Injected
+    |-FunDirectiveNode type=fun() -> void
+      |-FunctionNode type=fun() -> void
+        |-NameIdentifierNode="xx" type=fun() -> void
+        |-TypeReferenceNode=void type=void
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=void
+    |-NameIdentifierNode="xx" type=fun() -> void
   |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: i32, b: i32) -> i32
       |-FunctionNode type=fun(a: i32, b: i32) -> i32
@@ -34,6 +43,19 @@
               |-NameIdentifierNode="$t"
             |-WasmAtomNode=i32.const
               |-IntegerLiteral=3
+          |-WasmAtomNode=call
+            |-VariableReferenceNode type=fun() -> void
+              |-QNameNode=xx
+                |-NameIdentifierNode="xx"
+          |-WasmAtomNode=drop
+            |-WasmAtomNode=call
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=1
           |-WasmAtomNode=i32.mul
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local

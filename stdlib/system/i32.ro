@@ -1,0 +1,7 @@
+fun store(lhs: ref, rhs: i32): void = %wasm {
+  (i32.store (call $system::core::addressFromRef (get_local $lhs)) (get_local $rhs))
+}
+
+fun load(lhs: ref): i32 = %wasm {
+  (i32.load (call $system::core::addressFromRef (get_local $lhs)))
+}

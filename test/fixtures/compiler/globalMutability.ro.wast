@@ -267,7 +267,7 @@
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_1
+        (block $unknown_block_32
             (call $system::core::panic)
           )
       )
@@ -306,6 +306,9 @@
   )
   (func $system::core::sizeOf_10 (param $lhs i32) (result i32)
     (i32.const 1)
+  )
+  (func $system::core::addressFromRef (param $pointer i64) (result i32)
+    (i32.wrap/i64 (get_local $pointer))
   )
   (func $system::core::panic
     (unreachable)

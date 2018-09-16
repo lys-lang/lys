@@ -464,6 +464,20 @@ const visitor = {
     const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
     ret.arguments = ret.arguments.concat(newChildren);
 
+    if (ret.symbol == 'call' || ret.symbol == 'get_global' || ret.symbol == 'set_global') {
+      if (ret.arguments[0] instanceof Nodes.QNameNode) {
+        const varRef = new Nodes.VariableReferenceNode(children[0]);
+        varRef.variable = ret.arguments[0] as Nodes.QNameNode;
+
+        if (varRef.variable.names[0].name.startsWith('$')) {
+          // TODO: fix horrible hack $
+          varRef.variable.names[0].name = varRef.variable.names[0].name.replace(/^\$/, '');
+        }
+
+        ret.arguments[0] = varRef;
+      }
+    }
+
     return ret;
   }
 };

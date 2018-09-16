@@ -1652,14 +1652,16 @@
                 |-QNameNode=$done
                   |-NameIdentifierNode="$done"
             |-WasmAtomNode=call
-              |-QNameNode=$keccak_theta
-                |-NameIdentifierNode="$keccak_theta"
+              |-VariableReferenceNode
+                |-QNameNode=keccak_theta
+                  |-NameIdentifierNode="keccak_theta"
               |-WasmAtomNode=get_local
                 |-QNameNode=$context_offset
                   |-NameIdentifierNode="$context_offset"
             |-WasmAtomNode=call
-              |-QNameNode=$keccak_rho
-                |-NameIdentifierNode="$keccak_rho"
+              |-VariableReferenceNode
+                |-QNameNode=keccak_rho
+                  |-NameIdentifierNode="keccak_rho"
               |-WasmAtomNode=get_local
                 |-QNameNode=$context_offset
                   |-NameIdentifierNode="$context_offset"
@@ -1667,14 +1669,16 @@
                 |-QNameNode=$rotation_consts
                   |-NameIdentifierNode="$rotation_consts"
             |-WasmAtomNode=call
-              |-QNameNode=$keccak_pi
-                |-NameIdentifierNode="$keccak_pi"
+              |-VariableReferenceNode
+                |-QNameNode=keccak_pi
+                  |-NameIdentifierNode="keccak_pi"
               |-WasmAtomNode=get_local
                 |-QNameNode=$context_offset
                   |-NameIdentifierNode="$context_offset"
             |-WasmAtomNode=call
-              |-QNameNode=$keccak_chi
-                |-NameIdentifierNode="$keccak_chi"
+              |-VariableReferenceNode
+                |-QNameNode=keccak_chi
+                  |-NameIdentifierNode="keccak_chi"
               |-WasmAtomNode=get_local
                 |-QNameNode=$context_offset
                   |-NameIdentifierNode="$context_offset"
@@ -2107,8 +2111,9 @@
                 |-WasmAtomNode=i32.const
                   |-IntegerLiteral=128
         |-WasmAtomNode=call
-          |-QNameNode=$keccak_permute
-            |-NameIdentifierNode="$keccak_permute"
+          |-VariableReferenceNode
+            |-QNameNode=keccak_permute
+              |-NameIdentifierNode="keccak_permute"
           |-WasmAtomNode=get_local
             |-QNameNode=$context_offset
               |-NameIdentifierNode="$context_offset"
@@ -2135,8 +2140,9 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-WasmAtomNode=call
-          |-QNameNode=$keccak_reset
-            |-NameIdentifierNode="$keccak_reset"
+          |-VariableReferenceNode
+            |-QNameNode=keccak_reset
+              |-NameIdentifierNode="keccak_reset"
           |-WasmAtomNode=get_local
             |-QNameNode=$context_offset
               |-NameIdentifierNode="$context_offset"
@@ -2710,8 +2716,9 @@
                   |-QNameNode=$input_length
                     |-NameIdentifierNode="$input_length"
             |-WasmAtomNode=call
-              |-QNameNode=$memcpy
-                |-NameIdentifierNode="$memcpy"
+              |-VariableReferenceNode
+                |-QNameNode=memcpy
+                  |-NameIdentifierNode="memcpy"
               |-WasmAtomNode=i32.add
                 |-WasmAtomNode=get_local
                   |-QNameNode=$residue_buffer
@@ -2743,8 +2750,9 @@
                 |-WasmAtomNode=i32.const
                   |-IntegerLiteral=136
               |-WasmAtomNode=call
-                |-QNameNode=$keccak_block
-                  |-NameIdentifierNode="$keccak_block"
+                |-VariableReferenceNode
+                  |-QNameNode=keccak_block
+                    |-NameIdentifierNode="keccak_block"
                 |-WasmAtomNode=get_local
                   |-QNameNode=$input_offset
                     |-NameIdentifierNode="$input_offset"
@@ -2792,8 +2800,9 @@
                 |-QNameNode=$done
                   |-NameIdentifierNode="$done"
             |-WasmAtomNode=call
-              |-QNameNode=$keccak_block
-                |-NameIdentifierNode="$keccak_block"
+              |-VariableReferenceNode
+                |-QNameNode=keccak_block
+                  |-NameIdentifierNode="keccak_block"
               |-WasmAtomNode=get_local
                 |-QNameNode=$input_offset
                   |-NameIdentifierNode="$input_offset"
@@ -2832,8 +2841,9 @@
               |-IntegerLiteral=0
           |-WasmAtomNode=then
             |-WasmAtomNode=call
-              |-QNameNode=$memcpy
-                |-NameIdentifierNode="$memcpy"
+              |-VariableReferenceNode
+                |-QNameNode=memcpy
+                  |-NameIdentifierNode="memcpy"
               |-WasmAtomNode=i32.add
                 |-WasmAtomNode=get_local
                   |-QNameNode=$residue_buffer
@@ -2933,8 +2943,9 @@
             |-QNameNode=$residue_index
               |-NameIdentifierNode="$residue_index"
         |-WasmAtomNode=call
-          |-QNameNode=$memset
-            |-NameIdentifierNode="$memset"
+          |-VariableReferenceNode
+            |-QNameNode=memset
+              |-NameIdentifierNode="memset"
           |-WasmAtomNode=i32.add
             |-WasmAtomNode=get_local
               |-QNameNode=$residue_buffer
@@ -2992,8 +3003,9 @@
             |-WasmAtomNode=i32.const
               |-HexLiteral=0x80
         |-WasmAtomNode=call
-          |-QNameNode=$keccak_block
-            |-NameIdentifierNode="$keccak_block"
+          |-VariableReferenceNode
+            |-QNameNode=keccak_block
+              |-NameIdentifierNode="keccak_block"
           |-WasmAtomNode=get_local
             |-QNameNode=$residue_buffer
               |-NameIdentifierNode="$residue_buffer"

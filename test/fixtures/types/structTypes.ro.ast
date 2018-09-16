@@ -132,7 +132,7 @@
               |-FloatLiteral=99.1 type=f32 annotations=IsValueNode
     |-NameIdentifierNode="main" type=fun() -> boolean
   |-OverloadedFunctionNode type=fun() -> Infinity annotations=Injected
-    |-FunDirectiveNode type=fun() -> Infinity annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun() -> Infinity annotations=Injected
       |-FunctionNode type=fun() -> Infinity
         |-NameIdentifierNode="InfinityAllocator" type=fun() -> Infinity
         |-TypeReferenceNode=Infinity type=Infinity
@@ -271,7 +271,7 @@
               |-HexLiteral=0x600000000
     |-NameIdentifierNode="is" type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean & fun(a: TestStruct) -> boolean
   |-OverloadedFunctionNode type=fun() -> NDet annotations=Injected
-    |-FunDirectiveNode type=fun() -> NDet annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun() -> NDet annotations=Injected
       |-FunctionNode type=fun() -> NDet
         |-NameIdentifierNode="NDetAllocator" type=fun() -> NDet
         |-TypeReferenceNode=NDet type=NDet
@@ -282,7 +282,7 @@
             |-HexLiteral=0x200000000
     |-NameIdentifierNode="NDetAllocator" type=fun() -> NDet
   |-OverloadedFunctionNode type=fun(number: f32) -> Real annotations=Injected
-    |-FunDirectiveNode type=fun(number: f32) -> Real annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun(number: f32) -> Real annotations=Injected
       |-FunctionNode type=fun(number: f32) -> Real
         |-ParameterNode
           |-NameIdentifierNode="number" type=f32
@@ -303,10 +303,11 @@
             |-QNameNode=$_newRef
               |-NameIdentifierNode="$_newRef"
             |-WasmAtomNode=call
-              |-QNameNode=$system::memory::malloc
-                |-NameIdentifierNode="$system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
               |-WasmAtomNode=i32.const
                 |-IntegerLiteral=8
           |-WasmAtomNode=i64.or
@@ -318,7 +319,7 @@
                   |-NameIdentifierNode="$_newRef"
     |-NameIdentifierNode="RealAllocator" type=fun(number: f32) -> Real
   |-OverloadedFunctionNode type=fun(number: i32) -> Natural annotations=Injected
-    |-FunDirectiveNode type=fun(number: i32) -> Natural annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun(number: i32) -> Natural annotations=Injected
       |-FunctionNode type=fun(number: i32) -> Natural
         |-ParameterNode
           |-NameIdentifierNode="number" type=i32
@@ -339,10 +340,11 @@
             |-QNameNode=$_newRef
               |-NameIdentifierNode="$_newRef"
             |-WasmAtomNode=call
-              |-QNameNode=$system::memory::malloc
-                |-NameIdentifierNode="$system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
               |-WasmAtomNode=i32.const
                 |-IntegerLiteral=8
           |-WasmAtomNode=i64.or
@@ -354,7 +356,7 @@
                   |-NameIdentifierNode="$_newRef"
     |-NameIdentifierNode="NaturalAllocator" type=fun(number: i32) -> Natural
   |-OverloadedFunctionNode type=fun(real: f32, imaginary: f32) -> Complex annotations=Injected
-    |-FunDirectiveNode type=fun(real: f32, imaginary: f32) -> Complex annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun(real: f32, imaginary: f32) -> Complex annotations=Injected
       |-FunctionNode type=fun(real: f32, imaginary: f32) -> Complex
         |-ParameterNode
           |-NameIdentifierNode="real" type=f32
@@ -380,10 +382,11 @@
             |-QNameNode=$_newRef
               |-NameIdentifierNode="$_newRef"
             |-WasmAtomNode=call
-              |-QNameNode=$system::memory::malloc
-                |-NameIdentifierNode="$system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
               |-WasmAtomNode=i32.const
                 |-IntegerLiteral=8
           |-WasmAtomNode=i64.or
@@ -395,7 +398,7 @@
                   |-NameIdentifierNode="$_newRef"
     |-NameIdentifierNode="ComplexAllocator" type=fun(real: f32, imaginary: f32) -> Complex
   |-OverloadedFunctionNode type=fun() -> TestStruct annotations=Injected
-    |-FunDirectiveNode type=fun() -> TestStruct annotations=InjectImport,Injected
+    |-FunDirectiveNode type=fun() -> TestStruct annotations=Injected
       |-FunctionNode type=fun() -> TestStruct
         |-NameIdentifierNode="TestStructAllocator" type=fun() -> TestStruct
         |-TypeReferenceNode=TestStruct type=TestStruct

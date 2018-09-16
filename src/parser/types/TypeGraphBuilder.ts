@@ -243,7 +243,19 @@ export class TypeGraphBuilder {
         // new Edge(, target, EdgeLabels.LHS);
       }
     } else if (node instanceof Nodes.WasmExpressionNode) {
-      // noop
+      node.atoms.forEach($ => this.traverseNode($, target));
+    } else if (node instanceof Nodes.WasmAtomNode) {
+      if (node.symbol === 'call' || node.symbol === 'get_global' || node.symbol === 'set_global') {
+        if (node.arguments[0] instanceof Nodes.VariableReferenceNode) {
+          this.traverse(node.arguments[0]);
+        }
+      } else {
+        node.arguments.forEach($ => {
+          if ($ instanceof Nodes.WasmAtomNode) {
+            this.traverseNode($, target);
+          }
+        });
+      }
     } else if (node instanceof Nodes.MatchDefaultNode) {
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else this.traverseChildren(node, target);

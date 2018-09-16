@@ -1,5 +1,10 @@
 import * as t from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
+
+global['Binaryen'] = {
+  TOTAL_MEMORY: 16777216 * 8
+};
+
 import * as binaryen from 'binaryen';
 import * as wabt from 'wabt';
 import { annotations } from '../annotations';
@@ -7,7 +12,7 @@ import { flatten } from '../helpers';
 import { findNodesByType, Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { findParentType } from './helpers';
-import { FunctionType, StructType } from '../types';
+import { FunctionType, StructType, Type } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
@@ -184,12 +189,18 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
 }
 
 function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
-  if (node instanceof Nodes.QNameNode) {
-    if (node.text.startsWith('$')) {
-      return t.identifier(node.text.replace(/^\$/, ''));
+  if (node instanceof Nodes.VariableReferenceNode) {
+    const ofType = node.ofType as StructType | FunctionType | Type;
+
+    if (ofType && 'internalName' in ofType) {
+      return t.identifier(ofType.internalName);
     } else {
-      return t.valtypeLiteral(node.text);
+      return t.identifier(node.variable.text);
     }
+  }
+
+  if (node instanceof Nodes.QNameNode) {
+    return t.valtypeLiteral(node.text);
   }
 
   if (node instanceof Nodes.HexLiteral) {
@@ -322,7 +333,6 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 export class CodeGenerationPhaseResult extends PhaseResult {
   programAST: any;
   buffer: Uint8Array;
-  module: binaryen.Module;
 
   get document() {
     return this.compilationPhaseResult.document;
@@ -352,7 +362,6 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
-      console.log(this.parsingContext.modulesInContext);
       console.log(text);
       this.errors.push(e);
       throw e;
@@ -360,17 +369,34 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     const binary = wabtModule.toBinary({ log: false });
     this.buffer = binary.buffer;
-    this.module = binaryen.readBinary(this.buffer);
 
-    if (this.module.validate() == 0) {
-      this.errors.push(new AstNodeError('binaryen validation failed', this.document));
+    wabtModule.destroy();
+
+    try {
+      const module = binaryen.readBinary(this.buffer);
+
+      if (module.validate() == 0) {
+        this.errors.push(new AstNodeError('binaryen validation failed', this.document));
+      }
+
+      if (optimize) {
+        module.optimize();
+
+        this.buffer = module.emitBinary();
+      }
+
+      module.dispose();
+    } catch (e) {
+      if (e instanceof Error) throw e;
+      throw new Error(e);
     }
+  }
 
-    if (optimize) {
-      this.module.optimize();
-
-      this.buffer = this.module.emitBinary();
-    }
+  emitText() {
+    const module = binaryen.readBinary(this.buffer);
+    const ret = module.emitText();
+    module.dispose();
+    return ret;
   }
 
   optimize() {}
@@ -459,7 +485,25 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     const exportList = [this.compilationPhaseResult];
 
-    this.parsingContext.modulesInContext.forEach($ => {
+    const moduleList = new Set<string>(this.compilationPhaseResult.typePhaseResult.scopePhaseResult.importedModules);
+
+    let added = true;
+
+    while (added) {
+      added = false;
+
+      moduleList.forEach($ => {
+        const scope = this.parsingContext.getScopePhase($);
+        scope.importedModules.forEach($ => {
+          if (!moduleList.has($)) {
+            added = true;
+            moduleList.add($);
+          }
+        });
+      });
+    }
+
+    moduleList.forEach($ => {
       const compilation = this.parsingContext.getCompilationPhase($);
 
       if (!exportList.includes(compilation)) {
