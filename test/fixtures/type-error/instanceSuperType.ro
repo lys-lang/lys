@@ -1,0 +1,15 @@
+type x {
+  Nila
+  Custom(r: i32)
+}
+
+fun qq(x: ref): void = ???
+fun qq(x: x): f32 = ???
+fun qq(x: Custom): i32 = ???
+
+fun a(): void = x(Custom(1))
+fun b(t: Custom): void = x(t)
+fun c(t: x): void = x(t)
+fun d(i: i32): void = x(Custom(i))
+fun d(t: Nila): void = x(t)
+fun d(): void = x(Nila)

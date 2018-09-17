@@ -9,15 +9,19 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
+import { ParsingContext } from '../dist/parser/closure';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
   return node;
 });
 
+const parsingContext = new ParsingContext();
+
 describe('Semantic', function() {
   const phases = function(txt: string): ScopePhaseResult {
-    const parsing = new ParsingPhaseResult('test.ro', txt);
+    parsingContext.reset();
+    const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
     const canonical = new CanonicalPhaseResult(parsing);
     const semantic = new SemanticPhaseResult(canonical, 'test');
     const scope = new ScopePhaseResult(semantic);
@@ -92,6 +96,46 @@ describe('Semantic', function() {
     testToFail`
       type i32
       fun test(a: i32, a: i32) = 1
+    `;
+  });
+
+  describe('scope shadowing', () => {
+    test`
+      type x {
+        Nila
+      }
+
+      fun f(x: x): x = ???
+    `;
+
+    test`
+      type x {
+        Nila
+      }
+
+      fun f(x: x): x = ???
+    `;
+
+    testToFail`
+      type N {
+        x
+      }
+
+      fun x(): void = ???
+    `;
+
+    testToFail`
+      type x {
+        N
+      }
+
+      fun x(): void = ???
+    `;
+
+    testToFail`
+      struct x()
+
+      fun x(): void = ???
     `;
   });
 
@@ -341,7 +385,6 @@ describe('Semantic', function() {
 
   describe('Scopes', () => {
     test`
-      import 
       val a = true
       fun test() = a
     `;

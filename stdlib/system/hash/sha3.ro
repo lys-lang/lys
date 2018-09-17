@@ -516,16 +516,16 @@ private fun keccak_permute(context_offset: i32): void = %wasm {
     )
 
     // theta transform
-    (call $system::hash::sha3::keccak_theta (get_local $context_offset))
+    (call $keccak_theta (get_local $context_offset))
 
     // rho transform
-    (call $system::hash::sha3::keccak_rho (get_local $context_offset) (get_local $rotation_consts))
+    (call $keccak_rho (get_local $context_offset) (get_local $rotation_consts))
 
     // pi transform
-    (call $system::hash::sha3::keccak_pi (get_local $context_offset))
+    (call $keccak_pi (get_local $context_offset))
 
     // chi transform
-    (call $system::hash::sha3::keccak_chi (get_local $context_offset))
+    (call $keccak_chi (get_local $context_offset))
 
     // iota transform
     // context_offset[0] ^= KECCAK_ROUND_CONSTANTS[round];
@@ -681,7 +681,7 @@ private fun keccak_block(input_offset: i32, input_length: i32, context_offset: i
     )
   )
 
-  (call $system::hash::sha3::keccak_permute (get_local $context_offset))
+  (call $keccak_permute (get_local $context_offset))
 }
 
 //
@@ -691,7 +691,7 @@ private fun keccak_init(context_offset: i32): void = %wasm {
   (local $round_consts i32)
   (local $rotation_consts i32)
 
-  (call $system::hash::sha3::keccak_reset (get_local $context_offset))
+  (call $keccak_reset (get_local $context_offset))
 
   // insert the round constants (used by $KECCAK_IOTA)
   (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
@@ -793,7 +793,7 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
 
       // block complete
       (if (i32.eq (get_local $residue_index) (i32.const 136))
-        (call $system::hash::sha3::keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+        (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
 
         (set_local $residue_index (i32.const 0))
       )
@@ -811,7 +811,7 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
       (br $done)
     )
 
-    (call $system::hash::sha3::keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+    (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
 
     (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 136)))
     (set_local $input_length (i32.sub (get_local $input_length) (i32.const 136)))
@@ -863,7 +863,7 @@ private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm
   (set_local $tmp (i32.add (get_local $residue_buffer) (i32.const 135)))
   (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x80)))
 
-  (call $system::hash::sha3::keccak_block (get_local $residue_buffer) (i32.const 136) (get_local $context_offset))
+  (call $keccak_block (get_local $residue_buffer) (i32.const 136) (get_local $context_offset))
 
   // the first 32 bytes pointed at by $output_offset is the final hash
   (i64.store (get_local $output_offset) (i64.load (get_local $context_offset)))

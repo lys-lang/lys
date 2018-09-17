@@ -4,6 +4,65 @@ import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
 describe('execution tests', () => {
+  describe('struct', () => {
+    test(
+      'type alloc and basic pattern match',
+      `
+        type Color {
+          Red
+          Green
+          Blue
+          Custom(r: i32, g: i32, b: i32)
+        }
+
+        fun isRed(color: Color): boolean = {
+          color match {
+            case is Red -> true
+            // case Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+            else -> false
+          }
+        }
+
+        fun testColors(): void = {
+          support::test::assert(isRed(Red) == true)
+          support::test::assert(isRed(Green) == false)
+          support::test::assert(isRed(Blue) == false)
+          support::test::assert(isRed(Custom(5,5,5)) == false)
+          support::test::assert(Red.isRed() == true)
+          support::test::assert(Green.isRed() == false)
+          support::test::assert(Blue.isRed() == false)
+          support::test::assert(Custom(5,5,5).isRed() == false)
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testColors();
+      }
+    );
+
+    test(
+      'store values',
+      `
+        type x {
+          Custom(r: i32, g: i32, b: i32)
+        }
+
+        fun testColors(): void = {
+          val x = Custom(1,2,3)
+
+          support::test::assert(system::i32::load(x) == 0)
+
+          system::i32::store(x, 3)
+
+          support::test::assert(system::i32::load(x) == 3)
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testColors();
+      }
+    );
+  });
   describe('operators', () => {
     test(
       'single addition, overrides core',
@@ -183,7 +242,7 @@ describe('execution tests', () => {
             x.exports.testBool(99)
           ].map(($, $$) => `${$$} -> ${$}`),
           'match compare'
-        ).to.deep.eq([1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, -1].map(($, $$) => `${$$} -> ${$}`));
+        ).to.deep.eq([1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1].map(($, $$) => `${$$} -> ${$}`));
 
         expect(() => x.exports.testPanic1(), 'testPanic1').to.throw();
         expect(() => x.exports.testPanic2(), 'testPanic2').to.throw();
@@ -533,7 +592,7 @@ describe('execution tests', () => {
           }
       `,
       async x => {
-        expect(x.exports.test1(1)).to.eq(-1);
+        expect(x.exports.test1(1)).to.eq(1);
         expect(x.exports.test1(0)).to.eq(0);
         expect(x.exports.test2(10)).to.eq(1);
         expect(x.exports.test2(20)).to.eq(2);
@@ -548,7 +607,7 @@ describe('execution tests', () => {
         expect(x.exports.test2(71)).to.eq(0);
         expect(x.exports.test2(-170)).to.eq(0);
         expect(x.exports.test2(0)).to.eq(0);
-        expect(x.exports.test3(0)).to.eq(-1);
+        expect(x.exports.test3(0)).to.eq(1);
         expect(x.exports.test3(-1)).to.eq(0);
       }
     );

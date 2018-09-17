@@ -11,14 +11,18 @@ import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
+import { ParsingContext } from '../dist/parser/closure';
+
+const compilerTestParsingContext = new ParsingContext();
 
 const compilationPhases = function(txt: string): CompilationPhaseResult {
-  const parsing = new ParsingPhaseResult('test.ro', txt);
+  compilerTestParsingContext.reset();
+  const parsing = new ParsingPhaseResult('test.ro', txt, compilerTestParsingContext);
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
-  types.execute();
+  types.execute(true);
   types.ensureIsValid();
   const compiler = new CompilationPhaseResult(types);
   compiler.isSuccess();
@@ -60,7 +64,7 @@ describe('Compiler', function() {
       async (result, e) => {
         if (e) throw e;
         await result.validate(true);
-        return result.module.emitText();
+        return result.emitText();
       },
       '.optimized.wast'
     );

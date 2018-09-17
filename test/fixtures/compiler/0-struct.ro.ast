@@ -1,0 +1,368 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Color" type=Type<Color>
+    |-TypeDeclarationNode
+      |-StructDeclarationNode type=Type<Red>
+        |-NameIdentifierNode="Red" type=Type<Red>
+      |-StructDeclarationNode type=Type<Green>
+        |-NameIdentifierNode="Green" type=Type<Green>
+      |-StructDeclarationNode type=Type<Blue>
+        |-NameIdentifierNode="Blue" type=Type<Blue>
+      |-StructDeclarationNode type=Type<Custom>
+        |-NameIdentifierNode="Custom" type=Type<Custom>
+        |-ParameterNode
+          |-NameIdentifierNode="r" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="g" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+  |-OverloadedFunctionNode type=fun(color: Color) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(color: Color) -> boolean
+      |-FunctionNode type=boolean
+        |-ParameterNode
+          |-NameIdentifierNode="color" type=Color
+          |-TypeReferenceNode=Color type=Color
+            |-QNameNode=Color
+              |-NameIdentifierNode="Color"
+        |-NameIdentifierNode="isRed" type=fun(color: Color) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BlockNode type=boolean annotations=IsValueNode
+          |-PatternMatcherNode type=boolean annotations=IsValueNode
+            |-VariableReferenceNode type=Color annotations=IsValueNode
+              |-QNameNode=color
+                |-NameIdentifierNode="color"
+            |-MatchCaseIsNode type=boolean annotations=IsValueNode
+              |-TypeReferenceNode=Red type=Red
+                |-QNameNode=Red
+                  |-NameIdentifierNode="Red"
+              |-BooleanLiteral=true type=boolean annotations=IsValueNode
+            |-MatchDefaultNode type=boolean annotations=IsValueNode
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+    |-NameIdentifierNode="isRed" type=fun(color: Color) -> boolean
+  |-OverloadedFunctionNode type=fun() -> void annotations=Injected
+    |-FunDirectiveNode type=fun() -> void
+      |-FunctionNode type=void
+        |-NameIdentifierNode="testColors" type=fun() -> void
+        |-TypeReferenceNode=void type=void
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=void
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-VariableReferenceNode type=Red annotations=IsValueNode,ImplicitCall
+                  |-QNameNode=Red
+                    |-NameIdentifierNode="Red"
+              |-BooleanLiteral=true type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-VariableReferenceNode type=Green annotations=IsValueNode,ImplicitCall
+                  |-QNameNode=Green
+                    |-NameIdentifierNode="Green"
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-VariableReferenceNode type=Blue annotations=IsValueNode,ImplicitCall
+                  |-QNameNode=Blue
+                    |-NameIdentifierNode="Blue"
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-FunctionCallNode type=Custom annotations=IsValueNode
+                  |-VariableReferenceNode type=Type<Custom>
+                    |-QNameNode=Custom
+                      |-NameIdentifierNode="Custom"
+                  |-IntegerLiteral=5 type=i32 annotations=IsValueNode
+                  |-IntegerLiteral=5 type=i32 annotations=IsValueNode
+                  |-IntegerLiteral=5 type=i32 annotations=IsValueNode
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-VariableReferenceNode type=Red annotations=IsValueNode,ImplicitCall
+                  |-QNameNode=Red
+                    |-NameIdentifierNode="Red"
+              |-BooleanLiteral=true type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-VariableReferenceNode type=Green annotations=IsValueNode,ImplicitCall
+                  |-QNameNode=Green
+                    |-NameIdentifierNode="Green"
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-VariableReferenceNode type=Blue annotations=IsValueNode,ImplicitCall
+                  |-QNameNode=Blue
+                    |-NameIdentifierNode="Blue"
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+          |-FunctionCallNode type=void
+            |-VariableReferenceNode type=fun(x: boolean) -> void
+              |-QNameNode=support::test::assert
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
+                |-NameIdentifierNode="assert"
+            |-BinaryExpressionNode="==" type=boolean annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode type=boolean annotations=IsValueNode
+                |-VariableReferenceNode type=fun(color: Color) -> boolean
+                  |-QNameNode=isRed
+                    |-NameIdentifierNode="isRed"
+                |-FunctionCallNode type=Custom annotations=IsValueNode
+                  |-VariableReferenceNode type=Type<Custom>
+                    |-QNameNode=Custom
+                      |-NameIdentifierNode="Custom"
+                  |-IntegerLiteral=5 type=i32 annotations=IsValueNode
+                  |-IntegerLiteral=5 type=i32 annotations=IsValueNode
+                  |-IntegerLiteral=5 type=i32 annotations=IsValueNode
+              |-BooleanLiteral=false type=boolean annotations=IsValueNode
+    |-NameIdentifierNode="testColors" type=fun() -> void
+  |-OverloadedFunctionNode type=fun() -> Red annotations=Injected
+    |-FunDirectiveNode type=fun() -> Red annotations=Injected
+      |-FunctionNode type=fun() -> Red
+        |-NameIdentifierNode="RedAllocator" type=fun() -> Red
+        |-TypeReferenceNode=Red type=Red
+          |-QNameNode=Red
+            |-NameIdentifierNode="Red"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x100000000
+    |-NameIdentifierNode="RedAllocator" type=fun() -> Red
+  |-OverloadedFunctionNode type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(a: Red) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Red) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Red
+          |-TypeReferenceNode=Red type=Red
+            |-QNameNode=Red
+              |-NameIdentifierNode="Red"
+        |-NameIdentifierNode="is" type=fun(a: Red) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+    |-FunDirectiveNode type=fun(a: Green) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Green) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Green
+          |-TypeReferenceNode=Green type=Green
+            |-QNameNode=Green
+              |-NameIdentifierNode="Green"
+        |-NameIdentifierNode="is" type=fun(a: Green) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+    |-FunDirectiveNode type=fun(a: Blue) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Blue) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Blue
+          |-TypeReferenceNode=Blue type=Blue
+            |-QNameNode=Blue
+              |-NameIdentifierNode="Blue"
+        |-NameIdentifierNode="is" type=fun(a: Blue) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x300000000
+    |-FunDirectiveNode type=fun(a: Custom) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Custom) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Custom
+          |-TypeReferenceNode=Custom type=Custom
+            |-QNameNode=Custom
+              |-NameIdentifierNode="Custom"
+        |-NameIdentifierNode="is" type=fun(a: Custom) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x400000000
+    |-NameIdentifierNode="is" type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean
+  |-OverloadedFunctionNode type=fun() -> Green annotations=Injected
+    |-FunDirectiveNode type=fun() -> Green annotations=Injected
+      |-FunctionNode type=fun() -> Green
+        |-NameIdentifierNode="GreenAllocator" type=fun() -> Green
+        |-TypeReferenceNode=Green type=Green
+          |-QNameNode=Green
+            |-NameIdentifierNode="Green"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x200000000
+    |-NameIdentifierNode="GreenAllocator" type=fun() -> Green
+  |-OverloadedFunctionNode type=fun() -> Blue annotations=Injected
+    |-FunDirectiveNode type=fun() -> Blue annotations=Injected
+      |-FunctionNode type=fun() -> Blue
+        |-NameIdentifierNode="BlueAllocator" type=fun() -> Blue
+        |-TypeReferenceNode=Blue type=Blue
+          |-QNameNode=Blue
+            |-NameIdentifierNode="Blue"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x300000000
+    |-NameIdentifierNode="BlueAllocator" type=fun() -> Blue
+  |-OverloadedFunctionNode type=fun(r: i32, g: i32, b: i32) -> Custom annotations=Injected
+    |-FunDirectiveNode type=fun(r: i32, g: i32, b: i32) -> Custom annotations=Injected
+      |-FunctionNode type=fun(r: i32, g: i32, b: i32) -> Custom
+        |-ParameterNode
+          |-NameIdentifierNode="r" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="g" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="CustomAllocator" type=fun(r: i32, g: i32, b: i32) -> Custom
+        |-TypeReferenceNode=Custom type=Custom
+          |-QNameNode=Custom
+            |-NameIdentifierNode="Custom"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$_newRef
+              |-NameIdentifierNode="$_newRef"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$_newRef
+              |-NameIdentifierNode="$_newRef"
+            |-WasmAtomNode=call
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=8
+          |-WasmAtomNode=i64.or
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x400000000
+            |-WasmAtomNode=i64.extend_u/i32
+              |-WasmAtomNode=get_local
+                |-QNameNode=$_newRef
+                  |-NameIdentifierNode="$_newRef"
+    |-NameIdentifierNode="CustomAllocator" type=fun(r: i32, g: i32, b: i32) -> Custom

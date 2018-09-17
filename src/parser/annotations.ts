@@ -12,6 +12,7 @@ export type IAnnotationConstructor<T extends Annotation> = { new (...args): T };
 
 export namespace annotations {
   export class IsTailRec extends Annotation {}
+  export class Injected extends Annotation {}
 
   export class LabelId extends Annotation {
     constructor(public label: string) {
@@ -21,6 +22,7 @@ export namespace annotations {
   }
 
   export class IsTailRecCall extends Annotation {}
+  export class ImplicitCall extends Annotation {}
 
   export class IsValueNode extends Annotation {}
 

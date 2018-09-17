@@ -227,18 +227,35 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MatchCaseIsNode) {
-      node.deconstructorNames.forEach(($, $$) => {
-        if ($.name !== '_') {
-          new Edge(target, this.createNode($, new StructDeconstructorTypeResolver($$)));
-        }
-      });
+      this.resolveVariableByName(node.typeReference, 'is', target);
+      new Edge(this.traverse(node.typeReference), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+
+      if (node.deconstructorNames) {
+        node.deconstructorNames.forEach(($, $$) => {
+          if ($.name !== '_') {
+            new Edge(target, this.createNode($, new StructDeconstructorTypeResolver($$)));
+          }
+        });
+      }
 
       if (node.declaredName) {
         // new Edge(, target, EdgeLabels.LHS);
       }
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.WasmExpressionNode) {
-      // noop
+      node.atoms.forEach($ => this.traverseNode($, target));
+    } else if (node instanceof Nodes.WasmAtomNode) {
+      if (node.symbol === 'call' || node.symbol === 'get_global' || node.symbol === 'set_global') {
+        if (node.arguments[0] instanceof Nodes.VariableReferenceNode) {
+          this.traverse(node.arguments[0]);
+        }
+      } else {
+        node.arguments.forEach($ => {
+          if ($ instanceof Nodes.WasmAtomNode) {
+            this.traverseNode($, target);
+          }
+        });
+      }
     } else if (node instanceof Nodes.MatchDefaultNode) {
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else this.traverseChildren(node, target);

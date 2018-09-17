@@ -65,7 +65,7 @@ export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
 
       let color = 'grey';
 
-      if (node.amount > 5) {
+      if (node.amount > node.MAX_ATTEMPTS / 10) {
         label = label + '\nAmount: ' + node.amount.toString();
         color = 'magenta';
       }

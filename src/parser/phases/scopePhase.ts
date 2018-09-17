@@ -103,6 +103,14 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure.set(node.functionName);
     }
 
+    if (node instanceof Nodes.VariableReferenceNode) {
+      node.closure = node.closure.newChildClosure();
+    }
+
+    if (node instanceof Nodes.TypeReferenceNode) {
+      node.closure = node.closure.newChildClosure();
+    }
+
     if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
       node.closure.set(node.variableName);
@@ -118,6 +126,12 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       });
     }
 
+    if (node instanceof Nodes.StructDeclarationNode) {
+      if (!node.internalIdentifier) {
+        node.internalIdentifier = node.closure.getInternalIdentifier(node);
+      }
+    }
+
     if (node instanceof Nodes.FunctionNode) {
       if (!node.body) {
         throw new AstNodeError('Function has no value', node);
@@ -127,7 +141,9 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
         node.closure.set(node.functionName);
       }
 
-      node.internalIdentifier = node.closure.getInternalIdentifier(node);
+      if (!node.internalIdentifier) {
+        node.internalIdentifier = node.closure.getInternalIdentifier(node);
+      }
 
       node.closure = node.closure.newChildClosure();
 
@@ -143,7 +159,6 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
 const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (!node.closure.canResolveQName(node.variable)) {
-      node.closure.canResolveQName(node.variable);
       throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
     }
     const resolved = node.closure.getQName(node.variable);
@@ -158,14 +173,18 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhase
   }
 });
 
-const findImplicitImports = walkPreOrder((node: Nodes.Node) => {
+const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.VariableReferenceNode) {
     if (node.variable.names.length > 1) {
-      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+      const { moduleName, variable } = node.variable.deconstruct();
+      node.closure.registerImport(moduleName, new Set([variable]));
+      scopePhaseResult.importedModules.add(moduleName);
     }
   } else if (node instanceof Nodes.TypeReferenceNode) {
     if (node.variable.names.length > 1) {
-      node.closure.registerForeginModule(node.variable.names.slice(0, -1).join('::'));
+      const { moduleName, variable } = node.variable.deconstruct();
+      node.closure.registerImport(moduleName, new Set([variable]));
+      scopePhaseResult.importedModules.add(moduleName);
     }
   }
 });
@@ -185,6 +204,8 @@ function injectCoreImport(document: Nodes.DocumentNode) {
 }
 
 export class ScopePhaseResult extends PhaseResult {
+  importedModules = new Set<string>();
+
   get document() {
     return this.semanticPhaseResult.document;
   }
@@ -202,13 +223,15 @@ export class ScopePhaseResult extends PhaseResult {
     this.document.directives
       .filter($ => $ instanceof Nodes.ImportDirectiveNode)
       .forEach(($: Nodes.ImportDirectiveNode) => {
-        const importAll = new Set('*');
-        $.closure.registerImport($.module.text, importAll);
+        const importAll = $.allItems ? new Set(['*']) : new Set();
+        this.importedModules.add($.module.text);
+        this.document.closure.registerImport($.module.text, importAll);
       });
   }
 
   protected execute() {
     injectCoreImport(this.document);
+
     createClosures(this.document, this, null);
 
     this.registerImportedModules();

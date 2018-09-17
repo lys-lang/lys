@@ -383,12 +383,25 @@ fun (!=)(lhs: f64, rhs: f64): boolean = %wasm {
   (f64.ne (get_local $lhs) (get_local $rhs))
 }
 
-
-
-
 fun assert(x: boolean): void =
   if (x == false) {
     panic()
   }
+
+fun sizeOf(lhs: ref): u32 = %wasm { (i32.const 8) }
+fun sizeOf(lhs: f64): u32 = %wasm { (i32.const 8) }
+fun sizeOf(lhs: i64): u32 = %wasm { (i32.const 8) }
+fun sizeOf(lhs: u64): u32 = %wasm { (i32.const 8) }
+fun sizeOf(lhs: boolean): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: f32): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: i32): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: u32): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: i16): u32 = %wasm { (i32.const 2) }
+fun sizeOf(lhs: u16): u32 = %wasm { (i32.const 2) }
+fun sizeOf(lhs: u8): u32 = %wasm { (i32.const 1) }
+
+fun addressFromRef(pointer: ref): u32 = %wasm {
+  (i32.wrap/i64 (get_local $pointer))
+}
 
 fun panic(): void = %wasm { (unreachable) }

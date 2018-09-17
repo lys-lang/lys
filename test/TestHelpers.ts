@@ -77,9 +77,10 @@ export function printAST(token: IToken | Nodes.Node, level = 0) {
     const ofType = token.ofType ? ' type=' + token.ofType.toString() : '';
     const text = token.text ? '=' + token.text.replace(/\n/g, '\\n') : '';
     const annotations =
-      token.getAnnotations().size > 0
+      token.getAnnotations().length > 0
         ? ' annotations=' +
-          Array.from(token.getAnnotations().values())
+          token
+            .getAnnotations()
             .map($ => $.toString())
             .join(',')
         : '';
@@ -133,6 +134,10 @@ export function folderBasedTest<T extends PhaseResult>(
           if (writeToFile || !compareFileExists) {
             writeFileSync(compareToFileName, result);
           }
+          expect(compareTo.trim().length > 0 || !compareFileExists).toEqual(
+            true,
+            'comparing against blank file: ' + compareToFileName
+          );
           expect(result.trim()).toEqual(compareTo.trim());
         }
       },

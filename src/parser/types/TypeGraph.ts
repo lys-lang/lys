@@ -65,7 +65,7 @@ export class TypeNode {
     }
   }
 
-  private MAX_ATTEMPTS = 50;
+  public readonly MAX_ATTEMPTS = 50;
   private _outgoingEdges: Array<Edge> = [];
   private _incomingEdges: Array<Edge> = [];
   amount = 0;

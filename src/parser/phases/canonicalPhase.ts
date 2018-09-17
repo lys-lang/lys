@@ -17,9 +17,9 @@ function binaryOpVisitor(astNode: IToken) {
     } else if (opertator === 'is') {
       ret = new Nodes.IsExpressionNode(astNode);
     } else {
-      ret = new Nodes.BinaryExpressionNode(astNode);
-      ret.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
-      ret.operator.name = opertator;
+      const op = (ret = new Nodes.BinaryExpressionNode(astNode));
+      op.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
+      op.operator.name = opertator;
     }
 
     ret.lhs = oldRet;
@@ -464,6 +464,20 @@ const visitor = {
     const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
     ret.arguments = ret.arguments.concat(newChildren);
 
+    if (ret.symbol == 'call' || ret.symbol == 'get_global' || ret.symbol == 'set_global') {
+      if (ret.arguments[0] instanceof Nodes.QNameNode) {
+        const varRef = new Nodes.VariableReferenceNode(children[0]);
+        varRef.variable = ret.arguments[0] as Nodes.QNameNode;
+
+        if (varRef.variable.names[0].name.startsWith('$')) {
+          // TODO: fix horrible hack $
+          varRef.variable.names[0].name = varRef.variable.names[0].name.replace(/^\$/, '');
+        }
+
+        ret.arguments[0] = varRef;
+      }
+    }
+
     return ret;
   }
 };
@@ -507,5 +521,9 @@ export class CanonicalPhaseResult extends PhaseResult {
     this.document = visit(this.parsingPhaseResult.document);
     this.document.file = this.parsingPhaseResult.fileName;
     failIfErrors('Canonical phase', this.document, this);
+  }
+
+  static fromString(code: string) {
+    return new CanonicalPhaseResult(ParsingPhaseResult.fromString(code));
   }
 }

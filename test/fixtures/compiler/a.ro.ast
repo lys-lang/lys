@@ -10,7 +10,7 @@
     |-NameIdentifierNode="f32" type=Type<f32>
   |-TypeDirectiveNode
     |-NameIdentifierNode="f64" type=Type<f64>
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="test" type=fun() -> i32
@@ -19,7 +19,7 @@
             |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="test0" type=fun() -> i32
@@ -28,7 +28,7 @@
             |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test0" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun(a: i32) -> i32
+  |-OverloadedFunctionNode type=fun(a: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: i32) -> i32
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
@@ -44,7 +44,7 @@
           |-QNameNode=a
             |-NameIdentifierNode="a"
     |-NameIdentifierNode="testa" type=fun(a: i32) -> i32
-  |-OverloadedFunctionNode type=fun(a: f32, b: f64) -> f32
+  |-OverloadedFunctionNode type=fun(a: f32, b: f64) -> f32 annotations=Injected
     |-FunDirectiveNode type=fun(a: f32, b: f64) -> f32
       |-FunctionNode type=fun(a: f32, b: f64) -> f32
         |-ParameterNode
@@ -65,7 +65,7 @@
           |-QNameNode=a
             |-NameIdentifierNode="a"
     |-NameIdentifierNode="floatingPoints" type=fun(a: f32, b: f64) -> f32
-  |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32
+  |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32 annotations=Injected
     |-FunDirectiveNode type=fun(a: f32, b: f32) -> f32
       |-FunctionNode type=fun(a: f32, b: f32) -> f32
         |-ParameterNode
@@ -91,7 +91,7 @@
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="addFloat" type=fun(a: f32, b: f32) -> f32
-  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32
+  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: i32, b: i32) -> i32
       |-FunctionNode type=fun(a: i32, b: i32) -> i32
         |-ParameterNode
@@ -117,7 +117,7 @@
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="addInts" type=fun(a: i32, b: i32) -> i32
-  |-OverloadedFunctionNode type=fun(width: f32, height: f32) -> f32
+  |-OverloadedFunctionNode type=fun(width: f32, height: f32) -> f32 annotations=Injected
     |-FunDirectiveNode type=fun(width: f32, height: f32) -> f32
       |-FunctionNode type=fun(width: f32, height: f32) -> f32
         |-ParameterNode

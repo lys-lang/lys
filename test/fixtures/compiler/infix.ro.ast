@@ -8,7 +8,7 @@
     |-NameIdentifierNode="i32" type=Type<i32>
   |-TypeDirectiveNode
     |-NameIdentifierNode="f32" type=Type<f32>
-  |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32 & fun(a: i32, b: i32) -> i32
+  |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32 & fun(a: i32, b: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: f32, b: f32) -> f32
       |-FunctionNode type=fun(a: f32, b: f32) -> f32
         |-ParameterNode
@@ -58,7 +58,7 @@
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="sum" type=fun(a: f32, b: f32) -> f32 & fun(a: i32, b: i32) -> i32
-  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32
+  |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: i32, b: i32) -> i32
       |-FunctionNode type=i32
         |-ParameterNode
@@ -86,7 +86,7 @@
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="testInt" type=fun(a: i32, b: i32) -> i32
-  |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32
+  |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32 annotations=Injected
     |-FunDirectiveNode type=fun(a: f32, b: f32) -> f32
       |-FunctionNode type=f32
         |-ParameterNode

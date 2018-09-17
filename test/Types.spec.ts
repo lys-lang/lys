@@ -9,16 +9,22 @@ import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { print } from '../dist/utils/typeGraphPrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
+import { annotations } from '../dist/parser/annotations';
+import { Nodes } from '../dist/parser/nodes';
+import { ParsingContext } from '../dist/parser/closure';
+
+const parsingContext = new ParsingContext();
 
 const phases = function(txt: string): ScopePhaseResult {
-  const parsing = new ParsingPhaseResult('test.ro', txt);
+  parsingContext.reset();
+  const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   return scope;
 };
 
-describe.only('Types', function() {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -43,7 +49,14 @@ describe.only('Types', function() {
         }
 
         const expectedResult = normalizeResult(expectedType);
-        const givenResult = normalizeResult(typePhase.document.directives.map($ => $.ofType).join('\n'));
+
+        const givenResult = normalizeResult(
+          typePhase.document.directives
+            .filter($ => $ instanceof Nodes.OverloadedFunctionNode)
+            .filter(($: Nodes.OverloadedFunctionNode) => $.functions.some($ => !$.hasAnnotation(annotations.Injected)))
+            .map(($: Nodes.OverloadedFunctionNode) => $.ofType)
+            .join('\n')
+        );
 
         try {
           expect(givenResult).to.eq(expectedResult);
@@ -97,6 +110,66 @@ describe.only('Types', function() {
     });
     describe('recursive types', () => {
       checkMainType`
+        fun a() = %wasm { (nop) }
+        fun x() =
+          if (0 == 1)
+            a()
+          else
+            1
+        ---
+        fun() -> UNKNOWN
+        fun() -> i32
+      `;
+
+      checkMainType`
+        fun factorial(n: i32) =
+          if (n >= 1)
+            n * factorial(n - 1)
+          else
+            1
+
+        fun x() = factorial(10)
+        ---
+        fun(n: i32) -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        fun factorial(n: i32) = factorial(n - 1)
+
+        fun x() = factorial(10)
+        ---
+        fun(n: i32) -> UNKNOWN
+        fun() -> UNKNOWN
+      `;
+
+      checkMainType`
+        fun factorial(n: i32) =
+          if (n >= 1)
+            factorial(n - 1)
+          else
+            1
+
+        fun x() = factorial(10)
+        ---
+        fun(n: i32) -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        private fun a(i: i32) = i
+        private fun a(i: boolean) = i
+
+        private fun a() =
+          if(1 > 0)
+            a(1)
+          else
+            a(false)
+        ---
+        fun(i: i32) -> i32 & fun(i: boolean) -> boolean & fun() -> i32 | boolean
+      `;
+
+      checkMainType`
         type Test {
           Null
           Some(x: Test)
@@ -115,27 +188,17 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        fun factorial(n: i32) =
-          if (n >= 1)
-            n * factorial(n - 1)
-          else
-            1
+        struct Custom(r: i32)
+
+        fun a() = Custom(1)
+        fun b(i: i32) = Custom(i)
         ---
-        fun(n: i32) -> i32
+        fun() -> Custom
+        fun(i: i32) -> Custom
       `;
 
       checkMainType`
-        fun factorial(n: i32) =
-          if (n >= 1)
-            n * factorial(n - 1)
-          else
-            1
-        ---
-        fun(n: i32) -> i32
-      `;
-
-      checkMainType`
-        fun gcd(x: i32, y: i32) =
+        fun gcd(x: i32, y: i32): i32 =
           if (x > y)
             gcd(x - y, y)
           else if (x < y)
@@ -145,12 +208,100 @@ describe.only('Types', function() {
         ---
         fun(x: i32, y: i32) -> i32
       `;
+
+      checkMainType`
+        fun factorial(n: i32): i32 =
+          if (n >= 1)
+            n * factorial(n - 1)
+          else
+            1
+
+        fun gcd(x: i32, y: i32): i32 =
+          if (x > y)
+            gcd(x - y, y)
+          else if (x < y)
+            gcd(x, y - x)
+          else
+            factorial(x)
+        ---
+        fun(n: i32) -> i32
+        fun(x: i32, y: i32) -> i32
+      `;
     });
     describe('assign', () => {
       checkMainType`
         fun main() = 1.0
         ---
         fun() -> f32
+      `;
+
+      checkMainType`
+        type x {
+          Nila
+          Custom(r: i32)
+        }
+
+        fun qq(x: ref): void = ???
+        fun qq(x: x): f32 = ???
+        fun qq(x: Custom): i32 = ???
+
+        fun a(): i32 = qq(Custom(1))
+        fun b(t: Custom): i32 = qq(t)
+        fun c(t: x): f32 = qq(t)
+        fun d(i: i32): i32 = qq(Custom(i))
+        fun e(t: Nila): f32 = qq(t)
+        fun f(): f32 = qq(Nila)
+        ---
+        fun() -> i32
+        fun(t: Custom) -> i32
+        fun(t: x) -> f32
+        fun(i: i32) -> i32
+        fun(t: Nila) -> f32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        type x {
+          Nila
+          Custom(r: i32)
+        }
+
+        fun qq(x: Custom): i32 = ???
+        fun qq(x: ref): void = ???
+        fun qq(x: x): f32 = ???
+
+        fun a(): i32 = qq(Custom(1))
+        fun b(t: Custom): i32 = qq(t)
+        fun c(t: x): f32 = qq(t)
+        fun d(i: i32): i32 = qq(Custom(i))
+        fun e(t: Nila): f32 = qq(t)
+        fun f(): f32 = qq(Nila)
+        ---
+        fun() -> i32
+        fun(t: Custom) -> i32
+        fun(t: x) -> f32
+        fun(i: i32) -> i32
+        fun(t: Nila) -> f32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        type x {
+          Custom(r: i32)
+        }
+
+        fun QQ(x: ref): void = ???
+
+        fun a(): void = QQ(Custom(1))
+        fun b(t: Custom): void = QQ(t)
+        fun c(t: x): void = QQ(t)
+        fun d(i: i32): void = QQ(Custom(i))
+        ---
+        fun(x: ref) -> void
+        fun() -> void
+        fun(t: Custom) -> void
+        fun(t: x) -> void
+        fun(i: i32) -> void
       `;
 
       checkMainType`
@@ -205,7 +356,7 @@ describe.only('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Unexpected type Type<f32>, a value expression is required.
+        Type<f32> is not a value, constructor or function.
       `;
 
       checkMainType`
@@ -213,7 +364,7 @@ describe.only('Types', function() {
         ---
         fun() -> UNKNOWN
         ---
-        Unexpected type Type<f32>, a value expression is required.
+        Type<f32> is not a value, constructor or function.
       `;
 
       checkMainType`
@@ -221,7 +372,40 @@ describe.only('Types', function() {
         ---
         fun() -> f32
         ---
-        Unexpected type Type<f32>, a value expression is required.
+        Type<f32> is not a value, constructor or function.
+      `;
+    });
+
+    describe('struct pattern matching', () => {
+      checkMainType`
+        type Color {
+          Red
+          Green
+          Blue
+          Custom(r: i32, g: i32, b: i32)
+        }
+
+        fun isRed(color: Color): boolean = {
+          color match {
+            case is Red -> true
+            case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+            else -> false
+          }
+        }
+
+        fun testColors(): void = {
+          support::test::assert(isRed(Red) == true)
+          support::test::assert(isRed(Green) == false)
+          support::test::assert(isRed(Blue) == false)
+          support::test::assert(isRed(Custom(5,5,5)) == false)
+          support::test::assert(Red.isRed() == true)
+          support::test::assert(Green.isRed() == false)
+          support::test::assert(Blue.isRed() == false)
+          support::test::assert(Custom(5,5,5).isRed() == false)
+        }
+        ---
+        fun(color: Color) -> boolean
+        fun() -> void
       `;
     });
 
@@ -1113,67 +1297,69 @@ describe.only('Types', function() {
     });
   });
 
-  describe('Resolution', () => {
-    folderBasedTest(
-      '**/types/*.ro',
-      phases,
-      async (result, e) => {
-        if (e) throw e;
-        const typePhase = new TypePhaseResult(result);
-        typePhase.execute();
-        typePhase.ensureIsValid();
-
-        return print(typePhase.typeGraph);
-      },
-      '.dot'
-    );
-  });
-
-  describe('Resolution-ast', () => {
-    folderBasedTest(
-      '**/types/*.ro',
-      phases,
-      async (result, e) => {
-        if (e) {
-          if (result) {
-            console.log(printErrors(result.document, [e as any]));
-          }
-          throw e;
-        }
-
-        try {
+  describe('file based tests', () => {
+    describe('Resolution', () => {
+      folderBasedTest(
+        '**/types/*.ro',
+        phases,
+        async (result, e) => {
+          if (e) throw e;
           const typePhase = new TypePhaseResult(result);
           typePhase.execute();
-          return printAST(typePhase.document);
-        } catch (e) {
-          console.log(printErrors(result.document, [e]));
-          throw e;
-        }
-      },
-      '.ast'
-    );
-  });
-
-  describe('Compiler errors', () => {
-    folderBasedTest(
-      '**/type-error/*.ro',
-      phases,
-      async (result, e) => {
-        if (e) throw e;
-
-        const typePhase = new TypePhaseResult(result);
-
-        try {
-          typePhase.execute();
           typePhase.ensureIsValid();
-          debugger;
-        } catch (e) {
-          return printErrors(typePhase.document, typePhase.errors, true);
-        }
 
-        throw new Error('Type phase did not fail');
-      },
-      '.txt'
-    );
+          return print(typePhase.typeGraph);
+        },
+        '.dot'
+      );
+    });
+
+    describe('Resolution-ast', () => {
+      folderBasedTest(
+        '**/types/*.ro',
+        phases,
+        async (result, e) => {
+          if (e) {
+            if (result) {
+              console.log(printErrors(result.document, [e as any]));
+            }
+            throw e;
+          }
+
+          try {
+            const typePhase = new TypePhaseResult(result);
+            typePhase.execute();
+            return printAST(typePhase.document);
+          } catch (e) {
+            console.log(printErrors(result.document, [e]));
+            throw e;
+          }
+        },
+        '.ast'
+      );
+    });
+
+    describe('Compiler errors', () => {
+      folderBasedTest(
+        '**/type-error/*.ro',
+        phases,
+        async (result, e) => {
+          if (e) throw e;
+
+          const typePhase = new TypePhaseResult(result);
+
+          try {
+            typePhase.execute();
+            typePhase.ensureIsValid();
+            debugger;
+          } catch (e) {
+            return printErrors(typePhase.document, typePhase.errors, true);
+          }
+
+          throw new Error('Type phase did not fail');
+        },
+        '.txt'
+      );
+    });
   });
 });

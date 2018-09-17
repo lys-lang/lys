@@ -7,6 +7,7 @@ import { TypeGraphBuilder } from '../types/TypeGraphBuilder';
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { ParsingContext } from '../closure';
+import { print } from '../../utils/typeGraphPrinter';
 
 const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
   node.parent = parent;
@@ -46,13 +47,20 @@ export class TypePhaseResult extends PhaseResult {
     );
   }
 
-  execute() {
+  execute(printGraph = false) {
     const executor = this.typeResolutionContext.newExecutorWithContext(
       this.document.closure,
       this.typeGraph,
       this.scopePhaseResult.semanticPhaseResult.parsingContext
     );
 
-    executor.run();
+    try {
+      executor.run();
+    } catch (e) {
+      if (printGraph) {
+        console.log(print(this.typeGraph));
+      }
+      throw e;
+    }
   }
 }

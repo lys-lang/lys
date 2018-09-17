@@ -22,7 +22,7 @@ const resolveLocals = walkPreOrder(
        */
       const fn = findParentType(node, Nodes.FunctionNode);
 
-      node.local = fn.addLocal(node.lhs.ofType);
+      node.local = fn.getTempLocal(node.lhs.ofType);
     }
   },
   (node: Nodes.Node) => {

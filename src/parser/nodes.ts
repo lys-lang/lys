@@ -83,11 +83,16 @@ export namespace Nodes {
       this.annotations.add(annotation);
     }
 
-    getAnnotations() {
-      if (!this.annotations) {
-        this.annotations = new Set();
+    getAnnotations(): Annotation[];
+    getAnnotations<T extends Annotation>(klass: IAnnotationConstructor<T>): T[];
+    getAnnotations<T extends Annotation>(klass?: IAnnotationConstructor<T>): T[] {
+      const ret = [];
+      if (this.annotations) {
+        this.annotations.forEach($ => {
+          if (!klass || $ instanceof klass) ret.push($);
+        });
       }
-      return this.annotations;
+      return ret;
     }
   }
 
@@ -110,8 +115,21 @@ export namespace Nodes {
   export class QNameNode extends Node {
     names: NameIdentifierNode[];
 
+    deconstruct() {
+      const moduleName = this.names
+        .slice(0, -1)
+        .map($ => $.name)
+        .join('::');
+      const variable = this.names[this.names.length - 1].name;
+      return { moduleName, variable };
+    }
+
     get text() {
       return this.names.map($ => $.name).join('::');
+    }
+
+    toString() {
+      return this.text;
     }
 
     static fromString(name: string): QNameNode {
@@ -121,10 +139,7 @@ export namespace Nodes {
     }
   }
 
-  export class TypeNode extends Node {
-    /** Resolved type object */
-    nativeType: Type;
-  }
+  export class TypeNode extends Node {}
 
   export class TypeReferenceNode extends TypeNode {
     /** Name of the referenced type */
@@ -184,7 +199,6 @@ export namespace Nodes {
   }
 
   export class FunctionNode extends ExpressionNode {
-    injected: boolean = false;
     functionName: NameIdentifierNode;
     functionReturnType: TypeNode;
     parameters: ParameterNode[] = [];
@@ -245,7 +259,7 @@ export namespace Nodes {
     /** Gets a free temporary local of the specified type. */
     getTempLocal(type: Type): Local {
       var temps: Local[] | null;
-      switch (type.nativeType) {
+      switch (type.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s;
           break;
@@ -263,6 +277,7 @@ export namespace Nodes {
           break;
         }
         default:
+          console.trace('concrete type expected ' + type.toString());
           throw new Error('concrete type expected');
       }
 
@@ -282,7 +297,7 @@ export namespace Nodes {
     freeTempLocal(local: Local): void {
       var temps: Local[];
       if (local.type === null) throw new Error('type is null'); // internal error
-      switch (local.type.nativeType) {
+      switch (local.type.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
           break;
@@ -300,6 +315,7 @@ export namespace Nodes {
           break;
         }
         default:
+          console.trace('concrete type expected');
           throw new Error('concrete type expected');
       }
       if (local.index < 0) throw new Error('invalid local index');
@@ -309,7 +325,7 @@ export namespace Nodes {
     /** Gets and immediately frees a temporary local of the specified type. */
     getAndFreeTempLocal(type: Type): Local {
       var temps: Local[];
-      switch (type.nativeType) {
+      switch (type.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
           break;
@@ -327,6 +343,7 @@ export namespace Nodes {
           break;
         }
         default:
+          console.trace('concrete type expected');
           throw new Error('concrete type expected');
       }
 
@@ -377,7 +394,6 @@ export namespace Nodes {
   export class ContextAwareFunction extends FunctionNode {
     constructor(public baseFunction: FunctionNode, public closure: Closure) {
       super(baseFunction.astNode);
-      this.injected = true;
       this.functionName = baseFunction.functionName;
       this.functionReturnType = baseFunction.functionReturnType;
       this.parameters = baseFunction.parameters;
@@ -400,7 +416,6 @@ export namespace Nodes {
   }
 
   export class OverloadedFunctionNode extends DirectiveNode {
-    injected = true;
     functionName: NameIdentifierNode;
     functions: FunDirectiveNode[] = [];
   }
@@ -470,6 +485,10 @@ export namespace Nodes {
     }
     set value(value: number) {
       this.astNode.text = value.toString(16);
+    }
+
+    get text() {
+      return this.astNode.text;
     }
   }
 
@@ -575,6 +594,7 @@ export namespace Nodes {
     declaredName: NameIdentifierNode;
     typeReference: TypeReferenceNode;
     deconstructorNames: NameIdentifierNode[];
+    resolvedFunctionType: FunctionType;
   }
 
   export class MatchLiteralNode extends MatcherNode {
@@ -594,9 +614,11 @@ export namespace Nodes {
     internalIdentifier: string;
     declaredName: NameIdentifierNode;
     parameters: ParameterNode[];
+    typeNumber: number | null = null;
   }
 
   export class TypeDeclarationNode extends TypeNode {
+    typeNumber: number | null = null;
     declarations: StructDeclarationNode[];
   }
 

@@ -12,7 +12,7 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="x" type=i32
       |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="addOne" type=fun() -> i32
@@ -43,7 +43,7 @@
               |-QNameNode=y
                 |-NameIdentifierNode="y"
     |-NameIdentifierNode="addOne" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> void
+  |-OverloadedFunctionNode type=fun() -> void annotations=Injected
     |-FunDirectiveNode type=fun() -> void
       |-FunctionNode type=fun() -> void
         |-NameIdentifierNode="addOneNoReturn" type=fun() -> void

@@ -8,7 +8,7 @@
     |-NameIdentifierNode="i32" type=Type<i32>
   |-TypeDirectiveNode
     |-NameIdentifierNode="f32" type=Type<f32>
-  |-OverloadedFunctionNode type=fun(x: i32) -> i32 & fun(x: f32) -> f32
+  |-OverloadedFunctionNode type=fun(x: i32) -> i32 & fun(x: f32) -> f32 annotations=Injected
     |-FunDirectiveNode type=fun(x: i32) -> i32
       |-FunctionNode type=fun(x: i32) -> i32
         |-ParameterNode
@@ -38,7 +38,7 @@
           |-QNameNode=x
             |-NameIdentifierNode="x"
     |-NameIdentifierNode="x" type=fun(x: i32) -> i32 & fun(x: f32) -> f32
-  |-OverloadedFunctionNode type=fun() -> i32
+  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=i32
         |-NameIdentifierNode="outer" type=fun() -> i32
