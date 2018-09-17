@@ -73,8 +73,8 @@ describe('execution tests', () => {
 
           support::test::assert(system::i32::load(x) == 3)
           support::test::assert(system::i32::load(y) == 0xABCDEF01)
-          support::test::assert(system::u8::load(y) == 0x01)
-          support::test::assert(system::u8::load(y, 5) == 5)
+          support::test::assert(system::u8::load(y) as i32 == 0x01)
+          support::test::assert(system::u8::load(y, 5) as i32 == 5)
         }
 
         fun retRef() = addressFromRef(Custom(0, 0))
