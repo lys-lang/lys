@@ -133,7 +133,7 @@ export class PassThroughTypeResolver extends TypeResolver {
       if (ctx.currentParsingContext) {
         throw new Error(
           `PassThrough resolver only works with nodes with one edge but found '${
-            node.incomingEdges().length
+          node.incomingEdges().length
           }' with node ${node.astNode.nodeName}`
         );
       } else {

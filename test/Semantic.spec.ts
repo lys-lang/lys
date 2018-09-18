@@ -18,8 +18,8 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes
 
 const parsingContext = new ParsingContext();
 
-describe('Semantic', function() {
-  const phases = function(txt: string): ScopePhaseResult {
+describe('Semantic', function () {
+  const phases = function (txt: string): ScopePhaseResult {
     parsingContext.reset();
     const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
     const canonical = new CanonicalPhaseResult(parsing);
@@ -91,11 +91,11 @@ describe('Semantic', function() {
   describe('Duplicated parameters', () => {
     test`
       type i32
-      fun test(a: i32, b: i32) = 1
+      fun test(a: i32, b: i32): i32 = 1
     `;
     testToFail`
       type i32
-      fun test(a: i32, a: i32) = 1
+      fun test(a: i32, a: i32): i32 = 1
     `;
   });
 
@@ -156,7 +156,7 @@ describe('Semantic', function() {
         type i32
         var x = 1
         var b = null
-        fun a() = {
+        fun a(): void = {
           if (x < 3) a()
           b
         }`,
@@ -175,7 +175,7 @@ describe('Semantic', function() {
         type i32
         var x = 1
         var b = null
-        fun a() = {
+        fun a(): void = {
           if (x < 3) { a() }
           b
         }`,
@@ -193,18 +193,18 @@ describe('Semantic', function() {
   describe('Pattern matching', () => {
     test`
       type i32
-      fun test(a: i32) = a match {
+      fun test(a: i32): boolean = a match {
         case 1 -> true
         else -> false
       }
     `;
     testToFail`
       type i32
-      fun test(a: i32) = a match { }
+      fun test(a: i32): void = a match { }
     `;
     testToFail`
       type i32
-      fun test(a: i32) = a match { else -> 1 }
+      fun test(a: i32): i32 = a match { else -> 1 }
     `;
   });
 
@@ -214,7 +214,7 @@ describe('Semantic', function() {
         type i32
         fun map(a: i32,b: i32): i32 = a
 
-        fun a() = {
+        fun a(): i32 = {
           1.map(3)
         }`,
       'Document',
@@ -249,7 +249,7 @@ describe('Semantic', function() {
         type i32
         fun map(a: i32,b: i32): i32 = a
         var b = null
-        fun a() = {
+        fun a(): i32 = {
           (1).map(3)
           b
         }`,
@@ -321,7 +321,7 @@ describe('Semantic', function() {
   describe('scope resolution', () => {
     testParseToken(
       `
-        fun x(a: i32) = a
+        fun x(a: i32): i32 = a
       `,
       'Document',
       async (x, e) => {
@@ -338,7 +338,7 @@ describe('Semantic', function() {
       `
         type i32
         var a = 1
-        fun x(a: i32) = a
+        fun x(a: i32): i32 = a
       `,
       'Document',
       async (x, e) => {
@@ -369,7 +369,7 @@ describe('Semantic', function() {
       `
         type i32
         var a = 1
-        fun x(b: i32) = a
+        fun x(b: i32): i32 = a
       `,
       'Document',
       async (x, e) => {
@@ -386,26 +386,26 @@ describe('Semantic', function() {
   describe('Scopes', () => {
     test`
       val a = true
-      fun test() = a
+      fun test(): boolean = a
     `;
 
     test`
       val a = true
-      fun test() = a
+      fun test(): boolean = a
     `;
 
     test`
       val a = true
-      fun test() = a
+      fun test(): boolean = a
     `;
 
     test`
-      fun test() = test
+      fun test(): void = test
     `;
     test`
       type i32
       var a = 1
-      fun test(a: i32) = a
+      fun test(a: i32): i32 = a
     `;
 
     testToFail`var a = a`;
@@ -432,7 +432,7 @@ describe('Semantic', function() {
 
     testToFail`
       type i32
-      fun test(a: i32) = b
+      fun test(a: i32): i32 = b
     `;
   });
 });

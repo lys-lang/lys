@@ -6,7 +6,7 @@ import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { expect } from 'chai';
 
 describe('Parser', () => {
-  const phases = function(txt: string): CanonicalPhaseResult {
+  const phases = function (txt: string): CanonicalPhaseResult {
     const x = new ParsingPhaseResult('test.ro', txt);
 
     return new CanonicalPhaseResult(x);
@@ -26,7 +26,7 @@ describe('Parser', () => {
     );
   });
 
-  describe('Basic sanity tests', function() {
+  describe('Basic sanity tests', function () {
     function test(literals, ...placeholders) {
       let result = '';
 
@@ -159,12 +159,12 @@ describe('Parser', () => {
 
     describe('WasmExpression', () => {
       test`
-        private inline fun test() = %wasm {
+        private inline fun test(): void = %wasm {
 
         }
 
-        private inline fun test() = %wasm { }
-        private inline fun test() =%wasm{}
+        private inline fun test(): void = %wasm { }
+        private inline fun test(): void =%wasm{}
 
         var freeblock = 0
 
@@ -365,14 +365,14 @@ describe('Parser', () => {
       `;
     });
 
-    test`fun test() = 1`;
-    test`fun test() = {}`;
-    test`fun test() = {    }`;
-    test`fun test() = {  \n\n  }`;
+    test`fun test(): i32 = 1`;
+    test`fun test(): void = {}`;
+    test`fun test(): void = {    }`;
+    test`fun test(): void = {  \n\n  }`;
 
-    test`private fun test(  a: MBER,      b   : NumBer) = 1`;
+    test`private fun test(  a: MBER,      b   : NumBer): i32 = 1`;
 
-    test`fun test() = 2`;
+    test`fun test(): i32 = 2`;
 
     test`private var test: Double = 1`;
     test`private var test = 1`;
@@ -400,8 +400,8 @@ describe('Parser', () => {
     test`fun test(): Number = /*asd*/ 1`;
     test`fun test(): Number = /**/ 1`;
 
-    test`private fun test(a: Number) = 2`;
-    test`private fun test(a: Number, b: Type) = 2`;
+    test`private fun test(a: Number): i32 = 2`;
+    test`private fun test(a: Number, b: Type): i32 = 2`;
 
     test`val test = 1 + (4 + 1)`;
     test`val test = (1 + 4) + 1`;
@@ -414,10 +414,10 @@ describe('Parser', () => {
 
     test`
     var test = 1
-    fun getTest() = test
+    fun getTest(): i32 = test
     `;
 
-    test`var test: Entity = 1 fun valueOfTest() = test`;
+    test`var test: Entity = 1 fun valueOfTest(): Entity = test`;
 
     test`var test: Struct = 1`;
     test`var test: Struct = 1`;

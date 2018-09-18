@@ -4,7 +4,7 @@ import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 
-const phases = function(txt: string): CanonicalPhaseResult {
+const phases = function (txt: string): CanonicalPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
@@ -14,7 +14,7 @@ describe('FileBasedCanonical', () => {
   folderBasedTest('test/fixtures/canonical/*.ro', phases, result => printAST(result.document), '.ast');
 });
 
-describe('Canonical', function() {
+describe('Canonical', function () {
   function test(literals, ...placeholders) {
     let result = '';
 
@@ -58,7 +58,7 @@ describe('Canonical', function() {
       null
     }
 
-    fun x() = a
+    fun x(): void = a
   `;
 
   test`
@@ -80,42 +80,42 @@ describe('Canonical', function() {
     fun y(a: Float, b: Float): Float = a + b - 1 * 2 / 3 % 10 << 3 >> 1 >>> 0
   `;
   test`
-    fun gte(a: Float, b: Float) = a >= b && b < a || a > b || 1 <= 3 == 1111 != 3333
+    fun gte(a: Float, b: Float): boolean = a >= b && b < a || a > b || 1 <= 3 == 1111 != 3333
   `;
   test`
-    fun gte(a: Float, b: Float) = a || b || c || d
-  `;
-
-  test`
-    fun gte(a: Float, b: Float) = a.XX(b).XX(c).XX(d)
+    fun gte(a: Float, b: Float): boolean = a || b || c || d
   `;
 
   test`
-    fun gte(a: Float, b: Float) = a.XX
+    fun gte(a: Float, b: Float): boolean = a.XX(b).XX(c).XX(d)
   `;
 
   test`
-    fun gte(a: Float, b: Float) = a.XX()
+    fun gte(a: Float, b: Float): boolean = a.XX
   `;
 
   test`
-    fun fn() = a match {else -> 1}
+    fun gte(a: Float, b: Float): boolean = a.XX()
   `;
 
   test`
-    fun fn() = a match {case 1 -> 2 else -> 1}
+    fun fn(): Int  = a match {else -> 1}
   `;
 
   test`
-    fun fn() = { {a} match {case 1 -> {2} else -> {1}} }
+    fun fn(): Int = a match {case 1 -> 2 else -> 1}
   `;
 
   test`
-    fun fn() = { a match {case 1 -> 2 else -> 1} }
+    fun fn(): Int = { {a} match {case 1 -> {2} else -> {1}} }
   `;
 
   test`
-    fun fn() = a match {
+    fun fn(): Int = { a match {case 1 -> 2 else -> 1} }
+  `;
+
+  test`
+    fun fn(): Int = a match {
       case 1 -> 2
       case a if a < 3 -> 3.1
       else -> 1

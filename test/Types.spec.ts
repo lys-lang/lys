@@ -15,7 +15,7 @@ import { ParsingContext } from '../dist/parser/closure';
 
 const parsingContext = new ParsingContext();
 
-const phases = function(txt: string): ScopePhaseResult {
+const phases = function (txt: string): ScopePhaseResult {
   parsingContext.reset();
   const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
   const canonical = new CanonicalPhaseResult(parsing);
@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function() {
+describe('Types', function () {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -103,64 +103,43 @@ describe('Types', function() {
         import test::test
 
         var TestingContext = 1
-        fun main() = TestingContext
+        fun main(): i32 = TestingContext
         ---
         fun() -> i32
       `;
     });
     describe('recursive types', () => {
       checkMainType`
-        fun a() = %wasm { (nop) }
-        fun x() =
-          if (0 == 1)
-            a()
-          else
-            1
-        ---
-        fun() -> UNKNOWN
-        fun() -> i32
-      `;
-
-      checkMainType`
-        fun factorial(n: i32) =
+        fun factorial(n: i32): i32 =
           if (n >= 1)
             n * factorial(n - 1)
           else
             1
 
-        fun x() = factorial(10)
+        fun x(): i32 = factorial(10)
         ---
         fun(n: i32) -> i32
         fun() -> i32
       `;
 
       checkMainType`
-        fun factorial(n: i32) = factorial(n - 1)
-
-        fun x() = factorial(10)
-        ---
-        fun(n: i32) -> UNKNOWN
-        fun() -> UNKNOWN
-      `;
-
-      checkMainType`
-        fun factorial(n: i32) =
+        fun factorial(n: i32): i32 =
           if (n >= 1)
             factorial(n - 1)
           else
             1
 
-        fun x() = factorial(10)
+        fun x(): i32 = factorial(10)
         ---
         fun(n: i32) -> i32
         fun() -> i32
       `;
 
       checkMainType`
-        private fun a(i: i32) = i
-        private fun a(i: boolean) = i
+        private fun a(i: i32): i32 = i
+        private fun a(i: boolean): boolean = i
 
-        private fun a() =
+        private fun a(): i32 | boolean =
           if(1 > 0)
             a(1)
           else
@@ -175,8 +154,8 @@ describe('Types', function() {
           Some(x: Test)
         }
 
-        fun a() = Null
-        fun b() = Some(Some(Null))
+        fun a(): Null = Null
+        fun b(): Some = Some(Some(Null))
 
         fun c(): Test = Null
         fun d(): Test = Some(Some(Null))
@@ -190,8 +169,8 @@ describe('Types', function() {
       checkMainType`
         struct Custom(r: i32)
 
-        fun a() = Custom(1)
-        fun b(i: i32) = Custom(i)
+        fun a(): Custom = Custom(1)
+        fun b(i: i32): Custom = Custom(i)
         ---
         fun() -> Custom
         fun(i: i32) -> Custom
@@ -230,7 +209,7 @@ describe('Types', function() {
     });
     describe('assign', () => {
       checkMainType`
-        fun main() = 1.0
+        fun main(): f32 = 1.0
         ---
         fun() -> f32
       `;
@@ -307,7 +286,7 @@ describe('Types', function() {
       checkMainType`
         struct TEST()
 
-        fun main() = TEST
+        fun main(): TEST = TEST
         ---
         fun() -> TEST
       `;
@@ -318,10 +297,10 @@ describe('Types', function() {
           XXX(a: i32)
         }
 
-        fun main1() = TEST
+        fun main1(): TEST = TEST
         fun main2(): x = TEST
         fun main3(): x = XXX(1)
-        fun main4() = XXX(1)
+        fun main4(): XXX = XXX(1)
         ---
         fun() -> TEST
         fun() -> x
@@ -332,7 +311,7 @@ describe('Types', function() {
       checkMainType`
         struct TEST()
 
-        fun main() = TEST()
+        fun main(): TEST = TEST()
         ---
         fun() -> TEST
       `;
@@ -342,7 +321,7 @@ describe('Types', function() {
           TEST
         }
 
-        fun main() = TEST()
+        fun main(): TEST = TEST()
         fun main2(): x = TEST()
         ---
         fun() -> TEST
@@ -350,19 +329,11 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        private fun test(a: f32) = a
-        private fun main() = test(f32)
+        private fun test(a: f32): f32 = a
+        private fun main(): f32 = test(f32)
         ---
         fun(a: f32) -> f32
         fun() -> f32
-        ---
-        Type<f32> is not a value, constructor or function.
-      `;
-
-      checkMainType`
-        private fun main() = f32
-        ---
-        fun() -> UNKNOWN
         ---
         Type<f32> is not a value, constructor or function.
       `;
@@ -621,16 +592,16 @@ describe('Types', function() {
     });
     describe('operators', () => {
       checkMainType`
-        fun AL_BITS() = 3
-        fun AL_SIZE() = 1 << AL_BITS()
-        fun AL_MASK() = AL_SIZE() - 1
-        fun MAX_SIZE_32() = 1 << 30 // 1G
-        fun HEAP_BASE() = 0
-        fun startOffset() = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
-        fun offset() = startOffset
-        fun max(a: i32, b: i32) = if (a>b) a else b
+        fun AL_BITS(): i32 = 3
+        fun AL_SIZE(): i32 = 1 << AL_BITS()
+        fun AL_MASK(): i32 = AL_SIZE() - 1
+        fun MAX_SIZE_32(): i32 = 1 << 30 // 1G
+        fun HEAP_BASE(): i32 = 0
+        fun startOffset(): i32 = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
+        fun offset(): i32= startOffset
+        fun max(a: i32, b: i32): i32 = if (a>b) a else b
         fun currentMemory(): i32 = %wasm {(current_memory)}
-        fun main() = {
+        fun main(): i32 = {
           val ptr = offset()
           val newPtr = (ptr + 1 + AL_MASK()) & ~(AL_MASK())
           val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >>> 16
@@ -651,9 +622,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun max(a: i32, b: i32) = if (a>b) a else b
+        fun max(a: i32, b: i32): i32 = if (a>b) a else b
         fun currentMemory(): i32 = %wasm {(current_memory)}
-        fun main() = {
+        fun main(): i32 = {
           val pagesNeeded = 1
           val pagesBefore = currentMemory()
           max(pagesBefore, pagesNeeded)
@@ -667,7 +638,7 @@ describe('Types', function() {
       checkMainType`
         fun (+)(x: boolean, y: i32): f32 = 1.0
 
-        fun main() = true + 3
+        fun main(): f32 = true + 3
         ---
         fun(x: boolean, y: i32) -> f32
         fun() -> f32
@@ -695,15 +666,15 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun main() = ~1
+        fun main(): i32 = ~1
         ---
         fun() -> i32
       `;
 
       checkMainType`
-        fun max(a: i32, b: i32) = if (a>b) a else b
-        fun main() = max(c(), -1)
-        fun c() = 0xffff
+        fun max(a: i32, b: i32): i32 = if (a>b) a else b
+        fun main(): i32 = max(c(), -1)
+        fun c(): i32 = 0xffff
         ---
         fun(a: i32, b: i32) -> i32
         fun() -> i32
@@ -783,7 +754,7 @@ describe('Types', function() {
         checkMainType`
         private var lastPtr: i32 = 0
 
-        fun malloc(size: i32) = {
+        fun malloc(size: i32): i32 = {
           val ptr = lastPtr
           lastPtr = lastPtr + size
           ptr
@@ -821,7 +792,7 @@ describe('Types', function() {
         Type "i32" is not assignable to "f32"
       `;
         checkMainType`
-        fun matcher(x: i32) =
+        fun matcher(x: i32): i32 =
           x match {
             case 1.5 -> 1
             else -> 2
@@ -852,7 +823,7 @@ describe('Types', function() {
       checkMainType`
       type i32
 
-      fun matcher(x: i32) =
+      fun matcher(x: i32): i32 =
         x match {
           case 1 -> 1
           else -> 2
@@ -865,7 +836,7 @@ describe('Types', function() {
       type i32
       type f32
 
-      fun matcher(x: i32) =
+      fun matcher(x: i32): i32 =
         x match {
           case 1.5 -> 1
           else -> 2
@@ -879,7 +850,7 @@ describe('Types', function() {
       checkMainType`
       type void
 
-      fun matcher() = {}
+      fun matcher(): void = {}
       ---
       fun() -> void
     `;
@@ -909,7 +880,7 @@ describe('Types', function() {
         (get_local $size)
       }
 
-      fun main() = malloc(1)
+      fun main(): i32 = malloc(1)
       ---
       fun(size: i32) -> i32
       fun() -> i32
@@ -927,7 +898,7 @@ describe('Types', function() {
         True2()
       }
 
-      fun gt0(x: i32) =
+      fun gt0(x: i32): True | True2 =
         if (x > 0)
           True()
         else
@@ -947,11 +918,11 @@ describe('Types', function() {
         }
       }
 
-      fun fib(n: i32) = {
+      fun fib(n: i32): i32 = {
         fibo(n, 0, 1)
       }
 
-      fun test() = {
+      fun test(): i32 = {
         fib(46) // must be 1836311903
       }
       ---
@@ -989,7 +960,7 @@ describe('Types', function() {
         False()
       }
 
-      fun gt0(x: i32) =
+      fun gt0(x: i32): Boolean =
         if (x > 0)
           True()
         else
@@ -1002,18 +973,18 @@ describe('Types', function() {
       type i32
       type f32
 
-      fun x1() = {
-        fun Y() = 1.0
+      fun x1(): f32 = {
+        fun Y(): f32 = 1.0
         Y()
       }
 
-      fun x2() = {
+      fun x2(): i32 = {
         var n = 1
-        fun Y() = n
+        fun Y(): i32 = n
         Y()
       }
 
-      fun x3() = {
+      fun x3(): f32 = {
         x2()
         x1() + x1()
       }
@@ -1027,7 +998,7 @@ describe('Types', function() {
       type i32
       type f32
 
-      fun matcher(x: i32) =
+      fun matcher(x: i32): i32 | f32 =
         x match {
           case 1 -> 1
           else -> 2.1
@@ -1039,7 +1010,7 @@ describe('Types', function() {
       checkMainType`
       type i32
       type boolean
-      fun gte(x: i32, y: i32) = {
+      fun gte(x: i32, y: i32): boolean = {
         val test = x >= y
         test
       }
@@ -1063,7 +1034,7 @@ describe('Types', function() {
       checkMainType`
       type f32
 
-      fun x() =
+      fun x(): f32 =
         if (1.2)
           1.0
         else
@@ -1078,7 +1049,7 @@ describe('Types', function() {
       type i32
       type boolean
 
-      fun x() = 1 > 2
+      fun x(): boolean = 1 > 2
       ---
       fun() -> boolean
     `;
@@ -1087,7 +1058,7 @@ describe('Types', function() {
       type i32
       type boolean
 
-      fun x() = { 1 > 2 }
+      fun x(): boolean = { 1 > 2 }
       ---
       fun() -> boolean
     `;
@@ -1096,7 +1067,7 @@ describe('Types', function() {
       type i32
       type boolean
 
-      fun x() = {
+      fun x(): i32 = {
         1 > 2
         1
       }
@@ -1107,7 +1078,7 @@ describe('Types', function() {
       checkMainType`
       type i32
 
-      fun gte(x: i32) = {
+      fun gte(x: i32): i32 = {
         var test = 0
         test = 1 + x
         test
@@ -1137,7 +1108,7 @@ describe('Types', function() {
       checkMainType`
       type i32
 
-      fun gte(x: i32) = {
+      fun gte(x: i32): i32 = {
         var test = 0
         test = test + x
         test
@@ -1161,7 +1132,7 @@ describe('Types', function() {
       checkMainType`
       type i32
       var x = 1
-      fun getX() = x
+      fun getX(): i32 = x
       ---
       fun() -> i32
     `;
@@ -1179,7 +1150,7 @@ describe('Types', function() {
       checkMainType`
       type void
       type i32
-      fun getX(x: i32) = {}
+      fun getX(x: i32): void = {}
       ---
       fun(x: i32) -> void
     `;
@@ -1219,7 +1190,7 @@ describe('Types', function() {
       checkMainType`
       type i32
       type boolean
-      fun gte(x: i32, y: i32) = x >= y
+      fun gte(x: i32, y: i32): boolean = x >= y
       ---
       fun(x: i32, y: i32) -> boolean
     `;
