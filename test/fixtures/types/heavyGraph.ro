@@ -1,11 +1,11 @@
-fun AL_BITS() = 3
-fun AL_SIZE() = 1 << AL_BITS()
-fun AL_MASK() = AL_SIZE() - 1
-fun MAX_SIZE_32() = 1 << 30 // 1G
-fun HEAP_BASE() = 0
-fun startOffset() = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
-fun offset() = startOffset()
-fun max(a: i32, b: i32) = if (a>b) a else b
+fun AL_BITS(): i32 = 3
+fun AL_SIZE(): i32 = 1 << AL_BITS()
+fun AL_MASK(): i32 = AL_SIZE() - 1
+fun MAX_SIZE_32(): i32 = 1 << 30 // 1G
+fun HEAP_BASE(): i32 = 0
+fun startOffset(): i32 = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
+fun offset(): i32 = startOffset()
+fun max(a: i32, b: i32): i32 = if (a>b) a else b
 fun currentMemory(): i32 = %wasm {(current_memory)}
 
 fun growMemory(pages: i32): i32 = %wasm {

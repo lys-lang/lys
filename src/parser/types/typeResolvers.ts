@@ -25,8 +25,7 @@ import {
   InvalidCall,
   UnreachableCode,
   NotAValidType,
-  UnexpectedType,
-  CannotInferReturnType
+  UnexpectedType
 } from '../NodeError';
 import { MessageCollector } from '../closure';
 
@@ -133,7 +132,7 @@ export class PassThroughTypeResolver extends TypeResolver {
       if (ctx.currentParsingContext) {
         throw new Error(
           `PassThrough resolver only works with nodes with one edge but found '${
-            node.incomingEdges().length
+          node.incomingEdges().length
           }' with node ${node.astNode.nodeName}`
         );
       } else {
@@ -505,38 +504,15 @@ export class FunctionTypeResolver extends TypeResolver {
 
     const inferedReturnType = resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
 
-    if (!inferedReturnType) {
-      if (!fnType.returnType) {
-        ctx.parsingContext.messageCollector.error(new CannotInferReturnType(functionNode.body));
-        fnType.returnType = UnknownType.instance;
-      }
-
-      debugger;
-
-      // resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
-
-      return fnType;
-    } else {
+    if (inferedReturnType) {
       if (inferedReturnType instanceof TypeType) {
         ctx.parsingContext.messageCollector.error(new UnexpectedType(inferedReturnType, functionNode.body));
       }
 
-      if (!fnType.returnType) {
-        fnType.returnType = inferedReturnType;
-
-        const previousError = ctx.parsingContext.messageCollector.errors.findIndex(
-          $ => $ instanceof CannotInferReturnType && $.node === functionNode.body
+      if (!inferedReturnType.canBeAssignedTo(fnType.returnType)) {
+        ctx.parsingContext.messageCollector.error(
+          new TypeMismatch(inferedReturnType, fnType.returnType, functionNode.functionReturnType)
         );
-
-        if (previousError != -1) {
-          ctx.parsingContext.messageCollector.errors.splice(previousError, 1);
-        }
-      } else {
-        if (!inferedReturnType.canBeAssignedTo(fnType.returnType)) {
-          ctx.parsingContext.messageCollector.error(
-            new TypeMismatch(inferedReturnType, fnType.returnType, functionNode.functionReturnType)
-          );
-        }
       }
     }
 

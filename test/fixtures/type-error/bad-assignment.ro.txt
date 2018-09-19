@@ -2,9 +2,11 @@ test/fixtures/type-error/bad-assignment.ro
     1│ type i32
     2│ type f32
     3│ 
-    4│ fun test() = {
+    4│ fun test(): f32 = {
+     │             ^^^ Type mismatch: Type "i32" is not assignable to "f32"
     5│   var test = 1
     6│   test = 123.0
      │          ^^^^^ Type mismatch: Type "f32" is not assignable to "i32"
     7│   test
     8│ }
+    9│ 

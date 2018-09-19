@@ -9,4 +9,4 @@ fun assert(x: boolean): void =
     panic()
   }
 
-fun panic() = %wasm { (unreachable) }
+fun panic(): void = %wasm { (unreachable) }

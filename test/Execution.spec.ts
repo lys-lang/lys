@@ -120,7 +120,7 @@ describe('execution tests', () => {
       'void return 2',
       `
         type void
-        fun main() = {}
+        fun main(): void = {}
       `,
       async x => {
         expect(x.exports.main()).to.eq(undefined);
@@ -263,7 +263,7 @@ describe('execution tests', () => {
           bc - 2
         }
 
-        fun retMinusOne() = 0 - 1
+        fun retMinusOne(): i32 = 0 - 1
 
         fun main(x: i32): void = {
           if (x < 0) {
@@ -273,7 +273,7 @@ describe('execution tests', () => {
           }
         }
 
-        fun getValue() = a
+        fun getValue(): i32 = a
       `,
       async x => {
         expect(x.exports.getValue()).to.eq(-1);
@@ -295,26 +295,6 @@ describe('execution tests', () => {
         type i32
         fun main(x: i32): i32 = {
           var a: i32 = 1
-
-          if (x == 1) {
-            a = 3
-          } else {}
-
-          a
-        }
-      `,
-      async x => {
-        expect(x.exports.main(1)).to.eq(3);
-        expect(x.exports.main(3)).to.eq(1);
-      }
-    );
-
-    test(
-      'void return w/o types',
-      `
-        type i32
-        fun main(x: i32) = {
-          var a = 1
 
           if (x == 1) {
             a = 3
@@ -353,7 +333,7 @@ describe('execution tests', () => {
       'void return, if w/o else w/o types',
       `
         type i32
-        fun main(x: i32) = {
+        fun main(x: i32): i32 = {
           var a = 1
 
           if (x == 1) {
@@ -476,11 +456,11 @@ describe('execution tests', () => {
           }
         }
 
-        fun fib(n: i32) = {
+        fun fib(n: i32): i32 = {
           fibo(n, 0, 1)
         }
 
-        fun test() = {
+        fun test(): i32 = {
           fib(46) // must be 1836311903
         }
       `,
