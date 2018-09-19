@@ -15,7 +15,7 @@ import { ParsingContext } from '../dist/parser/closure';
 
 const parsingContext = new ParsingContext();
 
-const phases = function (txt: string): ScopePhaseResult {
+const phases = function(txt: string): ScopePhaseResult {
   parsingContext.reset();
   const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
   const canonical = new CanonicalPhaseResult(parsing);
@@ -24,7 +24,7 @@ const phases = function (txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function () {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -105,95 +105,95 @@ describe('Types', function () {
   describe('unit', () => {
     describe('numbers', () => {
       checkMainType`
-        fun test1(x: u8) = x as u8
-        fun test1(x: u8) = x as i16
-        fun test1(x: u8) = x as u16
-        fun test1(x: u8) = x as i32
-        fun test1(x: u8) = x as u32
-        fun test1(x: u8) = x as i64
-        fun test1(x: u8) = x as u64
-        fun test1(x: u8) = x as f32
-        fun test1(x: u8) = x as f64
+        fun test1(x: u8): u8 = x as u8
+        fun test1(x: u8): i16 = x as i16
+        fun test1(x: u8): u16 = x as u16
+        fun test1(x: u8): i32 = x as i32
+        fun test1(x: u8): u32 = x as u32
+        fun test1(x: u8): i64 = x as i64
+        fun test1(x: u8): u64 = x as u64
+        fun test1(x: u8): f32 = x as f32
+        fun test1(x: u8): f64 = x as f64
 
-        fun test2(x: i16) = x as u8
-        fun test2(x: i16) = x as i16
-        fun test2(x: i16) = x as u16
-        fun test2(x: i16) = x as i32
-        fun test2(x: i16) = x as u32
-        fun test2(x: i16) = x as i64
-        fun test2(x: i16) = x as u64
-        fun test2(x: i16) = x as f32
-        fun test2(x: i16) = x as f64
+        fun test2(x: i16): u8 = x as u8
+        fun test2(x: i16): i16 = x as i16
+        fun test2(x: i16): u16 = x as u16
+        fun test2(x: i16): i32 = x as i32
+        fun test2(x: i16): u32 = x as u32
+        fun test2(x: i16): i64 = x as i64
+        fun test2(x: i16): u64 = x as u64
+        fun test2(x: i16): f32 = x as f32
+        fun test2(x: i16): f64 = x as f64
 
-        fun test3(x: u16) = x as u8
-        fun test3(x: u16) = x as i16
-        fun test3(x: u16) = x as u16
-        fun test3(x: u16) = x as i32
-        fun test3(x: u16) = x as u32
-        fun test3(x: u16) = x as i64
-        fun test3(x: u16) = x as u64
-        fun test3(x: u16) = x as f32
-        fun test3(x: u16) = x as f64
+        fun test3(x: u16): u8 = x as u8
+        fun test3(x: u16): i16 = x as i16
+        fun test3(x: u16): u16 = x as u16
+        fun test3(x: u16): i32 = x as i32
+        fun test3(x: u16): u32 = x as u32
+        fun test3(x: u16): i64 = x as i64
+        fun test3(x: u16): u64 = x as u64
+        fun test3(x: u16): f32 = x as f32
+        fun test3(x: u16): f64 = x as f64
 
-        fun test4(x: i32) = x as u8
-        fun test4(x: i32) = x as i16
-        fun test4(x: i32) = x as u16
-        fun test4(x: i32) = x as i32
-        fun test4(x: i32) = x as u32
-        fun test4(x: i32) = x as i64
-        fun test4(x: i32) = x as u64
-        fun test4(x: i32) = x as f32
-        fun test4(x: i32) = x as f64
+        fun test4(x: i32): u8 = x as u8
+        fun test4(x: i32): i16 = x as i16
+        fun test4(x: i32): u16 = x as u16
+        fun test4(x: i32): i32 = x as i32
+        fun test4(x: i32): u32 = x as u32
+        fun test4(x: i32): i64 = x as i64
+        fun test4(x: i32): u64 = x as u64
+        fun test4(x: i32): f32 = x as f32
+        fun test4(x: i32): f64 = x as f64
 
-        fun test5(x: u32) = x as u8
-        fun test5(x: u32) = x as i16
-        fun test5(x: u32) = x as u16
-        fun test5(x: u32) = x as i32
-        fun test5(x: u32) = x as u32
-        fun test5(x: u32) = x as i64
-        fun test5(x: u32) = x as u64
-        fun test5(x: u32) = x as f32
-        fun test5(x: u32) = x as f64
+        fun test5(x: u32): u8 = x as u8
+        fun test5(x: u32): i16 = x as i16
+        fun test5(x: u32): u16 = x as u16
+        fun test5(x: u32): i32 = x as i32
+        fun test5(x: u32): u32 = x as u32
+        fun test5(x: u32): i64 = x as i64
+        fun test5(x: u32): u64 = x as u64
+        fun test5(x: u32): f32 = x as f32
+        fun test5(x: u32): f64 = x as f64
 
-        fun test6(x: i64) = x as u8
-        fun test6(x: i64) = x as i16
-        fun test6(x: i64) = x as u16
-        fun test6(x: i64) = x as i32
-        fun test6(x: i64) = x as u32
-        fun test6(x: i64) = x as i64
-        fun test6(x: i64) = x as u64
-        fun test6(x: i64) = x as f32
-        fun test6(x: i64) = x as f64
+        fun test6(x: i64): u8 = x as u8
+        fun test6(x: i64): i16 = x as i16
+        fun test6(x: i64): u16 = x as u16
+        fun test6(x: i64): i32 = x as i32
+        fun test6(x: i64): u32 = x as u32
+        fun test6(x: i64): i64 = x as i64
+        fun test6(x: i64): u64 = x as u64
+        fun test6(x: i64): f32 = x as f32
+        fun test6(x: i64): f64 = x as f64
 
-        fun test7(x: u64) = x as u8
-        fun test7(x: u64) = x as i16
-        fun test7(x: u64) = x as u16
-        fun test7(x: u64) = x as i32
-        fun test7(x: u64) = x as u32
-        fun test7(x: u64) = x as i64
-        fun test7(x: u64) = x as u64
-        fun test7(x: u64) = x as f32
-        fun test7(x: u64) = x as f64
+        fun test7(x: u64): u8 = x as u8
+        fun test7(x: u64): i16 = x as i16
+        fun test7(x: u64): u16 = x as u16
+        fun test7(x: u64): i32 = x as i32
+        fun test7(x: u64): u32 = x as u32
+        fun test7(x: u64): i64 = x as i64
+        fun test7(x: u64): u64 = x as u64
+        fun test7(x: u64): f32 = x as f32
+        fun test7(x: u64): f64 = x as f64
 
-        fun test8(x: f32) = x as u8
-        fun test8(x: f32) = x as i16
-        fun test8(x: f32) = x as u16
-        fun test8(x: f32) = x as i32
-        fun test8(x: f32) = x as u32
-        fun test8(x: f32) = x as i64
-        fun test8(x: f32) = x as u64
-        fun test8(x: f32) = x as f32
-        fun test8(x: f32) = x as f64
+        fun test8(x: f32): u8 = x as u8
+        fun test8(x: f32): i16 = x as i16
+        fun test8(x: f32): u16 = x as u16
+        fun test8(x: f32): i32 = x as i32
+        fun test8(x: f32): u32 = x as u32
+        fun test8(x: f32): i64 = x as i64
+        fun test8(x: f32): u64 = x as u64
+        fun test8(x: f32): f32 = x as f32
+        fun test8(x: f32): f64 = x as f64
 
-        fun test9(x: f64) = x as u8
-        fun test9(x: f64) = x as i16
-        fun test9(x: f64) = x as u16
-        fun test9(x: f64) = x as i32
-        fun test9(x: f64) = x as u32
-        fun test9(x: f64) = x as i64
-        fun test9(x: f64) = x as u64
-        fun test9(x: f64) = x as f32
-        fun test9(x: f64) = x as f64
+        fun test9(x: f64): u8 = x as u8
+        fun test9(x: f64): i16 = x as i16
+        fun test9(x: f64): u16 = x as u16
+        fun test9(x: f64): i32 = x as i32
+        fun test9(x: f64): u32 = x as u32
+        fun test9(x: f64): i64 = x as i64
+        fun test9(x: f64): u64 = x as u64
+        fun test9(x: f64): f32 = x as f32
+        fun test9(x: f64): f64 = x as f64
         ---
         fun(x: u8) -> u8 & fun(x: u8) -> i16 & fun(x: u8) -> u16 & fun(x: u8) -> i32 & fun(x: u8) -> u32 & fun(x: u8) -> i64 & fun(x: u8) -> u64 & fun(x: u8) -> f32 & fun(x: u8) -> f64
         fun(x: i16) -> u8 & fun(x: i16) -> i16 & fun(x: i16) -> u16 & fun(x: i16) -> i32 & fun(x: i16) -> u32 & fun(x: i16) -> i64 & fun(x: i16) -> u64 & fun(x: i16) -> f32 & fun(x: i16) -> f64

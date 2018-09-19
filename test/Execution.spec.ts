@@ -8,7 +8,7 @@ describe('execution tests', () => {
     test(
       'casts',
       `
-      fun i32f32(i: i32) = i as f32
+      fun i32f32(i: i32): f32 = i as f32
       `,
       async (x, err) => {
         if (err) throw err;
@@ -77,7 +77,7 @@ describe('execution tests', () => {
           support::test::assert(system::u8::load(y, 5) as i32 == 5)
         }
 
-        fun retRef() = addressFromRef(Custom(0, 0))
+        fun retRef(): u32 = addressFromRef(Custom(0, 0))
       `,
       async (x, err) => {
         if (err) throw err;
