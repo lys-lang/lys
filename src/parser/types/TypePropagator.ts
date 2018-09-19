@@ -12,7 +12,7 @@ function top<T>(stack: Array<T>): T | null {
 }
 
 export class TypeResolutionContext {
-  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) {}
+  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) { }
 
   private _executors = new Array<{
     dataGraph: TypeGraph;
@@ -115,7 +115,7 @@ export class TypeResolutionContext {
 
 export class TypePropagator {
   executionStack: Array<TypeNode> = [];
-  constructor(public ctx: TypeResolutionContext) {}
+  constructor(public ctx: TypeResolutionContext) { }
 
   scheduleNode(node: TypeNode): void {
     if (!this.executionStack.some(n => n == node)) {
