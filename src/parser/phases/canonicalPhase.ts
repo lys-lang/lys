@@ -144,7 +144,12 @@ const visitor = {
     fun.functionName = visit(findChildrenType(astNode, 'FunctionName').children[0]);
     fun.functionReturnType = visit(findChildrenType(astNode, 'Type'));
 
+    if (!fun.functionReturnType) {
+      throw new TokenError('Missing return type in function declaration', astNode);
+    }
+
     const params = findChildrenType(astNode, 'FunctionParamsList');
+
 
     if (!params) {
       throw new TokenError('Missing param list in function declaration', astNode);

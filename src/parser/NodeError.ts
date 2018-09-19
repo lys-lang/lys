@@ -42,12 +42,6 @@ export class UnexpectedType extends AstNodeError {
   }
 }
 
-export class CannotInferReturnType extends AstNodeError {
-  constructor(node: Nodes.Node) {
-    super(`Cannot infer return type..`, node);
-  }
-}
-
 export class InvalidOverload extends AstNodeError {
   constructor(public functionType: IntersectionType, public givenTypes: Type[], node: Nodes.Node) {
     super(

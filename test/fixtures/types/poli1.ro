@@ -6,13 +6,13 @@ type Boolean {
   False()
 }
 
-fun gt0(x: i32) =
+fun gt0(x: i32): Boolean =
   if (x > 0)
     True()
   else
     False()
 
-fun isTrue(a: Boolean) = a match {
+fun isTrue(a: Boolean): boolean = a match {
   case is True() -> true
   else -> false
 }
