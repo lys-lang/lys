@@ -4,6 +4,19 @@ import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
 describe('execution tests', () => {
+  describe('numbers', () => {
+    test(
+      'casts',
+      `
+      fun i32f32(i: i32): f32 = i as f32
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.i32f32(44.9)).to.eq(44);
+      }
+    );
+  });
+
   describe('struct', () => {
     test(
       'type alloc and basic pattern match',
@@ -44,22 +57,36 @@ describe('execution tests', () => {
       'store values',
       `
         type x {
-          Custom(r: i32, g: i32, b: i32)
+          Custom(r: i32, g: i32)
         }
 
         fun testColors(): void = {
-          val x = Custom(1,2,3)
+          val x = Custom(0,0)
+          val y = Custom(0,0)
 
           support::test::assert(system::i32::load(x) == 0)
+          support::test::assert(system::i32::load(y) == 0)
 
           system::i32::store(x, 3)
+          system::i32::store(y, 2882400001) // 0xabcdef01
+          system::i32::store(y, 5, 5)
 
           support::test::assert(system::i32::load(x) == 3)
+          support::test::assert(system::i32::load(y) == 0xABCDEF01)
+          support::test::assert(system::u8::load(y) as i32 == 0x01)
+          support::test::assert(system::u8::load(y, 5) as i32 == 5)
         }
+
+        fun retRef(): u32 = addressFromRef(Custom(0, 0))
       `,
       async (x, err) => {
         if (err) throw err;
         x.exports.testColors();
+        const a = x.exports.retRef();
+        const b = x.exports.retRef();
+        const c = x.exports.retRef();
+        expect(b).to.eq(a + 8, 'a + 8 = b');
+        expect(c).to.eq(b + 8, 'b + 8 = c');
       }
     );
   });

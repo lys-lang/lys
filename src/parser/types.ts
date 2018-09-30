@@ -16,6 +16,11 @@ export enum NativeTypes {
   void = 'void',
 
   boolean = 'boolean',
+  char = 'char',
+
+  usize = 'usize',
+  isize = 'isize',
+
   i8 = 'i8',
   u8 = 'u8',
   i16 = 'i16',
@@ -36,6 +41,9 @@ export enum sizeOf {
   u32 = word,
   u16 = word >> 1,
   boolean = word >> 2,
+  char = word,
+  usize = word,
+  isize = word,
   u8 = word >> 2,
   i8 = word >> 2,
   i16 = word >> 1,
@@ -58,6 +66,9 @@ export abstract class Type {
       case NativeTypes.i16:
       case NativeTypes.i32:
       case NativeTypes.u32:
+      case NativeTypes.char:
+      case NativeTypes.usize:
+      case NativeTypes.isize:
         return 'i32';
 
       case NativeTypes.f32:
@@ -290,7 +301,19 @@ export class ReferenceType extends Type {
 }
 
 export class UnionType extends Type {
-  nativeType: NativeTypes = NativeTypes.anyfunc;
+  get nativeType(): NativeTypes {
+    const superTypes = new Set();
+
+    this.of.forEach($ => {
+      superTypes.add($.binaryenType);
+    });
+
+    if (superTypes.size == 1) {
+      return superTypes.values().next().value;
+    }
+
+    return NativeTypes.anyfunc;
+  }
 
   constructor(public of: Type[] = [], public readonly simplified = false) {
     super();
@@ -419,6 +442,18 @@ export class i32 extends NativeType {
   static instance = new i32(NativeTypes.i32);
 }
 
+export class char extends NativeType {
+  static instance = new char(NativeTypes.i32);
+}
+
+export class usize extends NativeType {
+  static instance = new usize(NativeTypes.i32);
+}
+
+export class isize extends NativeType {
+  static instance = new isize(NativeTypes.i32);
+}
+
 export class u32 extends NativeType {
   static instance = new u32(NativeTypes.u32);
 }
@@ -482,6 +517,9 @@ export class InvalidType extends VoidType {
 export const InjectableTypes: Record<string, Type> = {
   u8: TypeType.of(u8.instance),
   boolean: TypeType.of(bool.instance),
+  char: TypeType.of(char.instance),
+  usize: TypeType.of(usize.instance),
+  isize: TypeType.of(isize.instance),
   i32: TypeType.of(i32.instance),
   u32: TypeType.of(u32.instance),
   i64: TypeType.of(i64.instance),

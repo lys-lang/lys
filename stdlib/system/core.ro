@@ -15,10 +15,16 @@ type f64
 type void
 
 type boolean
+type char
+
+type usize
+type isize
 
 type ref
 
 type string
+
+// private type i32Type = u32 | i32 | u16 | i16 | u8
 
 fun (==)(lhs: ref, rhs: ref): boolean = %wasm {
   (i64.eq (get_local $lhs) (get_local $rhs))
@@ -81,8 +87,20 @@ fun (^)(lhs: u32, rhs: u32): u32 = %wasm {
   (i32.xor (get_local $lhs) (get_local $rhs))
 }
 
-fun (==)(lhs: u32, rhs: u32): boolean = %wasm {
+fun (==)(lhs: i32 | i16, rhs: i32 | i16): boolean = %wasm {
   (i32.eq (get_local $lhs) (get_local $rhs))
+}
+
+fun (==)(lhs: u32 | u16 | u8, rhs: u32 | u16 | u8): boolean = %wasm {
+  (i32.eq (get_local $lhs) (get_local $rhs))
+}
+
+fun (==)(lhs: i64, rhs: i32 | i16): boolean = %wasm {
+  (i64.eq (get_local $lhs) (i64.extend_s/i32 (get_local $rhs)))
+}
+
+fun (==)(lhs: u64, rhs: u32 | u16 | u8): boolean = %wasm {
+  (i64.eq (get_local $lhs) (i64.extend_u/i32 (get_local $rhs)))
 }
 
 fun (>=)(lhs: u32, rhs: u32): boolean = %wasm {
@@ -383,6 +401,118 @@ fun (!=)(lhs: f64, rhs: f64): boolean = %wasm {
   (f64.ne (get_local $lhs) (get_local $rhs))
 }
 
+/**
+ * Safe conversions:
+ *   u8     i16, u16, i32, u32, i64, u64, f32, f64
+ *   i16    i32, i64, f32, f64
+ *   u16    i32, u32, i64, u64, f32, f64
+ *   i32    i64, f32, f64
+ *   u32    i64, u64, f32, f64
+ *   i64    f32, f64
+ *   char   u16, i32, u32, i64, u64, f32, f64
+ *   f32    f64
+ *   u64    f32, f64
+ */
+
+
+fun (as)(lhs: u8): i16 = %wasm { (get_local $lhs) }
+fun (as)(lhs: u8): u16 = %wasm { (get_local $lhs) }
+fun (as)(lhs: u8): i32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: u8): u32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: u8): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u8): u64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
+fun (as)(lhs: u8): f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u8): f64 = %wasm { (f64.convert_u/i32 (get_local $lhs)) }
+
+fun (as)(lhs: i16): i32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: i16): i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
+fun (as)(lhs: i16): f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
+fun (as)(lhs: i16): f64 = %wasm { (f64.convert_s/i32 (get_local $lhs)) }
+
+fun (as)(lhs: u16): i32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: u16): u32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: u16): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u16): u64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u16): f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u16): f64 = %wasm { (f64.convert_u/i32 (get_local $lhs)) }
+
+fun (as)(lhs: i32): i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
+fun (as)(lhs: i32): f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
+fun (as)(lhs: i32): f64 = %wasm { (f64.convert_s/i32 (get_local $lhs)) }
+
+fun (as)(lhs: u32): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u32): u64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u32): f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
+fun (as)(lhs: u32): f64 = %wasm { (f64.convert_u/i32 (get_local $lhs)) }
+
+fun (as)(lhs: i64): f32 = %wasm { (f32.convert_s/i64 (get_local $lhs)) }
+fun (as)(lhs: i64): f64 = %wasm { (f64.convert_s/i64 (get_local $lhs)) }
+
+fun (as)(lhs: char): u16 = %wasm { (get_local $lhs) }
+fun (as)(lhs: char): i32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: char): u32 = %wasm { (get_local $lhs) }
+fun (as)(lhs: char): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
+fun (as)(lhs: char): u64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
+fun (as)(lhs: char): f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
+fun (as)(lhs: char): f64 = %wasm { (f64.convert_u/i32 (get_local $lhs)) }
+
+fun (as)(lhs: f32): f64 = %wasm { (f64.promote/f32 (get_local $lhs)) }
+
+fun (as)(lhs: u64): f32 = %wasm { (f32.convert_u/i64 (get_local $lhs)) }
+fun (as)(lhs: u64): f64 = %wasm { (f64.convert_u/i64 (get_local $lhs)) }
+
+// Unsafe conversions, may fail or lose data
+
+// #[explicit]
+fun (as)(lhs: f64): /* may fail */ f32 = %wasm { (f32.demote/f64 (get_local $lhs)) }
+
+
+// #[explicit]
+fun (as)(lhs: u32): /* may fail */ i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: u32): /* may fail */ f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: i32): /* may fail */ f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: u64): /* may fail */ f32 = %wasm { (f32.convert_u/i64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: i64): /* may fail */ f32 = %wasm { (f32.convert_s/i64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: i64): /* may fail */ i32 = %wasm { (i32.wrap/i64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: u64): /* may fail */ u32 = %wasm { (i32.wrap/i64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f32): /* may fail */ i64 = %wasm { (i64.trunc_s/f32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f64): /* may fail */ i64 = %wasm { (i64.trunc_s/f64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f32): /* may fail */ u64 = %wasm { (i64.trunc_u/f32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f64): /* may fail */ u64 = %wasm { (i64.trunc_u/f64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f32): /* may fail */ i32 = %wasm { (i32.trunc_s/f32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f64): /* may fail */ i32 = %wasm { (i32.trunc_s/f64 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f32): /* may fail */ u32 = %wasm { (i32.trunc_u/f32 (get_local $lhs)) }
+
+// #[explicit]
+fun (as)(lhs: f64): /* may fail */ u32 = %wasm { (i32.trunc_u/f64 (get_local $lhs)) }
+
+
 fun assert(x: boolean): void =
   if (x == false) {
     panic()
@@ -393,6 +523,9 @@ fun sizeOf(lhs: f64): u32 = %wasm { (i32.const 8) }
 fun sizeOf(lhs: i64): u32 = %wasm { (i32.const 8) }
 fun sizeOf(lhs: u64): u32 = %wasm { (i32.const 8) }
 fun sizeOf(lhs: boolean): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: char): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: usize): u32 = %wasm { (i32.const 4) }
+fun sizeOf(lhs: isize): u32 = %wasm { (i32.const 4) }
 fun sizeOf(lhs: f32): u32 = %wasm { (i32.const 4) }
 fun sizeOf(lhs: i32): u32 = %wasm { (i32.const 4) }
 fun sizeOf(lhs: u32): u32 = %wasm { (i32.const 4) }

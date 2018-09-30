@@ -39,16 +39,20 @@ const overloadFunctions = function(document: Nodes.DocumentNode, phase: Semantic
   return document;
 };
 
-const checkDuplicatedNames = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
+const validateSignatures = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
     let used = [];
     node.parameters.forEach(param => {
       if (used.indexOf(param.parameterName.name) == -1) {
         used.push(param.parameterName.name);
       } else {
-        throw new AstNodeError(`Duplicated parameter "${param.parameterName.name}"`, param);
+        param.errors.push(new AstNodeError(`Duplicated parameter "${param.parameterName.name}"`, param));
       }
     });
+
+    if (!node.functionReturnType) {
+      node.errors.push(new AstNodeError('Missing return type in function declaration', node));
+    }
   }
 
   if (node instanceof Nodes.PatternMatcherNode) {
@@ -165,7 +169,7 @@ export class SemanticPhaseResult extends PhaseResult {
     createTypes(this.document, this);
 
     overloadFunctions(this.document, this);
-    checkDuplicatedNames(this.document, this);
+    validateSignatures(this.document, this);
     validateInjectedWasm(this.document, this);
 
     failIfErrors('Semantic phase', this.document, this);

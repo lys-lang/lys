@@ -197,6 +197,16 @@ export class TypeGraphBuilder {
 
       new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.AsExpressionNode) {
+      this.resolveVariableByName(node, 'as', target);
+
+      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.IsExpressionNode) {
+      this.resolveVariableByName(node, 'is', target);
+
+      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.UnaryExpressionNode) {
       this.resolveVariableByName(node.operator, node.operator.name, target);
 
