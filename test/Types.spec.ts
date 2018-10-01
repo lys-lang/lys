@@ -45,6 +45,7 @@ describe('Types', function() {
           typePhase.execute();
         } catch (e) {
           console.log(print(typePhase.typeGraph));
+          console.log(printAST(typePhase.document));
           throw e;
         }
 
@@ -52,9 +53,17 @@ describe('Types', function() {
 
         const givenResult = normalizeResult(
           typePhase.document.directives
-            .filter($ => $ instanceof Nodes.OverloadedFunctionNode)
-            .filter(($: Nodes.OverloadedFunctionNode) => $.functions.some($ => !$.hasAnnotation(annotations.Injected)))
-            .map(($: Nodes.OverloadedFunctionNode) => $.ofType)
+            .map($ => {
+              if (
+                $ instanceof Nodes.OverloadedFunctionNode &&
+                !$.functions.some($ => $.hasAnnotation(annotations.Injected))
+              ) {
+                return $.ofType + '';
+              } else if ($ instanceof Nodes.VarDirectiveNode) {
+                return `${$.decl.variableName.name} := ${$.decl.variableName.ofType}`;
+              }
+            })
+            .filter($ => !!$)
             .join('\n')
         );
 
@@ -254,10 +263,76 @@ describe('Types', function() {
         var TestingContext = 1
         fun main(): i32 = TestingContext
         ---
+        TestingContext := i32
         fun() -> i32
       `;
     });
     describe('recursive types', () => {
+      checkMainType`
+        type Test {
+          Null
+          Some(x: ref)
+        }
+
+        var b = Some(Null)
+        ---
+        b := Some
+      `;
+
+      checkMainType`
+        type Test {
+          Null
+          Some(x: Test)
+        }
+
+        var b = Some(Null)
+        ---
+        b := Some
+      `;
+
+      checkMainType`
+        type Test {
+          Null
+          Some(x: ref)
+        }
+
+        var a: Test = Some(Null)
+        var b = Some(Null)
+        ---
+        a := Test
+        b := Some
+      `;
+
+      checkMainType`
+        type Test {
+          Null
+          Some(x: Test)
+        }
+
+        var a: Test = Some(Null)
+        var b = Some(Null)
+        ---
+        a := Test
+        b := Some
+      `;
+
+      checkMainType`
+        type Test {
+          Null
+          Some(x: Test)
+        }
+
+        fun a(): Null = Null
+        fun b(): Some = Some(Some(Null))
+        fun c(): Test = Null
+        fun d(): Test = Some(Some(Null))
+        ---
+        fun() -> Null
+        fun() -> Some
+        fun() -> Test
+        fun() -> Test
+      `;
+
       checkMainType`
         fun factorial(n: i32): i32 =
           if (n >= 1)
@@ -298,34 +373,6 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Test {
-          Null
-          Some(x: Test)
-        }
-
-        fun a(): Null = Null
-        fun b(): Some = Some(Some(Null))
-
-        fun c(): Test = Null
-        fun d(): Test = Some(Some(Null))
-        ---
-        fun() -> Null
-        fun() -> Some
-        fun() -> Test
-        fun() -> Test
-      `;
-
-      checkMainType`
-        struct Custom(r: i32)
-
-        fun a(): Custom = Custom(1)
-        fun b(i: i32): Custom = Custom(i)
-        ---
-        fun() -> Custom
-        fun(i: i32) -> Custom
-      `;
-
-      checkMainType`
         fun gcd(x: i32, y: i32): i32 =
           if (x > y)
             gcd(x - y, y)
@@ -357,6 +404,273 @@ describe('Types', function() {
       `;
     });
     describe('assign', () => {
+      describe('enums', () => {
+        checkMainType`
+          type BOOLEAN {
+            TRUE
+            FALSE
+            NONE
+          }
+
+          fun test1(a: BOOLEAN): void = { test2(a) }
+          fun test2(a: FALSE): void = ???
+          ---
+          fun(a: BOOLEAN) -> void
+          fun(a: FALSE) -> void
+          ---
+          Expecting arguments type (FALSE) but got (BOOLEAN)
+        `;
+
+        checkMainType`
+          type BOOLEAN {
+            TRUE
+            FALSE
+            NONE
+          }
+
+          fun test1(a: TRUE | FALSE): void = { test2(a) }
+          fun test2(a: FALSE): void = ???
+          ---
+          fun(a: TRUE | FALSE) -> void
+          fun(a: FALSE) -> void
+          ---
+          Expecting arguments type (FALSE) but got (TRUE | FALSE)
+        `;
+
+        checkMainType`
+          type BOOLEAN {
+            TRUE
+            FALSE
+            NONE
+          }
+
+          fun test1(a: TRUE): void = {
+            test2(a)
+          }
+          fun test2(a: FALSE): void = ???
+          ---
+          fun(a: TRUE) -> void
+          fun(a: FALSE) -> void
+          ---
+          Expecting arguments type (FALSE) but got (TRUE)
+        `;
+
+        checkMainType`
+          // Ok, this one is fun. it is actually quite complicated to infer that a UnionType
+          // TRUE | FALSE | NONE satisfies all the subtypes of BOOLEAN.
+          // so, BOOLEAN is not assignable to TRUE | FALSE | NONE. So far.
+
+          type BOOLEAN {
+            TRUE
+            FALSE
+            NONE
+          }
+
+          fun test1(a: BOOLEAN): void = {
+            test5(a)
+          }
+          fun test2(a: FALSE): void = {
+            test1(a)
+            test3(a)
+            test4(a)
+            test5(a)
+          }
+          fun test3(a: TRUE | FALSE): void = {
+            test1(a)
+            test5(a)
+          }
+          fun test4(a: NONE | FALSE): void = {
+            test1(a)
+            test5(a)
+          }
+          fun test5(a: NONE | FALSE | TRUE): void = {
+            test5(a)
+          }
+
+          fun main(): void = {
+            test1(TRUE())
+            test1(FALSE())
+            test1(NONE())
+            test2(FALSE())
+            test3(TRUE())
+            test3(FALSE())
+            test4(NONE())
+            test4(FALSE())
+            test5(TRUE())
+            test5(FALSE())
+            test5(NONE())
+          }
+          ---
+          fun(a: BOOLEAN) -> void
+          fun(a: FALSE) -> void
+          fun(a: TRUE | FALSE) -> void
+          fun(a: NONE | FALSE) -> void
+          fun(a: NONE | FALSE | TRUE) -> void
+          fun() -> void
+          ---
+          Invalid signature. Expecting arguments type (NONE | FALSE | TRUE) but got (BOOLEAN)
+        `;
+
+        checkMainType`
+          type BOOLEAN {
+            TRUE
+            FALSE
+            NONE
+          }
+
+          fun test1(a: BOOLEAN): void = ???
+          fun test2(a: FALSE): void = ???
+          fun test3(a: TRUE | FALSE): void = ???
+          fun test4(a: NONE | FALSE): void = ???
+          fun test5(a: NONE | FALSE | TRUE): void = ???
+
+          fun main(): void = {
+            test1(TRUE())
+            test1(FALSE())
+            test1(NONE())
+            test2(FALSE())
+            test3(TRUE())
+            test3(FALSE())
+            test4(NONE())
+            test4(FALSE())
+            test5(TRUE())
+            test5(FALSE())
+            test5(NONE())
+          }
+          ---
+          fun(a: BOOLEAN) -> void
+          fun(a: FALSE) -> void
+          fun(a: TRUE | FALSE) -> void
+          fun(a: NONE | FALSE) -> void
+          fun(a: NONE | FALSE | TRUE) -> void
+          fun() -> void
+        `;
+
+        checkMainType`
+          type BOOLEAN {
+            TRUE
+            FALSE
+            NONE
+          }
+
+          fun test1(): TRUE = TRUE()
+          fun test2(): FALSE = FALSE()
+          fun test3(): BOOLEAN = FALSE()
+          fun test4(a: boolean): TRUE | FALSE = if(a) TRUE() else FALSE()
+
+          ---
+          fun() -> TRUE
+          fun() -> FALSE
+          fun() -> BOOLEAN
+          fun(a: boolean) -> TRUE | FALSE
+        `;
+        describe('unify complete types', () => {
+          checkMainType`
+            type Boolean {
+              True
+              False
+            }
+
+            var x = if (true) True else False
+            ---
+            x := Boolean
+          `;
+
+          checkMainType`
+            type Boolean {
+              True(a: i32)
+              False(a: i32)
+            }
+
+            var x = if (true) True(1) else False(1)
+            ---
+            x := Boolean
+          `;
+
+          checkMainType`
+            type Boolean {
+              True
+              False
+            }
+
+            var x = if (true) True else True
+            ---
+            x := True
+          `;
+
+          checkMainType`
+            type Boolean {
+              True
+              False
+              None
+            }
+
+            var x = if (true) True else False
+            ---
+            x := True | False
+          `;
+
+          checkMainType`
+            type Maybe {
+              Some(a: i32)
+              None
+            }
+
+            var x = if (true) Some(1) else None
+            ---
+            x := Maybe
+          `;
+
+          checkMainType`
+            type Maybe {
+              Some(a: i32)
+              None
+            }
+
+            var x = if (true) Some(1) else Some(2)
+            ---
+            x := Some
+          `;
+
+          checkMainType`
+            type Maybe {
+              Some(a: i32)
+              None
+            }
+
+            var x: Maybe = if (true) Some(1) else Some(2)
+            ---
+            x := Maybe
+          `;
+
+          checkMainType`
+            type P {
+              A
+              B
+            }
+            var y = if(true) A else B
+            fun test1(): P = A
+            ---
+            y := P
+            fun() -> P
+          `;
+
+          describe.skip('funny case that doesnt work.', () => {
+            checkMainType`
+              type P {
+                B(x: i32)
+                A(x: i32)
+              }
+              var y = if (true) A(0) else B(0)
+              fun test1(): P = A(1)
+              ---
+              y := P
+              fun() -> P
+            `;
+          });
+        });
+      });
+
       checkMainType`
         fun main(): f32 = 1.0
         ---
@@ -380,6 +694,7 @@ describe('Types', function() {
         fun e(t: Nila): f32 = qq(t)
         fun f(): f32 = qq(Nila)
         ---
+        null
         fun() -> i32
         fun(t: Custom) -> i32
         fun(t: x) -> f32
@@ -405,6 +720,7 @@ describe('Types', function() {
         fun e(t: Nila): f32 = qq(t)
         fun f(): f32 = qq(Nila)
         ---
+        null
         fun() -> i32
         fun(t: Custom) -> i32
         fun(t: x) -> f32
@@ -433,14 +749,6 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        struct TEST()
-
-        fun main(): TEST = TEST
-        ---
-        fun() -> TEST
-      `;
-
-      checkMainType`
         type x {
           TEST
           XXX(a: i32)
@@ -455,14 +763,6 @@ describe('Types', function() {
         fun() -> x
         fun() -> x
         fun() -> XXX
-      `;
-
-      checkMainType`
-        struct TEST()
-
-        fun main(): TEST = TEST()
-        ---
-        fun() -> TEST
       `;
 
       checkMainType`
@@ -493,6 +793,88 @@ describe('Types', function() {
         fun() -> f32
         ---
         Type<f32> is not a value, constructor or function.
+      `;
+    });
+
+    describe.skip('duplicated signature', () => {
+      checkMainType`
+        fun a(x: f32): void = ???
+        fun a(x: f32): void = ???
+        ---
+        fun(x: f32) -> void
+        ---
+        Error
+      `;
+
+      checkMainType`
+        type XX = f32
+        fun a(x: f32): void = ???
+        fun a(x: XX): void = ???
+        ---
+        fun(x: f32) -> void & fun(x: XX) -> void
+        ---
+        Error
+      `;
+
+      checkMainType`
+        fun (as)(x: f32): boolean = ???
+        fun (as)(x: f32): boolean = ???
+        ---
+        fun(x: f32) -> boolean
+        ---
+        Error
+      `;
+    });
+
+    describe('named types', () => {
+      checkMainType`
+        type Color {
+          Red
+          Green
+          Blue
+        }
+
+        fun isRed(color: Color): boolean = ???
+
+        fun test(): void = {
+          var x = if(1>0) Red else Green
+          isRed(x)
+          isRed(Red)
+          isRed(Green)
+          isRed(Blue)
+        }
+        ---
+        fun(color: Color) -> boolean
+        fun() -> void
+      `;
+
+      checkMainType`
+        type Color {
+          Red
+          Green
+          Blue
+        }
+
+        fun isRed(color: Color): void = ???
+        ---
+        fun(color: Color) -> void
+      `;
+
+      checkMainType`
+        type int = i32
+        type Integer = int
+        type Long = i64
+        fun add(a: i32, b: int): int = a + b
+        fun add2(a: i32, b: int): Integer = a + b
+        fun add3(a: Integer, b: int): Integer = a + b
+        fun add4(a: Integer, b: i32): i32 = a + b
+        fun add5(a: Long, b: i32): i64 = (a + b as i64)
+        ---
+        fun(a: i32, b: int) -> int
+        fun(a: i32, b: int) -> Integer
+        fun(a: Integer, b: int) -> Integer
+        fun(a: Integer, b: i32) -> i32
+        fun(a: Long, b: i32) -> i64
       `;
     });
 
@@ -529,7 +911,7 @@ describe('Types', function() {
       `;
     });
 
-    describe('types', () => {
+    describe('structs', () => {
       checkMainType`
         type BOOLEAN {
           TRUE
@@ -537,140 +919,52 @@ describe('Types', function() {
           NONE
         }
 
-        fun test1(a: BOOLEAN): void = { test2(a) }
-        fun test2(a: FALSE): void = ???
+        fun test1(): TRUE = TRUE()
+        fun test2(): FALSE = FALSE()
+        fun test3(): BOOLEAN = FALSE()
+        fun test4(a: boolean): TRUE | FALSE = if(a) TRUE() else FALSE()
+
         ---
-        fun(a: BOOLEAN) -> void
-        fun(a: FALSE) -> void
-        ---
-        Expecting arguments type (FALSE) but got (BOOLEAN)
+        fun() -> TRUE
+        fun() -> FALSE
+        fun() -> BOOLEAN
+        fun(a: boolean) -> TRUE | FALSE
       `;
 
       checkMainType`
-        type BOOLEAN {
-          TRUE
-          FALSE
-          NONE
-        }
+        struct Custom(r: i32)
 
-        fun test1(a: TRUE | FALSE): void = { test2(a) }
-        fun test2(a: FALSE): void = ???
+        var x = Custom(1)
         ---
-        fun(a: TRUE | FALSE) -> void
-        fun(a: FALSE) -> void
-        ---
-        Expecting arguments type (FALSE) but got (TRUE | FALSE)
+        x := Custom
       `;
 
       checkMainType`
-        type BOOLEAN {
-          TRUE
-          FALSE
-          NONE
-        }
+        struct Custom(r: i32)
 
-        fun test1(a: TRUE): void = {
-          test2(a)
-        }
-        fun test2(a: FALSE): void = ???
+        fun a(): Custom = Custom(1)
+        fun b(i: i32): Custom = Custom(i)
         ---
-        fun(a: TRUE) -> void
-        fun(a: FALSE) -> void
-        ---
-        Expecting arguments type (FALSE) but got (TRUE)
+        fun() -> Custom
+        fun(i: i32) -> Custom
       `;
 
       checkMainType`
-        // Ok, this one is fun. it is actually quite complicated to infer that a UnionType
-        // TRUE | FALSE | NONE satisfies all the subtypes of BOOLEAN.
-        // so, BOOLEAN is not assignable to TRUE | FALSE | NONE. So far.
+        struct TEST()
 
-        type BOOLEAN {
-          TRUE
-          FALSE
-          NONE
-        }
-
-        fun test1(a: BOOLEAN): void = {
-          test5(a)
-        }
-        fun test2(a: FALSE): void = {
-          test1(a)
-          test3(a)
-          test4(a)
-          test5(a)
-        }
-        fun test3(a: TRUE | FALSE): void = {
-          test1(a)
-          test5(a)
-        }
-        fun test4(a: NONE | FALSE): void = {
-          test1(a)
-          test5(a)
-        }
-        fun test5(a: NONE | FALSE | TRUE): void = {
-          test5(a)
-        }
-
-        fun main(): void = {
-          test1(TRUE())
-          test1(FALSE())
-          test1(NONE())
-          test2(FALSE())
-          test3(TRUE())
-          test3(FALSE())
-          test4(NONE())
-          test4(FALSE())
-          test5(TRUE())
-          test5(FALSE())
-          test5(NONE())
-        }
+        fun main(): TEST = TEST
         ---
-        fun(a: BOOLEAN) -> void
-        fun(a: FALSE) -> void
-        fun(a: TRUE | FALSE) -> void
-        fun(a: NONE | FALSE) -> void
-        fun(a: NONE | FALSE | TRUE) -> void
-        fun() -> void
-        ---
-        Expecting arguments type (NONE | FALSE | TRUE) but got (BOOLEAN)
+        fun() -> TEST
       `;
 
       checkMainType`
-        type BOOLEAN {
-          TRUE
-          FALSE
-          NONE
-        }
+        struct TEST()
 
-        fun test1(a: BOOLEAN): void = ???
-        fun test2(a: FALSE): void = ???
-        fun test3(a: TRUE | FALSE): void = ???
-        fun test4(a: NONE | FALSE): void = ???
-        fun test5(a: NONE | FALSE | TRUE): void = ???
-
-        fun main(): void = {
-          test1(TRUE())
-          test1(FALSE())
-          test1(NONE())
-          test2(FALSE())
-          test3(TRUE())
-          test3(FALSE())
-          test4(NONE())
-          test4(FALSE())
-          test5(TRUE())
-          test5(FALSE())
-          test5(NONE())
-        }
+        fun main(): TEST = TEST()
         ---
-        fun(a: BOOLEAN) -> void
-        fun(a: FALSE) -> void
-        fun(a: TRUE | FALSE) -> void
-        fun(a: NONE | FALSE) -> void
-        fun(a: NONE | FALSE | TRUE) -> void
-        fun() -> void
+        fun() -> TEST
       `;
-      return;
+
       checkMainType`
         struct A()
         fun test(x: ref): boolean = x == A()
@@ -682,7 +976,7 @@ describe('Types', function() {
         struct A()
 
         fun test1(x: ref): boolean = x == A()
-        fun test2(x: A) = test1(x)
+        fun test2(x: A): boolean = test1(x)
 
         ---
         fun(x: ref) -> boolean
@@ -712,33 +1006,15 @@ describe('Types', function() {
         }
 
         fun test1(x: Z): boolean = x == Z()
-        fun test2(x: X) = test1(x)
+        fun test2(x: X): boolean = test1(x)
         ---
         fun(x: Z) -> boolean
-        fun(x: X) -> INVALID_TYPE
+        fun(x: X) -> boolean
         ---
         Invalid signature. Expecting arguments type (Z) but got (X)
       `;
-
-      checkMainType`
-        type BOOLEAN {
-          TRUE
-          FALSE
-          NONE
-        }
-
-        fun test1() = TRUE()
-        fun test2() = FALSE()
-        fun test3(): BOOLEAN = FALSE()
-        fun test4(a: boolean) = if(a) TRUE() else FALSE()
-
-        ---
-        fun() -> TRUE
-        fun() -> FALSE
-        fun() -> BOOLEAN
-        fun(a: boolean) -> BOOLEAN
-      `;
     });
+
     describe('operators', () => {
       checkMainType`
         fun AL_BITS(): i32 = 3
@@ -884,6 +1160,14 @@ describe('Types', function() {
           }
         }
         ---
+        AL_BITS := i32
+        AL_SIZE := i32
+        AL_MASK := i32
+        MAX_SIZE_32 := i32
+        HEAP_BASE := i32
+        startOffset := i32
+        offset := i32
+        lastPtr := i32
         fun(pages: i32) -> i32
         fun() -> i32
         fun(a: i32, b: i32) -> i32
@@ -892,55 +1176,101 @@ describe('Types', function() {
 
       describe('imports', () => {
         checkMainType`
-        import * from system::random
+          import * from system::random
 
-        fun main(): f32 = nextInt()
-        ---
-        fun() -> f32
-        ---
-        Type "i32" is not assignable to "f32"
-      `;
-        checkMainType`
-        private var lastPtr: i32 = 0
-
-        fun malloc(size: i32): i32 = {
-          val ptr = lastPtr
-          lastPtr = lastPtr + size
-          ptr
-        }
-        ---
-        fun(size: i32) -> i32
-      `;
+          fun main(): f32 = nextInt()
+          ---
+          fun() -> f32
+          ---
+          Type "i32" is not assignable to "f32"
+        `;
 
         checkMainType`
-        fun testBool(i: i32): boolean = i match {
-          case 0 -> true
-          case 1 -> true
-          case 2 -> true
-          case 3 -> true
-          case 4 -> true
-          case 5 -> true
-          case 6 -> true
-          case 7 -> true
-          case 8 -> true
-          case 9 -> true
-          case 10 -> true
-          case 11 -> true
-          case 12 -> true
-          else ->    true
-        }
-        ---
-        fun(i: i32) -> boolean
-      `;
+          private var lastPtr: i32 = 0
+
+          fun malloc(size: i32): i32 = {
+            val ptr = lastPtr
+            lastPtr = lastPtr + size
+            ptr
+          }
+          ---
+          lastPtr := i32
+          fun(size: i32) -> i32
+        `;
 
         checkMainType`
-        fun main(): f32 = system::random::nextInt()
-        ---
-        fun() -> f32
-        ---
-        Type "i32" is not assignable to "f32"
-      `;
+          fun testBool(i: i32): boolean = i match {
+            case 0 -> true
+            case 1 -> true
+            case 2 -> true
+            case 3 -> true
+            case 4 -> true
+            case 5 -> true
+            case 6 -> true
+            case 7 -> true
+            case 8 -> true
+            case 9 -> true
+            case 10 -> true
+            case 11 -> true
+            case 12 -> true
+            else ->    true
+          }
+          ---
+          fun(i: i32) -> boolean
+        `;
+
         checkMainType`
+          fun main(): f32 = system::random::nextInt()
+          ---
+          fun() -> f32
+          ---
+          Type "i32" is not assignable to "f32"
+        `;
+        checkMainType`
+          fun matcher(x: i32): i32 =
+            x match {
+              case 1.5 -> 1
+              else -> 2
+            }
+          ---
+          fun(x: i32) -> i32
+          ---
+          Type "f32" is not assignable to "i32"
+        `;
+      });
+      checkMainType`
+        type i32
+
+        private fun innerFunctionArgs(a: i32): i32 = a
+        private fun innerFunction(): i32 = innerFunctionArgs(3)
+
+        private fun over(): i32 = 1
+        private fun over(a: i32): i32 = a
+
+        fun outerFunction(): i32 = innerFunction() + over()
+        ---
+        fun(a: i32) -> i32
+        fun() -> i32
+        fun() -> i32 & fun(a: i32) -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        type i32
+
+        fun matcher(x: i32): i32 =
+          x match {
+            case 1 -> 1
+            else -> 2
+          }
+        ---
+        fun(x: i32) -> i32
+      `;
+
+      checkMainType`
+        type i32
+        type f32
+
         fun matcher(x: i32): i32 =
           x match {
             case 1.5 -> 1
@@ -951,469 +1281,418 @@ describe('Types', function() {
         ---
         Type "f32" is not assignable to "i32"
       `;
-      });
-      checkMainType`
-      type i32
-
-      private fun innerFunctionArgs(a: i32): i32 = a
-      private fun innerFunction(): i32 = innerFunctionArgs(3)
-
-      private fun over(): i32 = 1
-      private fun over(a: i32): i32 = a
-
-      fun outerFunction(): i32 = innerFunction() + over()
-      ---
-      fun(a: i32) -> i32
-      fun() -> i32
-      fun() -> i32 & fun(a: i32) -> i32
-      fun() -> i32
-    `;
 
       checkMainType`
-      type i32
+        type void
 
-      fun matcher(x: i32): i32 =
-        x match {
-          case 1 -> 1
-          else -> 2
-        }
-      ---
-      fun(x: i32) -> i32
-    `;
+        fun matcher(): void = {}
+        ---
+        fun() -> void
+      `;
 
       checkMainType`
-      type i32
-      type f32
+        type i32
 
-      fun matcher(x: i32): i32 =
-        x match {
-          case 1.5 -> 1
-          else -> 2
-        }
-      ---
-      fun(x: i32) -> i32
-      ---
-      Type "f32" is not assignable to "i32"
-    `;
-
-      checkMainType`
-      type void
-
-      fun matcher(): void = {}
-      ---
-      fun() -> void
-    `;
-
-      checkMainType`
-      type i32
-
-      type Boolean {
-        True()
-        False()
-      }
-
-      fun gt0(x: i32): Boolean =
-        if (x > 0)
+        type Boolean {
           True()
-        else
           False()
-      ---
-      fun(x: i32) -> Boolean
-    `;
-
-      checkMainType`
-      type i32
-
-
-      fun malloc(size: i32): i32 = %wasm {
-        (get_local $size)
-      }
-
-      fun main(): i32 = malloc(1)
-      ---
-      fun(size: i32) -> i32
-      fun() -> i32
-    `;
-
-      checkMainType`
-      type i32
-
-      type Boolean {
-        True()
-        False()
-      }
-
-      type Boolean2 {
-        True2()
-      }
-
-      fun gt0(x: i32): True | True2 =
-        if (x > 0)
-          True()
-        else
-          True2()
-      ---
-      fun(x: i32) -> True | True2
-    `;
-
-      checkMainType`
-      type i32
-
-      private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
-        if (n > 0) {
-          fibo(n - 1, x2, x1 + x2)
-        } else {
-          x1
         }
-      }
 
-      fun fib(n: i32): i32 = {
-        fibo(n, 0, 1)
-      }
-
-      fun test(): i32 = {
-        fib(46) // must be 1836311903
-      }
-      ---
-      fun(n: i32, x1: i32, x2: i32) -> i32
-      fun(n: i32) -> i32
-      fun() -> i32
-    `;
+        fun gt0(x: i32): Boolean =
+          if (x > 0)
+            True()
+          else
+            False()
+        ---
+        fun(x: i32) -> Boolean
+      `;
 
       checkMainType`
-      type i32
+        type i32
 
-      type Boolean {
-        True()
-        False()
-      }
 
-      type Boolean2 {
-        True2()
-      }
+        fun malloc(size: i32): i32 = %wasm {
+          (get_local $size)
+        }
 
-      fun gt0(x: i32): True | Boolean2 =
-        if (x > 0)
-          True()
-        else
-          True2()
-      ---
-      fun(x: i32) -> True | Boolean2
-    `;
+        fun main(): i32 = malloc(1)
+        ---
+        fun(size: i32) -> i32
+        fun() -> i32
+      `;
 
       checkMainType`
-      type i32
+        type i32
 
-      type Boolean {
-        True()
-        False()
-      }
-
-      fun gt0(x: i32): Boolean =
-        if (x > 0)
+        type Boolean {
           True()
-        else
           False()
-      ---
-      fun(x: i32) -> Boolean
-    `;
-
-      checkMainType`
-      type i32
-      type f32
-
-      fun x1(): f32 = {
-        fun Y(): f32 = 1.0
-        Y()
-      }
-
-      fun x2(): i32 = {
-        var n = 1
-        fun Y(): i32 = n
-        Y()
-      }
-
-      fun x3(): f32 = {
-        x2()
-        x1() + x1()
-      }
-      ---
-      fun() -> f32
-      fun() -> i32
-      fun() -> f32
-    `;
-
-      checkMainType`
-      type i32
-      type f32
-
-      fun matcher(x: i32): i32 | f32 =
-        x match {
-          case 1 -> 1
-          else -> 2.1
         }
-      ---
-      fun(x: i32) -> i32 | f32
-    `;
+
+        type Boolean2 {
+          True2()
+        }
+
+        fun gt0(x: i32): True | True2 =
+          if (x > 0)
+            True()
+          else
+            True2()
+        ---
+        fun(x: i32) -> True | True2
+      `;
 
       checkMainType`
-      type i32
-      type boolean
-      fun gte(x: i32, y: i32): boolean = {
-        val test = x >= y
-        test
-      }
-      ---
-      fun(x: i32, y: i32) -> boolean
-    `;
+        type i32
+
+        private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
+          if (n > 0) {
+            fibo(n - 1, x2, x1 + x2)
+          } else {
+            x1
+          }
+        }
+
+        fun fib(n: i32): i32 = {
+          fibo(n, 0, 1)
+        }
+
+        fun test(): i32 = {
+          fib(46) // must be 1836311903
+        }
+        ---
+        fun(n: i32, x1: i32, x2: i32) -> i32
+        fun(n: i32) -> i32
+        fun() -> i32
+      `;
 
       checkMainType`
-      type i32
-      type boolean
-      fun gte(x: i32, y: i32): i32 = {
-        val test = x >= y
-        test
-      }
-      ---
-      fun(x: i32, y: i32) -> i32
-      ---
-      Type "boolean" is not assignable to "i32"
-    `;
+        type i32
+
+        type Boolean {
+          True()
+          False()
+        }
+
+        type Boolean2 {
+          True2()
+        }
+
+        fun gt0(x: i32): True | Boolean2 =
+          if (x > 0)
+            True()
+          else
+            True2()
+        ---
+        fun(x: i32) -> True | Boolean2
+      `;
 
       checkMainType`
-      type f32
+        type i32
 
-      fun x(): f32 =
-        if (1.2)
+        type Boolean {
+          True()
+          False()
+        }
+
+        fun gt0(x: i32): Boolean =
+          if (x > 0)
+            True()
+          else
+            False()
+        ---
+        fun(x: i32) -> Boolean
+      `;
+
+      checkMainType`
+        type i32
+        type f32
+
+        fun x1(): f32 = {
+          fun Y(): f32 = 1.0
+          Y()
+        }
+
+        fun x2(): i32 = {
+          var n = 1
+          fun Y(): i32 = n
+          Y()
+        }
+
+        fun x3(): f32 = {
+          x2()
+          x1() + x1()
+        }
+        ---
+        fun() -> f32
+        fun() -> i32
+        fun() -> f32
+      `;
+
+      checkMainType`
+        type i32
+        type f32
+
+        fun matcher(x: i32): i32 | f32 =
+          x match {
+            case 1 -> 1
+            else -> 2.1
+          }
+        ---
+        fun(x: i32) -> i32 | f32
+      `;
+
+      checkMainType`
+        type i32
+        type boolean
+        fun gte(x: i32, y: i32): boolean = {
+          val test = x >= y
+          test
+        }
+        ---
+        fun(x: i32, y: i32) -> boolean
+      `;
+
+      checkMainType`
+        type i32
+        type boolean
+        fun gte(x: i32, y: i32): i32 = {
+          val test = x >= y
+          test
+        }
+        ---
+        fun(x: i32, y: i32) -> i32
+        ---
+        Type "boolean" is not assignable to "i32"
+      `;
+
+      checkMainType`
+        type f32
+
+        fun x(): f32 =
+          if (1.2)
+            1.0
+          else
+            0.0
+        ---
+        fun() -> f32
+        ---
+        Type "f32" is not assignable to "boolean"
+      `;
+
+      checkMainType`
+        type i32
+        type boolean
+
+        fun x(): boolean = 1 > 2
+        ---
+        fun() -> boolean
+      `;
+
+      checkMainType`
+        type i32
+        type boolean
+
+        fun x(): boolean = { 1 > 2 }
+        ---
+        fun() -> boolean
+      `;
+
+      checkMainType`
+        type i32
+        type boolean
+
+        fun x(): i32 = {
+          1 > 2
+          1
+        }
+        ---
+        fun() -> i32
+      `;
+
+      checkMainType`
+        type i32
+
+        fun gte(x: i32): i32 = {
+          var test = 0
+          test = 1 + x
+          test
+        }
+        ---
+        fun(x: i32) -> i32
+      `;
+
+      checkMainType`
+        type i32
+
+        private fun fibo(n: i32, x1: i32, x2: i32): i32 =
+          if (n > 0)
+            fibo(n - 1, x2, x1 + x2)
+          else
+            x1
+
+        fun fib(n: i32): i32 = fibo(n, 0, 1)
+
+        fun test(): i32 = fib(46) // must be 1836311903
+        ---
+        fun(n: i32, x1: i32, x2: i32) -> i32
+        fun(n: i32) -> i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        type i32
+
+        fun gte(x: i32): i32 = {
+          var test = 0
+          test = test + x
+          test
+        }
+        ---
+        fun(x: i32) -> i32
+      `;
+
+      checkMainType`
+        type i32
+
+        fun gte(x: i32): i32 = {
+          var test = 0
+          test = test + x
+          test
+        }
+        ---
+        fun(x: i32) -> i32
+      `;
+
+      checkMainType`
+        type i32
+        var x = 1
+        fun getX(): i32 = x
+        ---
+        x := i32
+        fun() -> i32
+      `;
+
+      checkMainType`
+        type void
+        type i32
+        fun getX(x: i32): void = {}
+        ---
+        fun(x: i32) -> void
+      `;
+
+      checkMainType`
+        type i32
+        fun getX(x: i32): i32 = x
+        ---
+        fun(x: i32) -> i32
+      `;
+
+      checkMainType`
+        type i32
+        fun getX(x: i32): i32 = {
+          x
+          x
+          x
+          x
+          x
+        }
+        ---
+        fun(x: i32) -> i32
+      `;
+
+      checkMainType`
+        type i32
+        type f32
+        fun getX(): i32 = {
           1.0
-        else
-          0.0
-      ---
-      fun() -> f32
-      ---
-      Type "f32" is not assignable to "boolean"
-    `;
-
-      checkMainType`
-      type i32
-      type boolean
-
-      fun x(): boolean = 1 > 2
-      ---
-      fun() -> boolean
-    `;
-
-      checkMainType`
-      type i32
-      type boolean
-
-      fun x(): boolean = { 1 > 2 }
-      ---
-      fun() -> boolean
-    `;
-
-      checkMainType`
-      type i32
-      type boolean
-
-      fun x(): i32 = {
-        1 > 2
-        1
-      }
-      ---
-      fun() -> i32
-    `;
-
-      checkMainType`
-      type i32
-
-      fun gte(x: i32): i32 = {
-        var test = 0
-        test = 1 + x
-        test
-      }
-      ---
-      fun(x: i32) -> i32
-    `;
-
-      checkMainType`
-      type i32
-
-      private fun fibo(n: i32, x1: i32, x2: i32): i32 =
-        if (n > 0)
-          fibo(n - 1, x2, x1 + x2)
-        else
-          x1
-
-      fun fib(n: i32): i32 = fibo(n, 0, 1)
-
-      fun test(): i32 = fib(46) // must be 1836311903
-      ---
-      fun(n: i32, x1: i32, x2: i32) -> i32
-      fun(n: i32) -> i32
-      fun() -> i32
-    `;
-
-      checkMainType`
-      type i32
-
-      fun gte(x: i32): i32 = {
-        var test = 0
-        test = test + x
-        test
-      }
-      ---
-      fun(x: i32) -> i32
-    `;
-
-      checkMainType`
-      type i32
-
-      fun gte(x: i32): i32 = {
-        var test = 0
-        test = test + x
-        test
-      }
-      ---
-      fun(x: i32) -> i32
-    `;
-
-      checkMainType`
-      type i32
-      var x = 1
-      fun getX(): i32 = x
-      ---
-      fun() -> i32
-    `;
-
-      // TYPE ALIAS
-      // checkMainType`
-      //   type i32
-      //   type int = i32
-      //   var x = 1
-      //   fun getX(): int = x
-      //   ---
-      //   fun() -> int
-      // `;
-
-      checkMainType`
-      type void
-      type i32
-      fun getX(x: i32): void = {}
-      ---
-      fun(x: i32) -> void
-    `;
-
-      checkMainType`
-      type i32
-      fun getX(x: i32): i32 = x
-      ---
-      fun(x: i32) -> i32
-    `;
-
-      checkMainType`
-      type i32
-      fun getX(x: i32): i32 = {
-        x
-        x
-        x
-        x
-        x
-      }
-      ---
-      fun(x: i32) -> i32
-    `;
-
-      checkMainType`
-      type i32
-      type f32
-      fun getX(): i32 = {
-        1.0
-        1.0
-        1
-      }
-      ---
-      fun() -> i32
-    `;
-
-      checkMainType`
-      type i32
-      type boolean
-      fun gte(x: i32, y: i32): boolean = x >= y
-      ---
-      fun(x: i32, y: i32) -> boolean
-    `;
-
-      checkMainType`
-      type i32
-      type void
-
-      fun getX(x: i32): void =
-        if (x > 0) {
-          x
-        }
-      ---
-      fun(x: i32) -> void
-    `;
-
-      checkMainType`
-      type i32
-      type void
-
-      fun getX(): void = {
-        if (1 > 0) {
+          1.0
           1
         }
-      }
-      ---
-      fun() -> void
-    `;
+        ---
+        fun() -> i32
+      `;
 
       checkMainType`
-      type i32
-      type void
+        type i32
+        type boolean
+        fun gte(x: i32, y: i32): boolean = x >= y
+        ---
+        fun(x: i32, y: i32) -> boolean
+      `;
 
-      fun getX(): void =
-        if (1 > 0) {
-          1
+      checkMainType`
+        type i32
+        type void
+
+        fun getX(x: i32): void =
+          if (x > 0) {
+            x
+          }
+        ---
+        fun(x: i32) -> void
+      `;
+
+      checkMainType`
+        type i32
+        type void
+
+        fun getX(): void = {
+          if (1 > 0) {
+            1
+          }
         }
-      ---
-      fun() -> void
-    `;
+        ---
+        fun() -> void
+      `;
 
       checkMainType`
-      type i32
-      type void
+        type i32
+        type void
 
-      var x = 1
+        fun getX(): void =
+          if (1 > 0) {
+            1
+          }
+        ---
+        fun() -> void
+      `;
 
-      fun getX(): void =
-        if (x > 0) {
-          x
+      checkMainType`
+        type i32
+        type void
+
+        var x = 1
+
+        fun getX(): void =
+          if (x > 0) {
+            x
+          }
+        ---
+        x := i32
+        fun() -> void
+      `;
+
+      checkMainType`
+        type i32
+        type void
+
+        var x = 1
+
+        fun addOne(): i32 = {
+          var y = x
+          y = y + 1
+          x = y
         }
-      ---
-      fun() -> void
-    `;
 
-      checkMainType`
-      type i32
-      type void
-
-      var x = 1
-
-      fun addOne(): i32 = {
-        var y = x
-        y = y + 1
-        x = y
-      }
-
-      fun addOneNoReturn(): void = {
-        x = x + 1
-      }
-      ---
-      fun() -> i32
-      fun() -> void
-    `;
+        fun addOneNoReturn(): void = {
+          x = x + 1
+        }
+        ---
+        x := i32
+        fun() -> i32
+        fun() -> void
+      `;
     });
   });
 

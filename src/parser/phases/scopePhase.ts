@@ -120,13 +120,8 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure.set(node.variableName);
     }
 
-    if (node instanceof Nodes.TypeDeclarationNode) {
-      node.declarations.forEach($ => {
-        node.closure.set($.declaredName);
-      });
-    }
-
     if (node instanceof Nodes.StructDeclarationNode) {
+      node.closure.set(node.declaredName);
       if (!node.internalIdentifier) {
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }

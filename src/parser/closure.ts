@@ -316,11 +316,27 @@ export class Closure {
     throw new Error('Cannot resolve name "' + localName + '"');
   }
 
-  inspect() {
+  inspect(content: string = '') {
+    let localContent = `Scope:\n${Object.keys(this.nameMappings)
+      .map($ => 'let ' + $)
+      .join('\n')
+      .replace(/^(.*)/gm, '  $1')}`;
+
+    if (content) {
+      localContent = localContent + `\n${content.replace(/^(.*)/gm, '  $1')}`;
+    }
+
+    if (this.parent) {
+      return this.parent.inspect(localContent);
+    } else {
+      return localContent;
+    }
     return (
       'Closure [' +
       '\n  ' +
-      Object.keys(this.nameMappings).join('\n  ') +
+      Object.keys(this.nameMappings)
+        .map($ => 'let ' + $)
+        .join('\n  ') +
       '\n  parent = ' +
       (this.parent ? '\n' + this.parent.inspect().replace(/^(.*)/gm, '    $1') : 'null') +
       '\n]'

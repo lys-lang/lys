@@ -17,6 +17,23 @@ describe('execution tests', () => {
     );
   });
 
+  describe('named types', () => {
+    test(
+      'temperatures',
+      `
+        type int = i32
+        type Integer = int
+        fun add(a: i32, b: int): int = a + b
+        fun add2(a: i32, b: int): Integer = a + b
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.add(10, 13)).to.eq(23);
+        expect(x.exports.add2(30, 13)).to.eq(43);
+      }
+    );
+  });
+
   describe('struct', () => {
     test(
       'type alloc and basic pattern match',

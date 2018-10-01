@@ -1,0 +1,107 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-StructDeclarationNode type=Type<Simple>
+    |-NameIdentifierNode="Simple" type=Type<Simple>
+  |-StructDeclarationNode type=Type<WithInt>
+    |-NameIdentifierNode="WithInt" type=Type<WithInt>
+    |-ParameterNode
+      |-NameIdentifierNode="a" type=i32
+      |-TypeReferenceNode=i32 type=i32
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+  |-OverloadedFunctionNode type=fun() -> Simple annotations=Injected
+    |-FunDirectiveNode type=fun() -> Simple annotations=Injected
+      |-FunctionNode type=fun() -> Simple
+        |-NameIdentifierNode="SimpleAllocator" type=fun() -> Simple
+        |-TypeReferenceNode=Simple type=Simple
+          |-QNameNode=Simple
+            |-NameIdentifierNode="Simple"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x100000000
+    |-NameIdentifierNode="SimpleAllocator" type=fun() -> Simple
+  |-OverloadedFunctionNode type=fun(a: Simple) -> boolean & fun(a: WithInt) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(a: Simple) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Simple) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Simple
+          |-TypeReferenceNode=Simple type=Simple
+            |-QNameNode=Simple
+              |-NameIdentifierNode="Simple"
+        |-NameIdentifierNode="is" type=fun(a: Simple) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+    |-FunDirectiveNode type=fun(a: WithInt) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: WithInt) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=WithInt
+          |-TypeReferenceNode=WithInt type=WithInt
+            |-QNameNode=WithInt
+              |-NameIdentifierNode="WithInt"
+        |-NameIdentifierNode="is" type=fun(a: WithInt) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+    |-NameIdentifierNode="is" type=fun(a: Simple) -> boolean & fun(a: WithInt) -> boolean
+  |-OverloadedFunctionNode type=fun(a: i32) -> WithInt annotations=Injected
+    |-FunDirectiveNode type=fun(a: i32) -> WithInt annotations=Injected
+      |-FunctionNode type=fun(a: i32) -> WithInt
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="WithIntAllocator" type=fun(a: i32) -> WithInt
+        |-TypeReferenceNode=WithInt type=WithInt
+          |-QNameNode=WithInt
+            |-NameIdentifierNode="WithInt"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$_newRef
+              |-NameIdentifierNode="$_newRef"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$_newRef
+              |-NameIdentifierNode="$_newRef"
+            |-WasmAtomNode=call
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=8
+          |-WasmAtomNode=i64.or
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+            |-WasmAtomNode=i64.extend_u/i32
+              |-WasmAtomNode=get_local
+                |-QNameNode=$_newRef
+                  |-NameIdentifierNode="$_newRef"
+    |-NameIdentifierNode="WithIntAllocator" type=fun(a: i32) -> WithInt

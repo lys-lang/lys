@@ -84,6 +84,8 @@ export abstract class Type {
 
       case NativeTypes.void:
         return undefined;
+      default:
+        throw new Error(`Type ${this} (${this.constructor.name}) returned a undefined binaryenType`);
     }
   }
 
@@ -94,6 +96,10 @@ export abstract class Type {
   }
 
   canBeAssignedTo(otherType: Type) {
+    if (otherType instanceof TypeAlias) {
+      return this.canBeAssignedTo(otherType.of);
+    }
+
     if (this.superType && this.superType.canBeAssignedTo(otherType)) {
       return true;
     }
@@ -104,7 +110,7 @@ export abstract class Type {
       }
     }
 
-    return this.equals(otherType); // add supertype logic here
+    return this.equals(otherType);
   }
 
   toString() {
@@ -123,9 +129,8 @@ export class FunctionType extends Type {
   parameterNames: string[];
   returnType: Type;
 
-  acceptsTypes(types: Type[]) {
-    if (this.parameterTypes.length !== types.length) return false;
-    return types.every(($, $$) => $.canBeAssignedTo(this.parameterTypes[$$]));
+  acceptsTypes(types: Type[], strict: boolean) {
+    return accpetsTypes(this, types, strict);
   }
 
   equals(type: Type) {
@@ -169,6 +174,8 @@ export class RefType extends Type {
 }
 
 export class PolimorphicType extends RefType {
+  of = new Map<string, StructType>();
+
   constructor(public fqn: string) {
     super();
   }
@@ -194,11 +201,39 @@ export class StringType extends RefType {
   }
 }
 
-export class StructType extends PolimorphicType {
-  constructor(public internalName: string, fqn: string, superType: Type = null) {
-    super(fqn);
+function accpetsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): boolean {
+  if (type.parameterTypes.length !== types.length) {
+    return false;
+  }
+
+  if (type.parameterTypes.length == 0) {
+    return true;
+  }
+
+  for (let index = 0; index < types.length; index++) {
+    const argType = types[index];
+
+    if (strict) {
+      if (!argType.equals(type.parameterTypes[index])) {
+        return false;
+      }
+    } else {
+      if (!argType.canBeAssignedTo(type.parameterTypes[index])) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+export class StructType extends RefType {
+  constructor(public internalName: string, public fqn: string, superType: PolimorphicType = null) {
+    super();
+
     if (superType) {
       this.superType = superType;
+      superType.of.set(fqn, this);
     } else {
       this.superType = RefType.instance;
     }
@@ -207,9 +242,8 @@ export class StructType extends PolimorphicType {
   parameterTypes: Type[];
   parameterNames: string[];
 
-  acceptsTypes(types: Type[]) {
-    if (this.parameterTypes.length !== types.length) return false;
-    return types.every(($, $$) => $.canBeAssignedTo(this.parameterTypes[$$]));
+  acceptsTypes(types: Type[], strict: boolean) {
+    return accpetsTypes(this, types, strict);
   }
 
   equals(type: Type) {
@@ -247,9 +281,7 @@ export class IntersectionType extends Type {
     if (newTypes.length === 1) {
       return newTypes[0];
     } else {
-      const newType = new IntersectionType();
-      newType.of = newTypes;
-      return newType;
+      return new IntersectionType(newTypes);
     }
   }
 
@@ -301,18 +333,18 @@ export class ReferenceType extends Type {
 }
 
 export class UnionType extends Type {
-  get nativeType(): NativeTypes {
-    const superTypes = new Set();
+  get binaryenType(): Valtype {
+    const nativeTypes = new Set<Valtype>();
 
     this.of.forEach($ => {
-      superTypes.add($.binaryenType);
+      nativeTypes.add($.binaryenType);
     });
 
-    if (superTypes.size == 1) {
-      return superTypes.values().next().value;
+    if (nativeTypes.size == 1) {
+      return nativeTypes.values().next().value;
+    } else {
+      throw new Error('Cannot find a suitable low level type for ' + this.toString());
     }
-
-    return NativeTypes.anyfunc;
   }
 
   constructor(public of: Type[] = [], public readonly simplified = false) {
@@ -330,19 +362,23 @@ export class UnionType extends Type {
 
   equals(other: Type) {
     if (!other) return false;
-    // TODO: flatMap
-    return other instanceof UnionType && other.of.every($ => this.of.includes($));
+
+    return (
+      other instanceof UnionType && other.of.every($ => this.of.includes($)) && this.of.every($ => other.of.includes($))
+    );
   }
 
   simplify() {
     const newTypes: Type[] = [];
 
-    const superTypes = new Set<Type>();
+    const superTypes = new Set<PolimorphicType>();
 
     this.of.forEach($ => {
       if ($ instanceof UnknownType) return;
 
-      superTypes.add($.superType);
+      if ($.superType && $.superType instanceof PolimorphicType) {
+        superTypes.add($.superType);
+      }
 
       if (!newTypes.some($1 => $1.equals($))) {
         newTypes.push($);
@@ -359,12 +395,47 @@ export class UnionType extends Type {
       if (superTypes.size == 1) {
         const superType = superTypes.values().next().value;
 
-        if (newTypes.every($ => $.canBeAssignedTo(superType))) {
+        if (meetsAllRequirements(newTypes, superType)) {
           return superType;
         }
       }
       return new UnionType(newTypes, true);
     }
+  }
+}
+
+function meetsAllRequirements(types: Type[], superType: PolimorphicType) {
+  const missing = new Set(superType.of.values());
+
+  if (types.length < missing.size) {
+    return false;
+  }
+
+  types.forEach(($: StructType) => missing.delete($));
+
+  return missing.size == 0;
+}
+
+export class TypeAlias extends Type {
+  of: Type = null;
+  constructor(public name: string) {
+    super();
+  }
+
+  get nativeType(): NativeTypes {
+    return this.of.nativeType;
+  }
+
+  canBeAssignedTo(other: Type) {
+    return this.of.canBeAssignedTo(other);
+  }
+
+  equals(other: Type) {
+    return other == this;
+  }
+
+  toString() {
+    return this.name;
   }
 }
 
@@ -420,23 +491,6 @@ export class u8 extends NativeType {
 export class bool extends NativeType {
   static instance = new bool(NativeTypes.boolean);
 }
-
-// export class trueType extends bool {
-//   static instance = new bool(NativeTypes.boolean);
-
-//   canBeAssignedTo(other: Type) {
-//     if (!other) return false;
-//   }
-
-//   equals(other: Type) {
-//     if (!other) return false;
-//     if(other instanceof tue
-//   }
-
-//   toString() {
-//     return 'true';
-//   }
-// }
 
 export class i32 extends NativeType {
   static instance = new i32(NativeTypes.i32);
