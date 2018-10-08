@@ -498,7 +498,7 @@
       (set_local $var$1 (call $system::core::+_1 (get_local $a) (i32.const 1)))
       (block $B1_0
           (block $B1_1
-              (br_if $B1_0 (call $system::core::==_2 (i32.const 1) (get_local $var$1)))
+              (br_if $B1_0 (call $system::core::==_6 (i32.const 1) (get_local $var$1)))
             )
           (i32.const 1)
           (br $B1)
@@ -508,7 +508,7 @@
     )
   )
   (func $test::test2 (param $a i32) (result i32)
-    (if $a_wild_if (result i32) (call $system::core::==_2 (call $system::core::+_1 (get_local $a) (i32.const 1)) (i32.const 1))
+    (if $a_wild_if (result i32) (call $system::core::==_6 (call $system::core::+_1 (get_local $a) (i32.const 1)) (i32.const 1))
       (then
         (i32.const 0)
       )

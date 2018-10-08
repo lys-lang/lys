@@ -2,6 +2,7 @@ import { Closure } from './closure';
 import { AstNodeError } from './NodeError';
 import { TypeGraph } from './types/TypeGraph';
 import { TypeResolutionContext } from './types/TypePropagator';
+import { flatten } from './helpers';
 
 export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
 
@@ -53,7 +54,7 @@ export enum sizeOf {
 
 export abstract class Type {
   nativeType: NativeTypes;
-  superType: Type | null = null;
+
   getSize(): number {
     return sizeOf[this.nativeType];
   }
@@ -96,12 +97,12 @@ export abstract class Type {
   }
 
   canBeAssignedTo(otherType: Type) {
-    if (otherType instanceof TypeAlias) {
-      return this.canBeAssignedTo(otherType.of);
+    if (this.equals(otherType)) {
+      return true;
     }
 
-    if (this.superType && this.superType.canBeAssignedTo(otherType)) {
-      return true;
+    if (otherType instanceof TypeAlias) {
+      return this.canBeAssignedTo(otherType.of);
     }
 
     if (otherType instanceof UnionType) {
@@ -110,7 +111,7 @@ export abstract class Type {
       }
     }
 
-    return this.equals(otherType);
+    return false;
   }
 
   toString() {
@@ -156,6 +157,7 @@ export class FunctionType extends Type {
 
 export class RefType extends Type {
   nativeType: NativeTypes = NativeTypes.u64;
+  superType: RefType | null = null;
 
   static instance: RefType = new RefType();
 
@@ -163,8 +165,32 @@ export class RefType extends Type {
     return 'ref';
   }
 
-  canBeAssignedTo(other: Type) {
-    return super.canBeAssignedTo(other) || (other instanceof RefType && other.toString() == 'ref');
+  canBeAssignedTo(otherType: Type) {
+    if (super.canBeAssignedTo(otherType)) {
+      return true;
+    }
+
+    if (this.superType && this.superType.canBeAssignedTo(otherType)) {
+      return true;
+    }
+
+    if (otherType instanceof RefType && otherType.toString() == 'ref') {
+      return true;
+    }
+
+    return false;
+  }
+
+  typeSimilarity(to: Type, depth: number = 1): number {
+    if (this.equals(to)) {
+      return 1 / depth;
+    }
+
+    if (this.superType) {
+      return this.superType.typeSimilarity(to, depth + 1);
+    }
+
+    return 0;
   }
 
   equals(other: Type) {
@@ -178,6 +204,7 @@ export class PolimorphicType extends RefType {
 
   constructor(public fqn: string) {
     super();
+    this.superType = RefType.instance;
   }
 
   equals(otherType: Type) {
@@ -201,41 +228,95 @@ export class StringType extends RefType {
   }
 }
 
-function accpetsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): boolean {
+function accpetsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): number {
   if (type.parameterTypes.length !== types.length) {
-    return false;
+    return 0;
   }
 
+  let score = 1;
+
   if (type.parameterTypes.length == 0) {
-    return true;
+    return 1;
   }
 
   for (let index = 0; index < types.length; index++) {
-    const argType = types[index];
+    const argumentType = types[index];
+    const parameterType = type.parameterTypes[index];
 
-    if (strict) {
-      if (!argType.equals(type.parameterTypes[index])) {
-        return false;
+    const equals = argumentType.equals(parameterType);
+
+    if (equals) {
+      score += 1;
+    } else if (!strict) {
+      const canBeAssignedTo = argumentType.canBeAssignedTo(parameterType);
+
+      if (!canBeAssignedTo) {
+        return 0;
       }
+
+      score += getTypeSimilarity(argumentType, parameterType);
     } else {
-      if (!argType.canBeAssignedTo(type.parameterTypes[index])) {
-        return false;
-      }
+      return 0;
     }
   }
 
-  return true;
+  return score;
+}
+
+function downToRefTypes(type: Type): RefType[] {
+  let argType = type;
+
+  while (true) {
+    if (argType instanceof RefType) {
+      return [argType];
+    } else if (argType instanceof TypeAlias) {
+      argType = argType.of;
+    } else if (argType instanceof UnionType) {
+      return flatten(argType.of.map($ => downToRefTypes($)));
+    } else {
+      return [];
+    }
+  }
+}
+
+export function getTypeSimilarity(lhs: Type, rhs: Type) {
+  if (rhs.equals(lhs) && lhs.equals(rhs)) {
+    return 1;
+  }
+
+  const lhsTypes = downToRefTypes(lhs);
+  if (lhsTypes.length == 0) return 0;
+
+  const rhsTypes = downToRefTypes(rhs);
+  if (rhsTypes.length == 0) return 0;
+
+  let results: number[] = [];
+
+  lhsTypes.forEach(lhs => rhsTypes.forEach(rhs => results.push(lhs.typeSimilarity(rhs))));
+
+  return Math.max.apply(Math, results);
 }
 
 export class StructType extends RefType {
-  constructor(public internalName: string, public fqn: string, superType: PolimorphicType = null) {
+  private constructor(public internalName: string, public fqn: string, superType: PolimorphicType = null) {
     super();
 
     if (superType) {
       this.superType = superType;
+      if (superType.of.has(fqn)) {
+        throw new Error('Supertype already have ' + fqn);
+      }
       superType.of.set(fqn, this);
     } else {
       this.superType = RefType.instance;
+    }
+  }
+
+  static fromSuperType(internalName: string, fqn: string, superType: PolimorphicType) {
+    if (superType && superType.of.has(fqn)) {
+      return superType.of.get(fqn);
+    } else {
+      return new StructType(internalName, fqn, superType);
     }
   }
 
@@ -249,6 +330,7 @@ export class StructType extends RefType {
   equals(type: Type) {
     if (!(type instanceof StructType)) return false;
     if (this.fqn !== type.fqn) return false;
+    if (this.superType !== type.superType) return false;
     if (this.parameterTypes.length != type.parameterTypes.length) return false;
     if (this.parameterTypes.some(($, $$) => !$.equals(type.parameterTypes[$$]))) return false;
     return true;
@@ -376,7 +458,7 @@ export class UnionType extends Type {
     this.of.forEach($ => {
       if ($ instanceof UnknownType) return;
 
-      if ($.superType && $.superType instanceof PolimorphicType) {
+      if ($ instanceof RefType && $.superType && $.superType instanceof PolimorphicType) {
         superTypes.add($.superType);
       }
 

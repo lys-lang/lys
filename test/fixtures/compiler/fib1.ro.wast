@@ -498,8 +498,8 @@
       (block $B1_0
           (block $B1_1
               (block $B1_2
-                  (br_if $B1_0 (call $system::core::==_2 (i32.const 0) (get_local $var$3)))
-                  (br_if $B1_1 (call $system::core::==_2 (i32.const 1) (get_local $var$3)))
+                  (br_if $B1_0 (call $system::core::==_6 (i32.const 0) (get_local $var$3)))
+                  (br_if $B1_1 (call $system::core::==_6 (i32.const 1) (get_local $var$3)))
                 )
               (call $test::fibo (call $system::core::-_1 (get_local $n) (i32.const 1)) (get_local $b) (call $system::core::+_1 (get_local $a) (get_local $b)))
               (br $B1)

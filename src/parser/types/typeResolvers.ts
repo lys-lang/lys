@@ -28,7 +28,8 @@ import {
   UnreachableCode,
   NotAValidType,
   AstNodeError,
-  UnexpectedType
+  UnexpectedType,
+  CannotInferReturnType
 } from '../NodeError';
 import { MessageCollector } from '../closure';
 
@@ -603,6 +604,14 @@ export class FunctionTypeResolver extends TypeResolver {
     const inferedReturnType = resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
 
     if (inferedReturnType) {
+      const previousError = ctx.parsingContext.messageCollector.errors.findIndex(
+        $ => $.node === functionNode.body && $ instanceof CannotInferReturnType
+      );
+
+      if (previousError != -1) {
+        ctx.parsingContext.messageCollector.errors.splice(previousError, 1);
+      }
+
       if (inferedReturnType instanceof TypeType) {
         ctx.parsingContext.messageCollector.error(new UnexpectedType(inferedReturnType, functionNode.body));
       }
@@ -611,6 +620,10 @@ export class FunctionTypeResolver extends TypeResolver {
         ctx.parsingContext.messageCollector.error(
           new TypeMismatch(inferedReturnType, fnType.returnType, functionNode.functionReturnType)
         );
+      }
+    } else {
+      if (!ctx.parsingContext.messageCollector.hasErrorForBranch(functionNode.body)) {
+        ctx.parsingContext.messageCollector.error(new CannotInferReturnType(functionNode.body));
       }
     }
 
@@ -627,7 +640,7 @@ export class StructTypeResolver extends TypeResolver {
     const superType =
       ((superTypeEdge.length && (superTypeEdge[0].incomingType() as TypeType).of) as PolimorphicType) || null;
 
-    const fnType = new StructType(structNode.internalIdentifier, structNode.declaredName.name, superType);
+    const fnType = StructType.fromSuperType(structNode.internalIdentifier, structNode.declaredName.name, superType);
 
     fnType.parameterTypes = structNode.parameters
       .map($ => {
@@ -659,7 +672,8 @@ export class VariableReferenceResolver extends TypeResolver {
         return ret;
       }
       ctx.parsingContext.messageCollector.error(new UnexpectedType(ret, node.astNode));
-      return UnknownType.instance;
+      // return UnknownType.instance;
+      return null;
     }
 
     return ret || INVALID_TYPE;
@@ -728,18 +742,42 @@ function findFunctionOverload(
   }
 
   if (incommingType instanceof IntersectionType) {
+    const matchList: { fun: FunctionType; score: number }[] = [];
+
     for (let fun of incommingType.of) {
       if (fun instanceof FunctionType) {
-        if (fun.acceptsTypes(argTypes, strict)) {
-          if (
-            !returnType ||
-            (strict ? fun.returnType.equals(returnType) : fun.returnType.canBeAssignedTo(returnType))
-          ) {
-            return fun;
+        if (strict) {
+          if (fun.acceptsTypes(argTypes, strict)) {
+            if (fun.returnType.equals(returnType)) {
+              return fun;
+            }
+          }
+        } else {
+          const score = fun.acceptsTypes(argTypes, strict);
+          if (score) {
+            if (!returnType || fun.returnType.canBeAssignedTo(returnType)) {
+              matchList.push({ fun, score });
+            }
           }
         }
       } else {
         throw new NotAFunction(fun, errorNode);
+      }
+    }
+
+    if (matchList.length == 1) {
+      return matchList[0].fun;
+    } else if (matchList.length > 0) {
+      matchList.sort((a, b) => {
+        if (a.score < b.score) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      if (matchList[0].score > matchList[1].score) {
+        return matchList[0].fun;
       }
     }
 

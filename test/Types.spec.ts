@@ -655,7 +655,7 @@ describe('Types', function() {
             fun() -> P
           `;
 
-          describe.skip('funny case that doesnt work.', () => {
+          describe('funny case that doesnt work.', () => {
             checkMainType`
               type P {
                 B(x: i32)
@@ -678,57 +678,154 @@ describe('Types', function() {
       `;
 
       checkMainType`
+        type i32
         type x {
           Nila
           Custom(r: i32)
         }
 
-        fun qq(x: ref): void = ???
-        fun qq(x: x): f32 = ???
-        fun qq(x: Custom): i32 = ???
-
-        fun a(): i32 = qq(Custom(1))
-        fun b(t: Custom): i32 = qq(t)
-        fun c(t: x): f32 = qq(t)
-        fun d(i: i32): i32 = qq(Custom(i))
-        fun e(t: Nila): f32 = qq(t)
-        fun f(): f32 = qq(Nila)
+        fun d(i: i32): void = x(Custom(i))
+        fun d(t: Nila): void = x(t)
+        fun d(): void = x(Nila)
         ---
-        null
-        fun() -> i32
-        fun(t: Custom) -> i32
-        fun(t: x) -> f32
-        fun(i: i32) -> i32
-        fun(t: Nila) -> f32
-        fun() -> f32
+        fun(i: i32) -> void & fun(t: Nila) -> void & fun() -> void
+        ---
+        Type<x> is not a value, constructor or function.
       `;
 
       checkMainType`
-        type x {
-          Nila
-          Custom(r: i32)
-        }
+        type i32
 
-        fun qq(x: Custom): i32 = ???
-        fun qq(x: ref): void = ???
-        fun qq(x: x): f32 = ???
-
-        fun a(): i32 = qq(Custom(1))
-        fun b(t: Custom): i32 = qq(t)
-        fun c(t: x): f32 = qq(t)
-        fun d(i: i32): i32 = qq(Custom(i))
-        fun e(t: Nila): f32 = qq(t)
-        fun f(): f32 = qq(Nila)
+        fun rec(x: i32): i32 =
+          if (x > 0)
+            rec(x - 1)
+          else
+            0
         ---
-        null
-        fun() -> i32
-        fun(t: Custom) -> i32
-        fun(t: x) -> f32
-        fun(i: i32) -> i32
-        fun(t: Nila) -> f32
-        fun() -> f32
+        fun(x: i32) -> i32
       `;
+      describe('sss', () => {
+        checkMainType`
+          type i32
+          type void
 
+          type x {
+            Nila
+            Custom(r: i32)
+          }
+
+          fun testSuperType(x: x): void = ???
+
+          fun test(): void = {
+            testSuperType(Custom(1))
+            testSuperType(Nila)
+          }
+          ---
+          fun(x: x) -> void
+          fun() -> void
+        `;
+
+        checkMainType`
+          type i32
+          type void
+
+          type x {
+            Nila
+            Custom(r: i32)
+          }
+
+          fun testRefType(x: ref): void = ???
+
+          fun testX(y: x): void = {
+            testRefType(y)
+          }
+
+          fun test(): void = {
+            testX(Custom(1))
+            testX(Nila)
+            testRefType(Custom(1))
+            testRefType(Nila)
+          }
+          ---
+          fun(x: ref) -> void
+          fun(y: x) -> void
+          fun() -> void
+        `;
+
+        checkMainType`
+          type i32
+          type void
+
+          type x {
+            Nila
+          }
+
+          fun qq(x: ref): void = ???
+          fun qq(x: x): f32 = ???
+
+          fun e(t: Nila): f32 = qq(t)
+          fun f(): f32 = qq(Nila)
+          ---
+          fun(x: ref) -> void & fun(x: x) -> f32
+          fun(t: Nila) -> f32
+          fun() -> f32
+        `;
+
+        checkMainType`
+          type i32
+          type void
+
+          type x {
+            Nila
+            Custom(r: i32)
+          }
+
+          fun qq(x: ref): void = ???
+          fun qq(x: x): f32 = ???
+          fun qq(x: Custom): i32 = ???
+
+          fun a(): i32 = qq(Custom(1))
+          fun b(t: Custom): i32 = qq(t)
+          fun c(t: x): f32 = qq(t)
+          fun d(i: i32): i32 = qq(Custom(i))
+          fun e(t: Nila): f32 = qq(t)
+          fun f(): f32 = qq(Nila)
+          ---
+          fun(x: ref) -> void & fun(x: x) -> f32 & fun(x: Custom) -> i32
+          fun() -> i32
+          fun(t: Custom) -> i32
+          fun(t: x) -> f32
+          fun(i: i32) -> i32
+          fun(t: Nila) -> f32
+          fun() -> f32
+        `;
+
+        checkMainType`
+          type x {
+            Nila
+            Custom(r: i32)
+          }
+
+          fun qq(x: Custom): i32 = ???
+          fun qq(x: ref): void = ???
+          fun qq(x: x): f32 = ???
+
+          fun a(): i32 = qq(Custom(1))
+          fun b(t: Custom): i32 = qq(t)
+          fun c(t: x): f32 = qq(t)
+          fun d(i: i32): i32 = qq(Custom(i))
+          fun e(t: Nila): f32 = qq(t)
+          fun f(): f32 = qq(Nila)
+          ---
+          fun(x: Custom) -> i32 & fun(x: ref) -> void & fun(x: x) -> f32
+          fun() -> i32
+          fun(t: Custom) -> i32
+          fun(t: x) -> f32
+          fun(i: i32) -> i32
+          fun(t: Nila) -> f32
+          fun() -> f32
+        `;
+      });
       checkMainType`
         type x {
           Custom(r: i32)
@@ -1023,7 +1120,7 @@ describe('Types', function() {
         fun MAX_SIZE_32(): i32 = 1 << 30 // 1G
         fun HEAP_BASE(): i32 = 0
         fun startOffset(): i32 = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
-        fun offset(): i32= startOffset
+        fun offset(): i32 = startOffset()
         fun max(a: i32, b: i32): i32 = if (a>b) a else b
         fun currentMemory(): i32 = %wasm {(current_memory)}
         fun main(): i32 = {

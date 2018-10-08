@@ -32,7 +32,7 @@ digraph Document {
   30 [label="Name: isComplex\n⟨fun(number: Number) -> boolean⟩", fillcolor=grey];
   31 [label="FunOverload: main\n⟨fun() -> void⟩", fillcolor=grey];
   32 [label="FunDirective: main\n⟨fun() -> void⟩", fillcolor=grey];
-  33 [label="FunNode: main\n⟨void⟩", fillcolor=grey];
+  33 [label="FunNode: main\n⟨fun() -> void⟩", fillcolor=grey];
   34 [label="TypeRef: void\n⟨void⟩", fillcolor=grey];
   35 [label="Name: main\n⟨fun() -> void⟩", fillcolor=grey];
   36 [label="Name: main\n⟨fun() -> void⟩", fillcolor=grey];
@@ -130,9 +130,6 @@ Amount: 7", fillcolor=magenta];
     124 [label="VarRef: Complex\n⟨Type<Complex>⟩", fillcolor=grey];
     125 [label="Float: 0.00000\n⟨f32⟩", fillcolor=grey];
     126 [label="Float: 99.10000\n⟨f32⟩", fillcolor=grey];
-    127 [label="FunNode: main\n⟨void⟩", fillcolor=grey];
-    128 [label="TypeRef: void\n⟨void⟩", fillcolor=grey];
-    107 -> 127[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     108 -> 107[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     109 -> 108[taillabel="fun(number: Number) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     110 -> 108[taillabel="Infinity" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -156,141 +153,108 @@ Amount: 7", fillcolor=magenta];
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    129 [label="Name: number\n⟨Number⟩", fillcolor=grey];
-    130 [label="PatternMatcherNode", fillcolor=grey, color=red];
-    131 [label="VarRef: number\n⟨Number⟩", fillcolor=grey];
-    132 [label="MatchCaseIsNode\n⟨boolean⟩
+    127 [label="Name: number\n⟨Number⟩", fillcolor=grey];
+    128 [label="PatternMatcherNode", fillcolor=grey, color=red];
+    129 [label="VarRef: number\n⟨Number⟩", fillcolor=grey];
+    130 [label="MatchCaseIsNode\n⟨boolean⟩
 Amount: 9", fillcolor=magenta];
-    133 [label="TypeRef: Real\n⟨Real⟩", fillcolor=grey];
-    134 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
-    135 [label="MatchCaseIsNode\n⟨boolean⟩
+    131 [label="TypeRef: Real\n⟨Real⟩", fillcolor=grey];
+    132 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
+    133 [label="MatchCaseIsNode\n⟨boolean⟩
 Amount: 9", fillcolor=magenta];
-    136 [label="TypeRef: Natural\n⟨Natural⟩", fillcolor=grey];
-    137 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
-    138 [label="MatchCaseIsNode", fillcolor=grey, color=red];
-    139 [label="TypeRef: Complex\n⟨Complex⟩", fillcolor=grey];
-    140 [label="BinOp: '!='", fillcolor=grey, color=red];
-    141 [label="VarRef: imaginary", fillcolor=grey, color=red];
-    142 [label="Float: 0.00000\n⟨f32⟩", fillcolor=grey];
-    143 [label="Name: imaginary", fillcolor=grey, color=red];
-    144 [label="MatchDefaultNode\n⟨boolean⟩", fillcolor=grey];
-    145 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
-    146 [label="FunNode: isComplex\n⟨fun(number: Number) -> boolean⟩", fillcolor=grey];
-    147 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    129 -> 131[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    130 -> 146[taillabel="Not Defined" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
-    131 -> 130[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    131 -> 132[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    131 -> 135[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    131 -> 138[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    131 -> 144[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    134 [label="TypeRef: Natural\n⟨Natural⟩", fillcolor=grey];
+    135 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
+    136 [label="MatchCaseIsNode", fillcolor=grey, color=red];
+    137 [label="TypeRef: Complex\n⟨Complex⟩", fillcolor=grey];
+    138 [label="BinOp: '!='", fillcolor=grey, color=red];
+    139 [label="VarRef: imaginary", fillcolor=grey, color=red];
+    140 [label="Float: 0.00000\n⟨f32⟩", fillcolor=grey];
+    141 [label="Name: imaginary", fillcolor=grey, color=red];
+    142 [label="MatchDefaultNode\n⟨boolean⟩", fillcolor=grey];
+    143 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
+    127 -> 129[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    129 -> 128[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    129 -> 130[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    129 -> 133[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    129 -> 136[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    129 -> 142[taillabel="Number" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    130 -> 128[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    131 -> 130[taillabel="Real" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     132 -> 130[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    133 -> 132[taillabel="Real" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    134 -> 132[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    135 -> 130[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    136 -> 135[taillabel="Natural" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    137 -> 135[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    138 -> 143[taillabel="Not Defined" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
-    138 -> 130[taillabel="[MATCH_EXPRESSION]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
-    139 -> 138[taillabel="Complex" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    140 -> 138[taillabel="[RHS]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
-    141 -> 140[taillabel="[LHS]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
-    142 -> 140[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    143 -> 141[taillabel="[NAME]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
-    144 -> 130[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    145 -> 144[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    133 -> 128[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    134 -> 133[taillabel="Natural" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    135 -> 133[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    136 -> 141[taillabel="Not Defined" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
+    136 -> 128[taillabel="[MATCH_EXPRESSION]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
+    137 -> 136[taillabel="Complex" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    138 -> 136[taillabel="[RHS]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
+    139 -> 138[taillabel="[LHS]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
+    140 -> 138[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    141 -> 139[taillabel="[NAME]" labeldistance="1" fontname="times  italic" fontsize = 10 color="blue" ];
+    142 -> 128[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    143 -> 142[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "isComplex(Number)";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    148 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    149 [label="FunNode: InfinityAllocator\n⟨fun() -> Infinity⟩", fillcolor=grey];
-    150 [label="TypeRef: Infinity\n⟨Infinity⟩", fillcolor=grey];
-    148 -> 149[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    144 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "InfinityAllocator()";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
-    151 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    152 [label="FunNode: NDetAllocator\n⟨fun() -> NDet⟩", fillcolor=grey];
-    153 [label="TypeRef: NDet\n⟨NDet⟩", fillcolor=grey];
-    151 -> 152[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    145 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "NDetAllocator()";
 }
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
-    154 [label="Name: a\n⟨Infinity⟩", fillcolor=grey];
-    155 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    156 [label="FunNode: is\n⟨fun(a: Infinity) -> boolean⟩", fillcolor=grey];
-    157 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    155 -> 156[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    146 [label="Name: a\n⟨Infinity⟩", fillcolor=grey];
+    147 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "is(Infinity)";
 }
   subgraph cluster5 {
     node [style=filled, fillcolor=grey];
-    158 [label="Name: a\n⟨NDet⟩", fillcolor=grey];
-    159 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    160 [label="FunNode: is\n⟨fun(a: NDet) -> boolean⟩", fillcolor=grey];
-    161 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    159 -> 160[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    148 [label="Name: a\n⟨NDet⟩", fillcolor=grey];
+    149 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "is(NDet)";
 }
   subgraph cluster6 {
     node [style=filled, fillcolor=grey];
-    162 [label="Name: a\n⟨Real⟩", fillcolor=grey];
-    163 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    164 [label="FunNode: is\n⟨fun(a: Real) -> boolean⟩", fillcolor=grey];
-    165 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    163 -> 164[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    150 [label="Name: a\n⟨Real⟩", fillcolor=grey];
+    151 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "is(Real)";
 }
   subgraph cluster7 {
     node [style=filled, fillcolor=grey];
-    166 [label="Name: a\n⟨Natural⟩", fillcolor=grey];
-    167 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    168 [label="FunNode: is\n⟨fun(a: Natural) -> boolean⟩", fillcolor=grey];
-    169 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    167 -> 168[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    152 [label="Name: a\n⟨Natural⟩", fillcolor=grey];
+    153 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "is(Natural)";
 }
   subgraph cluster8 {
     node [style=filled, fillcolor=grey];
-    170 [label="Name: a\n⟨Complex⟩", fillcolor=grey];
-    171 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    172 [label="FunNode: is\n⟨fun(a: Complex) -> boolean⟩", fillcolor=grey];
-    173 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    171 -> 172[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    154 [label="Name: a\n⟨Complex⟩", fillcolor=grey];
+    155 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
   label = "is(Complex)";
 }
   subgraph cluster9 {
     node [style=filled, fillcolor=grey];
-    174 [label="Name: number\n⟨i32⟩", fillcolor=grey];
-    175 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    176 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
-    177 [label="FunNode: NaturalAllocator\n⟨fun(number: i32) -> Natural⟩", fillcolor=grey];
-    178 [label="TypeRef: Natural\n⟨Natural⟩", fillcolor=grey];
-    175 -> 177[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    156 [label="Name: number\n⟨i32⟩", fillcolor=grey];
+    157 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    158 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
   label = "NaturalAllocator(i32)";
 }
   subgraph cluster10 {
     node [style=filled, fillcolor=grey];
-    179 [label="Name: number\n⟨f32⟩", fillcolor=grey];
-    180 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    181 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
-    182 [label="FunNode: RealAllocator\n⟨fun(number: f32) -> Real⟩", fillcolor=grey];
-    183 [label="TypeRef: Real\n⟨Real⟩", fillcolor=grey];
-    180 -> 182[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    159 [label="Name: number\n⟨f32⟩", fillcolor=grey];
+    160 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    161 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
   label = "RealAllocator(f32)";
 }
   subgraph cluster11 {
     node [style=filled, fillcolor=grey];
-    184 [label="Name: real\n⟨f32⟩", fillcolor=grey];
-    185 [label="Name: imaginary\n⟨f32⟩", fillcolor=grey];
-    186 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    187 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
-    188 [label="FunNode: ComplexAllocator\n⟨fun(real: f32, imaginary: f32) -> Complex⟩", fillcolor=grey];
-    189 [label="TypeRef: Complex\n⟨Complex⟩", fillcolor=grey];
-    186 -> 188[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    162 [label="Name: real\n⟨f32⟩", fillcolor=grey];
+    163 [label="Name: imaginary\n⟨f32⟩", fillcolor=grey];
+    164 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    165 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
   label = "ComplexAllocator(f32,f32)";
 }
   1 -> 14[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -307,12 +271,6 @@ Amount: 9", fillcolor=magenta];
   3 -> 60[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 66[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 72[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 147[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 157[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 161[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 165[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 169[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 173[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 5[taillabel="Type<Number>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 7[taillabel="Type<Number>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 9[taillabel="Type<Number>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -323,27 +281,23 @@ Amount: 9", fillcolor=magenta];
   6 -> 40[taillabel="Type<Infinity>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 46[taillabel="Type<Infinity>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 110[taillabel="Type<Infinity>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  6 -> 150[taillabel="Type<Infinity>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   7 -> 8[taillabel="Type<NDet>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   8 -> 52[taillabel="Type<NDet>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   8 -> 78[taillabel="Type<NDet>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  8 -> 153[taillabel="Type<NDet>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   9 -> 12[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   10 -> 11[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   11 -> 9[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   12 -> 58[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   12 -> 86[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   12 -> 114[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  12 -> 133[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  12 -> 183[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  12 -> 131[taillabel="Type<Real>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   13 -> 16[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   14 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   15 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   16 -> 64[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   16 -> 94[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   16 -> 119[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  16 -> 136[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  16 -> 178[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  16 -> 134[taillabel="Type<Natural>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   17 -> 22[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   18 -> 19[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   19 -> 17[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -352,8 +306,7 @@ Amount: 9", fillcolor=magenta];
   22 -> 70[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   22 -> 104[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   22 -> 124[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  22 -> 139[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  22 -> 189[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  22 -> 137[taillabel="Type<Complex>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   23 -> 30[taillabel="fun(number: Number) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   24 -> 23[taillabel="fun(number: Number) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   25 -> 29[taillabel="fun(number: Number) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -406,9 +359,9 @@ Amount: 9", fillcolor=magenta];
   70 -> 71[taillabel="Complex" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   71 -> 69[taillabel="Complex" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   72 -> 69[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  74 -> 132[taillabel="fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  74 -> 135[taillabel="fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  74 -> 138[taillabel="fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  74 -> 130[taillabel="fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  74 -> 133[taillabel="fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  74 -> 136[taillabel="fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   75 -> 80[taillabel="fun() -> NDet" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   76 -> 75[taillabel="fun() -> NDet" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   77 -> 79[taillabel="fun() -> NDet" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

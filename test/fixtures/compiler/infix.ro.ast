@@ -60,7 +60,7 @@
     |-NameIdentifierNode="sum" type=fun(a: f32, b: f32) -> f32 & fun(a: i32, b: i32) -> i32
   |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(a: i32, b: i32) -> i32
-      |-FunctionNode type=i32
+      |-FunctionNode type=fun(a: i32, b: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
           |-TypeReferenceNode=i32 type=i32
@@ -88,7 +88,7 @@
     |-NameIdentifierNode="testInt" type=fun(a: i32, b: i32) -> i32
   |-OverloadedFunctionNode type=fun(a: f32, b: f32) -> f32 annotations=Injected
     |-FunDirectiveNode type=fun(a: f32, b: f32) -> f32
-      |-FunctionNode type=f32
+      |-FunctionNode type=fun(a: f32, b: f32) -> f32
         |-ParameterNode
           |-NameIdentifierNode="a" type=f32
           |-TypeReferenceNode=f32 type=f32

@@ -62,6 +62,7 @@ export class TypeGraphBuilder {
 
   buildFunctionNode(functionNode: Nodes.FunctionNode, args: Type[]): TypeGraph {
     const paramList = functionNode.parameters;
+
     if (args.length != paramList.length) {
       paramList.forEach((param, index) => {
         if (index >= args.length) {
@@ -81,14 +82,12 @@ export class TypeGraphBuilder {
       });
     }
 
-    const bodyNode: TypeNode = this.traverse(functionNode.body);
-    const result = this.createNode(functionNode, new PassThroughTypeResolver());
+    this.traverse(functionNode.body);
 
     if (functionNode.functionReturnType) {
       this.traverse(functionNode.functionReturnType);
     }
 
-    new Edge(bodyNode, result);
     return this.createTypeGraph();
   }
 

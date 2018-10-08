@@ -16,9 +16,7 @@ digraph Document {
     12 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
     13 [label="VarRef: test\n⟨i32⟩", fillcolor=grey];
     14 [label="Int: 2\n⟨i32⟩", fillcolor=grey];
-    15 [label="FunNode: test\n⟨fun() -> i32⟩", fillcolor=grey];
-    16 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    8 -> 15[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    15 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
     9 -> 8[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     10 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     11 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -28,7 +26,7 @@ digraph Document {
   label = "test()";
 }
   1 -> 5[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 16[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 15[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 7[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 6[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

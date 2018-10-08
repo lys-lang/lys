@@ -37,49 +37,41 @@ digraph Document {
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
     35 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    36 [label="FunNode: SimpleAllocator\n⟨fun() -> Simple⟩", fillcolor=grey];
-    37 [label="TypeRef: Simple\n⟨Simple⟩", fillcolor=grey];
-    35 -> 36[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    36 [label="TypeRef: Simple\n⟨Simple⟩", fillcolor=grey];
   label = "SimpleAllocator()";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    38 [label="Name: a\n⟨Simple⟩", fillcolor=grey];
-    39 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    40 [label="FunNode: is\n⟨fun(a: Simple) -> boolean⟩", fillcolor=grey];
-    41 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    39 -> 40[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    37 [label="Name: a\n⟨Simple⟩", fillcolor=grey];
+    38 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    39 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
   label = "is(Simple)";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    42 [label="Name: a\n⟨i32⟩", fillcolor=grey];
-    43 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    44 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
-    45 [label="FunNode: WithIntAllocator\n⟨fun(a: i32) -> WithInt⟩", fillcolor=grey];
-    46 [label="TypeRef: WithInt\n⟨WithInt⟩", fillcolor=grey];
-    43 -> 45[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    40 [label="Name: a\n⟨i32⟩", fillcolor=grey];
+    41 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    42 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+    43 [label="TypeRef: WithInt\n⟨WithInt⟩", fillcolor=grey];
   label = "WithIntAllocator(i32)";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
-    47 [label="Name: a\n⟨WithInt⟩", fillcolor=grey];
-    48 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    49 [label="FunNode: is\n⟨fun(a: WithInt) -> boolean⟩", fillcolor=grey];
-    50 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    48 -> 49[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    44 [label="Name: a\n⟨WithInt⟩", fillcolor=grey];
+    45 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    46 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
   label = "is(WithInt)";
 }
   1 -> 2[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 10[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 16[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 37[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 36[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 6[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 5[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   5 -> 3[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 22[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 32[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  6 -> 46[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 43[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   7 -> 12[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   8 -> 7[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   9 -> 11[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

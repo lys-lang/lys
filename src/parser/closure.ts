@@ -179,6 +179,10 @@ export class MessageCollector {
     return this.errors.some($ => $.node === node);
   }
 
+  hasErrorForBranch(node: Nodes.Node): any {
+    return this.errors.some($ => $.node === node) || node.children.some($ => this.hasErrorForBranch($));
+  }
+
   hasErrors() {
     return this.errors.some($ => !$.warning);
   }
@@ -200,11 +204,17 @@ export class Closure {
 
   importedModules = new Map<string, Set<string>>();
 
+  childrenScopes: Closure[] = [];
+
+  readonly name: string;
+
   constructor(
     public parsingContext: ParsingContext,
     public parent: Closure = null,
     public readonly moduleName: string = null
-  ) {}
+  ) {
+    this.name = this.parsingContext.getUnusedName('_scope');
+  }
 
   registerForeginModule(moduleName: string) {
     if (moduleName && !this.importedModules.has(moduleName)) {
@@ -344,7 +354,9 @@ export class Closure {
   }
 
   newChildClosure(): Closure {
-    return new Closure(this.parsingContext, this, this.moduleName);
+    const newScope = new Closure(this.parsingContext, this, this.moduleName);
+    this.childrenScopes.push(newScope);
+    return newScope;
   }
 }
 

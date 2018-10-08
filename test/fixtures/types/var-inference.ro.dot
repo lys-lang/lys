@@ -12,13 +12,11 @@ digraph Document {
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
     10 [label="VarRef: x\n⟨i32⟩", fillcolor=grey];
-    11 [label="FunNode: getX\n⟨fun() -> i32⟩", fillcolor=grey];
-    12 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    10 -> 11[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    11 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   label = "getX()";
 }
   1 -> 7[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 12[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 11[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 2[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 9[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

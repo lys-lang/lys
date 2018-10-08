@@ -25,11 +25,9 @@ digraph Document {
     21 [label="Name: Y\n⟨fun() -> i32⟩", fillcolor=grey];
     22 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
     23 [label="VarRef: Y\n⟨fun() -> i32⟩", fillcolor=grey];
-    24 [label="FunNode: x2\n⟨fun() -> i32⟩", fillcolor=grey];
-    25 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    15 -> 24[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    24 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
     16 -> 15[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    17 -> 26[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    17 -> 25[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     18 -> 17[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     19 -> 21[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     19 -> 15[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -41,47 +39,41 @@ digraph Document {
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    26 [label="VarRef: n\n⟨i32⟩", fillcolor=grey];
-    27 [label="FunNode: Y\n⟨fun() -> i32⟩", fillcolor=grey];
-    28 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    26 -> 27[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    25 [label="VarRef: n\n⟨i32⟩", fillcolor=grey];
+    26 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   label = "Y()";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    29 [label="BlockNode\n⟨f32⟩", fillcolor=grey];
-    30 [label="FunNode: Y\n⟨fun() -> f32⟩", fillcolor=grey];
-    31 [label="TypeRef: f32\n⟨f32⟩", fillcolor=grey];
-    32 [label="Name: Y\n⟨fun() -> f32⟩", fillcolor=grey];
-    33 [label="FunctionCallNode\n⟨f32⟩", fillcolor=grey];
-    34 [label="VarRef: Y\n⟨fun() -> f32⟩", fillcolor=grey];
-    35 [label="FunNode: x1\n⟨fun() -> f32⟩", fillcolor=grey];
-    36 [label="TypeRef: f32\n⟨f32⟩", fillcolor=grey];
-    29 -> 35[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    27 [label="BlockNode\n⟨f32⟩", fillcolor=grey];
+    28 [label="FunNode: Y\n⟨fun() -> f32⟩", fillcolor=grey];
+    29 [label="TypeRef: f32\n⟨f32⟩", fillcolor=grey];
+    30 [label="Name: Y\n⟨fun() -> f32⟩", fillcolor=grey];
+    31 [label="FunctionCallNode\n⟨f32⟩", fillcolor=grey];
+    32 [label="VarRef: Y\n⟨fun() -> f32⟩", fillcolor=grey];
+    33 [label="TypeRef: f32\n⟨f32⟩", fillcolor=grey];
+    28 -> 30[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    28 -> 27[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    29 -> 28[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     30 -> 32[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    30 -> 29[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    31 -> 30[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    32 -> 34[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    33 -> 29[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    34 -> 33[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    31 -> 27[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    32 -> 31[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "x1()";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
-    37 [label="Float: 1.00000\n⟨f32⟩", fillcolor=grey];
-    38 [label="FunNode: Y\n⟨fun() -> f32⟩", fillcolor=grey];
-    39 [label="TypeRef: f32\n⟨f32⟩", fillcolor=grey];
-    37 -> 38[taillabel="f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    34 [label="Float: 1.00000\n⟨f32⟩", fillcolor=grey];
+    35 [label="TypeRef: f32\n⟨f32⟩", fillcolor=grey];
   label = "Y()";
 }
   1 -> 12[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 20[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 25[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 28[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 24[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 26[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 6[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 31[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 36[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 39[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 29[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 33[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 35[taillabel="Type<f32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 8[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 3[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   5 -> 7[taillabel="fun() -> f32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

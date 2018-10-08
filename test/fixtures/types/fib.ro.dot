@@ -3,7 +3,7 @@ digraph Document {
   1 [label="Name: i32\n⟨Type<i32>⟩", fillcolor=grey];
   2 [label="FunOverload: fibo\n⟨fun(n: i32, x1: i32, x2: i32) -> i32⟩", fillcolor=grey];
   3 [label="FunDirective: fibo\n⟨fun(n: i32, x1: i32, x2: i32) -> i32⟩", fillcolor=grey];
-  4 [label="FunNode: fibo\n⟨i32⟩", fillcolor=grey];
+  4 [label="FunNode: fibo\n⟨fun(n: i32, x1: i32, x2: i32) -> i32⟩", fillcolor=grey];
   5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   6 [label="Name: n\n⟨i32⟩", fillcolor=grey];
   7 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
@@ -15,7 +15,7 @@ digraph Document {
   13 [label="Name: fibo\n⟨fun(n: i32, x1: i32, x2: i32) -> i32⟩", fillcolor=grey];
   14 [label="FunOverload: fib\n⟨fun(n: i32) -> i32⟩", fillcolor=grey];
   15 [label="FunDirective: fib\n⟨fun(n: i32) -> i32⟩", fillcolor=grey];
-  16 [label="FunNode: fib\n⟨i32⟩", fillcolor=grey];
+  16 [label="FunNode: fib\n⟨fun(n: i32) -> i32⟩", fillcolor=grey];
   17 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   18 [label="Name: n\n⟨i32⟩", fillcolor=grey];
   19 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
@@ -23,7 +23,7 @@ digraph Document {
   21 [label="Name: fib\n⟨fun(n: i32) -> i32⟩", fillcolor=grey];
   22 [label="FunOverload: test\n⟨fun() -> i32⟩", fillcolor=grey];
   23 [label="FunDirective: test\n⟨fun() -> i32⟩", fillcolor=grey];
-  24 [label="FunNode: test\n⟨i32⟩", fillcolor=grey];
+  24 [label="FunNode: test\n⟨fun() -> i32⟩", fillcolor=grey];
   25 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   26 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
   27 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
@@ -46,15 +46,13 @@ digraph Document {
     42 [label="VarRef: n\n⟨i32⟩", fillcolor=grey];
     43 [label="Int: 0\n⟨i32⟩", fillcolor=grey];
     44 [label="VarRef: x1\n⟨i32⟩", fillcolor=grey];
-    45 [label="FunNode: fibo\n⟨i32⟩", fillcolor=grey];
-    46 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    45 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
     28 -> 35[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     28 -> 42[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     29 -> 39[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     29 -> 44[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     30 -> 37[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     30 -> 40[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    31 -> 45[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     32 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     33 -> 32[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     34 -> 32[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -72,32 +70,28 @@ digraph Document {
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    47 [label="Name: n\n⟨i32⟩", fillcolor=grey];
-    48 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
-    49 [label="VarRef: fibo\n⟨fun(n: i32, x1: i32, x2: i32) -> i32⟩", fillcolor=grey];
-    50 [label="VarRef: n\n⟨i32⟩", fillcolor=grey];
-    51 [label="Int: 0\n⟨i32⟩", fillcolor=grey];
-    52 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
-    53 [label="FunNode: fib\n⟨i32⟩", fillcolor=grey];
-    54 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    47 -> 50[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    48 -> 53[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    49 -> 48[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    50 -> 48[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    51 -> 48[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    52 -> 48[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    46 [label="Name: n\n⟨i32⟩", fillcolor=grey];
+    47 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
+    48 [label="VarRef: fibo\n⟨fun(n: i32, x1: i32, x2: i32) -> i32⟩", fillcolor=grey];
+    49 [label="VarRef: n\n⟨i32⟩", fillcolor=grey];
+    50 [label="Int: 0\n⟨i32⟩", fillcolor=grey];
+    51 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
+    52 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    46 -> 49[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    48 -> 47[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    49 -> 47[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    50 -> 47[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    51 -> 47[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "fib(i32)";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    55 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
-    56 [label="VarRef: fib\n⟨fun(n: i32) -> i32⟩", fillcolor=grey];
-    57 [label="Int: 46\n⟨i32⟩", fillcolor=grey];
-    58 [label="FunNode: test\n⟨i32⟩", fillcolor=grey];
-    59 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    55 -> 58[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    56 -> 55[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    57 -> 55[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    53 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
+    54 [label="VarRef: fib\n⟨fun(n: i32) -> i32⟩", fillcolor=grey];
+    55 [label="Int: 46\n⟨i32⟩", fillcolor=grey];
+    56 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    54 -> 53[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    55 -> 53[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "test()";
 }
   1 -> 5[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -107,9 +101,9 @@ digraph Document {
   1 -> 17[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 19[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 25[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 46[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 54[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 59[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 45[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 52[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 56[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 13[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 2[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 12[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -122,7 +116,7 @@ digraph Document {
   10 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   11 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   13 -> 33[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  13 -> 49[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  13 -> 48[taillabel="fun(n: i32, x1: i32, x2: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   14 -> 21[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   15 -> 14[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   16 -> 20[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -130,7 +124,7 @@ digraph Document {
   17 -> 18[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   18 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   19 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  21 -> 56[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  21 -> 54[taillabel="fun(n: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   22 -> 27[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   23 -> 22[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   24 -> 26[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

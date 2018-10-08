@@ -8,7 +8,7 @@
     |-NameIdentifierNode="i32" type=Type<i32>
   |-OverloadedFunctionNode type=fun(x: i32, y: i32) -> i32 annotations=Injected
     |-FunDirectiveNode type=fun(x: i32, y: i32) -> i32
-      |-FunctionNode type=i32
+      |-FunctionNode type=fun(x: i32, y: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="x" type=i32
           |-TypeReferenceNode=i32 type=i32
@@ -77,7 +77,7 @@
     |-NameIdentifierNode="gcd" type=fun(x: i32, y: i32) -> i32
   |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=i32
+      |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="test" type=fun() -> i32
         |-TypeReferenceNode=i32 type=i32
           |-QNameNode=i32

@@ -140,10 +140,10 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
 
-      node.closure = node.closure.newChildClosure();
+      node.body.closure = node.closure.newChildClosure();
 
       node.parameters.forEach($ => {
-        node.closure.set($.parameterName);
+        node.body.closure.set($.parameterName);
       });
 
       node.processParameters();
