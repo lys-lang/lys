@@ -73,7 +73,7 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
 
   const moduleFun = t.func(
     t.identifier(fn.internalIdentifier), // name
-    fnType, //signature
+    fnType, // signature
     [...locals, ...emitList(fn.body, document)] // body
   );
 
@@ -437,7 +437,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       // TODO: If the value is a literal, do not defer initialization to starters
 
       const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
-      const nativeType = $.decl.variableName.ofType.binaryenType;
+      const binaryenType = $.decl.variableName.ofType.binaryenType;
       const identifier = t.identifier($.decl.variableName.name);
 
       starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
@@ -447,8 +447,8 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       // }
 
       return t.global(
-        t.globalType(nativeType, mut),
-        [t.objectInstruction('const', nativeType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, compilationPhase.document),
+        t.globalType(binaryenType, mut),
+        [t.objectInstruction('const', binaryenType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, compilationPhase.document),
         identifier
       );
     });

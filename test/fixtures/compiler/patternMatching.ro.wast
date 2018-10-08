@@ -498,7 +498,7 @@
       (set_local $var$1 (get_local $a))
       (block $B1_0
           (block $B1_1
-              (br_if $B1_0 (call $system::core::==_2 (i32.const 1) (get_local $var$1)))
+              (br_if $B1_0 (call $system::core::==_6 (i32.const 1) (get_local $var$1)))
             )
           (i32.const 0)
           (br $B1)
@@ -521,15 +521,15 @@
                                   (block $B2_7
                                       (block $B2_8
                                           (block $B2_9
-                                              (br_if $B2_0 (call $system::core::==_2 (i32.const 10) (get_local $var$1)))
-                                              (br_if $B2_1 (call $system::core::==_2 (i32.const 20) (get_local $var$1)))
-                                              (br_if $B2_2 (call $system::core::==_2 (i32.const 30) (get_local $var$1)))
-                                              (br_if $B2_3 (call $system::core::==_2 (i32.const 40) (get_local $var$1)))
-                                              (br_if $B2_4 (call $system::core::==_2 (i32.const 50) (get_local $var$1)))
-                                              (br_if $B2_5 (call $system::core::==_2 (i32.const 60) (get_local $var$1)))
-                                              (br_if $B2_6 (call $system::core::==_2 (i32.const 70) (get_local $var$1)))
-                                              (br_if $B2_7 (call $system::core::==_2 (i32.const 80) (get_local $var$1)))
-                                              (br_if $B2_8 (call $system::core::==_2 (i32.const 90) (get_local $var$1)))
+                                              (br_if $B2_0 (call $system::core::==_6 (i32.const 10) (get_local $var$1)))
+                                              (br_if $B2_1 (call $system::core::==_6 (i32.const 20) (get_local $var$1)))
+                                              (br_if $B2_2 (call $system::core::==_6 (i32.const 30) (get_local $var$1)))
+                                              (br_if $B2_3 (call $system::core::==_6 (i32.const 40) (get_local $var$1)))
+                                              (br_if $B2_4 (call $system::core::==_6 (i32.const 50) (get_local $var$1)))
+                                              (br_if $B2_5 (call $system::core::==_6 (i32.const 60) (get_local $var$1)))
+                                              (br_if $B2_6 (call $system::core::==_6 (i32.const 70) (get_local $var$1)))
+                                              (br_if $B2_7 (call $system::core::==_6 (i32.const 80) (get_local $var$1)))
+                                              (br_if $B2_8 (call $system::core::==_6 (i32.const 90) (get_local $var$1)))
                                             )
                                           (i32.const 0)
                                           (br $B2)

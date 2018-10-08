@@ -10,10 +10,6 @@ type Number {
   Complex(real: f32, imaginary: f32)
 }
 
-struct TestStruct()
-
-// type Number = Infinity | NDet | Real | Natural | Complex
-
 fun isComplex(number: Number): boolean =
   number match {
     case is Real(_) -> false

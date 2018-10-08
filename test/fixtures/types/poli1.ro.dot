@@ -17,7 +17,7 @@ digraph Document {
   15 [label="Name: gt0\n⟨fun(x: i32) -> Boolean⟩", fillcolor=grey];
   16 [label="FunOverload: isTrue\n⟨fun(a: Boolean) -> boolean⟩", fillcolor=grey];
   17 [label="FunDirective: isTrue\n⟨fun(a: Boolean) -> boolean⟩", fillcolor=grey];
-  18 [label="FunNode: isTrue\n⟨boolean⟩", fillcolor=grey];
+  18 [label="FunNode: isTrue\n⟨fun(a: Boolean) -> boolean⟩", fillcolor=grey];
   19 [label="TypeRef: Boolean\n⟨Boolean⟩", fillcolor=grey];
   20 [label="Name: a\n⟨Boolean⟩", fillcolor=grey];
   21 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
@@ -60,10 +60,8 @@ digraph Document {
     56 [label="Int: 0\n⟨i32⟩", fillcolor=grey];
     57 [label="FunctionCallNode\n⟨False⟩", fillcolor=grey];
     58 [label="VarRef: False\n⟨False⟩", fillcolor=grey];
-    59 [label="FunNode: gt0\n⟨fun(x: i32) -> Boolean⟩", fillcolor=grey];
-    60 [label="TypeRef: Boolean\n⟨Boolean⟩", fillcolor=grey];
+    59 [label="TypeRef: Boolean\n⟨Boolean⟩", fillcolor=grey];
     50 -> 55[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    51 -> 59[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     52 -> 51[taillabel="True" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     53 -> 52[taillabel="True" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     54 -> 51[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -75,85 +73,75 @@ digraph Document {
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    61 [label="Name: a\n⟨Boolean⟩", fillcolor=grey];
-    62 [label="PatternMatcherNode\n⟨boolean⟩", fillcolor=grey];
-    63 [label="VarRef: a\n⟨Boolean⟩", fillcolor=grey];
-    64 [label="MatchCaseIsNode\n⟨boolean⟩", fillcolor=grey];
-    65 [label="TypeRef: True\n⟨True⟩", fillcolor=grey];
-    66 [label="BooleanLiteraltrue\n⟨boolean⟩", fillcolor=grey];
-    67 [label="MatchDefaultNode\n⟨boolean⟩", fillcolor=grey];
-    68 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
-    69 [label="FunNode: isTrue\n⟨boolean⟩", fillcolor=grey];
-    70 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    61 -> 63[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    62 -> 69[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    63 -> 62[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    63 -> 64[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    63 -> 67[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    64 -> 62[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    65 -> 64[taillabel="True" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    66 -> 64[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    67 -> 62[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    68 -> 67[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    60 [label="Name: a\n⟨Boolean⟩", fillcolor=grey];
+    61 [label="PatternMatcherNode\n⟨boolean⟩", fillcolor=grey];
+    62 [label="VarRef: a\n⟨Boolean⟩", fillcolor=grey];
+    63 [label="MatchCaseIsNode\n⟨boolean⟩", fillcolor=grey];
+    64 [label="TypeRef: True\n⟨True⟩", fillcolor=grey];
+    65 [label="BooleanLiteraltrue\n⟨boolean⟩", fillcolor=grey];
+    66 [label="MatchDefaultNode\n⟨boolean⟩", fillcolor=grey];
+    67 [label="BooleanLiteralfalse\n⟨boolean⟩", fillcolor=grey];
+    68 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
+    60 -> 62[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    62 -> 61[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    62 -> 63[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    62 -> 66[taillabel="Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    63 -> 61[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    64 -> 63[taillabel="True" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    65 -> 63[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    66 -> 61[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    67 -> 66[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "isTrue(Boolean)";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    71 [label="Name: a\n⟨True⟩", fillcolor=grey];
-    72 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    73 [label="FunNode: is\n⟨fun(a: True) -> boolean⟩", fillcolor=grey];
-    74 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    72 -> 73[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    69 [label="Name: a\n⟨True⟩", fillcolor=grey];
+    70 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    71 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
   label = "is(True)";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
-    75 [label="Name: a\n⟨False⟩", fillcolor=grey];
-    76 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    77 [label="FunNode: is\n⟨fun(a: False) -> boolean⟩", fillcolor=grey];
-    78 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
-    76 -> 77[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    72 [label="Name: a\n⟨False⟩", fillcolor=grey];
+    73 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    74 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
   label = "is(False)";
 }
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
-    79 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    80 [label="FunNode: TrueAllocator\n⟨fun() -> True⟩", fillcolor=grey];
-    81 [label="TypeRef: True\n⟨True⟩", fillcolor=grey];
-    79 -> 80[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    75 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    76 [label="TypeRef: True\n⟨True⟩", fillcolor=grey];
   label = "TrueAllocator()";
 }
   subgraph cluster5 {
     node [style=filled, fillcolor=grey];
-    82 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    83 [label="FunNode: FalseAllocator\n⟨fun() -> False⟩", fillcolor=grey];
-    84 [label="TypeRef: False\n⟨False⟩", fillcolor=grey];
-    82 -> 83[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    77 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    78 [label="TypeRef: False\n⟨False⟩", fillcolor=grey];
   label = "FalseAllocator()";
 }
   1 -> 11[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 21[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 35[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 41[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 70[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 68[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 71[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 74[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 78[taillabel="Type<boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 4[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 6[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 13[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 19[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 60[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 59[taillabel="Type<Boolean>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 5[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   5 -> 27[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   5 -> 33[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   5 -> 53[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 65[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 81[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 64[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 76[taillabel="Type<True>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 7[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   7 -> 39[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   7 -> 47[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   7 -> 58[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 84[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 78[taillabel="Type<False>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   8 -> 15[taillabel="fun(x: i32) -> Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   9 -> 8[taillabel="fun(x: i32) -> Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   10 -> 14[taillabel="fun(x: i32) -> Boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -186,7 +174,7 @@ digraph Document {
   39 -> 40[taillabel="False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   40 -> 38[taillabel="False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   41 -> 38[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  43 -> 64[taillabel="fun(a: True) -> boolean & fun(a: False) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  43 -> 63[taillabel="fun(a: True) -> boolean & fun(a: False) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   44 -> 49[taillabel="fun() -> False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   45 -> 44[taillabel="fun() -> False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   46 -> 48[taillabel="fun() -> False" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

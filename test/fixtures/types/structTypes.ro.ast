@@ -43,10 +43,6 @@
           |-TypeReferenceNode=f32 type=f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-  |-TypeDirectiveNode
-    |-StructDeclarationNode type=Type<TestStruct>
-      |-NameIdentifierNode="TestStruct" type=Type<TestStruct>
-    |-NameIdentifierNode="TestStruct" type=Type<TestStruct>
   |-OverloadedFunctionNode type=fun(number: Number) -> boolean annotations=Injected
     |-FunDirectiveNode type=fun(number: Number) -> boolean
       |-FunctionNode type=fun(number: Number) -> boolean
@@ -92,7 +88,7 @@
     |-NameIdentifierNode="isComplex" type=fun(number: Number) -> boolean
   |-OverloadedFunctionNode type=fun() -> void annotations=Injected
     |-FunDirectiveNode type=fun() -> void
-      |-FunctionNode type=void
+      |-FunctionNode type=fun() -> void
         |-NameIdentifierNode="main" type=fun() -> void
         |-TypeReferenceNode=void type=void
           |-QNameNode=void
@@ -145,7 +141,7 @@
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x100000000
     |-NameIdentifierNode="InfinityAllocator" type=fun() -> Infinity
-  |-OverloadedFunctionNode type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean & fun(a: TestStruct) -> boolean annotations=Injected
+  |-OverloadedFunctionNode type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean annotations=Injected
     |-FunDirectiveNode type=fun(a: Infinity) -> boolean annotations=Injected
       |-FunctionNode type=fun(a: Infinity) -> boolean
         |-ParameterNode
@@ -251,28 +247,7 @@
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x500000000
-    |-FunDirectiveNode type=fun(a: TestStruct) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: TestStruct) -> boolean
-        |-ParameterNode
-          |-NameIdentifierNode="a" type=TestStruct
-          |-TypeReferenceNode=TestStruct type=TestStruct
-            |-QNameNode=TestStruct
-              |-NameIdentifierNode="TestStruct"
-        |-NameIdentifierNode="is" type=fun(a: TestStruct) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x600000000
-    |-NameIdentifierNode="is" type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean & fun(a: TestStruct) -> boolean
+    |-NameIdentifierNode="is" type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean
   |-OverloadedFunctionNode type=fun() -> NDet annotations=Injected
     |-FunDirectiveNode type=fun() -> NDet annotations=Injected
       |-FunctionNode type=fun() -> NDet
@@ -400,14 +375,3 @@
                 |-QNameNode=$_newRef
                   |-NameIdentifierNode="$_newRef"
     |-NameIdentifierNode="ComplexAllocator" type=fun(real: f32, imaginary: f32) -> Complex
-  |-OverloadedFunctionNode type=fun() -> TestStruct annotations=Injected
-    |-FunDirectiveNode type=fun() -> TestStruct annotations=Injected
-      |-FunctionNode type=fun() -> TestStruct
-        |-NameIdentifierNode="TestStructAllocator" type=fun() -> TestStruct
-        |-TypeReferenceNode=TestStruct type=TestStruct
-          |-QNameNode=TestStruct
-            |-NameIdentifierNode="TestStruct"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=i64.const
-            |-HexLiteral=0x600000000
-    |-NameIdentifierNode="TestStructAllocator" type=fun() -> TestStruct

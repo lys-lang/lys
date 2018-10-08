@@ -1,6 +1,7 @@
 import { Nodes } from '../nodes';
 import { Type } from '../types';
 import { TypeResolutionContext } from './TypePropagator';
+import { AstNodeError } from '../NodeError';
 
 export abstract class TypeResolver {
   abstract execute(node: TypeNode, ctx: TypeResolutionContext): Type | null;
@@ -80,6 +81,16 @@ export class TypeNode {
 
         if (resultType) {
           if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
+            if (this.resultType()) {
+              console.log(
+                this.astNode.nodeName,
+                this.typeResolver.constructor.name,
+                this.resultType().toString(),
+                '->',
+                resultType.toString()
+              );
+            }
+
             // We only add one if the type is new
             const newType = resultType;
             // this.astNode instanceof Nodes.VariableReferenceNode ? toConcreteType(resultType, ctx) : resultType;
@@ -150,6 +161,22 @@ export class Edge {
   private _error: boolean | null = null;
 
   constructor(public source: TypeNode, public target: TypeNode, public label: string = '') {
+    if (source.outgoingEdges().some($ => $.target == target)) {
+      throw new AstNodeError('duplicated edge in source', source.astNode);
+    }
+
+    if (target.incomingEdges().some($ => $.source == source)) {
+      throw new AstNodeError('duplicated edge in target', target.astNode);
+    }
+
+    if (source.incomingEdges().some($ => $.source == target)) {
+      throw new AstNodeError('crossed edges are not allowed 1', source.astNode);
+    }
+
+    if (target.outgoingEdges().some($ => $.target == source)) {
+      throw new AstNodeError('crossed edges are not allowed 2', target.astNode);
+    }
+
     source.addOutgoingEdge(this);
     target.addIncomingEdge(this);
   }

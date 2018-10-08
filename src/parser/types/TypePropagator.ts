@@ -12,7 +12,7 @@ function top<T>(stack: Array<T>): T | null {
 }
 
 export class TypeResolutionContext {
-  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) { }
+  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) {}
 
   private _executors = new Array<{
     dataGraph: TypeGraph;
@@ -95,6 +95,9 @@ export class TypeResolutionContext {
     const x = this.getFunctionGraph(functionNode);
     if (x) {
       const theFn = x.findIndex(graph => graph.graph === _graph || this.matches(graph.seq, parameterTypes));
+      if (theFn == -1) {
+        throw new Error('Could not delete function subgraph');
+      }
       x.splice(theFn, 1);
     }
   }
@@ -115,7 +118,7 @@ export class TypeResolutionContext {
 
 export class TypePropagator {
   executionStack: Array<TypeNode> = [];
-  constructor(public ctx: TypeResolutionContext) { }
+  constructor(public ctx: TypeResolutionContext) {}
 
   scheduleNode(node: TypeNode): void {
     if (!this.executionStack.some(n => n == node)) {
@@ -187,26 +190,29 @@ export function resolveReturnType(
   const subGraph: TypeGraph = ctx.getFunctionSubGraph(functionNode, argTypes);
 
   if (subGraph) {
-    const result = subGraph.findNode(functionNode).resultType();
-    if (result instanceof FunctionType) {
+    const result = subGraph.findNode(functionNode.body).resultType();
+
+    if (!result) {
       // THIS SHOULD NOT HAPPEN
-      return result.returnType;
+      debugger;
     }
+
     return result;
   } else {
     const context = ctx.currentParsingContext;
     const messageCollector = new MessageCollector();
 
-    const dataGraphBuilder = new TypeGraphBuilder(context, typeGraph, messageCollector);
-
-    const dataGraph: TypeGraph = dataGraphBuilder.buildFunctionNode(functionNode, argTypes);
+    const dataGraph: TypeGraph = new TypeGraphBuilder(context, typeGraph, messageCollector).buildFunctionNode(
+      functionNode,
+      argTypes
+    );
 
     ctx.addFunctionSubGraph(functionNode, argTypes, dataGraph);
     const functionName = functionNode.functionName.name + '(' + argTypes.join(',') + ')';
     ctx.rootGraph.addSubGraph(dataGraph, functionName);
     const propagator = ctx.newExecutorWithContext(functionNode.closure, dataGraph, context);
     propagator.run();
-    const value = dataGraph.findNode(functionNode);
+    const value = dataGraph.findNode(functionNode.body);
 
     const result = value.resultType();
 
@@ -217,10 +223,6 @@ export function resolveReturnType(
       context.messageCollector.mergeWith(messageCollector);
     }
 
-    if (result instanceof FunctionType) {
-      // THIS SHOULD NOT HAPPEN
-      return result.returnType;
-    }
     return result;
   }
 }

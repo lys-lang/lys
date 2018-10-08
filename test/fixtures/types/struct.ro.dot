@@ -1,0 +1,101 @@
+digraph Document {
+  node [shape=box,fixedsize=shape fontsize=10]
+  1 [label="StructDeclarationNode\n⟨Type<Simple>⟩", fillcolor=grey];
+  2 [label="Name: Simple\n⟨Type<Simple>⟩", fillcolor=grey];
+  3 [label="StructDeclarationNode\n⟨Type<WithInt>⟩", fillcolor=grey];
+  4 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  5 [label="Name: a\n⟨i32⟩", fillcolor=grey];
+  6 [label="Name: WithInt\n⟨Type<WithInt>⟩", fillcolor=grey];
+  7 [label="FunOverload: SimpleAllocator\n⟨fun() -> Simple⟩", fillcolor=grey];
+  8 [label="FunDirective: SimpleAllocator\n⟨fun() -> Simple⟩", fillcolor=grey];
+  9 [label="FunNode: SimpleAllocator\n⟨fun() -> Simple⟩", fillcolor=grey];
+  10 [label="TypeRef: Simple\n⟨Simple⟩", fillcolor=grey];
+  11 [label="Name: SimpleAllocator\n⟨fun() -> Simple⟩", fillcolor=grey];
+  12 [label="Name: SimpleAllocator\n⟨fun() -> Simple⟩", fillcolor=grey];
+  13 [label="FunOverload: is\n⟨fun(a: Simple) -> boolean & fun(a: WithInt) -> boolean⟩", fillcolor=grey];
+  14 [label="FunDirective: is\n⟨fun(a: Simple) -> boolean⟩", fillcolor=grey];
+  15 [label="FunNode: is\n⟨fun(a: Simple) -> boolean⟩", fillcolor=grey];
+  16 [label="TypeRef: Simple\n⟨Simple⟩", fillcolor=grey];
+  17 [label="Name: a\n⟨Simple⟩", fillcolor=grey];
+  18 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
+  19 [label="Name: is\n⟨fun(a: Simple) -> boolean⟩", fillcolor=grey];
+  20 [label="FunDirective: is\n⟨fun(a: WithInt) -> boolean⟩", fillcolor=grey];
+  21 [label="FunNode: is\n⟨fun(a: WithInt) -> boolean⟩", fillcolor=grey];
+  22 [label="TypeRef: WithInt\n⟨WithInt⟩", fillcolor=grey];
+  23 [label="Name: a\n⟨WithInt⟩", fillcolor=grey];
+  24 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
+  25 [label="Name: is\n⟨fun(a: WithInt) -> boolean⟩", fillcolor=grey];
+  26 [label="Name: is\n⟨fun(a: Simple) -> boolean & fun(a: WithInt) -> boolean⟩", fillcolor=grey];
+  27 [label="FunOverload: WithIntAllocator\n⟨fun(a: i32) -> WithInt⟩", fillcolor=grey];
+  28 [label="FunDirective: WithIntAllocator\n⟨fun(a: i32) -> WithInt⟩", fillcolor=grey];
+  29 [label="FunNode: WithIntAllocator\n⟨fun(a: i32) -> WithInt⟩", fillcolor=grey];
+  30 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  31 [label="Name: a\n⟨i32⟩", fillcolor=grey];
+  32 [label="TypeRef: WithInt\n⟨WithInt⟩", fillcolor=grey];
+  33 [label="Name: WithIntAllocator\n⟨fun(a: i32) -> WithInt⟩", fillcolor=grey];
+  34 [label="Name: WithIntAllocator\n⟨fun(a: i32) -> WithInt⟩", fillcolor=grey];
+  subgraph cluster0 {
+    node [style=filled, fillcolor=grey];
+    35 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    36 [label="TypeRef: Simple\n⟨Simple⟩", fillcolor=grey];
+  label = "SimpleAllocator()";
+}
+  subgraph cluster1 {
+    node [style=filled, fillcolor=grey];
+    37 [label="Name: a\n⟨Simple⟩", fillcolor=grey];
+    38 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    39 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
+  label = "is(Simple)";
+}
+  subgraph cluster2 {
+    node [style=filled, fillcolor=grey];
+    40 [label="Name: a\n⟨i32⟩", fillcolor=grey];
+    41 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    42 [label="VarRef: system::memory::malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+    43 [label="TypeRef: WithInt\n⟨WithInt⟩", fillcolor=grey];
+  label = "WithIntAllocator(i32)";
+}
+  subgraph cluster3 {
+    node [style=filled, fillcolor=grey];
+    44 [label="Name: a\n⟨WithInt⟩", fillcolor=grey];
+    45 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
+    46 [label="TypeRef: boolean\n⟨boolean⟩", fillcolor=grey];
+  label = "is(WithInt)";
+}
+  1 -> 2[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 10[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 16[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 36[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 6[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 5[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 3[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 22[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 32[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 43[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 12[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  8 -> 7[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  9 -> 11[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  9 -> 8[taillabel="fun() -> Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  10 -> 9[taillabel="Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  13 -> 26[taillabel="fun(a: Simple) -> boolean & fun(a: WithInt) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  14 -> 13[taillabel="fun(a: Simple) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  15 -> 19[taillabel="fun(a: Simple) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  15 -> 14[taillabel="fun(a: Simple) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  16 -> 17[taillabel="Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  17 -> 15[taillabel="Simple" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  18 -> 15[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  20 -> 13[taillabel="fun(a: WithInt) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  21 -> 25[taillabel="fun(a: WithInt) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  21 -> 20[taillabel="fun(a: WithInt) -> boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  22 -> 23[taillabel="WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  23 -> 21[taillabel="WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  24 -> 21[taillabel="boolean" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  27 -> 34[taillabel="fun(a: i32) -> WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 27[taillabel="fun(a: i32) -> WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  29 -> 33[taillabel="fun(a: i32) -> WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  29 -> 28[taillabel="fun(a: i32) -> WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  30 -> 31[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  31 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  32 -> 29[taillabel="WithInt" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  label="";
+}

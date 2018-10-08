@@ -6,7 +6,8 @@ import {
   EdgeLabels,
   PassThroughTypeResolver,
   StructDeconstructorTypeResolver,
-  VarDeclarationTypeResolver
+  VarDeclarationTypeResolver,
+  AliasTypeResolver
 } from './typeResolvers';
 import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType } from '../types';
 import { AstNodeError } from '../NodeError';
@@ -31,10 +32,10 @@ export class TypeGraphBuilder {
 
   createNode(node: Nodes.Node, resolver: TypeResolver): TypeNode {
     if (this._nodes.some($ => $.astNode == node)) {
-      throw new AstNodeError(`The node ${node.nodeName} already exist in _nodes`, node);
+      throw new AstNodeError(`The node ${node.nodeName} (${node}) already exist in _nodes`, node);
     }
     if (!resolver) {
-      throw new AstNodeError(`The node ${node.nodeName} has no resolver`, node);
+      throw new AstNodeError(`The node ${node.nodeName} (${node}) has no resolver`, node);
     }
     const result = new TypeNode(node, resolver);
     this._nodes.push(result);
@@ -51,6 +52,8 @@ export class TypeGraphBuilder {
         throw new Error('Unreachable');
       } else if (node instanceof Nodes.TypeDirectiveNode) {
         this.processTypeDirective(node);
+      } else if (node instanceof Nodes.StructDeclarationNode) {
+        this.processStruct(node, null);
       }
     });
 
@@ -59,6 +62,7 @@ export class TypeGraphBuilder {
 
   buildFunctionNode(functionNode: Nodes.FunctionNode, args: Type[]): TypeGraph {
     const paramList = functionNode.parameters;
+
     if (args.length != paramList.length) {
       paramList.forEach((param, index) => {
         if (index >= args.length) {
@@ -78,14 +82,12 @@ export class TypeGraphBuilder {
       });
     }
 
-    const bodyNode: TypeNode = this.traverse(functionNode.body);
-    const result = this.createNode(functionNode, new PassThroughTypeResolver());
+    this.traverse(functionNode.body);
 
     if (functionNode.functionReturnType) {
       this.traverse(functionNode.functionReturnType);
     }
 
-    new Edge(bodyNode, result);
     return this.createTypeGraph();
   }
 
@@ -289,7 +291,9 @@ export class TypeGraphBuilder {
   processStruct(node: Nodes.StructDeclarationNode, parent: TypeNode) {
     const target = this.createReferenceNode(node);
 
-    new Edge(parent, target, EdgeLabels.SUPER_TYPE);
+    if (parent) {
+      new Edge(parent, target, EdgeLabels.SUPER_TYPE);
+    }
 
     node.parameters.forEach(arg => {
       const defaultValue: Nodes.Node = arg.defaultValue;
@@ -318,6 +322,7 @@ export class TypeGraphBuilder {
       if (directive.variableName.name in InjectableTypes) {
         this.messageCollector.error('You cannot redefine a built-in type', directive.valueType);
       }
+
       if (directive.valueType instanceof Nodes.TypeDeclarationNode) {
         const typeDirective = this.traverseNode(
           directive.variableName,
@@ -326,9 +331,15 @@ export class TypeGraphBuilder {
             new LiteralTypeResolver(TypeType.of(new PolimorphicType(directive.variableName.name)))
           )
         );
+
         directive.valueType.declarations.forEach($ => this.processStruct($, typeDirective));
       } else {
-        new Edge(this.createReferenceNode(directive.valueType), this.traverse(directive.variableName));
+        const typeDirective = this.traverseNode(
+          directive.variableName,
+          this.createNode(directive.variableName, new AliasTypeResolver(directive.variableName.name))
+        );
+
+        new Edge(this.traverse(directive.valueType), typeDirective);
       }
     } else {
       if (directive.variableName.name in InjectableTypes) {

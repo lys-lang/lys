@@ -110,6 +110,10 @@ export namespace Nodes {
       r.name = name;
       return r;
     }
+
+    toString() {
+      return this.name;
+    }
   }
 
   export class QNameNode extends Node {

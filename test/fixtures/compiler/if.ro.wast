@@ -517,7 +517,7 @@
     (local $a i32)
     (block $unknown_block_1 (result i32)
       (set_local $a (i32.const 1))
-      (if $a_wild_if (call $system::core::==_2 (get_local $x) (i32.const 1))
+      (if $a_wild_if (call $system::core::==_6 (get_local $x) (i32.const 1))
           (then
             (block $unknown_block_2
                 (set_local $a (i32.const 3))

@@ -13,7 +13,9 @@ import {
   UnknownType,
   TypeType,
   f32,
-  i32
+  i32,
+  TypeAlias,
+  PolimorphicType
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -26,7 +28,8 @@ import {
   UnreachableCode,
   NotAValidType,
   AstNodeError,
-  UnexpectedType
+  UnexpectedType,
+  CannotInferReturnType
 } from '../NodeError';
 import { MessageCollector } from '../closure';
 
@@ -135,7 +138,7 @@ export class PassThroughTypeResolver extends TypeResolver {
       if (ctx.currentParsingContext) {
         throw new Error(
           `PassThrough resolver only works with nodes with one edge but found '${
-          node.incomingEdges().length
+            node.incomingEdges().length
           }' with node ${node.astNode.nodeName}`
         );
       } else {
@@ -242,9 +245,27 @@ export class IfElseTypeResolver extends TypeResolver {
 
 export class UnionTypeResolver extends TypeResolver {
   execute(node: TypeNode, _ctx: TypeResolutionContext) {
-    const type = new UnionType();
-    type.of = node.incomingEdges().map($ => $.incomingType());
-    return type;
+    return new UnionType(node.incomingEdges().map($ => $.incomingType()));
+  }
+}
+
+export class AliasTypeResolver extends TypeResolver {
+  constructor(public typeName: string) {
+    super();
+  }
+
+  execute(node: TypeNode, _ctx: TypeResolutionContext) {
+    const type = new TypeAlias(this.typeName);
+
+    const edges = node.incomingEdges();
+
+    if (edges.length) {
+      type.of = node.incomingEdges()[0].incomingType();
+    } else {
+      type.of = INVALID_TYPE;
+    }
+
+    return TypeType.of(type);
   }
 }
 
@@ -335,12 +356,21 @@ export class AsOpTypeResolver extends TypeResolver {
     const argTypes = [lhsType];
 
     if (lhsType.equals(retType) && retType.equals(lhsType)) {
-      ctx.parsingContext.messageCollector.error(new AstNodeError(`This cast is useless`, opNode));
+      ctx.parsingContext.messageCollector.error(
+        new AstNodeError(`This cast is useless ${lhsType} as ${retType}`, opNode)
+      );
       return retType;
     }
 
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector, retType);
+      const fun = findFunctionOverload(
+        incommingType,
+        argTypes,
+        opNode,
+        ctx.parsingContext.messageCollector,
+        retType,
+        true
+      );
 
       if (fun instanceof FunctionType) {
         opNode.resolvedFunctionType = fun;
@@ -373,7 +403,7 @@ export class IsOpTypeResolver extends TypeResolver {
     ];
 
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector);
+      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector, null);
 
       if (fun instanceof FunctionType) {
         opNode.resolvedFunctionType = fun;
@@ -382,9 +412,7 @@ export class IsOpTypeResolver extends TypeResolver {
 
       ctx.parsingContext.messageCollector.error(`Error with "is"`, opNode);
     } catch (e) {
-      // if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
       ctx.parsingContext.messageCollector.error(e);
-      // }
     }
 
     return bool.instance;
@@ -576,6 +604,14 @@ export class FunctionTypeResolver extends TypeResolver {
     const inferedReturnType = resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
 
     if (inferedReturnType) {
+      const previousError = ctx.parsingContext.messageCollector.errors.findIndex(
+        $ => $.node === functionNode.body && $ instanceof CannotInferReturnType
+      );
+
+      if (previousError != -1) {
+        ctx.parsingContext.messageCollector.errors.splice(previousError, 1);
+      }
+
       if (inferedReturnType instanceof TypeType) {
         ctx.parsingContext.messageCollector.error(new UnexpectedType(inferedReturnType, functionNode.body));
       }
@@ -584,6 +620,10 @@ export class FunctionTypeResolver extends TypeResolver {
         ctx.parsingContext.messageCollector.error(
           new TypeMismatch(inferedReturnType, fnType.returnType, functionNode.functionReturnType)
         );
+      }
+    } else {
+      if (!ctx.parsingContext.messageCollector.hasErrorForBranch(functionNode.body)) {
+        ctx.parsingContext.messageCollector.error(new CannotInferReturnType(functionNode.body));
       }
     }
 
@@ -597,9 +637,10 @@ export class StructTypeResolver extends TypeResolver {
 
     const superTypeEdge = node.incomingEdgesByName(EdgeLabels.SUPER_TYPE);
 
-    const superType = (superTypeEdge.length && (superTypeEdge[0].incomingType() as TypeType).of) || null;
+    const superType =
+      ((superTypeEdge.length && (superTypeEdge[0].incomingType() as TypeType).of) as PolimorphicType) || null;
 
-    const fnType = new StructType(structNode.internalIdentifier, structNode.declaredName.name, superType);
+    const fnType = StructType.fromSuperType(structNode.internalIdentifier, structNode.declaredName.name, superType);
 
     fnType.parameterTypes = structNode.parameters
       .map($ => {
@@ -631,7 +672,8 @@ export class VariableReferenceResolver extends TypeResolver {
         return ret;
       }
       ctx.parsingContext.messageCollector.error(new UnexpectedType(ret, node.astNode));
-      return UnknownType.instance;
+      // return UnknownType.instance;
+      return null;
     }
 
     return ret || INVALID_TYPE;
@@ -692,18 +734,30 @@ function findFunctionOverload(
   argTypes: Type[],
   errorNode: Nodes.Node,
   messageCollector: MessageCollector,
-  returnType: Type | null = null
+  returnType: Type | null = null,
+  strict = false
 ) {
   if (incommingType instanceof TypeType) {
     return findFunctionOverload(incommingType.of, argTypes, errorNode, messageCollector);
   }
 
   if (incommingType instanceof IntersectionType) {
+    const matchList: { fun: FunctionType; score: number }[] = [];
+
     for (let fun of incommingType.of) {
       if (fun instanceof FunctionType) {
-        if (fun.acceptsTypes(argTypes)) {
-          if (!returnType || fun.returnType.canBeAssignedTo(returnType)) {
-            return fun;
+        if (strict) {
+          if (fun.acceptsTypes(argTypes, strict)) {
+            if (fun.returnType.equals(returnType)) {
+              return fun;
+            }
+          }
+        } else {
+          const score = fun.acceptsTypes(argTypes, strict);
+          if (score) {
+            if (!returnType || fun.returnType.canBeAssignedTo(returnType)) {
+              matchList.push({ fun, score });
+            }
           }
         }
       } else {
@@ -711,16 +765,32 @@ function findFunctionOverload(
       }
     }
 
+    if (matchList.length == 1) {
+      return matchList[0].fun;
+    } else if (matchList.length > 0) {
+      matchList.sort((a, b) => {
+        if (a.score < b.score) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      if (matchList[0].score > matchList[1].score) {
+        return matchList[0].fun;
+      }
+    }
+
     messageCollector.error(new InvalidOverload(incommingType, argTypes, errorNode));
 
     return new UnionType(incommingType.of.map(($: FunctionType) => $.returnType));
   } else if (incommingType instanceof FunctionType) {
-    if (!incommingType.acceptsTypes(argTypes)) {
+    if (!incommingType.acceptsTypes(argTypes, strict)) {
       messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
     }
     return incommingType;
   } else if (incommingType instanceof StructType) {
-    if (!incommingType.acceptsTypes(argTypes)) {
+    if (!incommingType.acceptsTypes(argTypes, strict)) {
       messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
     }
     return incommingType;

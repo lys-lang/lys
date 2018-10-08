@@ -30,6 +30,12 @@ export class TypeMismatch extends AstNodeError {
   }
 }
 
+export class CannotInferReturnType extends AstNodeError {
+  constructor(node: Nodes.Node) {
+    super(`Cannot infer return type`, node);
+  }
+}
+
 export class NotAValidType extends AstNodeError {
   constructor(public variableType: string, node: Nodes.Node) {
     super(`The variable "${variableType}" is not a type`, node);

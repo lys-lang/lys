@@ -11,7 +11,7 @@ digraph Document {
   9 [label="Name: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
   10 [label="FunOverload: main\n⟨fun() -> i32⟩", fillcolor=grey];
   11 [label="FunDirective: main\n⟨fun() -> i32⟩", fillcolor=grey];
-  12 [label="FunNode: main\n⟨i32⟩", fillcolor=grey];
+  12 [label="FunNode: main\n⟨fun() -> i32⟩", fillcolor=grey];
   13 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   14 [label="Name: main\n⟨fun() -> i32⟩", fillcolor=grey];
   15 [label="Name: main\n⟨fun() -> i32⟩", fillcolor=grey];
@@ -19,28 +19,24 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     16 [label="Name: size\n⟨i32⟩", fillcolor=grey];
     17 [label="WasmExpressionNode\n⟨UNKNOWN⟩", fillcolor=grey];
-    18 [label="FunNode: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
-    19 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    17 -> 18[taillabel="UNKNOWN" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    18 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
   label = "malloc(i32)";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    20 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
-    21 [label="VarRef: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
-    22 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
-    23 [label="FunNode: main\n⟨i32⟩", fillcolor=grey];
-    24 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    20 -> 23[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    21 -> 20[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    22 -> 20[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    19 [label="FunctionCallNode\n⟨i32⟩", fillcolor=grey];
+    20 [label="VarRef: malloc\n⟨fun(size: i32) -> i32⟩", fillcolor=grey];
+    21 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
+    22 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    20 -> 19[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    21 -> 19[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label = "main()";
 }
   1 -> 5[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 7[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 13[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 19[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 24[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 18[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 22[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 9[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   3 -> 2[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 8[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -48,7 +44,7 @@ digraph Document {
   5 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   7 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  9 -> 21[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  9 -> 20[taillabel="fun(size: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   10 -> 15[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   11 -> 10[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   12 -> 14[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

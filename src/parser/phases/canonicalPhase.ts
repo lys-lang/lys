@@ -405,11 +405,7 @@ const visitor = {
     return null;
   },
   StructDirective(astNode: IToken) {
-    const ret = new Nodes.TypeDirectiveNode(astNode);
-    const structType = visit(astNode.children[0]) as Nodes.StructDeclarationNode;
-    ret.valueType = structType;
-    ret.variableName = structType.declaredName;
-    return ret;
+    return visit(astNode.children[0]) as Nodes.StructDeclarationNode;
   },
   UnknownExpression(astNode: IToken) {
     return new Nodes.UnknownExpressionNode(astNode);

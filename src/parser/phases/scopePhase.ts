@@ -120,13 +120,8 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure.set(node.variableName);
     }
 
-    if (node instanceof Nodes.TypeDeclarationNode) {
-      node.declarations.forEach($ => {
-        node.closure.set($.declaredName);
-      });
-    }
-
     if (node instanceof Nodes.StructDeclarationNode) {
+      node.closure.set(node.declaredName);
       if (!node.internalIdentifier) {
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
@@ -145,10 +140,10 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
 
-      node.closure = node.closure.newChildClosure();
+      node.body.closure = node.closure.newChildClosure();
 
       node.parameters.forEach($ => {
-        node.closure.set($.parameterName);
+        node.body.closure.set($.parameterName);
       });
 
       node.processParameters();
