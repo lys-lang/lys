@@ -6,7 +6,8 @@
   "typings": "dist/index.d.ts",
   "bin": "dist/bin.js",
   "scripts": {
-    "test": "mocha --require source-map-support/register --reporter list",
+    "test": "node ./node_modules/mocha/bin/_mocha --require source-map-support/register",
+    "test:inspect": "node --inspect ./node_modules/mocha/bin/_mocha --require source-map-support/register",
     "prof": "node --prof ./node_modules/mocha/bin/_mocha --timeout 999999",
     "test-travis": "npm run lint && npm run build && npm run coverage && npm run test",
     "preversion": "npm run build && npm test",
@@ -33,14 +34,14 @@
   },
   "dependencies": {
     "@types/node": "^10.9.2",
-    "@webassemblyjs/ast": "^1.7.6",
-    "@webassemblyjs/validation": "^1.7.6",
-    "@webassemblyjs/wast-printer": "^1.7.6",
+    "@webassemblyjs/ast": "^1.7.8",
+    "@webassemblyjs/validation": "^1.7.8",
+    "@webassemblyjs/wast-printer": "^1.7.8",
     "binaryen": "^51.0.0",
     "colors": "^1.3.1",
     "ebnf": "^1.6.3",
     "source-map-support": "^0.5.9",
-    "wabt": "^1.0.0"
+    "wabt": "^1.0.5"
   },
   "devDependencies": {
     "@types/chai": "^4.1.4",

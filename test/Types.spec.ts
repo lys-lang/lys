@@ -975,7 +975,58 @@ describe('Types', function() {
       `;
     });
 
-    describe('struct pattern matching', () => {
+    describe.only('struct pattern matching', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+          C
+        }
+
+        var value: Enum = A
+
+        var x = value match {
+          case b is B -> b
+          else -> B
+        }
+
+        var y = value match {
+          case a is A -> a
+          case b is B -> b
+          else -> B
+        }
+
+        var z = value match {
+          case a is A -> a
+          case b is B -> b
+          else -> value
+        }
+        ---
+        value := Enum
+        x := B
+        y := A | B
+        z := Enum
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun test(value: Enum): B = {
+          value match {
+            case b is B -> {
+              var x: B = b
+              x
+            }
+            else -> B
+          }
+        }
+        ---
+        fun(value: Enum) -> B
+      `;
+      return;
       checkMainType`
         type Color {
           Red

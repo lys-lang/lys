@@ -6,7 +6,7 @@ global['Binaryen'] = {
 };
 
 import * as binaryen from 'binaryen';
-import * as wabt from 'wabt';
+import _wabt = require('wabt');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { findNodesByType, Nodes } from '../nodes';
@@ -24,6 +24,8 @@ type CompilationModuleResult = {
   moduleParts: any[];
   starters: any[];
 };
+
+const wabt: typeof _wabt = (_wabt as any)();
 
 const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
@@ -353,8 +355,6 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
   async validate(optimize: boolean = true) {
     let text = print(this.programAST);
-
-    await wabt.ready;
 
     const wabtModule = wabt.parseWat(
       this.compilationPhaseResult.typePhaseResult.scopePhaseResult.semanticPhaseResult.canonicalPhaseResult

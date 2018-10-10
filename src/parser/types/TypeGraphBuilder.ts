@@ -102,7 +102,9 @@ export class TypeGraphBuilder {
           'Unable to resolve reference to ' +
             reference.referencedNode.name +
             ' from ' +
-            (reference.moduleSource || 'local module')
+            (reference.moduleSource || 'local module') +
+            '\n' +
+            result.astNode.closure.inspect()
         );
       }
     });
@@ -240,7 +242,11 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MatchCaseIsNode) {
       this.resolveVariableByName(node.typeReference, 'is', target);
-      new Edge(this.traverse(node.typeReference), target, EdgeLabels.LHS);
+
+      const typeRef = this.traverse(node.typeReference);
+
+      new Edge(typeRef, target, EdgeLabels.LHS);
+
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
 
       if (node.deconstructorNames) {
@@ -252,7 +258,7 @@ export class TypeGraphBuilder {
       }
 
       if (node.declaredName) {
-        // new Edge(, target, EdgeLabels.LHS);
+        new Edge(typeRef, this.traverse(node.declaredName), EdgeLabels.LHS);
       }
     } else if (node instanceof Nodes.WasmExpressionNode) {
       node.atoms.forEach($ => this.traverseNode($, target));

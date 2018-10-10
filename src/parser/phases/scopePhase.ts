@@ -86,6 +86,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       }
 
       if (node.deconstructorNames) {
+        // TODO: check duplicated names
         node.deconstructorNames.forEach($ => {
           if ($.name !== '_') {
             node.rhs.closure.set($);

@@ -1,6 +1,6 @@
-declare var describe, it, require, console;
+declare var describe;
 
-import { testParseToken, testParseTokenFailsafe, folderBasedTest, printAST } from './TestHelpers';
+import { folderBasedTest, printAST } from './TestHelpers';
 
 import { print } from '@webassemblyjs/wast-printer';
 
