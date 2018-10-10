@@ -451,16 +451,10 @@ export class UnionType extends Type {
   }
 
   simplify() {
-    const newTypes: Type[] = [];
-
-    const superTypes = new Set<PolimorphicType>();
+    let newTypes: Type[] = [];
 
     this.of.forEach($ => {
       if ($ instanceof UnknownType) return;
-
-      if ($ instanceof RefType && $.superType && $.superType instanceof PolimorphicType) {
-        superTypes.add($.superType);
-      }
 
       if (!newTypes.some($1 => $1.equals($))) {
         newTypes.push($);
@@ -471,9 +465,33 @@ export class UnionType extends Type {
       return InvalidType.instance;
     }
 
+    let didChange = false;
+
+    do {
+      didChange = false;
+      newTypes.forEach(($, i) => {
+        if ($ instanceof RefType && $.superType && newTypes.includes($.superType)) {
+          newTypes[i] = null;
+          didChange = true;
+        }
+      });
+    } while (didChange);
+
+    newTypes = newTypes.filter($ => !!$);
+
     if (newTypes.length === 1) {
       return newTypes[0];
     } else {
+      const superTypes = new Set<PolimorphicType>();
+
+      newTypes.forEach($ => {
+        if ($ instanceof RefType && $.superType) {
+          if ($.superType instanceof PolimorphicType) {
+            superTypes.add($.superType);
+          }
+        }
+      });
+
       if (superTypes.size == 1) {
         const superType = superTypes.values().next().value;
 

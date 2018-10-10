@@ -55,7 +55,7 @@
         |-TypeReferenceNode=boolean type=boolean
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-PatternMatcherNode annotations=IsValueNode
+        |-PatternMatcherNode type=boolean annotations=IsValueNode
           |-VariableReferenceNode type=Number annotations=IsValueNode
             |-QNameNode=number
               |-NameIdentifierNode="number"
@@ -71,15 +71,15 @@
                 |-NameIdentifierNode="Natural"
             |-NameIdentifierNode="_"
             |-BooleanLiteral=false type=boolean annotations=IsValueNode
-          |-MatchCaseIsNode annotations=IsValueNode
+          |-MatchCaseIsNode type=boolean annotations=IsValueNode
             |-TypeReferenceNode=Complex type=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
             |-NameIdentifierNode="_"
-            |-NameIdentifierNode="imaginary"
-            |-BinaryExpressionNode="!=" annotations=IsValueNode
+            |-NameIdentifierNode="imaginary" type=f32
+            |-BinaryExpressionNode="!=" type=boolean annotations=IsValueNode
               |-NameIdentifierNode="!="
-              |-VariableReferenceNode annotations=IsValueNode
+              |-VariableReferenceNode type=f32 annotations=IsValueNode
                 |-QNameNode=imaginary
                   |-NameIdentifierNode="imaginary"
               |-FloatLiteral=0 type=f32 annotations=IsValueNode

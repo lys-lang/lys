@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function() {
+describe.only('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -975,7 +975,7 @@ describe('Types', function() {
       `;
     });
 
-    describe.only('struct pattern matching', () => {
+    describe('struct pattern matching', () => {
       checkMainType`
         type Enum {
           A
@@ -1101,7 +1101,7 @@ describe('Types', function() {
         ---
         fun(color: Color) -> Red | Blue
       `;
-      return;
+
       checkMainType`
         type Color {
           Red
