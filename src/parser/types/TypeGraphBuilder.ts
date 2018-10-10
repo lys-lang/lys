@@ -252,7 +252,7 @@ export class TypeGraphBuilder {
       if (node.deconstructorNames) {
         node.deconstructorNames.forEach(($, $$) => {
           if ($.name !== '_') {
-            new Edge(target, this.createNode($, new StructDeconstructorTypeResolver($$)));
+            new Edge(typeRef, this.createNode($, new StructDeconstructorTypeResolver($$)));
           }
         });
       }

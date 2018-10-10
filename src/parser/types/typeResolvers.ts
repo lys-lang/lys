@@ -517,7 +517,7 @@ export class StructDeconstructorTypeResolver extends TypeResolver {
       this.parameterIndex >= structType.parameterTypes.length
     ) {
       ctx.currentParsingContext.messageCollector.error(
-        `Invalid number of arguments. The type ${structType} only accpets ${structType.parameterTypes.length} `,
+        `Invalid number of arguments. The type ${structType} only accepts ${structType.parameterTypes.length} `,
         node.astNode
       );
       return INVALID_TYPE;

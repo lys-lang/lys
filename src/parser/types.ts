@@ -131,7 +131,7 @@ export class FunctionType extends Type {
   returnType: Type;
 
   acceptsTypes(types: Type[], strict: boolean) {
-    return accpetsTypes(this, types, strict);
+    return acceptsTypes(this, types, strict);
   }
 
   equals(type: Type) {
@@ -228,7 +228,7 @@ export class StringType extends RefType {
   }
 }
 
-function accpetsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): number {
+function acceptsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): number {
   if (type.parameterTypes.length !== types.length) {
     return 0;
   }
@@ -324,7 +324,7 @@ export class StructType extends RefType {
   parameterNames: string[];
 
   acceptsTypes(types: Type[], strict: boolean) {
-    return accpetsTypes(this, types, strict);
+    return acceptsTypes(this, types, strict);
   }
 
   equals(type: Type) {

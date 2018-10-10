@@ -1026,6 +1026,81 @@ describe('Types', function() {
         ---
         fun(value: Enum) -> B
       `;
+
+      checkMainType`
+        type Color {
+          Red
+          Custom(r: i32, g: i32, b: i32)
+        }
+
+        fun isRed(color: Color): boolean = {
+          color match {
+            case is Red -> true
+            case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+          }
+        }
+        ---
+        fun(color: Color) -> boolean
+      `;
+      checkMainType`
+        type Color {
+          Red
+          Custom(a: i32)
+        }
+
+        fun isRed(color: Color): i32 = {
+          color match {
+            case is Red -> 1
+            case is Custom(a) -> a
+          }
+        }
+        ---
+        fun(color: Color) -> i32
+      `;
+
+      checkMainType`
+        type Color {
+          Red
+          Custom(a: i32)
+        }
+
+        fun isRed(color: Color): i32 = {
+          color match {
+            case is Red -> 1
+            case is Custom(a, b, c, d) -> a
+          }
+        }
+        ---
+        fun(color: Color) -> i32
+        ---
+        Invalid number of arguments. The type Custom only accepts 1
+        Invalid number of arguments. The type Custom only accepts 1
+        Invalid number of arguments. The type Custom only accepts 1
+      `;
+
+      checkMainType`
+        type Color {
+          Red
+          Blue
+          // TODO: check duplicated params in structs
+          Custom(
+            a: i32,
+            b: i32,
+            c: i32,
+            d: Red,
+            e: i32
+          )
+        }
+
+        fun isRed(color: Color): Red | Blue = {
+          color match {
+            case is Custom(_,_,_,a) -> Red
+            else -> Blue
+          }
+        }
+        ---
+        fun(color: Color) -> Red | Blue
+      `;
       return;
       checkMainType`
         type Color {

@@ -43,10 +43,10 @@ export namespace Nodes {
     hasAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
       if (!this.annotations) return false;
 
-      if (typeof name === 'function') {
-        return !!this.getAnnotation(name);
-      } else {
+      if (typeof name === 'object') {
         return this.annotations.has(name);
+      } else {
+        return !!this.getAnnotation(name);
       }
     }
 
@@ -71,10 +71,10 @@ export namespace Nodes {
     }
 
     removeAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
-      if (typeof name === 'function') {
-        this.getAnnotationsByClass(name).forEach($ => this.annotations.delete($));
-      } else {
+      if (typeof name === 'object') {
         this.annotations.delete(name);
+      } else {
+        this.getAnnotationsByClass(name).forEach($ => this.annotations.delete($));
       }
     }
 
