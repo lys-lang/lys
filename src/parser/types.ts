@@ -657,8 +657,8 @@ export class InvalidType extends VoidType {
     return 'INVALID_TYPE';
   }
 
-  equals(_: Type) {
-    return false;
+  equals(otherType: Type) {
+    return otherType instanceof InvalidType;
   }
 
   canBeAssignedTo(_: Type) {

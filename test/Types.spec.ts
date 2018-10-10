@@ -1094,7 +1094,7 @@ describe.only('Types', function() {
 
         fun isRed(color: Color): Red | Blue = {
           color match {
-            case is Custom(_,_,_,a) -> Red
+            case is Custom(_,_,_,a) -> a
             else -> Blue
           }
         }
