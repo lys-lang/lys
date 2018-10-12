@@ -8,6 +8,18 @@
     |-NameIdentifierNode="i32" type=Type<i32>
   |-TypeDirectiveNode
     |-NameIdentifierNode="boolean" type=Type<boolean>
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Maybe" type=Type<Maybe>
+    |-TypeDeclarationNode
+      |-StructDeclarationNode type=Type<None>
+        |-NameIdentifierNode="None" type=Type<None>
+      |-StructDeclarationNode type=Type<Some>
+        |-NameIdentifierNode="Some" type=Type<Some>
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
   |-OverloadedFunctionNode type=fun(a: i32) -> boolean annotations=Injected
     |-FunDirectiveNode type=fun(a: i32) -> boolean
       |-FunctionNode type=fun(a: i32) -> boolean
@@ -76,3 +88,161 @@
           |-MatchDefaultNode type=i32 annotations=IsValueNode
             |-IntegerLiteral=0 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test2" type=fun(a: i32) -> i32
+  |-OverloadedFunctionNode type=fun(a: Maybe) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(a: Maybe) -> boolean
+      |-FunctionNode type=fun(a: Maybe) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Maybe
+          |-TypeReferenceNode=Maybe type=Maybe
+            |-QNameNode=Maybe
+              |-NameIdentifierNode="Maybe"
+        |-NameIdentifierNode="test3" type=fun(a: Maybe) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-PatternMatcherNode type=boolean annotations=IsValueNode
+          |-VariableReferenceNode type=Maybe annotations=IsValueNode
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
+          |-MatchCaseIsNode type=boolean annotations=IsValueNode
+            |-TypeReferenceNode=Some type=Some
+              |-QNameNode=Some
+                |-NameIdentifierNode="Some"
+            |-BooleanLiteral=true type=boolean annotations=IsValueNode
+          |-MatchCaseIsNode type=boolean annotations=IsValueNode
+            |-TypeReferenceNode=None type=None
+              |-QNameNode=None
+                |-NameIdentifierNode="None"
+            |-BooleanLiteral=false type=boolean annotations=IsValueNode
+    |-NameIdentifierNode="test3" type=fun(a: Maybe) -> boolean
+  |-OverloadedFunctionNode type=fun() -> None annotations=Injected
+    |-FunDirectiveNode type=fun() -> None annotations=Injected
+      |-FunctionNode type=fun() -> None
+        |-NameIdentifierNode="NoneAllocator" type=fun() -> None
+        |-TypeReferenceNode=None type=None
+          |-QNameNode=None
+            |-NameIdentifierNode="None"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x100000000
+    |-NameIdentifierNode="NoneAllocator" type=fun() -> None
+  |-OverloadedFunctionNode type=fun(a: None) -> boolean & fun(a: Some) -> boolean & fun(a: Maybe) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(a: None) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: None) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=None
+          |-TypeReferenceNode=None type=None
+            |-QNameNode=None
+              |-NameIdentifierNode="None"
+        |-NameIdentifierNode="is" type=fun(a: None) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+    |-FunDirectiveNode type=fun(a: Some) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Some) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Some
+          |-TypeReferenceNode=Some type=Some
+            |-QNameNode=Some
+              |-NameIdentifierNode="Some"
+        |-NameIdentifierNode="is" type=fun(a: Some) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+    |-FunDirectiveNode type=fun(a: Maybe) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Maybe) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Maybe
+          |-TypeReferenceNode=Maybe type=Maybe
+            |-QNameNode=Maybe
+              |-NameIdentifierNode="Maybe"
+        |-NameIdentifierNode="is" type=fun(a: Maybe) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-QNameNode=i64
+              |-NameIdentifierNode="i64"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+          |-WasmAtomNode=i32.or
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=get_local
+                |-QNameNode=$mask
+                  |-NameIdentifierNode="$mask"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x200000000
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=get_local
+                |-QNameNode=$mask
+                  |-NameIdentifierNode="$mask"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x100000000
+    |-NameIdentifierNode="is" type=fun(a: None) -> boolean & fun(a: Some) -> boolean & fun(a: Maybe) -> boolean
+  |-OverloadedFunctionNode type=fun(value: i32) -> Some annotations=Injected
+    |-FunDirectiveNode type=fun(value: i32) -> Some annotations=Injected
+      |-FunctionNode type=fun(value: i32) -> Some
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=i32
+          |-TypeReferenceNode=i32 type=i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="SomeAllocator" type=fun(value: i32) -> Some
+        |-TypeReferenceNode=Some type=Some
+          |-QNameNode=Some
+            |-NameIdentifierNode="Some"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$_newRef
+              |-NameIdentifierNode="$_newRef"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$_newRef
+              |-NameIdentifierNode="$_newRef"
+            |-WasmAtomNode=call
+              |-VariableReferenceNode type=fun(size: i32) -> i32
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=8
+          |-WasmAtomNode=i64.or
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+            |-WasmAtomNode=i64.extend_u/i32
+              |-WasmAtomNode=get_local
+                |-QNameNode=$_newRef
+                  |-NameIdentifierNode="$_newRef"
+    |-NameIdentifierNode="SomeAllocator" type=fun(value: i32) -> Some

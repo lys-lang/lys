@@ -34,7 +34,7 @@ const phases = function(txt: string): CodeGenerationPhaseResult {
   return new CodeGenerationPhaseResult(compiler);
 };
 
-describe('Compiler', function() {
+describe.only('Compiler', function() {
   describe('Core lib', () => {
     folderBasedTest(
       'stdlib/**/*.ro',

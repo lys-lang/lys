@@ -91,6 +91,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new BinaryOpTypeResolver();
   } else if (astNode instanceof Nodes.AsExpressionNode) {
     return new AsOpTypeResolver();
+  } else if (astNode instanceof Nodes.IsExpressionNode) {
+    return new IsOpTypeResolver();
   } else if (astNode instanceof Nodes.UnaryExpressionNode) {
     return new UnaryOpTypeResolver();
   } else if (astNode instanceof Nodes.BlockNode) {
@@ -391,18 +393,18 @@ export class AsOpTypeResolver extends TypeResolver {
     return retType;
   }
 }
+
 export class IsOpTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.IsExpressionNode;
 
     const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
 
-    const argTypes = [
-      node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(),
-      node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
-    ];
+    const argTypes = [node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()];
 
     try {
+      // TODO: Verify LHS is assignable to RHS, otherwise it is false always
+
       const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector, null);
 
       if (fun instanceof FunctionType) {

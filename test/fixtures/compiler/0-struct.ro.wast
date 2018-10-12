@@ -30,13 +30,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_22 (result i32)
+    (block $unknown_block_29 (result i32)
       (if $a_wild_if (result i32) (call $system::core::>_1 (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_23 (result i32)
+            (block $unknown_block_30 (result i32)
                 (if $a_wild_if (call $system::core::>_1 (get_local $size) (get_global $MAX_SIZE_32))
                     (then
-                      (block $unknown_block_24
+                      (block $unknown_block_31
                           (call $system::core::panic)
                         )
                     )
@@ -47,15 +47,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::>_1 (get_local $newPtr) (call $system::core::<<_1 (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_25
+                      (block $unknown_block_32
                           (set_local $pagesNeeded (call $system::core::>>>_1 (call $system::core::& (call $system::core::+_1 (call $system::core::-_1 (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::~_1 (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_26
+                                (block $unknown_block_33
                                     (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_27
+                                          (block $unknown_block_34
                                               (call $system::core::panic)
                                             )
                                         )
@@ -74,7 +74,7 @@
               )
           )
           (else
-            (block $unknown_block_28 (result i32)
+            (block $unknown_block_35 (result i32)
                 (i32.const 0)
               )
           )
@@ -551,7 +551,7 @@
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_20
+        (block $unknown_block_21
             (call $system::core::panic)
           )
       )
@@ -651,6 +651,11 @@
   )
   (func $test::is_3 (param $a i64) (result i32)
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x400000000))
+  )
+  (func $test::is_4 (param $a i64) (result i32)
+    (local $mask i64)
+    (set_local $mask (i64.and (i64.const 0xffffffff00000000) (get_local $a)))
+    (i32.or (i32.or (i32.or (i64.eq (get_local $mask) (i64.const 0x400000000)) (i64.eq (get_local $mask) (i64.const 0x300000000))) (i64.eq (get_local $mask) (i64.const 0x200000000))) (i64.eq (get_local $mask) (i64.const 0x100000000)))
   )
   (func $GreenType (result i64)
     (i64.const 0x200000000)

@@ -291,6 +291,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const ofType = node.resolvedFunctionType;
 
       return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document)]);
+    } else if (node instanceof Nodes.IsExpressionNode) {
+      const ofType = node.resolvedFunctionType;
+
+      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document)]);
     } else if (node instanceof Nodes.UnaryExpressionNode) {
       const ofType = node.resolvedFunctionType;
 

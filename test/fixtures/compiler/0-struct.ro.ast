@@ -211,7 +211,7 @@
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x100000000
     |-NameIdentifierNode="RedAllocator" type=fun() -> Red
-  |-OverloadedFunctionNode type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean annotations=Injected
+  |-OverloadedFunctionNode type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean & fun(a: Color) -> boolean annotations=Injected
     |-FunDirectiveNode type=fun(a: Red) -> boolean annotations=Injected
       |-FunctionNode type=fun(a: Red) -> boolean
         |-ParameterNode
@@ -296,7 +296,60 @@
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x400000000
-    |-NameIdentifierNode="is" type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean
+    |-FunDirectiveNode type=fun(a: Color) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Color) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Color
+          |-TypeReferenceNode=Color type=Color
+            |-QNameNode=Color
+              |-NameIdentifierNode="Color"
+        |-NameIdentifierNode="is" type=fun(a: Color) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-QNameNode=i64
+              |-NameIdentifierNode="i64"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+          |-WasmAtomNode=i32.or
+            |-WasmAtomNode=i32.or
+              |-WasmAtomNode=i32.or
+                |-WasmAtomNode=i64.eq
+                  |-WasmAtomNode=get_local
+                    |-QNameNode=$mask
+                      |-NameIdentifierNode="$mask"
+                  |-WasmAtomNode=i64.const
+                    |-HexLiteral=0x400000000
+                |-WasmAtomNode=i64.eq
+                  |-WasmAtomNode=get_local
+                    |-QNameNode=$mask
+                      |-NameIdentifierNode="$mask"
+                  |-WasmAtomNode=i64.const
+                    |-HexLiteral=0x300000000
+              |-WasmAtomNode=i64.eq
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$mask
+                    |-NameIdentifierNode="$mask"
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0x200000000
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=get_local
+                |-QNameNode=$mask
+                  |-NameIdentifierNode="$mask"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x100000000
+    |-NameIdentifierNode="is" type=fun(a: Red) -> boolean & fun(a: Green) -> boolean & fun(a: Blue) -> boolean & fun(a: Custom) -> boolean & fun(a: Color) -> boolean
   |-OverloadedFunctionNode type=fun() -> Green annotations=Injected
     |-FunDirectiveNode type=fun() -> Green annotations=Injected
       |-FunctionNode type=fun() -> Green

@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe.only('Types', function() {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -975,6 +975,44 @@ describe.only('Types', function() {
       `;
     });
 
+    describe.only('struct "is"', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+          C
+        }
+
+        var value1: Enum = A
+        var value2: A | B = A
+        var value3: A = A
+
+        var x1 = value1 is A
+        var y1 = value1 is Enum
+        var z1 = value1 is B
+
+        var x2 = value2 is A
+        var y2 = value2 is Enum
+        var z2 = value2 is B
+
+        var x3 = value3 is A
+        var y3 = value3 is Enum
+        var z3 = value3 is B
+        ---
+        value1 := Enum
+        value2 := A | B
+        value3 := A
+        x1 := boolean
+        y1 := boolean
+        z1 := boolean
+        x2 := boolean
+        y2 := boolean
+        z2 := boolean
+        x3 := boolean
+        y3 := boolean
+        z3 := boolean
+      `;
+    });
     describe('struct pattern matching', () => {
       checkMainType`
         type Enum {

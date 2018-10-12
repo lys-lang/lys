@@ -1,6 +1,11 @@
 type i32
 type boolean
 
+type Maybe {
+  None
+  Some(value: i32)
+}
+
 fun test(a: i32): boolean =
   a match {
     case 1 -> true
@@ -20,3 +25,23 @@ fun test2(a: i32): i32 =
     case 90 -> 9
     else -> 0
   }
+
+fun test3(a: Maybe): boolean =
+  a match {
+    case is Some -> true
+    case is None -> false
+  }
+
+/*
+fun test4(a: Maybe): boolean =
+  a match {
+    case is Some(a) -> a > 0
+    case is None -> false
+  }
+
+fun test5(a: Maybe): boolean =
+  a match {
+    case x is Some(a) -> a > 0 || x is Some
+    case x is None -> x is None
+  }
+*/
