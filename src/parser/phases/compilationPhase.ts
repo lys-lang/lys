@@ -66,10 +66,10 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: Compilati
   }
 });
 
-const resolveDeclarations = walkPreOrder((node: Nodes.Node, phase: CompilationPhaseResult) => {
+const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VarDeclarationNode) {
     if (node.parent instanceof Nodes.DirectiveNode) {
-      node.local = new Global(phase.parsingContext.getUnusedName(node.variableName.name), node.variableName);
+      node.local = new Global(node.closure.getInternalIdentifier(node.variableName), node.variableName);
     } else {
       const fn = findParentType(node, Nodes.FunctionNode);
 

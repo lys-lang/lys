@@ -235,6 +235,8 @@ export class Closure {
       prefix = node.functionName.name || 'anonFun';
     } else if (node instanceof Nodes.StructDeclarationNode) {
       prefix = node.declaredName.name || 'anonType';
+    } else if (node instanceof Nodes.NameIdentifierNode) {
+      prefix = node.name || 'anonName';
     }
 
     return this.parsingContext.getUnusedName(`${this.moduleName ? this.moduleName + '::' : ''}${prefix}`);

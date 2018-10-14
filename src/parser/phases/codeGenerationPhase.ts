@@ -442,7 +442,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
       const binaryenType = $.decl.variableName.ofType.binaryenType;
-      const identifier = t.identifier($.decl.variableName.name);
+      const identifier = t.identifier($.decl.local.name);
 
       starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 
