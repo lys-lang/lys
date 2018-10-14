@@ -1,10 +1,11 @@
-import { Nodes, Local } from '../nodes';
+import { Nodes, Local, Global } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { findParentType } from './helpers';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { TypePhaseResult } from './typePhase';
 import { ParsingContext } from '../closure';
+import { AstNodeError } from '../NodeError';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -12,7 +13,7 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, pa
 });
 
 const resolveLocals = walkPreOrder(
-  (node: Nodes.Node) => {
+  (node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // create a local for lhs of MatchNode
 
@@ -23,6 +24,11 @@ const resolveLocals = walkPreOrder(
       const fn = findParentType(node, Nodes.FunctionNode);
 
       node.local = fn.getTempLocal(node.lhs.ofType);
+    } else if (node instanceof Nodes.MatcherNode && parent instanceof Nodes.PatternMatcherNode) {
+      // create a local for lhs of MatchNode
+      if (node.declaredName) {
+        node.local = parent.local;
+      }
     }
   },
   (node: Nodes.Node) => {
@@ -37,12 +43,39 @@ const resolveLocals = walkPreOrder(
   }
 );
 
-const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
-  if (node instanceof Nodes.VarDeclarationNode) {
-    const fn = findParentType(node, Nodes.FunctionNode);
+const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: CompilationPhaseResult) => {
+  if (node instanceof Nodes.VariableReferenceNode) {
+    if (!node.closure.canResolveQName(node.variable)) {
+      throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
+    }
+    const resolved = node.closure.getQName(node.variable);
+    const decl = resolved.referencedNode.parent; // NameIdentifierNode#parent
 
-    if (fn) {
-      node.local = fn.addLocal(node.value.ofType, node.variableName.name, node.variableName);
+    if (
+      decl instanceof Nodes.ParameterNode ||
+      decl instanceof Nodes.VarDeclarationNode ||
+      decl instanceof Nodes.ValDeclarationNode ||
+      decl instanceof Nodes.MatcherNode
+    ) {
+      node.local = decl.local;
+
+      if (!node.local) {
+        throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
+      }
+    }
+  }
+});
+
+const resolveDeclarations = walkPreOrder((node: Nodes.Node, phase: CompilationPhaseResult) => {
+  if (node instanceof Nodes.VarDeclarationNode) {
+    if (node.parent instanceof Nodes.DirectiveNode) {
+      node.local = new Global(phase.parsingContext.getUnusedName(node.variableName.name), node.variableName);
+    } else {
+      const fn = findParentType(node, Nodes.FunctionNode);
+
+      if (fn) {
+        node.local = fn.addLocal(node.value.ofType, node.variableName.name, node.variableName);
+      }
     }
   }
 });
@@ -181,8 +214,9 @@ export class CompilationPhaseResult extends PhaseResult {
 
   protected execute() {
     fixParents(this.document, this, null);
-    resolveLocals(this.document, this, null);
     resolveDeclarations(this.document, this, null);
+    resolveLocals(this.document, this, null);
+    resolveVariables(this.document, this, null);
     // detectReturnExpressions(this.document);
     // detectTailCall(this.document);
     fixParents(this.document, this, null);

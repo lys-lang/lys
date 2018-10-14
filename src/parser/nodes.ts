@@ -176,6 +176,8 @@ export namespace Nodes {
 
   export class VariableReferenceNode extends ExpressionNode {
     variable: QNameNode;
+    /** local index in the function's scope */
+    local: LocalGlobalHeapReference;
     isLocal: boolean = false;
   }
 
@@ -200,6 +202,7 @@ export namespace Nodes {
     parameterName: NameIdentifierNode;
     parameterType: TypeNode;
     defaultValue: ExpressionNode;
+    local: LocalGlobalHeapReference;
   }
 
   export class FunctionNode extends ExpressionNode {
@@ -241,6 +244,7 @@ export namespace Nodes {
         let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
         this.localsByName.set(local.name, local);
         this.localsByIndex[local.index] = local;
+        parameter.local = local;
       });
     }
 
@@ -580,6 +584,9 @@ export namespace Nodes {
   }
 
   export abstract class MatcherNode extends ExpressionNode {
+    declaredName?: NameIdentifierNode;
+    /** local index in the function's scope */
+    local: LocalGlobalHeapReference;
     rhs: ExpressionNode;
   }
 
@@ -590,12 +597,10 @@ export namespace Nodes {
   }
 
   export class MatchConditionNode extends MatcherNode {
-    declaredName: NameIdentifierNode;
     condition: ExpressionNode;
   }
 
   export class MatchCaseIsNode extends MatcherNode {
-    declaredName: NameIdentifierNode;
     typeReference: TypeReferenceNode;
     deconstructorNames: NameIdentifierNode[];
     resolvedFunctionType: FunctionType;
@@ -657,7 +662,7 @@ export interface LocalGlobalHeapReference {
 
 export class Global implements LocalGlobalHeapReference {
   type: Type;
-  constructor(public index: number, public name: string, public declarationNode: Nodes.Node) {}
+  constructor(public name: string, public declarationNode: Nodes.Node) {}
 }
 
 export class Local implements LocalGlobalHeapReference {

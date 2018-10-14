@@ -245,19 +245,19 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       if (isLocal) {
         const instr = isValueNode ? 'tee_local' : 'set_local';
-        return t.instruction(instr, [t.identifier(node.variable.variable.text), emit(node.value, document)]);
+        return t.instruction(instr, [t.identifier(node.variable.local.name), emit(node.value, document)]);
       } else {
         if (isValueNode) {
           return t.blockInstruction(
             t.identifier('tee_global_' + getModuleSecuentialId(document)),
             [
-              t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]),
-              t.instruction('get_global', [t.identifier(node.variable.variable.text)])
+              t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]),
+              t.instruction('get_global', [t.identifier(node.variable.local.name)])
             ],
             node.value.ofType.binaryenType
           );
         } else {
-          return t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]);
+          return t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]);
         }
       }
     } else if (node instanceof Nodes.BlockNode) {
@@ -313,7 +313,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         return t.callInstruction(t.identifier(ofType.internalName), []);
       } else {
         const instr = node.isLocal ? 'get_local' : 'get_global';
-        return t.instruction(instr, [t.identifier(node.variable.text)]);
+        return t.instruction(instr, [t.identifier(node.local.name)]);
       }
     }
 

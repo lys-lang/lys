@@ -115,6 +115,40 @@
                 |-NameIdentifierNode="None"
             |-BooleanLiteral=false type=boolean annotations=IsValueNode
     |-NameIdentifierNode="test3" type=fun(a: Maybe) -> boolean
+  |-OverloadedFunctionNode type=fun(a: Maybe) -> Some annotations=Injected
+    |-FunDirectiveNode type=fun(a: Maybe) -> Some
+      |-FunctionNode type=fun(a: Maybe) -> Some
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Maybe
+          |-TypeReferenceNode=Maybe type=Maybe
+            |-QNameNode=Maybe
+              |-NameIdentifierNode="Maybe"
+        |-NameIdentifierNode="test4" type=fun(a: Maybe) -> Some
+        |-TypeReferenceNode=Some type=Some
+          |-QNameNode=Some
+            |-NameIdentifierNode="Some"
+        |-PatternMatcherNode type=Some annotations=IsValueNode
+          |-VariableReferenceNode type=Maybe annotations=IsValueNode
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
+          |-MatchCaseIsNode type=Some annotations=IsValueNode
+            |-NameIdentifierNode="x" type=Some
+            |-TypeReferenceNode=Some type=Some
+              |-QNameNode=Some
+                |-NameIdentifierNode="Some"
+            |-VariableReferenceNode type=Some annotations=IsValueNode
+              |-QNameNode=x
+                |-NameIdentifierNode="x"
+          |-MatchCaseIsNode type=Some annotations=IsValueNode
+            |-TypeReferenceNode=None type=None
+              |-QNameNode=None
+                |-NameIdentifierNode="None"
+            |-FunctionCallNode type=Some annotations=IsValueNode
+              |-VariableReferenceNode type=Type<Some>
+                |-QNameNode=Some
+                  |-NameIdentifierNode="Some"
+              |-IntegerLiteral=0 type=i32 annotations=IsValueNode
+    |-NameIdentifierNode="test4" type=fun(a: Maybe) -> Some
   |-OverloadedFunctionNode type=fun() -> None annotations=Injected
     |-FunDirectiveNode type=fun() -> None annotations=Injected
       |-FunctionNode type=fun() -> None

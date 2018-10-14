@@ -32,6 +32,13 @@ fun test3(a: Maybe): boolean =
     case is None -> false
   }
 
+
+fun test4(a: Maybe): Some =
+  a match {
+    case x is Some -> x
+    case is None -> Some(0)
+  }
+
 /*
 fun test4(a: Maybe): boolean =
   a match {

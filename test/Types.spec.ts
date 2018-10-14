@@ -975,7 +975,7 @@ describe('Types', function() {
       `;
     });
 
-    describe.only('struct "is"', () => {
+    describe('struct "is"', () => {
       checkMainType`
         type Enum {
           A
@@ -1013,6 +1013,7 @@ describe('Types', function() {
         z3 := boolean
       `;
     });
+
     describe('struct pattern matching', () => {
       checkMainType`
         type Enum {

@@ -658,7 +658,8 @@ export class StructTypeResolver extends TypeResolver {
 
 export class VariableReferenceResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const type = node.incomingEdges()[0].incomingType();
+    const referencedEdge = node.incomingEdges()[0];
+    const type = referencedEdge.incomingType();
 
     const ret = toConcreteType(type, ctx);
 

@@ -8,7 +8,7 @@ describe('execution tests', () => {
     test(
       'casts',
       `
-      fun i32f32(i: i32): f32 = i as f32
+        fun i32f32(i: i32): f32 = i as f32
       `,
       async (x, err) => {
         if (err) throw err;
@@ -19,7 +19,7 @@ describe('execution tests', () => {
 
   describe('named types', () => {
     test(
-      'temperatures',
+      'type alias of native',
       `
         type int = i32
         type Integer = int
@@ -35,6 +35,110 @@ describe('execution tests', () => {
   });
 
   describe('struct', () => {
+    test(
+      'is',
+      `
+        type i32
+        type Enum {
+          A
+          B
+          C
+        }
+
+        type Color {
+          Red
+          Green
+          Blue
+          Custom(a: i32)
+        }
+
+        var value1: Enum = A
+        var value2: A | B = A
+        var value3: A = A
+
+        fun testPassing(): void = {
+          support::test::assert( (A) is A            == true  )
+          support::test::assert( (A) is Enum         == true  )
+          support::test::assert( (B) is B            == true  )
+          support::test::assert( (B) is A            == false )
+          support::test::assert( (B) is Enum         == true  )
+          support::test::assert( (B) is B            == true  )
+          support::test::assert( (C) is A            == false )
+          support::test::assert( (C) is Enum         == true  )
+          support::test::assert( (C) is B            == false )
+
+          support::test::assert( value1 is A         == true  )
+          support::test::assert( value1 is B         == false )
+          support::test::assert( value1 is Enum      == true  )
+          support::test::assert( value2 is A         == true  )
+          support::test::assert( value2 is B         == false )
+          support::test::assert( value2 is Enum      == true  )
+          support::test::assert( value3 is A         == true  )
+          support::test::assert( value3 is B         == false )
+          support::test::assert( value3 is Enum      == true  )
+
+          support::test::assert( value3 is Red       == false )
+          support::test::assert( Red is Red          == true  )
+          support::test::assert( Custom(1) is Color  == true  )
+          support::test::assert( Custom(1) is Custom == true  )
+          support::test::assert( Custom(1) is Red    == false )
+          support::test::assert( Custom(1) is B      == false )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'is, pattern matching variable',
+      `
+        type i32
+        type Enum {
+          A
+          B
+          C
+        }
+
+        type Color {
+          Red
+          Green
+          Blue
+          Custom(a: i32)
+        }
+
+        struct J()
+
+        var value1: Enum = A
+        var value2: A | B = A
+        var value3: A = A
+
+        fun toRed(col: ref): Color =
+          col match {
+            case x is Red -> x
+            case x is Enum ->
+              x match {
+                case is A -> Red
+                else -> Green
+              }
+            else -> Red
+          }
+
+        fun testPassing(): void = {
+          support::test::assert( toRed(Red)  is Red )
+          support::test::assert( toRed(Blue) is Red )
+          support::test::assert( toRed(A) is Red )
+          support::test::assert( toRed(B) is Green )
+          support::test::assert( toRed(J()) is Red )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
     test(
       'type alloc and basic pattern match',
       `
