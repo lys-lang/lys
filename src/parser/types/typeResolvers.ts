@@ -15,7 +15,8 @@ import {
   f32,
   i32,
   TypeAlias,
-  PolimorphicType
+  PolimorphicType,
+  RefType
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -405,6 +406,21 @@ export class IsOpTypeResolver extends TypeResolver {
     try {
       // TODO: Verify LHS is assignable to RHS, otherwise it is false always
 
+      const LHSType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
+
+      if (!LHSType.canBeAssignedTo(RefType.instance)) {
+        ctx.parsingContext.messageCollector.error(`"is" expression can only be used with reference types.`, opNode);
+        return bool.instance;
+      }
+
+      if (!argTypes[0].canBeAssignedTo(LHSType) && !LHSType.canBeAssignedTo(argTypes[0])) {
+        ctx.parsingContext.messageCollector.error(
+          `This statement is always false, type ${LHSType} can never be ${argTypes[0]}`,
+          opNode
+        );
+        return bool.instance;
+      }
+
       const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector, null);
 
       if (fun instanceof FunctionType) {
@@ -535,29 +551,40 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
 
     {
       // Find the operator ==
-      const opNode = node.astNode as Nodes.MatchLiteralNode;
+      const opNode = node.astNode as Nodes.MatchCaseIsNode;
 
       const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
 
       const argTypes = [node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()];
+      const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
 
-      try {
-        const collector = new MessageCollector();
-
-        const fun = findFunctionOverload(incommingType, argTypes, opNode, collector);
-
-        if (fun instanceof FunctionType) {
-          opNode.resolvedFunctionType = fun;
-
-          if (!fun.returnType.canBeAssignedTo(bool.instance)) {
-            ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, bool.instance, opNode));
+      if (!matchingValueType.canBeAssignedTo(RefType.instance)) {
+        ctx.parsingContext.messageCollector.error(`"is" expression can only be used with reference types.`, opNode);
+      } else {
+        try {
+          if (!argTypes[0].canBeAssignedTo(matchingValueType) && !matchingValueType.canBeAssignedTo(argTypes[0])) {
+            throw 'this is only to fall into the catch hanler';
           }
-        } else {
-          throw 'this is only to fall into the catch hanler';
+
+          const collector = new MessageCollector();
+
+          const fun = findFunctionOverload(incommingType, argTypes, opNode, collector);
+
+          if (fun instanceof FunctionType) {
+            opNode.resolvedFunctionType = fun;
+
+            if (!fun.returnType.canBeAssignedTo(bool.instance)) {
+              ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, bool.instance, opNode));
+            }
+          } else {
+            throw 'this is only to fall into the catch hanler';
+          }
+        } catch {
+          ctx.parsingContext.messageCollector.error(
+            new TypeMismatch(matchingValueType, argTypes[0], opNode.typeReference)
+          );
+          ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
         }
-      } catch {
-        ctx.parsingContext.messageCollector.error(new TypeMismatch(argTypes[1], argTypes[0], opNode.literal));
-        ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
       }
     }
 

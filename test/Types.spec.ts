@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function() {
+describe.only('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -1011,6 +1011,181 @@ describe('Types', function() {
         x3 := boolean
         y3 := boolean
         z3 := boolean
+        ---
+        This statement is always false, type A can never be B
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+        }
+
+        fun x(x: u64): boolean = x is A
+        fun x(x: f32): boolean = x is A
+        ---
+        fun(x: u64) -> boolean & fun(x: f32) -> boolean
+        ---
+        "is" expression can only be used with reference types.
+        "is" expression can only be used with reference types.
+      `;
+    });
+
+    describe.only('match is not exhaustive', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: A | B): i32 =
+          x match {
+            case is A -> 1
+          }
+        ---
+        fun(x: A | B) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: A | B): i32 =
+          x match {
+            case is A -> 1
+            else -> 1
+          }
+        ---
+        fun(x: A | B) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum | Enum2): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: Enum | Enum2) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum | Enum2): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+            case is D -> 1
+          }
+        ---
+        fun(x: Enum | Enum2) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: A | B | C): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: A | B | C) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: A | B | C): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: A | B | C) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: A | B | C | D): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: A | B | C | D) -> i32
+        ---
+        Match is not exhaustive
       `;
     });
 
@@ -1045,6 +1220,40 @@ describe('Types', function() {
         x := B
         y := A | B
         z := Enum
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+        }
+
+        fun x(x: u64): i32 =
+          x match {
+            case is A -> 1
+            else -> 1
+          }
+        ---
+        fun(x: u64) -> i32
+        ---
+        "is" expression can only be used with reference types.
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: B): i32 =
+          x match {
+            case is A -> 1
+            else -> 1
+          }
+        ---
+        fun(x: B) -> i32
+        ---
+        Type mismatch: Type "B" is not assignable to "A"
+        Unreachable code
       `;
 
       checkMainType`
