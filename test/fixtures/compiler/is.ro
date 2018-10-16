@@ -8,6 +8,8 @@ var value1: Enum = A
 var value2: A | B = A
 var value3: A = A
 
+fun identity(a: ref): ref = a
+
 fun test(): void = {
   var x1 = value1 is A
   var y1 = value1 is Enum
@@ -19,5 +21,5 @@ fun test(): void = {
 
   var x3 = value3 is A
   var y3 = value3 is Enum
-  var z3 = value3 is B
+  var z3 = identity(value3) is B
 }

@@ -106,9 +106,7 @@
   (func $support::test::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_2
-            (call $support::test::panic)
-          )
+        (call $support::test::panic)
       )
       (else)
     )
@@ -551,9 +549,7 @@
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_21
-            (call $system::core::panic)
-          )
+        (call $system::core::panic)
       )
       (else)
     )

@@ -78,57 +78,40 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       node.closure = parent.closure;
     }
 
-    if (node instanceof Nodes.MatchCaseIsNode) {
+    if (node instanceof Nodes.MatcherNode) {
       node.rhs.closure = node.closure.newChildClosure();
 
       if (node.declaredName) {
         node.rhs.closure.set(node.declaredName);
       }
 
-      if (node.deconstructorNames) {
-        // TODO: check duplicated names
-        node.deconstructorNames.forEach($ => {
-          if ($.name !== '_') {
-            node.rhs.closure.set($);
-          }
-        });
+      if (node instanceof Nodes.MatchCaseIsNode) {
+        if (node.deconstructorNames) {
+          // TODO: check duplicated names
+          node.deconstructorNames.forEach($ => {
+            if ($.name !== '_') {
+              node.rhs.closure.set($);
+            }
+          });
+        }
       }
-    }
-
-    if (node instanceof Nodes.MatchConditionNode && parent instanceof Nodes.PatternMatcherNode) {
-      node.rhs.closure = node.closure.newChildClosure();
-      node.rhs.closure.set(node.declaredName);
-    }
-
-    if (node instanceof Nodes.OverloadedFunctionNode) {
+    } else if (node instanceof Nodes.OverloadedFunctionNode) {
       node.closure.set(node.functionName);
-    }
-
-    if (node instanceof Nodes.VariableReferenceNode) {
+    } else if (node instanceof Nodes.VariableReferenceNode) {
       node.closure = node.closure.newChildClosure();
-    }
-
-    if (node instanceof Nodes.TypeReferenceNode) {
+    } else if (node instanceof Nodes.TypeReferenceNode) {
       node.closure = node.closure.newChildClosure();
-    }
-
-    if (node instanceof Nodes.VarDeclarationNode) {
+    } else if (node instanceof Nodes.VarDeclarationNode) {
       node.value.closure = node.closure.newChildClosure();
       node.closure.set(node.variableName);
-    }
-
-    if (node instanceof Nodes.TypeDirectiveNode) {
+    } else if (node instanceof Nodes.TypeDirectiveNode) {
       node.closure.set(node.variableName);
-    }
-
-    if (node instanceof Nodes.StructDeclarationNode) {
+    } else if (node instanceof Nodes.StructDeclarationNode) {
       node.closure.set(node.declaredName);
       if (!node.internalIdentifier) {
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
-    }
-
-    if (node instanceof Nodes.FunctionNode) {
+    } else if (node instanceof Nodes.FunctionNode) {
       if (!node.body) {
         throw new AstNodeError('Function has no value', node);
       }

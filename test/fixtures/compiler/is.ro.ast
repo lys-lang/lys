@@ -44,6 +44,22 @@
       |-VariableReferenceNode type=A annotations=IsValueNode,ImplicitCall
         |-QNameNode=A
           |-NameIdentifierNode="A"
+  |-OverloadedFunctionNode type=fun(a: ref) -> ref annotations=Injected
+    |-FunDirectiveNode type=fun(a: ref) -> ref
+      |-FunctionNode type=fun(a: ref) -> ref
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=ref
+          |-TypeReferenceNode=ref type=ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="identity" type=fun(a: ref) -> ref
+        |-TypeReferenceNode=ref type=ref
+          |-QNameNode=ref
+            |-NameIdentifierNode="ref"
+        |-VariableReferenceNode type=ref annotations=IsValueNode
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
+    |-NameIdentifierNode="identity" type=fun(a: ref) -> ref
   |-OverloadedFunctionNode type=fun() -> void annotations=Injected
     |-FunDirectiveNode type=fun() -> void
       |-FunctionNode type=fun() -> void
@@ -127,9 +143,13 @@
           |-VarDeclarationNode type=void
             |-NameIdentifierNode="z3" type=boolean
             |-IsExpressionNode=is type=boolean annotations=IsValueNode
-              |-VariableReferenceNode type=A
-                |-QNameNode=value3
-                  |-NameIdentifierNode="value3"
+              |-FunctionCallNode type=ref
+                |-VariableReferenceNode type=fun(a: ref) -> ref
+                  |-QNameNode=identity
+                    |-NameIdentifierNode="identity"
+                |-VariableReferenceNode type=A annotations=IsValueNode
+                  |-QNameNode=value3
+                    |-NameIdentifierNode="value3"
               |-TypeReferenceNode=B type=B
                 |-QNameNode=B
                   |-NameIdentifierNode="B"

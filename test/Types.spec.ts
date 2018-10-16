@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe.only('Types', function() {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -1025,12 +1025,173 @@ describe.only('Types', function() {
         ---
         fun(x: u64) -> boolean & fun(x: f32) -> boolean
         ---
-        "is" expression can only be used with reference types.
-        "is" expression can only be used with reference types.
+        "is" expression can only be used with reference types,
+        "is" expression can only be used with reference types,
       `;
     });
 
-    describe.only('match is not exhaustive', () => {
+    describe('match is not exhaustive', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is Enum -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is Enum -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is Enum -> 1
+            else -> 3
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is ref -> 1
+            else -> 3
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is ref -> 1
+            else -> 3
+          }
+        ---
+        fun(x: ref) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is Enum -> 1
+            else -> 3
+          }
+        ---
+        fun(x: ref) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            else -> 3
+          }
+        ---
+        fun(x: ref) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+          }
+        ---
+        fun(x: ref) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is Enum -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
       checkMainType`
         type Enum {
           A
@@ -1194,6 +1355,31 @@ describe.only('Types', function() {
         type Enum {
           A
           B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum | Enum2 | A | B | C | D): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is B -> 1
+            else -> 1
+          }
+        ---
+        fun(x: Enum | Enum2 | A | B | C | D) -> i32
+        ---
+        Type mismatch: Type "C | D" is not assignable to "B"
+        Unreachable code
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
           C
         }
 
@@ -1225,6 +1411,29 @@ describe.only('Types', function() {
       checkMainType`
         type Enum {
           A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
         }
 
         fun x(x: u64): i32 =
@@ -1235,7 +1444,7 @@ describe.only('Types', function() {
         ---
         fun(x: u64) -> i32
         ---
-        "is" expression can only be used with reference types.
+        "is" expression can only be used with reference types, used with: u64
       `;
 
       checkMainType`

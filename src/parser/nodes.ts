@@ -145,6 +145,8 @@ export namespace Nodes {
 
   export class TypeNode extends Node {}
 
+  export class TypeReducerNode extends Node {}
+
   export class TypeReferenceNode extends TypeNode {
     /** Name of the referenced type */
     variable: QNameNode;

@@ -13,7 +13,7 @@ import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType } from '../t
 import { AstNodeError } from '../NodeError';
 
 export class TypeGraphBuilder {
-  _nodes: TypeNode[] = [];
+  _nodeMap = new Map<Nodes.Node, TypeNode>();
   _referenceNode: { reference: Reference; result: TypeNode }[] = [];
 
   constructor(
@@ -31,14 +31,14 @@ export class TypeGraphBuilder {
   }
 
   createNode(node: Nodes.Node, resolver: TypeResolver): TypeNode {
-    if (this._nodes.some($ => $.astNode == node)) {
-      throw new AstNodeError(`The node ${node.nodeName} (${node}) already exist in _nodes`, node);
+    if (this._nodeMap.has(node)) {
+      throw new AstNodeError(`The node ${node.nodeName} (${node}) already exist in _nodeMap`, node);
     }
     if (!resolver) {
       throw new AstNodeError(`The node ${node.nodeName} (${node}) has no resolver`, node);
     }
     const result = new TypeNode(node, resolver);
-    this._nodes.push(result);
+    this._nodeMap.set(node, result);
     return result;
   }
 
@@ -108,7 +108,11 @@ export class TypeGraphBuilder {
         );
       }
     });
-    return new TypeGraph(this._nodes, this.parentGraph);
+    const nodes: Array<TypeNode> = [];
+    for (let node of this._nodeMap.values()) {
+      nodes.push(node);
+    }
+    return new TypeGraph(nodes, this.parentGraph);
   }
 
   resolveReferenceNode(referenceNode: Reference): TypeNode | null {
@@ -147,6 +151,9 @@ export class TypeGraphBuilder {
   }
 
   private traverse(node: Nodes.Node): TypeNode {
+    if (this._nodeMap.has(node)) {
+      return this._nodeMap.get(node);
+    }
     return this.traverseNode(node, this.createReferenceNode(node));
   }
 
@@ -229,10 +236,29 @@ export class TypeGraphBuilder {
       const matched = this.traverse(node.lhs);
       new Edge(matched, target, EdgeLabels.PATTERN_EXPRESSION);
 
+      let valueNode = matched;
+      let previousSource = null;
+
       node.matchingSet.forEach(child => {
         const source = this.traverse(child);
         new Edge(source, target, EdgeLabels.MATCH_EXPRESSION);
-        new Edge(matched, source, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+        const typeReducedNode = this.traverse(new Nodes.TypeReducerNode(child.astNode));
+
+        if (previousSource) {
+          new Edge(previousSource, typeReducedNode, EdgeLabels.REMOVED_TYPE);
+        }
+
+        if (child instanceof Nodes.MatchCaseIsNode) {
+          previousSource = this.traverse(child.typeReference);
+        } else {
+          previousSource = null;
+        }
+
+        new Edge(typeReducedNode, source, EdgeLabels.PATTERN_MATCHING_VALUE);
+        new Edge(valueNode, typeReducedNode, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+        valueNode = typeReducedNode;
       });
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
@@ -368,7 +394,7 @@ export class TypeGraphBuilder {
   }
 
   private findLocalNode(referenceNode: Nodes.Node): TypeNode | null {
-    return this._nodes.find(node => node.astNode == referenceNode);
+    return this._nodeMap.get(referenceNode);
   }
 
   traverseChildren(node: Nodes.Node, result: TypeNode) {

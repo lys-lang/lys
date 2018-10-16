@@ -56,33 +56,35 @@ describe('execution tests', () => {
         var value2: A | B = A
         var value3: A = A
 
+        fun identity(a: ref): ref = a
+
         fun testPassing(): void = {
-          support::test::assert( (A) is A            == true  )
-          support::test::assert( (A) is Enum         == true  )
-          support::test::assert( (B) is B            == true  )
-          support::test::assert( (B) is A            == false )
-          support::test::assert( (B) is Enum         == true  )
-          support::test::assert( (B) is B            == true  )
-          support::test::assert( (C) is A            == false )
-          support::test::assert( (C) is Enum         == true  )
-          support::test::assert( (C) is B            == false )
+          support::test::assert( identity(A) is A              == true  )
+          support::test::assert( identity(A) is Enum           == true  )
+          support::test::assert( identity(B) is B              == true  )
+          support::test::assert( identity(B) is A              == false )
+          support::test::assert( identity(B) is Enum           == true  )
+          support::test::assert( identity(B) is B              == true  )
+          support::test::assert( identity(C) is A              == false )
+          support::test::assert( identity(C) is Enum           == true  )
+          support::test::assert( identity(C) is B              == false )
 
-          support::test::assert( value1 is A         == true  )
-          support::test::assert( value1 is B         == false )
-          support::test::assert( value1 is Enum      == true  )
-          support::test::assert( value2 is A         == true  )
-          support::test::assert( value2 is B         == false )
-          support::test::assert( value2 is Enum      == true  )
-          support::test::assert( value3 is A         == true  )
-          support::test::assert( value3 is B         == false )
-          support::test::assert( value3 is Enum      == true  )
+          support::test::assert( identity(value1) is A         == true  )
+          support::test::assert( identity(value1) is B         == false )
+          support::test::assert( identity(value1) is Enum      == true  )
+          support::test::assert( identity(value2) is A         == true  )
+          support::test::assert( identity(value2) is B         == false )
+          support::test::assert( identity(value2) is Enum      == true  )
+          support::test::assert( identity(value3) is A         == true  )
+          support::test::assert( identity(value3) is B         == false )
+          support::test::assert( identity(value3) is Enum      == true  )
 
-          support::test::assert( value3 is Red       == false )
-          support::test::assert( Red is Red          == true  )
-          support::test::assert( Custom(1) is Color  == true  )
-          support::test::assert( Custom(1) is Custom == true  )
-          support::test::assert( Custom(1) is Red    == false )
-          support::test::assert( Custom(1) is B      == false )
+          support::test::assert( identity(value3) is Red       == false )
+          support::test::assert( identity(Red) is Red          == true  )
+          support::test::assert( identity(Custom(1)) is Color  == true  )
+          support::test::assert( identity(Custom(1)) is Custom == true  )
+          support::test::assert( identity(Custom(1)) is Red    == false )
+          support::test::assert( identity(Custom(1)) is B      == false )
         }
       `,
       async (x, err) => {

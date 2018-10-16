@@ -514,9 +514,8 @@ fun (as)(lhs: f64): /* may fail */ u32 = %wasm { (i32.trunc_u/f64 (get_local $lh
 
 
 fun assert(x: boolean): void =
-  if (x == false) {
+  if (x == false)
     panic()
-  }
 
 fun sizeOf(lhs: ref): u32 = %wasm { (i32.const 8) }
 fun sizeOf(lhs: f64): u32 = %wasm { (i32.const 8) }

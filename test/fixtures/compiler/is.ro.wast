@@ -435,9 +435,7 @@
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_37
-            (call $system::core::panic)
-          )
+        (call $system::core::panic)
       )
       (else)
     )
@@ -493,7 +491,11 @@
   (global $test::value1 (mut i64) (i64.const 0))
   (global $test::value2 (mut i64) (i64.const 0))
   (global $test::value3 (mut i64) (i64.const 0))
+  (export "identity" (func $test::identity))
   (export "test" (func $test::test))
+  (func $test::identity (param $a i64) (result i64)
+    (get_local $a)
+  )
   (func $test::test
     (local $x1 i32)
     (local $y1 i32)
@@ -513,7 +515,7 @@
       (set_local $z2 (call $test::is_1 (get_global $test::value2)))
       (set_local $x3 (call $test::is (get_global $test::value3)))
       (set_local $y3 (call $test::is_3 (get_global $test::value3)))
-      (set_local $z3 (call $test::is_1 (get_global $test::value3)))
+      (set_local $z3 (call $test::is_1 (call $test::identity (get_global $test::value3))))
     )
   )
   (func $AType (result i64)
