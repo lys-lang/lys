@@ -162,13 +162,27 @@ export namespace Nodes {
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
     parameterType: TypeNode;
+
+    toString() {
+      if (this.name) {
+        return `${this.name}: ${this.parameterType}`;
+      } else {
+        return `${this.parameterType}`;
+      }
+    }
   }
 
   export class FunctionTypeNode extends TypeNode {
-    returnType: TypeNode;
     typeParameters: string[];
     parameters: FunctionParameterTypeNode[];
+    effect: TypeNode;
+    returnType: TypeNode;
+
+    toString() {
+      return `fun(${this.parameters.join(', ')}) -> ${this.returnType}`;
+    }
   }
+
   export class EffectMemberDeclarationNode extends TypeNode {
     name: NameIdentifierNode;
     typeParameters: string[];
@@ -615,10 +629,18 @@ export namespace Nodes {
 
   export class UnionTypeNode extends TypeNode {
     of: TypeNode[];
+
+    toString() {
+      return this.of.length > 1 ? '(' + this.of.join(' | ') + ')' : this.of.join(' | ');
+    }
   }
 
   export class IntersectionTypeNode extends TypeNode {
     of: TypeNode[];
+
+    toString() {
+      return this.of.length > 1 ? '(' + this.of.join(' & ') + ')' : this.of.join(' & ');
+    }
   }
 
   export class StructDeclarationNode extends TypeNode {

@@ -87,16 +87,40 @@ const createTypes = walkPreOrder(
 
       const size = 8;
 
-      const allocatorName = node.declaredName.name + 'Allocator';
+      const typeName = node.declaredName.name;
+
+      const allocatorName = typeName + 'Allocator';
 
       let injectedFunctions: CanonicalPhaseResult;
 
       if (node.parameters.length) {
         const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.text).join(', ');
+
+        // const getters = node.parameters
+        //   .map(
+        //     ({ parameterName, parameterType }) => `
+        //       const ${typeName}_${parameterName}_offset: usize = 0
+
+        //       fun get_${parameterName}(
+        //         target: ${typeName}
+        //       ): ${parameterType.toString()} = %wasm {
+        //         (unreachable)
+        //       }
+
+        //       fun set_${parameterName}(
+        //         target: ${typeName},
+        //         value: ${parameterType.toString()}
+        //       ): void = %wasm {
+        //         (unreachable)
+        //       }
+        //     `
+        //   )
+        //   .join('\n');
+
         // TODO: sizeOf
         injectedFunctions = CanonicalPhaseResult.fromString(
           `
-          fun ${allocatorName}(${args}): ${node.declaredName.name} = %wasm {
+          fun ${allocatorName}(${args}): ${typeName} = %wasm {
             (local $_newRef i32)
             (set_local $_newRef (call $system::memory::malloc (i32.const ${size})))
             (i64.or
@@ -105,7 +129,7 @@ const createTypes = walkPreOrder(
             )
           }
 
-          fun is(a: ${node.declaredName.name}): boolean = %wasm {
+          fun is(a: ${typeName}): boolean = %wasm {
             (i64.eq
               (i64.and
                 (i64.const 0xffffffff00000000)
@@ -119,11 +143,11 @@ const createTypes = walkPreOrder(
       } else {
         injectedFunctions = CanonicalPhaseResult.fromString(
           `
-          fun ${allocatorName}(): ${node.declaredName.name} = %wasm {
+          fun ${allocatorName}(): ${typeName} = %wasm {
             (i64.const 0x${node.typeNumber.toString(16)}00000000)
           }
 
-          fun is(a: ${node.declaredName.name}): boolean = %wasm {
+          fun is(a: ${typeName}): boolean = %wasm {
             (i64.eq
               (i64.and
                 (i64.const 0xffffffff00000000)
