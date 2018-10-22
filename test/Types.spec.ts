@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe.only('Types', function() {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
