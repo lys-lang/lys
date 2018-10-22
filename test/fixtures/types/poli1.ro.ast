@@ -78,7 +78,7 @@
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x100000000
     |-NameIdentifierNode="TrueAllocator" type=fun() -> True
-  |-OverloadedFunctionNode type=fun(a: True) -> boolean & fun(a: False) -> boolean annotations=Injected
+  |-OverloadedFunctionNode type=fun(a: True) -> boolean & fun(a: False) -> boolean & fun(a: Boolean) -> boolean annotations=Injected
     |-FunDirectiveNode type=fun(a: True) -> boolean annotations=Injected
       |-FunctionNode type=fun(a: True) -> boolean
         |-ParameterNode
@@ -121,7 +121,46 @@
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x200000000
-    |-NameIdentifierNode="is" type=fun(a: True) -> boolean & fun(a: False) -> boolean
+    |-FunDirectiveNode type=fun(a: Boolean) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Boolean) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Boolean
+          |-TypeReferenceNode=Boolean type=Boolean
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
+        |-NameIdentifierNode="is" type=fun(a: Boolean) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-QNameNode=i64
+              |-NameIdentifierNode="i64"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+          |-WasmAtomNode=i32.or
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=get_local
+                |-QNameNode=$mask
+                  |-NameIdentifierNode="$mask"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x200000000
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=get_local
+                |-QNameNode=$mask
+                  |-NameIdentifierNode="$mask"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x100000000
+    |-NameIdentifierNode="is" type=fun(a: True) -> boolean & fun(a: False) -> boolean & fun(a: Boolean) -> boolean
   |-OverloadedFunctionNode type=fun() -> False annotations=Injected
     |-FunDirectiveNode type=fun() -> False annotations=Injected
       |-FunctionNode type=fun() -> False

@@ -975,7 +975,590 @@ describe('Types', function() {
       `;
     });
 
+    describe('struct "is"', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+          C
+        }
+
+        var value1: Enum = A
+        var value2: A | B = A
+        var value3: A = A
+
+        var x1 = value1 is A
+        var y1 = value1 is Enum
+        var z1 = value1 is B
+
+        var x2 = value2 is A
+        var y2 = value2 is Enum
+        var z2 = value2 is B
+
+        var x3 = value3 is A
+        var y3 = value3 is Enum
+        var z3 = value3 is B
+        ---
+        value1 := Enum
+        value2 := A | B
+        value3 := A
+        x1 := boolean
+        y1 := boolean
+        z1 := boolean
+        x2 := boolean
+        y2 := boolean
+        z2 := boolean
+        x3 := boolean
+        y3 := boolean
+        z3 := boolean
+        ---
+        This statement is always false, type A can never be B
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+        }
+
+        fun x(x: u64): boolean = x is A
+        fun x(x: f32): boolean = x is A
+        ---
+        fun(x: u64) -> boolean & fun(x: f32) -> boolean
+        ---
+        "is" expression can only be used with reference types,
+        "is" expression can only be used with reference types,
+      `;
+    });
+
+    describe('match is not exhaustive', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is Enum -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is Enum -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is Enum -> 1
+            else -> 3
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is ref -> 1
+            else -> 3
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is ref -> 1
+            else -> 3
+          }
+        ---
+        fun(x: ref) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is Enum -> 1
+            else -> 3
+          }
+        ---
+        fun(x: ref) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            else -> 3
+          }
+        ---
+        fun(x: ref) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: ref): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+          }
+        ---
+        fun(x: ref) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is Enum -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: A | B): i32 =
+          x match {
+            case is A -> 1
+          }
+        ---
+        fun(x: A | B) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: A | B): i32 =
+          x match {
+            case is A -> 1
+            else -> 1
+          }
+        ---
+        fun(x: A | B) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum | Enum2): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: Enum | Enum2) -> i32
+        ---
+        Match is not exhaustive
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum | Enum2): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+            case is D -> 1
+          }
+        ---
+        fun(x: Enum | Enum2) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: A | B | C): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: A | B | C) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: A | B | C): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: A | B | C) -> i32
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: A | B | C | D): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: A | B | C | D) -> i32
+        ---
+        Match is not exhaustive
+      `;
+    });
+
     describe('struct pattern matching', () => {
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum | Enum2 | A | B | C | D): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is B -> 1
+            else -> 1
+          }
+        ---
+        fun(x: Enum | Enum2 | A | B | C | D) -> i32
+        ---
+        Type mismatch: Type "C | D" is not assignable to "B"
+        Unreachable code
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+          C
+        }
+
+        var value: Enum = A
+
+        var x = value match {
+          case b is B -> b
+          else -> B
+        }
+
+        var y = value match {
+          case a is A -> a
+          case b is B -> b
+          else -> B
+        }
+
+        var z = value match {
+          case a is A -> a
+          case b is B -> b
+          else -> value
+        }
+        ---
+        value := Enum
+        x := B
+        y := A | B
+        z := Enum
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        type Enum2 {
+          C
+          D
+        }
+
+        fun x(x: Enum): i32 =
+          x match {
+            case is A -> 1
+            case is B -> 1
+            case is C -> 1
+          }
+        ---
+        fun(x: Enum) -> i32
+        ---
+        Unreachable
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+        }
+
+        fun x(x: u64): i32 =
+          x match {
+            case is A -> 1
+            else -> 1
+          }
+        ---
+        fun(x: u64) -> i32
+        ---
+        "is" expression can only be used with reference types, used with: u64
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun x(x: B): i32 =
+          x match {
+            case is A -> 1
+            else -> 1
+          }
+        ---
+        fun(x: B) -> i32
+        ---
+        Type mismatch: Type "B" is not assignable to "A"
+        Unreachable code
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+        }
+
+        fun test(value: Enum): B = {
+          value match {
+            case b is B -> {
+              var x: B = b
+              x
+            }
+            else -> B
+          }
+        }
+        ---
+        fun(value: Enum) -> B
+      `;
+
+      checkMainType`
+        type Color {
+          Red
+          Custom(r: i32, g: i32, b: i32)
+        }
+
+        fun isRed(color: Color): boolean = {
+          color match {
+            case is Red -> true
+            case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+          }
+        }
+        ---
+        fun(color: Color) -> boolean
+      `;
+      checkMainType`
+        type Color {
+          Red
+          Custom(a: i32)
+        }
+
+        fun isRed(color: Color): i32 = {
+          color match {
+            case is Red -> 1
+            case is Custom(a) -> a
+          }
+        }
+        ---
+        fun(color: Color) -> i32
+      `;
+
+      checkMainType`
+        type Color {
+          Red
+          Custom(a: i32)
+        }
+
+        fun isRed(color: Color): i32 = {
+          color match {
+            case is Red -> 1
+            case is Custom(a, b, c, d) -> a
+          }
+        }
+        ---
+        fun(color: Color) -> i32
+        ---
+        Invalid number of arguments. The type Custom only accepts 1
+        Invalid number of arguments. The type Custom only accepts 1
+        Invalid number of arguments. The type Custom only accepts 1
+      `;
+
+      checkMainType`
+        type Color {
+          Red
+          Blue
+          // TODO: check duplicated params in structs
+          Custom(
+            a: i32,
+            b: i32,
+            c: i32,
+            d: Red,
+            e: i32
+          )
+        }
+
+        fun isRed(color: Color): Red | Blue = {
+          color match {
+            case is Custom(_,_,_,a) -> a
+            else -> Blue
+          }
+        }
+        ---
+        fun(color: Color) -> Red | Blue
+      `;
+
       checkMainType`
         type Color {
           Red

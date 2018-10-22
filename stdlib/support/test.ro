@@ -4,9 +4,6 @@ fun identity(x: f32): f32 = x
 fun identity(x: f64): f64 = x
 fun identity(x: f32): f32 = x
 
-fun assert(x: boolean): void =
-  if (x == false) {
-    panic()
-  }
+fun assert(x: boolean): void = if (x == false) panic()
 
 fun panic(): void = %wasm { (unreachable) }

@@ -6,7 +6,8 @@ export function printAST(token: Nodes.Node, level = 0) {
   const annotations =
     token.getAnnotations().length > 0
       ? ' annotations=' +
-        Array.from(token.getAnnotations().values())
+        token
+          .getAnnotations()
           .map($ => $.toString())
           .join(',')
       : '';

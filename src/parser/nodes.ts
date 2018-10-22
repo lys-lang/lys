@@ -43,10 +43,10 @@ export namespace Nodes {
     hasAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
       if (!this.annotations) return false;
 
-      if (typeof name === 'function') {
-        return !!this.getAnnotation(name);
-      } else {
+      if (typeof name === 'object') {
         return this.annotations.has(name);
+      } else {
+        return !!this.getAnnotation(name);
       }
     }
 
@@ -71,10 +71,10 @@ export namespace Nodes {
     }
 
     removeAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
-      if (typeof name === 'function') {
-        this.getAnnotationsByClass(name).forEach($ => this.annotations.delete($));
-      } else {
+      if (typeof name === 'object') {
         this.annotations.delete(name);
+      } else {
+        this.getAnnotationsByClass(name).forEach($ => this.annotations.delete($));
       }
     }
 
@@ -145,6 +145,8 @@ export namespace Nodes {
 
   export class TypeNode extends Node {}
 
+  export class TypeReducerNode extends Node {}
+
   export class TypeReferenceNode extends TypeNode {
     /** Name of the referenced type */
     variable: QNameNode;
@@ -160,13 +162,27 @@ export namespace Nodes {
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
     parameterType: TypeNode;
+
+    toString() {
+      if (this.name) {
+        return `${this.name}: ${this.parameterType}`;
+      } else {
+        return `${this.parameterType}`;
+      }
+    }
   }
 
   export class FunctionTypeNode extends TypeNode {
-    returnType: TypeNode;
     typeParameters: string[];
     parameters: FunctionParameterTypeNode[];
+    effect: TypeNode;
+    returnType: TypeNode;
+
+    toString() {
+      return `fun(${this.parameters.join(', ')}) -> ${this.returnType}`;
+    }
   }
+
   export class EffectMemberDeclarationNode extends TypeNode {
     name: NameIdentifierNode;
     typeParameters: string[];
@@ -176,6 +192,8 @@ export namespace Nodes {
 
   export class VariableReferenceNode extends ExpressionNode {
     variable: QNameNode;
+    /** local index in the function's scope */
+    local: LocalGlobalHeapReference;
     isLocal: boolean = false;
   }
 
@@ -200,6 +218,7 @@ export namespace Nodes {
     parameterName: NameIdentifierNode;
     parameterType: TypeNode;
     defaultValue: ExpressionNode;
+    local: LocalGlobalHeapReference;
   }
 
   export class FunctionNode extends ExpressionNode {
@@ -241,6 +260,7 @@ export namespace Nodes {
         let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
         this.localsByName.set(local.name, local);
         this.localsByIndex[local.index] = local;
+        parameter.local = local;
       });
     }
 
@@ -580,6 +600,9 @@ export namespace Nodes {
   }
 
   export abstract class MatcherNode extends ExpressionNode {
+    declaredName?: NameIdentifierNode;
+    /** local index in the function's scope */
+    local: LocalGlobalHeapReference;
     rhs: ExpressionNode;
   }
 
@@ -590,12 +613,10 @@ export namespace Nodes {
   }
 
   export class MatchConditionNode extends MatcherNode {
-    declaredName: NameIdentifierNode;
     condition: ExpressionNode;
   }
 
   export class MatchCaseIsNode extends MatcherNode {
-    declaredName: NameIdentifierNode;
     typeReference: TypeReferenceNode;
     deconstructorNames: NameIdentifierNode[];
     resolvedFunctionType: FunctionType;
@@ -608,10 +629,18 @@ export namespace Nodes {
 
   export class UnionTypeNode extends TypeNode {
     of: TypeNode[];
+
+    toString() {
+      return this.of.length > 1 ? '(' + this.of.join(' | ') + ')' : this.of.join(' | ');
+    }
   }
 
   export class IntersectionTypeNode extends TypeNode {
     of: TypeNode[];
+
+    toString() {
+      return this.of.length > 1 ? '(' + this.of.join(' & ') + ')' : this.of.join(' & ');
+    }
   }
 
   export class StructDeclarationNode extends TypeNode {
@@ -657,7 +686,7 @@ export interface LocalGlobalHeapReference {
 
 export class Global implements LocalGlobalHeapReference {
   type: Type;
-  constructor(public index: number, public name: string, public declarationNode: Nodes.Node) {}
+  constructor(public name: string, public declarationNode: Nodes.Node) {}
 }
 
 export class Local implements LocalGlobalHeapReference {

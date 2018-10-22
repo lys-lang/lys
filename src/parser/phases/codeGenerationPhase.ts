@@ -6,7 +6,7 @@ global['Binaryen'] = {
 };
 
 import * as binaryen from 'binaryen';
-import * as wabt from 'wabt';
+import _wabt = require('wabt');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { findNodesByType, Nodes } from '../nodes';
@@ -24,6 +24,8 @@ type CompilationModuleResult = {
   moduleParts: any[];
   starters: any[];
 };
+
+const wabt: typeof _wabt = (_wabt as any)();
 
 const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
@@ -243,19 +245,19 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       if (isLocal) {
         const instr = isValueNode ? 'tee_local' : 'set_local';
-        return t.instruction(instr, [t.identifier(node.variable.variable.text), emit(node.value, document)]);
+        return t.instruction(instr, [t.identifier(node.variable.local.name), emit(node.value, document)]);
       } else {
         if (isValueNode) {
           return t.blockInstruction(
             t.identifier('tee_global_' + getModuleSecuentialId(document)),
             [
-              t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]),
-              t.instruction('get_global', [t.identifier(node.variable.variable.text)])
+              t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]),
+              t.instruction('get_global', [t.identifier(node.variable.local.name)])
             ],
             node.value.ofType.binaryenType
           );
         } else {
-          return t.instruction('set_global', [t.identifier(node.variable.variable.text), emit(node.value, document)]);
+          return t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]);
         }
       }
     } else if (node instanceof Nodes.BlockNode) {
@@ -289,6 +291,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const ofType = node.resolvedFunctionType;
 
       return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document)]);
+    } else if (node instanceof Nodes.IsExpressionNode) {
+      const ofType = node.resolvedFunctionType;
+
+      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document)]);
     } else if (node instanceof Nodes.UnaryExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
@@ -307,7 +313,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         return t.callInstruction(t.identifier(ofType.internalName), []);
       } else {
         const instr = node.isLocal ? 'get_local' : 'get_global';
-        return t.instruction(instr, [t.identifier(node.variable.text)]);
+        return t.instruction(instr, [t.identifier(node.local.name)]);
       }
     }
 
@@ -353,8 +359,6 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
   async validate(optimize: boolean = true) {
     let text = print(this.programAST);
-
-    await wabt.ready;
 
     const wabtModule = wabt.parseWat(
       this.compilationPhaseResult.typePhaseResult.scopePhaseResult.semanticPhaseResult.canonicalPhaseResult
@@ -438,7 +442,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
       const binaryenType = $.decl.variableName.ofType.binaryenType;
-      const identifier = t.identifier($.decl.variableName.name);
+      const identifier = t.identifier($.decl.local.name);
 
       starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 

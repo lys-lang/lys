@@ -435,9 +435,7 @@
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::==_1 (get_local $x) (i32.const 0))
       (then
-        (block $unknown_block_23
-            (call $system::core::panic)
-          )
+        (call $system::core::panic)
       )
       (else)
     )

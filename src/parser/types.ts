@@ -131,7 +131,7 @@ export class FunctionType extends Type {
   returnType: Type;
 
   acceptsTypes(types: Type[], strict: boolean) {
-    return accpetsTypes(this, types, strict);
+    return acceptsTypes(this, types, strict);
   }
 
   equals(type: Type) {
@@ -228,7 +228,7 @@ export class StringType extends RefType {
   }
 }
 
-function accpetsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): number {
+function acceptsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): number {
   if (type.parameterTypes.length !== types.length) {
     return 0;
   }
@@ -324,7 +324,7 @@ export class StructType extends RefType {
   parameterNames: string[];
 
   acceptsTypes(types: Type[], strict: boolean) {
-    return accpetsTypes(this, types, strict);
+    return acceptsTypes(this, types, strict);
   }
 
   equals(type: Type) {
@@ -433,6 +433,17 @@ export class UnionType extends Type {
     super();
   }
 
+  static of(x: Type[] | Type): UnionType {
+    if (x instanceof UnionType) {
+      return x;
+    } else if (x instanceof Type) {
+      return new UnionType([x]);
+    } else if (x instanceof Array) {
+      return new UnionType(x);
+    }
+    throw new Error('Cannot create UnionType');
+  }
+
   toString() {
     if (this.of.length == 0) return '(empty union)';
     return this.of.map($ => $.toString()).join(' | ');
@@ -450,17 +461,53 @@ export class UnionType extends Type {
     );
   }
 
-  simplify() {
-    const newTypes: Type[] = [];
+  expand(): UnionType {
+    const newSet = new Set<Type>();
 
-    const superTypes = new Set<PolimorphicType>();
+    function add(type: Type) {
+      if (newSet.has(type)) return;
+      for (let $ of newSet) {
+        if ($.equals(type) && type.equals($)) return;
+      }
+      newSet.add(type);
+    }
+
+    for (let $ of this.of) {
+      if ($ instanceof UnionType) {
+        $.expand().of.forEach($ => add($));
+      } else if ($ instanceof PolimorphicType) {
+        $.of.forEach($ => add($));
+      } else {
+        add($);
+      }
+    }
+
+    return new UnionType(Array.from(newSet.values()));
+  }
+
+  subtract(type: Type): Type {
+    const newSet = new Set<Type>();
+
+    for (let $ of this.of) {
+      if ($.canBeAssignedTo(type)) {
+        // do nothing
+      } else newSet.add($);
+    }
+
+    if (newSet.size == 1) {
+      return newSet.values().next().value;
+    } else if (newSet.size == 0) {
+      return NeverType.instance;
+    }
+
+    return new UnionType(Array.from(newSet.values()));
+  }
+
+  simplify() {
+    let newTypes: Type[] = [];
 
     this.of.forEach($ => {
       if ($ instanceof UnknownType) return;
-
-      if ($ instanceof RefType && $.superType && $.superType instanceof PolimorphicType) {
-        superTypes.add($.superType);
-      }
 
       if (!newTypes.some($1 => $1.equals($))) {
         newTypes.push($);
@@ -471,9 +518,33 @@ export class UnionType extends Type {
       return InvalidType.instance;
     }
 
+    let didChange = false;
+
+    do {
+      didChange = false;
+      newTypes.forEach(($, i) => {
+        if ($ instanceof RefType && $.superType && newTypes.includes($.superType)) {
+          newTypes[i] = null;
+          didChange = true;
+        }
+      });
+    } while (didChange);
+
+    newTypes = newTypes.filter($ => !!$);
+
     if (newTypes.length === 1) {
       return newTypes[0];
     } else {
+      const superTypes = new Set<PolimorphicType>();
+
+      newTypes.forEach($ => {
+        if ($ instanceof RefType && $.superType) {
+          if ($.superType instanceof PolimorphicType) {
+            superTypes.add($.superType);
+          }
+        }
+      });
+
       if (superTypes.size == 1) {
         const superType = superTypes.values().next().value;
 
@@ -566,6 +637,27 @@ export class VoidType extends NativeType {
   static instance = new VoidType(NativeTypes.void);
 }
 
+export class NeverType extends NativeType {
+  static instance = new NeverType(NativeTypes.void);
+
+  equals(other: Type) {
+    if (other instanceof NeverType) return true;
+    if (other instanceof UnionType) {
+      if (other.of.length == 0) {
+        return true;
+      }
+      if (other.of.length == 1 && this.equals(other.of[0])) {
+        return true;
+      }
+    }
+    return super.equals(other);
+  }
+
+  toString() {
+    return 'never';
+  }
+}
+
 export class u8 extends NativeType {
   static instance = new u8(NativeTypes.u8);
 }
@@ -639,8 +731,8 @@ export class InvalidType extends VoidType {
     return 'INVALID_TYPE';
   }
 
-  equals(_: Type) {
-    return false;
+  equals(otherType: Type) {
+    return otherType instanceof InvalidType;
   }
 
   canBeAssignedTo(_: Type) {
@@ -666,7 +758,8 @@ export const InjectableTypes: Record<string, Type> = {
   f64: TypeType.of(f64.instance),
   void: TypeType.of(VoidType.instance),
   ref: TypeType.of(RefType.instance),
-  string: TypeType.of(StringType.instance)
+  string: TypeType.of(StringType.instance),
+  never: TypeType.of(NeverType.instance)
 };
 
 export function toConcreteType(type: Type, ctx: TypeResolutionContext) {

@@ -1,7 +1,7 @@
 import { TypeGraph, TypeNode, Edge } from './TypeGraph';
 import { ParsingContext, Closure, MessageCollector } from '../closure';
 import { Nodes } from '../nodes';
-import { Type, FunctionType } from '../types';
+import { Type } from '../types';
 import { TypeGraphBuilder } from './TypeGraphBuilder';
 
 function top<T>(stack: Array<T>): T | null {

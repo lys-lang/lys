@@ -9,11 +9,11 @@ import {
   VarDeclarationTypeResolver,
   AliasTypeResolver
 } from './typeResolvers';
-import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType } from '../types';
+import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType, NeverType } from '../types';
 import { AstNodeError } from '../NodeError';
 
 export class TypeGraphBuilder {
-  _nodes: TypeNode[] = [];
+  _nodeMap = new Map<Nodes.Node, TypeNode>();
   _referenceNode: { reference: Reference; result: TypeNode }[] = [];
 
   constructor(
@@ -31,14 +31,14 @@ export class TypeGraphBuilder {
   }
 
   createNode(node: Nodes.Node, resolver: TypeResolver): TypeNode {
-    if (this._nodes.some($ => $.astNode == node)) {
-      throw new AstNodeError(`The node ${node.nodeName} (${node}) already exist in _nodes`, node);
+    if (this._nodeMap.has(node)) {
+      throw new AstNodeError(`The node ${node.nodeName} (${node}) already exist in _nodeMap`, node);
     }
     if (!resolver) {
       throw new AstNodeError(`The node ${node.nodeName} (${node}) has no resolver`, node);
     }
     const result = new TypeNode(node, resolver);
-    this._nodes.push(result);
+    this._nodeMap.set(node, result);
     return result;
   }
 
@@ -102,11 +102,17 @@ export class TypeGraphBuilder {
           'Unable to resolve reference to ' +
             reference.referencedNode.name +
             ' from ' +
-            (reference.moduleSource || 'local module')
+            (reference.moduleSource || 'local module') +
+            '\n' +
+            result.astNode.closure.inspect()
         );
       }
     });
-    return new TypeGraph(this._nodes, this.parentGraph);
+    const nodes: Array<TypeNode> = [];
+    for (let node of this._nodeMap.values()) {
+      nodes.push(node);
+    }
+    return new TypeGraph(nodes, this.parentGraph);
   }
 
   resolveReferenceNode(referenceNode: Reference): TypeNode | null {
@@ -145,6 +151,9 @@ export class TypeGraphBuilder {
   }
 
   private traverse(node: Nodes.Node): TypeNode {
+    if (this._nodeMap.has(node)) {
+      return this._nodeMap.get(node);
+    }
     return this.traverseNode(node, this.createReferenceNode(node));
   }
 
@@ -224,14 +233,104 @@ export class TypeGraphBuilder {
         new Edge(this.traverse(child), target, EdgeLabels.PARAMETER);
       });
     } else if (node instanceof Nodes.PatternMatcherNode) {
-      const matched = this.traverse(node.lhs);
-      new Edge(matched, target, EdgeLabels.PATTERN_EXPRESSION);
+      const valueToMatch = this.traverse(node.lhs);
+      new Edge(valueToMatch, target, EdgeLabels.PATTERN_EXPRESSION);
 
-      node.matchingSet.forEach(child => {
-        const source = this.traverse(child);
-        new Edge(source, target, EdgeLabels.MATCH_EXPRESSION);
-        new Edge(matched, source, EdgeLabels.PATTERN_MATCHING_VALUE);
-      });
+      type Carry = {
+        bearerOfTypes: TypeNode;
+        typeToRemoveNext: TypeNode;
+      };
+
+      const carry: Carry = node.matchingSet.reduce<Carry>(
+        (carry: Carry, matcherNode) => {
+          const matchExpression = this.traverse(matcherNode);
+
+          let newResult: Carry = {
+            bearerOfTypes: null,
+            typeToRemoveNext: null
+          };
+
+          new Edge(matchExpression, target, EdgeLabels.MATCH_EXPRESSION);
+
+          /**
+           * This reductor will take the carried type and remove the type from the
+           * carry.bearerOfTypes
+           */
+          newResult.bearerOfTypes = this.traverse(new Nodes.TypeReducerNode());
+
+          /**
+           * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
+           */
+          if (carry.typeToRemoveNext) {
+            new Edge(carry.typeToRemoveNext, newResult.bearerOfTypes, EdgeLabels.REMOVED_TYPE);
+          }
+
+          /**
+           * If we know the type to be removed from the flow, create the
+           * newResult.typeToRemoveNext
+           */
+          if (matcherNode instanceof Nodes.MatchCaseIsNode) {
+            newResult.typeToRemoveNext = this.traverse(matcherNode.typeReference);
+          } else {
+            newResult.typeToRemoveNext = null;
+          }
+
+          /**
+           * The current typeReductor is feed by the previous bearerOfTypes.
+           * In the first iteration, it is the valueToMatch directly, subsequent
+           * nodes uses the previous typeReductor
+           */
+          new Edge(carry.bearerOfTypes, newResult.bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+          /**
+           * The typeReductor is the input type of the matcher.
+           */
+          new Edge(newResult.bearerOfTypes, matchExpression, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+          /**
+           * The MatchDefaultNode (else) marks the end of the pattern matching
+           * and it consumes every possible remaining value to match.
+           */
+          if (matcherNode instanceof Nodes.MatchDefaultNode) {
+            newResult.bearerOfTypes = new TypeNode(
+              new Nodes.TypeReducerNode(),
+              new LiteralTypeResolver(NeverType.instance)
+            );
+          }
+
+          return newResult;
+        },
+        {
+          bearerOfTypes: valueToMatch,
+          typeToRemoveNext: null
+        }
+      );
+
+      if (carry.typeToRemoveNext && carry.bearerOfTypes) {
+        /**
+         * This reductor will take the carried type and remove the type from the
+         * carry.bearerOfTypes
+         */
+        const bearerOfTypes = this.traverse(new Nodes.TypeReducerNode(node.astNode));
+
+        /**
+         * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
+         */
+        if (carry.typeToRemoveNext) {
+          new Edge(carry.typeToRemoveNext, bearerOfTypes, EdgeLabels.REMOVED_TYPE);
+        }
+
+        /**
+         * The current typeReductor is feed by the previous bearerOfTypes.
+         * In the first iteration, it is the valueToMatch directly, subsequent
+         * nodes uses the previous typeReductor
+         */
+        new Edge(carry.bearerOfTypes, bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+        new Edge(bearerOfTypes, target, EdgeLabels.REST_TYPE);
+      } else if (carry.bearerOfTypes) {
+        new Edge(carry.bearerOfTypes, target, EdgeLabels.REST_TYPE);
+      }
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.MatchLiteralNode) {
@@ -240,19 +339,23 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MatchCaseIsNode) {
       this.resolveVariableByName(node.typeReference, 'is', target);
-      new Edge(this.traverse(node.typeReference), target, EdgeLabels.LHS);
+
+      const typeRef = this.traverse(node.typeReference);
+
+      new Edge(typeRef, target, EdgeLabels.LHS);
+
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
 
       if (node.deconstructorNames) {
         node.deconstructorNames.forEach(($, $$) => {
           if ($.name !== '_') {
-            new Edge(target, this.createNode($, new StructDeconstructorTypeResolver($$)));
+            new Edge(typeRef, this.createNode($, new StructDeconstructorTypeResolver($$)));
           }
         });
       }
 
       if (node.declaredName) {
-        // new Edge(, target, EdgeLabels.LHS);
+        new Edge(typeRef, this.traverse(node.declaredName), EdgeLabels.LHS);
       }
     } else if (node instanceof Nodes.WasmExpressionNode) {
       node.atoms.forEach($ => this.traverseNode($, target));
@@ -362,7 +465,7 @@ export class TypeGraphBuilder {
   }
 
   private findLocalNode(referenceNode: Nodes.Node): TypeNode | null {
-    return this._nodes.find(node => node.astNode == referenceNode);
+    return this._nodeMap.get(referenceNode);
   }
 
   traverseChildren(node: Nodes.Node, result: TypeNode) {

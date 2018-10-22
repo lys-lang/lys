@@ -1,0 +1,300 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Enum" type=Type<Enum>
+    |-TypeDeclarationNode
+      |-StructDeclarationNode type=Type<A>
+        |-NameIdentifierNode="A" type=Type<A>
+      |-StructDeclarationNode type=Type<B>
+        |-NameIdentifierNode="B" type=Type<B>
+      |-StructDeclarationNode type=Type<C>
+        |-NameIdentifierNode="C" type=Type<C>
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="value1" type=Enum
+      |-TypeReferenceNode=Enum type=Enum
+        |-QNameNode=Enum
+          |-NameIdentifierNode="Enum"
+      |-VariableReferenceNode type=A annotations=IsValueNode,ImplicitCall
+        |-QNameNode=A
+          |-NameIdentifierNode="A"
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="value2" type=A | B
+      |-UnionTypeNode type=A | B
+        |-TypeReferenceNode=A type=A
+          |-QNameNode=A
+            |-NameIdentifierNode="A"
+        |-TypeReferenceNode=B type=B
+          |-QNameNode=B
+            |-NameIdentifierNode="B"
+      |-VariableReferenceNode type=A annotations=IsValueNode,ImplicitCall
+        |-QNameNode=A
+          |-NameIdentifierNode="A"
+  |-VarDirectiveNode
+    |-VarDeclarationNode
+      |-NameIdentifierNode="value3" type=A
+      |-TypeReferenceNode=A type=A
+        |-QNameNode=A
+          |-NameIdentifierNode="A"
+      |-VariableReferenceNode type=A annotations=IsValueNode,ImplicitCall
+        |-QNameNode=A
+          |-NameIdentifierNode="A"
+  |-OverloadedFunctionNode type=fun(a: ref) -> ref annotations=Injected
+    |-FunDirectiveNode type=fun(a: ref) -> ref
+      |-FunctionNode type=fun(a: ref) -> ref
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=ref
+          |-TypeReferenceNode=ref type=ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="identity" type=fun(a: ref) -> ref
+        |-TypeReferenceNode=ref type=ref
+          |-QNameNode=ref
+            |-NameIdentifierNode="ref"
+        |-VariableReferenceNode type=ref annotations=IsValueNode
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
+    |-NameIdentifierNode="identity" type=fun(a: ref) -> ref
+  |-OverloadedFunctionNode type=fun() -> void annotations=Injected
+    |-FunDirectiveNode type=fun() -> void
+      |-FunctionNode type=fun() -> void
+        |-NameIdentifierNode="test" type=fun() -> void
+        |-TypeReferenceNode=void type=void
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=void
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="x1" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=Enum
+                |-QNameNode=value1
+                  |-NameIdentifierNode="value1"
+              |-TypeReferenceNode=A type=A
+                |-QNameNode=A
+                  |-NameIdentifierNode="A"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="y1" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=Enum
+                |-QNameNode=value1
+                  |-NameIdentifierNode="value1"
+              |-TypeReferenceNode=Enum type=Enum
+                |-QNameNode=Enum
+                  |-NameIdentifierNode="Enum"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="z1" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=Enum
+                |-QNameNode=value1
+                  |-NameIdentifierNode="value1"
+              |-TypeReferenceNode=B type=B
+                |-QNameNode=B
+                  |-NameIdentifierNode="B"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="x2" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=A | B
+                |-QNameNode=value2
+                  |-NameIdentifierNode="value2"
+              |-TypeReferenceNode=A type=A
+                |-QNameNode=A
+                  |-NameIdentifierNode="A"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="y2" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=A | B
+                |-QNameNode=value2
+                  |-NameIdentifierNode="value2"
+              |-TypeReferenceNode=Enum type=Enum
+                |-QNameNode=Enum
+                  |-NameIdentifierNode="Enum"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="z2" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=A | B
+                |-QNameNode=value2
+                  |-NameIdentifierNode="value2"
+              |-TypeReferenceNode=B type=B
+                |-QNameNode=B
+                  |-NameIdentifierNode="B"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="x3" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=A
+                |-QNameNode=value3
+                  |-NameIdentifierNode="value3"
+              |-TypeReferenceNode=A type=A
+                |-QNameNode=A
+                  |-NameIdentifierNode="A"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="y3" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-VariableReferenceNode type=A
+                |-QNameNode=value3
+                  |-NameIdentifierNode="value3"
+              |-TypeReferenceNode=Enum type=Enum
+                |-QNameNode=Enum
+                  |-NameIdentifierNode="Enum"
+          |-VarDeclarationNode type=void
+            |-NameIdentifierNode="z3" type=boolean
+            |-IsExpressionNode=is type=boolean annotations=IsValueNode
+              |-FunctionCallNode type=ref
+                |-VariableReferenceNode type=fun(a: ref) -> ref
+                  |-QNameNode=identity
+                    |-NameIdentifierNode="identity"
+                |-VariableReferenceNode type=A annotations=IsValueNode
+                  |-QNameNode=value3
+                    |-NameIdentifierNode="value3"
+              |-TypeReferenceNode=B type=B
+                |-QNameNode=B
+                  |-NameIdentifierNode="B"
+    |-NameIdentifierNode="test" type=fun() -> void
+  |-OverloadedFunctionNode type=fun() -> A annotations=Injected
+    |-FunDirectiveNode type=fun() -> A annotations=Injected
+      |-FunctionNode type=fun() -> A
+        |-NameIdentifierNode="AAllocator" type=fun() -> A
+        |-TypeReferenceNode=A type=A
+          |-QNameNode=A
+            |-NameIdentifierNode="A"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x100000000
+    |-NameIdentifierNode="AAllocator" type=fun() -> A
+  |-OverloadedFunctionNode type=fun(a: A) -> boolean & fun(a: B) -> boolean & fun(a: C) -> boolean & fun(a: Enum) -> boolean annotations=Injected
+    |-FunDirectiveNode type=fun(a: A) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: A) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=A
+          |-TypeReferenceNode=A type=A
+            |-QNameNode=A
+              |-NameIdentifierNode="A"
+        |-NameIdentifierNode="is" type=fun(a: A) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+    |-FunDirectiveNode type=fun(a: B) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: B) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=B
+          |-TypeReferenceNode=B type=B
+            |-QNameNode=B
+              |-NameIdentifierNode="B"
+        |-NameIdentifierNode="is" type=fun(a: B) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x200000000
+    |-FunDirectiveNode type=fun(a: C) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: C) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=C
+          |-TypeReferenceNode=C type=C
+            |-QNameNode=C
+              |-NameIdentifierNode="C"
+        |-NameIdentifierNode="is" type=fun(a: C) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x300000000
+    |-FunDirectiveNode type=fun(a: Enum) -> boolean annotations=Injected
+      |-FunctionNode type=fun(a: Enum) -> boolean
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=Enum
+          |-TypeReferenceNode=Enum type=Enum
+            |-QNameNode=Enum
+              |-NameIdentifierNode="Enum"
+        |-NameIdentifierNode="is" type=fun(a: Enum) -> boolean
+        |-TypeReferenceNode=boolean type=boolean
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-QNameNode=i64
+              |-NameIdentifierNode="i64"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$mask
+              |-NameIdentifierNode="$mask"
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+          |-WasmAtomNode=i32.or
+            |-WasmAtomNode=i32.or
+              |-WasmAtomNode=i64.eq
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$mask
+                    |-NameIdentifierNode="$mask"
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0x300000000
+              |-WasmAtomNode=i64.eq
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$mask
+                    |-NameIdentifierNode="$mask"
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0x200000000
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=get_local
+                |-QNameNode=$mask
+                  |-NameIdentifierNode="$mask"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x100000000
+    |-NameIdentifierNode="is" type=fun(a: A) -> boolean & fun(a: B) -> boolean & fun(a: C) -> boolean & fun(a: Enum) -> boolean
+  |-OverloadedFunctionNode type=fun() -> B annotations=Injected
+    |-FunDirectiveNode type=fun() -> B annotations=Injected
+      |-FunctionNode type=fun() -> B
+        |-NameIdentifierNode="BAllocator" type=fun() -> B
+        |-TypeReferenceNode=B type=B
+          |-QNameNode=B
+            |-NameIdentifierNode="B"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x200000000
+    |-NameIdentifierNode="BAllocator" type=fun() -> B
+  |-OverloadedFunctionNode type=fun() -> C annotations=Injected
+    |-FunDirectiveNode type=fun() -> C annotations=Injected
+      |-FunctionNode type=fun() -> C
+        |-NameIdentifierNode="CAllocator" type=fun() -> C
+        |-TypeReferenceNode=C type=C
+          |-QNameNode=C
+            |-NameIdentifierNode="C"
+        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x300000000
+    |-NameIdentifierNode="CAllocator" type=fun() -> C
