@@ -56,7 +56,8 @@ export const EdgeLabels = {
   RETURN_TYPE: '#RETURN_TYPE',
   DEFAULT_VALUE: 'DEFAULT_VALUE',
   NAME: 'NAME',
-  REMOVED_TYPE: 'REMOVED_TYPE'
+  REMOVED_TYPE: 'REMOVED_TYPE',
+  REST_TYPE: 'REST_TYPE'
 };
 
 export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
@@ -285,13 +286,31 @@ export class IntersectionTypeResolver extends TypeResolver {
 }
 
 export class PatternMatcherTypeResolver extends TypeResolver {
-  execute(node: TypeNode, _ctx: TypeResolutionContext) {
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
     const type = new UnionType();
     type.of = node
       .incomingEdges()
       .filter($ => $.incomingTypeDefined() && $.source.astNode instanceof Nodes.MatcherNode)
       .map($ => $.incomingType());
-    return type.simplify();
+
+    const patternMatcherNode = node.astNode as Nodes.PatternMatcherNode;
+
+    if (patternMatcherNode.hasAnnotation(annotations.IsValueNode)) {
+      const restEdge = node.incomingEdgesByName(EdgeLabels.REST_TYPE);
+      if (restEdge.length) {
+        const restType = restEdge[0].incomingType();
+        if (!NeverType.instance.equals(restType)) {
+          ctx.parsingContext.messageCollector.error(
+            `Match is not exhaustive, not covered types: ${restType}`,
+            patternMatcherNode
+          );
+        }
+      }
+
+      return type.simplify();
+    }
+
+    return VoidType.instance;
   }
 }
 

@@ -4,7 +4,7 @@ import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 
-const phases = function (txt: string): CanonicalPhaseResult {
+const phases = function(txt: string): CanonicalPhaseResult {
   const parsing = new ParsingPhaseResult('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
@@ -14,7 +14,7 @@ describe('FileBasedCanonical', () => {
   folderBasedTest('test/fixtures/canonical/*.ro', phases, result => printAST(result.document), '.ast');
 });
 
-describe('Canonical', function () {
+describe('Canonical', function() {
   function test(literals, ...placeholders) {
     let result = '';
 

@@ -106,7 +106,7 @@ Statement         ::= ValDeclaration
                     | AssignStatement
                     | Expression {fragment=true}
 
-MatchExpression   ::= MatchKeyword WS* MatchBody WS* {pin=1,fragment=true}
+MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
 
 BinaryExpression  ::= '.' NameIdentifier CallArguments? {pin=2,fragment=true}
 
@@ -154,7 +154,7 @@ MatchElements     ::= (CaseCondition | CaseIs | CaseLiteral | CaseElse) WS*  {fr
 CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression WS* '->' WS* Expression {pin=5}
 CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
 CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ TypeReference WS* DeconstructStruct? '->' WS* Expression {pin=4}
-CaseElse          ::= ELSE_KEYWORD WS* '->' WS* Expression {pin=3}
+CaseElse          ::= ELSE_KEYWORD WS* (NameIdentifier WS+)? '->' WS* Expression {pin=4}
 
 DeconstructStruct ::= '(' (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
 NthNameIdentifier ::= ',' WS* NameIdentifier WS* {fragment=true}

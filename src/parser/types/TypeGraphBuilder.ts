@@ -9,7 +9,7 @@ import {
   VarDeclarationTypeResolver,
   AliasTypeResolver
 } from './typeResolvers';
-import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType } from '../types';
+import { Type, InjectableTypes, VoidType, PolimorphicType, TypeType, NeverType } from '../types';
 import { AstNodeError } from '../NodeError';
 
 export class TypeGraphBuilder {
@@ -233,33 +233,104 @@ export class TypeGraphBuilder {
         new Edge(this.traverse(child), target, EdgeLabels.PARAMETER);
       });
     } else if (node instanceof Nodes.PatternMatcherNode) {
-      const matched = this.traverse(node.lhs);
-      new Edge(matched, target, EdgeLabels.PATTERN_EXPRESSION);
+      const valueToMatch = this.traverse(node.lhs);
+      new Edge(valueToMatch, target, EdgeLabels.PATTERN_EXPRESSION);
 
-      let valueNode = matched;
-      let previousSource = null;
+      type Carry = {
+        bearerOfTypes: TypeNode;
+        typeToRemoveNext: TypeNode;
+      };
 
-      node.matchingSet.forEach(child => {
-        const source = this.traverse(child);
-        new Edge(source, target, EdgeLabels.MATCH_EXPRESSION);
+      const carry: Carry = node.matchingSet.reduce<Carry>(
+        (carry: Carry, matcherNode) => {
+          const matchExpression = this.traverse(matcherNode);
 
-        const typeReducedNode = this.traverse(new Nodes.TypeReducerNode(child.astNode));
+          let newResult: Carry = {
+            bearerOfTypes: null,
+            typeToRemoveNext: null
+          };
 
-        if (previousSource) {
-          new Edge(previousSource, typeReducedNode, EdgeLabels.REMOVED_TYPE);
+          new Edge(matchExpression, target, EdgeLabels.MATCH_EXPRESSION);
+
+          /**
+           * This reductor will take the carried type and remove the type from the
+           * carry.bearerOfTypes
+           */
+          newResult.bearerOfTypes = this.traverse(new Nodes.TypeReducerNode());
+
+          /**
+           * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
+           */
+          if (carry.typeToRemoveNext) {
+            new Edge(carry.typeToRemoveNext, newResult.bearerOfTypes, EdgeLabels.REMOVED_TYPE);
+          }
+
+          /**
+           * If we know the type to be removed from the flow, create the
+           * newResult.typeToRemoveNext
+           */
+          if (matcherNode instanceof Nodes.MatchCaseIsNode) {
+            newResult.typeToRemoveNext = this.traverse(matcherNode.typeReference);
+          } else {
+            newResult.typeToRemoveNext = null;
+          }
+
+          /**
+           * The current typeReductor is feed by the previous bearerOfTypes.
+           * In the first iteration, it is the valueToMatch directly, subsequent
+           * nodes uses the previous typeReductor
+           */
+          new Edge(carry.bearerOfTypes, newResult.bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+          /**
+           * The typeReductor is the input type of the matcher.
+           */
+          new Edge(newResult.bearerOfTypes, matchExpression, EdgeLabels.PATTERN_MATCHING_VALUE);
+
+          /**
+           * The MatchDefaultNode (else) marks the end of the pattern matching
+           * and it consumes every possible remaining value to match.
+           */
+          if (matcherNode instanceof Nodes.MatchDefaultNode) {
+            newResult.bearerOfTypes = new TypeNode(
+              new Nodes.TypeReducerNode(),
+              new LiteralTypeResolver(NeverType.instance)
+            );
+          }
+
+          return newResult;
+        },
+        {
+          bearerOfTypes: valueToMatch,
+          typeToRemoveNext: null
+        }
+      );
+
+      if (carry.typeToRemoveNext && carry.bearerOfTypes) {
+        /**
+         * This reductor will take the carried type and remove the type from the
+         * carry.bearerOfTypes
+         */
+        const bearerOfTypes = this.traverse(new Nodes.TypeReducerNode(node.astNode));
+
+        /**
+         * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
+         */
+        if (carry.typeToRemoveNext) {
+          new Edge(carry.typeToRemoveNext, bearerOfTypes, EdgeLabels.REMOVED_TYPE);
         }
 
-        if (child instanceof Nodes.MatchCaseIsNode) {
-          previousSource = this.traverse(child.typeReference);
-        } else {
-          previousSource = null;
-        }
+        /**
+         * The current typeReductor is feed by the previous bearerOfTypes.
+         * In the first iteration, it is the valueToMatch directly, subsequent
+         * nodes uses the previous typeReductor
+         */
+        new Edge(carry.bearerOfTypes, bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
 
-        new Edge(typeReducedNode, source, EdgeLabels.PATTERN_MATCHING_VALUE);
-        new Edge(valueNode, typeReducedNode, EdgeLabels.PATTERN_MATCHING_VALUE);
-
-        valueNode = typeReducedNode;
-      });
+        new Edge(bearerOfTypes, target, EdgeLabels.REST_TYPE);
+      } else if (carry.bearerOfTypes) {
+        new Edge(carry.bearerOfTypes, target, EdgeLabels.REST_TYPE);
+      }
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.MatchLiteralNode) {
