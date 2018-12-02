@@ -10,9 +10,7 @@ import { TypePhaseResult } from './phases/typePhase';
 import { CompilationPhaseResult } from './phases/compilationPhase';
 import { assert } from 'console';
 
-export interface IDictionary<T> {
-  [key: string]: T;
-}
+export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
 export interface IOverloadedInfix {
   [operator: string]: {
@@ -199,8 +197,8 @@ export class MessageCollector {
 
 export class Closure {
   localScopeDeclares: Set<string> = new Set();
-  nameMappings: IDictionary<Reference> = {};
-  localUsages: IDictionary<number> = {};
+  nameMappings: Record<string, Reference> = {};
+  localUsages: Record<string, number> = {};
 
   importedModules = new Map<string, Set<string>>();
 
@@ -211,9 +209,10 @@ export class Closure {
   constructor(
     public parsingContext: ParsingContext,
     public parent: Closure = null,
-    public readonly moduleName: string = null
+    public readonly moduleName: string = null,
+    nameHint: string = ''
   ) {
-    this.name = this.parsingContext.getUnusedName('_scope');
+    this.name = this.parsingContext.getUnusedName(nameHint + '_scope');
   }
 
   registerForeginModule(moduleName: string) {
@@ -243,7 +242,7 @@ export class Closure {
   }
 
   incrementUsage(name: string) {
-    const reference = this.get(name);
+    const reference = this.get(name, true);
     this.localUsages[name] = (this.localUsages[name] || 0) + 1;
     reference.usages++;
   }
@@ -252,111 +251,95 @@ export class Closure {
     this.incrementUsage(name.text);
   }
 
-  set(nameNode: Nodes.NameIdentifierNode) {
+  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType) {
     const localName = nameNode.name;
 
     if (localName === '_') return;
-
-    if (localName in this.localUsages && this.localUsages[localName] > 0) {
-      throw new Error(`Cannot reasign ${localName} because it was used`);
-    }
 
     if (this.localScopeDeclares.has(localName)) {
       throw new Error(`"${localName}" is already declared`);
     }
 
-    this.nameMappings[localName] = new Reference(nameNode, this, null);
+    this.nameMappings[localName] = new Reference(nameNode, this, type, null);
 
     this.localScopeDeclares.add(localName);
 
     return this.nameMappings[localName];
   }
 
-  canResolveName(localName: string) {
+  canResolveName(localName: string, recurseParent: boolean) {
     try {
-      return !!this.get(localName);
+      return !!this.get(localName, recurseParent);
     } catch {
       return false;
     }
   }
 
-  canResolveQName(qname: Nodes.QNameNode) {
-    return this.canResolveName(qname.text);
+  canResolveQName(qname: Nodes.QNameNode, recurseParent: boolean) {
+    return this.canResolveName(qname.text, recurseParent);
   }
 
-  getQName(qname: Nodes.QNameNode): Reference {
-    return this.get(qname.text);
+  getQName(qname: Nodes.QNameNode, recurseParent: boolean): Reference {
+    return this.get(qname.text, recurseParent);
   }
 
-  get(localName: string): Reference {
+  get(localName: string, recurseParent: boolean): Reference {
     if (localName in this.nameMappings) {
       return this.nameMappings[localName];
     }
 
-    if (localName.includes('::')) {
-      const parts = localName.split('::');
-      const moduleName = parts.slice(0, -1).join('::');
-      const name = parts[parts.length - 1];
-      const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(name);
-
-      return ref.withModule(moduleName);
-    }
-
-    for (let [moduleName, importsSet] of this.importedModules) {
-      if (importsSet.has(localName)) {
-        const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(localName);
-
-        return ref.withModule(moduleName);
-      } else if (
-        importsSet.has('*') &&
-        this.parsingContext.getScopePhase(moduleName).document.closure.canResolveName(localName)
-      ) {
-        const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(localName);
+    if (recurseParent) {
+      if (localName.includes('::')) {
+        const parts = localName.split('::');
+        const moduleName = parts.slice(0, -1).join('::');
+        const name = parts[parts.length - 1];
+        const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(name, recurseParent);
 
         return ref.withModule(moduleName);
       }
-    }
 
-    if (this.parent && this.parent.canResolveName(localName)) {
-      return this.parent.get(localName);
-    }
+      if (this.parent && this.parent.canResolveName(localName, recurseParent)) {
+        return this.parent.get(localName, recurseParent);
+      }
 
-    if (localName in this.nameMappings) {
-      return this.nameMappings[localName];
+      for (let [moduleName, importsSet] of this.importedModules) {
+        if (importsSet.has(localName)) {
+          const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(localName, recurseParent);
+
+          return ref.withModule(moduleName);
+        } else if (
+          importsSet.has('*') &&
+          this.parsingContext.getScopePhase(moduleName).document.closure.canResolveName(localName, recurseParent)
+        ) {
+          const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(localName, recurseParent);
+
+          return ref.withModule(moduleName);
+        }
+      }
     }
 
     throw new Error('Cannot resolve name "' + localName + '"');
   }
 
   inspect(content: string = '') {
-    let localContent = `Scope:\n${Object.keys(this.nameMappings)
+    let localContent = `Scope ${this.name}:\n${Object.keys(this.nameMappings)
       .map($ => 'let ' + $)
       .join('\n')
       .replace(/^(.*)/gm, '  $1')}`;
 
     if (content) {
-      localContent = localContent + `\n${content.replace(/^(.*)/gm, '  $1')}`;
+      localContent = localContent + `\n${content.toString().replace(/^(.*)/gm, '  $1')}`;
     }
 
-    if (this.parent) {
-      return this.parent.inspect(localContent);
-    } else {
-      return localContent;
-    }
-    return (
-      'Closure [' +
-      '\n  ' +
-      Object.keys(this.nameMappings)
-        .map($ => 'let ' + $)
-        .join('\n  ') +
-      '\n  parent = ' +
-      (this.parent ? '\n' + this.parent.inspect().replace(/^(.*)/gm, '    $1') : 'null') +
-      '\n]'
-    );
+    return localContent;
   }
 
-  newChildClosure(): Closure {
-    const newScope = new Closure(this.parsingContext, this, this.moduleName);
+  deepInspect() {
+    return this.inspect(this.childrenScopes.map($ => $.deepInspect()).join('\n'));
+  }
+
+  newChildClosure(nameHint: string): Closure {
+    const newScope = new Closure(this.parsingContext, this, this.moduleName, nameHint);
     this.childrenScopes.push(newScope);
     return newScope;
   }
@@ -368,14 +351,17 @@ export class Reference {
   constructor(
     public readonly referencedNode: Nodes.NameIdentifierNode,
     public readonly scope: Closure,
-    public readonly moduleSource: string | null = null
+    public readonly type: ReferenceType,
+    public readonly moduleName: string | null = null
   ) {}
 
+  /** Returns true if the reference points to a declaration in the same module */
   get isLocalReference(): boolean {
-    return !this.moduleSource;
+    return !this.moduleName;
   }
 
+  /** Returns a copy of the reference with the moduleSource set */
   withModule(moduleName: string) {
-    return new Reference(this.referencedNode, this.scope, moduleName);
+    return new Reference(this.referencedNode, this.scope, this.type, moduleName);
   }
 }

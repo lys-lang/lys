@@ -54,6 +54,8 @@ export class TypePhaseResult extends PhaseResult {
       this.scopePhaseResult.semanticPhaseResult.parsingContext
     );
 
+    // TODO: find similar signature decl in same scopes
+
     try {
       executor.run();
     } catch (e) {

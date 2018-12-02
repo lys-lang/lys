@@ -144,11 +144,48 @@ effect exc {
 }
 
 // Type inference will infer the type (int,int) -> exc int propagating the exception effect.
-fun safediv(x: i32, y: i32): i32 =
+fun div(x: i32, y: i32): <exn> i32 =
   if (y == 0)
     raise("divide by zero")
   else
     x / y
+
+
+handler XHandler {
+  raise(a: string): i32 = 0
+}
+
+
+fun safeDiv(a: i32, b: i32): <total> i32 = {
+  with XHandler handle {
+    with XHandler handle {
+      with XHandler handle {
+        div(a, b)
+  }}}
+}
+
+
+
+
+effect ambient {
+  flip(...): bool
+}
+
+
+
+
+fun get() = flip(...)
+
+handler X for ambient {
+  flip(..., resume: (bool) -> void) {
+    resume(true)
+    resume(false)
+  }
+  return x = [x]
+}
+
+
+val res = with X handle get()
 ```
 
 ##

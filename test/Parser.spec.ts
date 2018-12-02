@@ -6,7 +6,7 @@ import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { expect } from 'chai';
 
 describe('Parser', () => {
-  const phases = function (txt: string): CanonicalPhaseResult {
+  const phases = function(txt: string): CanonicalPhaseResult {
     const x = new ParsingPhaseResult('test.ro', txt);
 
     return new CanonicalPhaseResult(x);
@@ -26,7 +26,7 @@ describe('Parser', () => {
     );
   });
 
-  describe('Basic sanity tests', function () {
+  describe('Basic sanity tests', function() {
     function test(literals, ...placeholders) {
       let result = '';
 
@@ -119,6 +119,59 @@ describe('Parser', () => {
         import github::menduz::aureum as W
       `;
     });
+
+    describe('namespaces', () => {
+      test`
+        namespace Enum {
+
+        } // a
+        namespace Enum {}
+        namespace Enum {
+          //
+        } // b
+        namespace Enum{
+          //
+        } // c
+        namespace Enum
+        {
+
+        } // d
+      `;
+      test`
+        namespace Enum {
+          val test = 1
+        }
+      `;
+      test`
+        namespace Enum {
+          val test = 1
+        }
+
+        fun (as)(self: Test): X = {
+          x() as X
+        }
+      `;
+      test`
+        type Enum {
+          A
+          B
+          C
+        }
+
+        namespace Enum {
+          val test = 1
+
+          private fun x(): int = test
+
+          fun (as)(self: Test): X = {
+            x() as X
+          }
+
+          namespace Enum { }
+        }
+      `;
+    });
+
     describe('operator definition', () => {
       test`
         fun (as)(x: i32, y: boolean): void = {}

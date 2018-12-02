@@ -18,3 +18,7 @@ export function printAST(token: Nodes.Node, level = 0) {
     (token.children || []).map(c => printAST(c, level + 1)).join('')
   );
 }
+
+export function indent(str: string, indentation: string = '  ') {
+  return str.replace(/^(.*)$/gm, indentation + '$1');
+}

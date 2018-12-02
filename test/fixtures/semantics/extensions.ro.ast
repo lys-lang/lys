@@ -1,0 +1,42 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="i32"
+  |-ExtensionDirectiveNode
+    |-ReferenceNode
+      |-QNameNode=i32
+        |-NameIdentifierNode="i32"
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="a"
+        |-ReferenceNode
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=1 annotations=IsValueNode,IsValueNode
+  |-OverloadedFunctionNode annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="a"
+        |-ReferenceNode
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=1 annotations=IsValueNode,IsValueNode
+    |-NameIdentifierNode="a"
+  |-OverloadedFunctionNode annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="main"
+        |-ReferenceNode
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-FunctionCallNode annotations=IsValueNode
+          |-MemberNode
+            |-ReferenceNode
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-NameIdentifierNode="a"
+    |-NameIdentifierNode="main"

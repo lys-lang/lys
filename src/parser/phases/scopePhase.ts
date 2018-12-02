@@ -31,7 +31,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
 
     if (node.functionReturnType) {
       returnsVoidValue =
-        node.functionReturnType instanceof Nodes.TypeReferenceNode && node.functionReturnType.variable.text === 'void';
+        node.functionReturnType instanceof Nodes.ReferenceNode && node.functionReturnType.variable.text === 'void';
     }
 
     if (!returnsVoidValue) {
@@ -79,10 +79,10 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
     }
 
     if (node instanceof Nodes.MatcherNode) {
-      node.rhs.closure = node.closure.newChildClosure();
+      node.rhs.closure = node.closure.newChildClosure('MatcherRHS');
 
       if (node.declaredName) {
-        node.rhs.closure.set(node.declaredName);
+        node.rhs.closure.set(node.declaredName, 'VALUE');
       }
 
       if (node instanceof Nodes.MatchCaseIsNode) {
@@ -90,24 +90,24 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
           // TODO: check duplicated names
           node.deconstructorNames.forEach($ => {
             if ($.name !== '_') {
-              node.rhs.closure.set($);
+              node.rhs.closure.set($, 'VALUE');
             }
           });
         }
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure.set(node.functionName);
-    } else if (node instanceof Nodes.VariableReferenceNode) {
-      node.closure = node.closure.newChildClosure();
-    } else if (node instanceof Nodes.TypeReferenceNode) {
-      node.closure = node.closure.newChildClosure();
+      node.closure.set(node.functionName, 'FUNCTION');
+    } else if (node instanceof Nodes.NamespaceDirectiveNode) {
+      node.closure = node.closure.newChildClosure('NamespaceDirective_' + node.reference.text);
+    } else if (node instanceof Nodes.ReferenceNode) {
+      node.closure = node.closure.newChildClosure('Reference');
     } else if (node instanceof Nodes.VarDeclarationNode) {
-      node.value.closure = node.closure.newChildClosure();
-      node.closure.set(node.variableName);
+      node.value.closure = node.closure.newChildClosure('VarDeclaration');
+      node.closure.set(node.variableName, 'VALUE');
     } else if (node instanceof Nodes.TypeDirectiveNode) {
-      node.closure.set(node.variableName);
+      node.closure.set(node.variableName, 'TYPE');
     } else if (node instanceof Nodes.StructDeclarationNode) {
-      node.closure.set(node.declaredName);
+      node.closure.set(node.declaredName, 'TYPE');
       if (!node.internalIdentifier) {
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
@@ -117,17 +117,17 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
       }
 
       if (!(parent instanceof Nodes.DirectiveNode)) {
-        node.closure.set(node.functionName);
+        node.closure.set(node.functionName, 'VALUE');
       }
 
       if (!node.internalIdentifier) {
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
 
-      node.body.closure = node.closure.newChildClosure();
+      node.body.closure = node.closure.newChildClosure('FunctionBody');
 
       node.parameters.forEach($ => {
-        node.body.closure.set($.parameterName);
+        node.body.closure.set($.parameterName, 'VALUE');
       });
 
       node.processParameters();
@@ -135,31 +135,89 @@ const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, pare
   }
 });
 
-const resolveVariables = walkPreOrder((node: Nodes.Node, phaseResult: ScopePhaseResult) => {
-  if (node instanceof Nodes.VariableReferenceNode) {
-    if (!node.closure.canResolveQName(node.variable)) {
-      throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
+function collectNamespaces(name: Nodes.NameIdentifierNode, directives: Nodes.DirectiveNode[]) {
+  if (!name.namespaceNames) {
+    name.namespaceNames = new Map();
+  }
+
+  const { namespaceNames } = name;
+
+  function registerNameIdentifier(nameNode: Nodes.NameIdentifierNode) {
+    if (namespaceNames.has(nameNode.name)) {
+      nameNode.errors.push(
+        new AstNodeError(`The name ${nameNode.name} is already registered in this namespace`, nameNode)
+      );
+    } else {
+      namespaceNames.set(nameNode.name, nameNode);
     }
-    const resolved = node.closure.getQName(node.variable);
+  }
+
+  directives.forEach(node => {
+    if (node instanceof Nodes.OverloadedFunctionNode) {
+      registerNameIdentifier(node.functionName);
+    } else if (node instanceof Nodes.VarDirectiveNode) {
+      registerNameIdentifier(node.decl.variableName);
+    } else if (node instanceof Nodes.FunDirectiveNode) {
+      // TODO: this shouldn't happen. Only overloaded directives should be processed
+      registerNameIdentifier(node.functionNode.functionName);
+    } else if (node instanceof Nodes.TypeDirectiveNode) {
+      registerNameIdentifier(node.variableName);
+    } else {
+      node.errors.push(new AstNodeError(`Don't know how to register this directive ${node.nodeName}`, node));
+    }
+  });
+}
+
+const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult: ScopePhaseResult) => {
+  if (node instanceof Nodes.ReferenceNode) {
+    if (!node.closure.canResolveQName(node.variable, true)) {
+      throw new AstNodeError(`Cannot resolve reference "${node.variable.text}"`, node.variable);
+    }
+    const resolved = node.closure.getQName(node.variable, true);
     const isGlobal = !resolved.isLocalReference || resolved.scope == phaseResult.document.closure;
     node.isLocal = !isGlobal;
+    node.resolvedReference = resolved;
     node.closure.incrementUsageQName(node.variable);
-  } else if (node instanceof Nodes.TypeReferenceNode) {
-    if (!node.closure.canResolveQName(node.variable)) {
-      throw new AstNodeError(`Cannot resolve type named "${node.variable.text}"`, node.variable);
+  } else if (node instanceof Nodes.NamespaceDirectiveNode) {
+    if (node.reference.variable.names.length > 1) {
+      throw new AstNodeError(`A single name was expected. Got a fully qualified name.`, node.reference);
     }
-    node.closure.incrementUsageQName(node.variable);
+
+    if (!node.reference.resolvedReference.isLocalReference) {
+      throw new AstNodeError(
+        `Namespaces are only allowed for local file declarations. The name ${
+          node.reference.resolvedReference.referencedNode.name
+        } belongs to the module ${node.reference.resolvedReference.moduleName}`,
+        node.reference
+      );
+    }
+
+    collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives);
+  } else if (node instanceof Nodes.MemberNode) {
+    if (node.lhs instanceof Nodes.ReferenceNode) {
+      if (node.lhs.resolvedReference.type === 'TYPE') {
+        const { namespaceNames } = node.lhs.resolvedReference.referencedNode;
+
+        if (namespaceNames && namespaceNames.has(node.memberName.name)) {
+          // fiesta
+          // node.resolvedReference = extensions
+        } else {
+          throw new AstNodeError(
+            `The namespace "${node.lhs.resolvedReference.referencedNode.toString()}" has no exported member "${
+              node.memberName.name
+            }"`,
+            node
+          );
+        }
+      } else {
+        throw new AstNodeError(`Don't know how to resolve this ref: ${node.lhs.resolvedReference.type}`, node);
+      }
+    }
   }
 });
 
 const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: ScopePhaseResult) => {
-  if (node instanceof Nodes.VariableReferenceNode) {
-    if (node.variable.names.length > 1) {
-      const { moduleName, variable } = node.variable.deconstruct();
-      node.closure.registerImport(moduleName, new Set([variable]));
-      scopePhaseResult.importedModules.add(moduleName);
-    }
-  } else if (node instanceof Nodes.TypeReferenceNode) {
+  if (node instanceof Nodes.ReferenceNode) {
     if (node.variable.names.length > 1) {
       const { moduleName, variable } = node.variable.deconstruct();
       node.closure.registerImport(moduleName, new Set([variable]));

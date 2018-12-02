@@ -1,7 +1,8 @@
 import { IToken, TokenError } from 'ebnf';
-import { Closure } from './closure';
+import { Closure, Reference } from './closure';
 import { Type, NativeTypes, FunctionType, StructType } from './types';
 import { Annotation, IAnnotationConstructor } from './annotations';
+import { indent } from '../utils/astPrinter';
 
 export namespace Nodes {
   export abstract class Node {
@@ -101,6 +102,8 @@ export namespace Nodes {
   export class NameIdentifierNode extends Node {
     name: string;
 
+    namespaceNames: Map<string, NameIdentifierNode>;
+
     get text() {
       return JSON.stringify(this.name);
     }
@@ -113,6 +116,11 @@ export namespace Nodes {
 
     toString() {
       return this.name;
+    }
+
+    getSelfReference() {
+      // TODO: Review this
+      return this.closure.get(this.name, false);
     }
   }
 
@@ -147,18 +155,6 @@ export namespace Nodes {
 
   export class TypeReducerNode extends Node {}
 
-  export class TypeReferenceNode extends TypeNode {
-    /** Name of the referenced type */
-    variable: QNameNode;
-
-    get text() {
-      return this.variable.text;
-    }
-
-    isPointer: number = 0;
-    isArray: boolean = false;
-  }
-
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
     parameterType: TypeNode;
@@ -190,16 +186,37 @@ export namespace Nodes {
     returnType: TypeNode;
   }
 
-  export class VariableReferenceNode extends ExpressionNode {
+  export class ReferenceNode extends ExpressionNode {
     variable: QNameNode;
     /** local index in the function's scope */
     local: LocalGlobalHeapReference;
     isLocal: boolean = false;
+
+    resolvedReference: Reference;
+
+    toString() {
+      return this.variable.toString();
+    }
   }
 
   export class BlockNode extends ExpressionNode {
     label: string;
     statements: Node[];
+
+    toString() {
+      if (this.statements.length) return '{}';
+      return '{\n' + indent(this.statements.join('\n')) + '\n}';
+    }
+  }
+
+  export class MemberNode extends ExpressionNode {
+    lhs: Node;
+    memberName: NameIdentifierNode;
+    operator: string;
+
+    toString() {
+      return this.lhs.toString() + this.operator + this.memberName.toString();
+    }
   }
 
   export abstract class DirectiveNode extends Node {
@@ -212,6 +229,10 @@ export namespace Nodes {
     file?: string;
     moduleName?: string;
     textContent: string;
+
+    toString() {
+      return this.directives.join('\n');
+    }
   }
 
   export class ParameterNode extends Node {
@@ -219,6 +240,13 @@ export namespace Nodes {
     parameterType: TypeNode;
     defaultValue: ExpressionNode;
     local: LocalGlobalHeapReference;
+
+    toString() {
+      if (this.defaultValue) {
+        return this.parameterName.toString() + ': ' + this.parameterType + ' = ' + this.defaultValue;
+      }
+      return this.parameterName.toString() + ': ' + this.parameterType;
+    }
   }
 
   export class FunctionNode extends ExpressionNode {
@@ -415,16 +443,6 @@ export namespace Nodes {
     }
   }
 
-  export class ContextAwareFunction extends FunctionNode {
-    constructor(public baseFunction: FunctionNode, public closure: Closure) {
-      super(baseFunction.astNode);
-      this.functionName = baseFunction.functionName;
-      this.functionReturnType = baseFunction.functionReturnType;
-      this.parameters = baseFunction.parameters;
-      this.body = baseFunction.body;
-    }
-  }
-
   export class ImportDirectiveNode extends DirectiveNode {
     allItems: boolean = true;
     module: QNameNode;
@@ -433,6 +451,11 @@ export namespace Nodes {
 
   export class FunDirectiveNode extends DirectiveNode {
     functionNode: FunctionNode;
+  }
+
+  export class NamespaceDirectiveNode extends DirectiveNode {
+    reference: ReferenceNode;
+    directives: DirectiveNode[];
   }
 
   export class EffectDirectiveNode extends DirectiveNode {
@@ -447,7 +470,7 @@ export namespace Nodes {
   export class VarDeclarationNode extends Node {
     mutable = true;
     variableName: NameIdentifierNode;
-    variableType: TypeReferenceNode;
+    variableType: ReferenceNode;
     value: ExpressionNode;
     local: LocalGlobalHeapReference;
   }
@@ -465,7 +488,7 @@ export namespace Nodes {
   }
 
   export class AssignmentNode extends Node {
-    variable: VariableReferenceNode;
+    variable: ReferenceNode;
     value: ExpressionNode;
   }
 
@@ -617,7 +640,7 @@ export namespace Nodes {
   }
 
   export class MatchCaseIsNode extends MatcherNode {
-    typeReference: TypeReferenceNode;
+    typeReference: ReferenceNode;
     deconstructorNames: NameIdentifierNode[];
     resolvedFunctionType: FunctionType;
   }

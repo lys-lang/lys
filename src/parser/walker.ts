@@ -2,15 +2,17 @@ import { IToken } from 'ebnf';
 import { PhaseResult } from './phases/PhaseResult';
 
 export function walkPreOrder<T extends { errors: any[]; children: any[] } = IToken, D extends PhaseResult = any>(
-  cbEnter: (node: T, phaseResult: D, parent: T) => void,
+  cbEnter?: (node: T, phaseResult: D, parent: T) => void,
   cbLeave?: (node: T, phaseResult: D, parent: T) => void
 ) {
   const leFn = function(node: T, phaseResult?: D, parent: T = null) {
     if (node) {
-      try {
-        cbEnter.call(this, node, phaseResult, parent);
-      } catch (e) {
-        node.errors.push(e);
+      if (cbEnter) {
+        try {
+          cbEnter.call(this, node, phaseResult, parent);
+        } catch (e) {
+          node.errors.push(e);
+        }
       }
 
       if (node.children) {
@@ -27,31 +29,6 @@ export function walkPreOrder<T extends { errors: any[]; children: any[] } = ITok
         } catch (e) {
           node.errors.push(e);
         }
-      }
-    }
-  };
-
-  return leFn;
-}
-
-/** @deprecated use walkPreOrder */
-export function walkPostOrder<T extends { errors: any[]; children: any[] } = IToken, D extends PhaseResult = any>(
-  cb: (node: T, phaseResult: D, parent: T) => void
-) {
-  const leFn = function(node: T, phaseResult?: D, parent: T = null) {
-    if (node) {
-      if (node.children) {
-        for (let i = 0; i < node.children.length; i++) {
-          if (node.children[i]) {
-            leFn.call(this, node.children[i], phaseResult, node);
-          }
-        }
-      }
-
-      try {
-        cb.call(this, node, phaseResult, parent);
-      } catch (e) {
-        node.errors.push(e);
       }
     }
   };

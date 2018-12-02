@@ -93,16 +93,14 @@ export function edgeLabel(edge: Edge): string {
 }
 
 export function nodeLabel(node: TypeNode): string {
-  if (node.astNode instanceof Nodes.VariableReferenceNode) {
-    return `VarRef: ${node.astNode.variable.text}`;
+  if (node.astNode instanceof Nodes.ReferenceNode) {
+    return `Ref: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
     return `Name: ${node.astNode.name}`;
   } else if (node.astNode instanceof Nodes.BinaryExpressionNode) {
     return `BinOp: ${node.astNode.operator.text}`;
   } else if (node.astNode instanceof Nodes.UnaryExpressionNode) {
     return `Unary: ${node.astNode.operator.text}`;
-  } else if (node.astNode instanceof Nodes.TypeReferenceNode) {
-    return `TypeRef: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.IntegerLiteral) {
     return `Int: ${node.astNode.value}`;
   } else if (node.astNode instanceof Nodes.FloatLiteral) {

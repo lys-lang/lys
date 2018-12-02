@@ -44,24 +44,26 @@ const resolveLocals = walkPreOrder(
 );
 
 const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: CompilationPhaseResult) => {
-  if (node instanceof Nodes.VariableReferenceNode) {
-    if (!node.closure.canResolveQName(node.variable)) {
-      throw new AstNodeError(`Cannot resolve variable "${node.variable.text}"`, node.variable);
-    }
-    const resolved = node.closure.getQName(node.variable);
-    const decl = resolved.referencedNode.parent; // NameIdentifierNode#parent
+  if (node instanceof Nodes.ReferenceNode) {
+    const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
 
-    if (
-      decl instanceof Nodes.ParameterNode ||
-      decl instanceof Nodes.VarDeclarationNode ||
-      decl instanceof Nodes.ValDeclarationNode ||
-      decl instanceof Nodes.MatcherNode
-    ) {
-      node.local = decl.local;
+    if (node.resolvedReference.type === 'VALUE') {
+      if (
+        decl instanceof Nodes.ParameterNode ||
+        decl instanceof Nodes.VarDeclarationNode ||
+        decl instanceof Nodes.ValDeclarationNode ||
+        decl instanceof Nodes.MatcherNode
+      ) {
+        node.local = decl.local;
 
-      if (!node.local) {
-        throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
+        if (!node.local) {
+          throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
+        }
+      } else {
+        throw new AstNodeError(`Value node has no local`, decl);
       }
+    } else {
+      throw new AstNodeError(`Cannot emit reference of type ${node.resolvedReference.type}`, decl);
     }
   }
 });

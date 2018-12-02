@@ -11,55 +11,55 @@
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="n"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-ParameterNode
           |-NameIdentifierNode="x1"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-ParameterNode
           |-NameIdentifierNode="x2"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-NameIdentifierNode="fibo"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-IfNode annotations=IsValueNode
             |-BinaryExpressionNode=">" annotations=IsValueNode
               |-NameIdentifierNode=">"
-              |-VariableReferenceNode annotations=IsValueNode
+              |-ReferenceNode annotations=IsValueNode
                 |-QNameNode=n
                   |-NameIdentifierNode="n"
               |-IntegerLiteral=0 annotations=IsValueNode
             |-BlockNode annotations=IsValueNode
               |-FunctionCallNode annotations=IsValueNode
-                |-VariableReferenceNode
+                |-ReferenceNode
                   |-QNameNode=fibo
                     |-NameIdentifierNode="fibo"
                 |-BinaryExpressionNode="-" annotations=IsValueNode
                   |-NameIdentifierNode="-"
-                  |-VariableReferenceNode annotations=IsValueNode
+                  |-ReferenceNode annotations=IsValueNode
                     |-QNameNode=n
                       |-NameIdentifierNode="n"
                   |-IntegerLiteral=1 annotations=IsValueNode
-                |-VariableReferenceNode annotations=IsValueNode
+                |-ReferenceNode annotations=IsValueNode
                   |-QNameNode=x2
                     |-NameIdentifierNode="x2"
                 |-BinaryExpressionNode="+" annotations=IsValueNode
                   |-NameIdentifierNode="+"
-                  |-VariableReferenceNode annotations=IsValueNode
+                  |-ReferenceNode annotations=IsValueNode
                     |-QNameNode=x1
                       |-NameIdentifierNode="x1"
-                  |-VariableReferenceNode annotations=IsValueNode
+                  |-ReferenceNode annotations=IsValueNode
                     |-QNameNode=x2
                       |-NameIdentifierNode="x2"
             |-BlockNode annotations=IsValueNode
-              |-VariableReferenceNode annotations=IsValueNode
+              |-ReferenceNode annotations=IsValueNode
                 |-QNameNode=x1
                   |-NameIdentifierNode="x1"
     |-NameIdentifierNode="fibo"
@@ -68,19 +68,19 @@
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="n"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-NameIdentifierNode="fib"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-FunctionCallNode annotations=IsValueNode
-            |-VariableReferenceNode
+            |-ReferenceNode
               |-QNameNode=fibo
                 |-NameIdentifierNode="fibo"
-            |-VariableReferenceNode annotations=IsValueNode
+            |-ReferenceNode annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
             |-IntegerLiteral=0 annotations=IsValueNode
@@ -90,12 +90,12 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="test"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-FunctionCallNode annotations=IsValueNode
-            |-VariableReferenceNode
+            |-ReferenceNode
               |-QNameNode=fib
                 |-NameIdentifierNode="fib"
             |-IntegerLiteral=46 annotations=IsValueNode

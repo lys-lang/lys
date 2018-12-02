@@ -267,6 +267,42 @@ describe('Types', function() {
         fun() -> i32
       `;
     });
+
+    describe('namespaces', () => {
+      checkMainType`
+        fun abc(): void = {/* empty block */}
+        ---
+        fun() -> void
+      `;
+
+      checkMainType`
+        type Test {
+          Null
+          Some(x: ref)
+        }
+
+        namespace Test {
+          fun xxx(): boolean = ???
+        }
+
+        namespace Null {
+          fun xxx(): i32 = ???
+        }
+
+        namespace Some {
+          fun xxx(): f32 = ???
+        }
+
+        var a = Test#xxx()
+        var b = Null#xxx()
+        var c = Some#xxx()
+        ---
+        a := boolean
+        b := i32
+        c := f32
+      `;
+    });
+
     describe('recursive types', () => {
       checkMainType`
         type Test {

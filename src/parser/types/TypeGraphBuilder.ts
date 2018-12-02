@@ -102,7 +102,7 @@ export class TypeGraphBuilder {
           'Unable to resolve reference to ' +
             reference.referencedNode.name +
             ' from ' +
-            (reference.moduleSource || 'local module') +
+            (reference.moduleName || 'local module') +
             '\n' +
             result.astNode.closure.inspect()
         );
@@ -120,14 +120,14 @@ export class TypeGraphBuilder {
     if (referenceNode.isLocalReference) {
       return this.findNode(referenceNode.referencedNode);
     } else {
-      const typePhase = this.parsingContext.getTypePhase(referenceNode.moduleSource);
+      const typePhase = this.parsingContext.getTypePhase(referenceNode.moduleName);
       const typeNode = typePhase.typeGraph.findNode(referenceNode.referencedNode);
       return typeNode;
     }
   }
 
   private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode): void {
-    const reference = node.closure.get(name);
+    const reference = node.closure.get(name, true);
 
     if (reference) {
       if (!this._referenceNode.some($ => $.reference === reference && $.result == result)) {
@@ -139,7 +139,7 @@ export class TypeGraphBuilder {
   }
 
   private resolveVariable(node: Nodes.QNameNode, result: TypeNode): void {
-    const reference = node.closure.getQName(node);
+    const reference = node.closure.getQName(node, true);
 
     if (reference) {
       if (!this._referenceNode.some($ => $.reference === reference && $.result == result)) {
@@ -189,13 +189,11 @@ export class TypeGraphBuilder {
         new Edge(this.traverse(fun), target);
       });
       new Edge(target, this.traverse(node.functionName));
-    } else if (node instanceof Nodes.VariableReferenceNode) {
+    } else if (node instanceof Nodes.ReferenceNode) {
       this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.AssignmentNode) {
       new Edge(this.traverse(node.variable), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.value), target, EdgeLabels.RHS);
-    } else if (node instanceof Nodes.TypeReferenceNode) {
-      this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.IfNode) {
       new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
       new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION);
@@ -208,6 +206,14 @@ export class TypeGraphBuilder {
 
       new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+    } else if (node instanceof Nodes.MemberNode) {
+      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
+
+      if (((node.astNode as any) as Nodes.MemberNode).operator === '#') {
+        new Edge(this.traverse(node.memberName), target, EdgeLabels.RHS);
+      }
+
+      // new Edge(this.traverse(node.memberName), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.AsExpressionNode) {
       this.resolveVariableByName(node, 'as', target);
 
@@ -361,7 +367,7 @@ export class TypeGraphBuilder {
       node.atoms.forEach($ => this.traverseNode($, target));
     } else if (node instanceof Nodes.WasmAtomNode) {
       if (node.symbol === 'call' || node.symbol === 'get_global' || node.symbol === 'set_global') {
-        if (node.arguments[0] instanceof Nodes.VariableReferenceNode) {
+        if (node.arguments[0] instanceof Nodes.ReferenceNode) {
           this.traverse(node.arguments[0]);
         }
       } else {
@@ -431,7 +437,7 @@ export class TypeGraphBuilder {
           directive.variableName,
           this.createNode(
             directive.variableName,
-            new LiteralTypeResolver(TypeType.of(new PolimorphicType(directive.variableName.name)))
+            new LiteralTypeResolver(TypeType.of(new PolimorphicType(directive.variableName.getSelfReference())))
           )
         );
 
@@ -459,13 +465,13 @@ export class TypeGraphBuilder {
     }
   }
 
-  findNode(referenceNode: Nodes.Node): TypeNode | null {
-    const localNode = this.findLocalNode(referenceNode);
-    return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNode));
+  findNode(referenceNoded: Nodes.Node): TypeNode | null {
+    const localNode = this.findLocalNode(referenceNoded);
+    return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNoded));
   }
 
-  private findLocalNode(referenceNode: Nodes.Node): TypeNode | null {
-    return this._nodeMap.get(referenceNode);
+  private findLocalNode(referenceNoded: Nodes.Node): TypeNode | null {
+    return this._nodeMap.get(referenceNoded);
   }
 
   traverseChildren(node: Nodes.Node, result: TypeNode) {

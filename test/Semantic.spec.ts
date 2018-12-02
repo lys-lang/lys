@@ -18,8 +18,8 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes
 
 const parsingContext = new ParsingContext();
 
-describe('Semantic', function () {
-  const phases = function (txt: string): ScopePhaseResult {
+describe('Semantic', function() {
+  const phases = function(txt: string): ScopePhaseResult {
     parsingContext.reset();
     const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
     const canonical = new CanonicalPhaseResult(parsing);
@@ -81,7 +81,10 @@ describe('Semantic', function () {
       'Document',
       async (document, err) => {
         const didFail = !!err || !document || !document.isSuccess();
-        expect(didFail).toEqual(true, 'It mush have failed');
+        if (!didFail) {
+          console.log(document.document.closure.deepInspect());
+        }
+        expect(didFail).toEqual(true, 'It must have failed');
       },
       phases,
       false,
@@ -190,6 +193,81 @@ describe('Semantic', function () {
     );
   });
 
+  describe('namespaces', () => {
+    test`
+      type i32
+      type boolean
+
+      namespace i32 {
+        fun gta(): i32 = 1
+      }
+
+      fun test(a: i32): boolean = i32#gta()
+    `;
+
+    testToFail`
+      type i32
+      type boolean
+
+      namespace i32 {
+
+      }
+
+      namespace boolean {
+        fun gta(): boolean = true
+      }
+
+      fun test(a: i32): boolean = i32#gta()
+    `;
+
+    testToFail`
+      type i32
+
+      namespace i32 {
+        fun gtax(): i32 = 1
+      }
+
+      fun test(a: i32): i32 = gtax()
+    `;
+
+    test`
+      type i32
+
+      namespace i32 {
+        fun gta(): i32 = 1
+      }
+
+      fun test(a: i32): i32 = i32#gta()
+    `;
+
+    testToFail`
+      import Support::Test
+
+      namespace TestStruct {
+        // stub
+      }
+    `;
+
+    testToFail`
+      namespace Support::Test::TestStruct {
+        // stub
+      }
+    `;
+
+    testToFail`
+      namespace NonExistentType {
+        // stub
+      }
+    `;
+
+    test`
+      struct ExistentType()
+      namespace ExistentType {
+        // stub
+      }
+    `;
+  });
+
   describe('Pattern matching', () => {
     test`
       type i32
@@ -215,7 +293,7 @@ describe('Semantic', function () {
         fun map(a: i32,b: i32): i32 = a
 
         fun a(): i32 = {
-          1.map(3)
+          map(1,3)
         }`,
       'Document',
       async (x, e) => {
@@ -327,8 +405,8 @@ describe('Semantic', function () {
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable);
+        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
+        const resolved = refs[0].closure.getQName(refs[0].variable, true);
         expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
       },
       phases
@@ -344,8 +422,8 @@ describe('Semantic', function () {
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable);
+        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
+        const resolved = refs[0].closure.getQName(refs[0].variable, true);
         expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
       },
       phases
@@ -359,8 +437,8 @@ describe('Semantic', function () {
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable);
+        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
+        const resolved = refs[0].closure.getQName(refs[0].variable, true);
         expect(resolved.referencedNode.parent.astNode.type).toBe('ValDeclaration');
       },
       phases
@@ -375,8 +453,8 @@ describe('Semantic', function () {
       async (x, e) => {
         if (e) throw e;
         fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.VariableReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable);
+        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
+        const resolved = refs[0].closure.getQName(refs[0].variable, true);
         expect(resolved.referencedNode.parent.astNode.type).toBe('VarDeclaration');
       },
       phases

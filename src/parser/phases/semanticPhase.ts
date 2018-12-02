@@ -9,10 +9,13 @@ import { assert } from 'console';
 import { printAST } from '../../utils/astPrinter';
 import { annotations } from '../annotations';
 
-const overloadFunctions = function(document: Nodes.DocumentNode, phase: SemanticPhaseResult) {
-  const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
+const overloadFunctions = function(
+  document: Nodes.DocumentNode | Nodes.NamespaceDirectiveNode,
+  phase: SemanticPhaseResult
+) {
+  const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode> = new Map();
 
-  const process = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult) => {
+  document.directives.forEach((node: Nodes.Node) => {
     if (node instanceof Nodes.FunDirectiveNode) {
       const functionName = node.functionNode.functionName.name;
       const x = overloadedFunctions.get(functionName);
@@ -22,13 +25,13 @@ const overloadFunctions = function(document: Nodes.DocumentNode, phase: Semantic
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
         overloaded.annotate(new annotations.Injected());
         overloaded.functionName = Nodes.NameIdentifierNode.fromString(functionName);
-        overloadedFunctions.set(functionName, overloaded);
         overloaded.functions = [node];
+        overloadedFunctions.set(functionName, overloaded);
       }
+    } else if (node instanceof Nodes.NamespaceDirectiveNode) {
+      overloadFunctions(node, phase);
     }
   });
-
-  process(document, phase);
 
   document.directives = document.directives.filter($ => !($ instanceof Nodes.FunDirectiveNode));
 
@@ -71,7 +74,7 @@ const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
       if (!node.arguments[0]) {
         throw new AstNodeError(`Missing name`, node);
       }
-      if (node.arguments[0] instanceof Nodes.VariableReferenceNode == false) {
+      if (node.arguments[0] instanceof Nodes.ReferenceNode == false) {
         throw new AstNodeError(`Here you need a fully qualified name starting with $`, node.arguments[0]);
       }
     }
@@ -85,91 +88,114 @@ const createTypes = walkPreOrder(
 
       assert(node.typeNumber > 0, `typenumber is == 0`);
 
-      const size = 8;
-
       const typeName = node.declaredName.name;
 
-      const allocatorName = typeName + 'Allocator';
+      const allocatorName = 'new';
 
-      let injectedFunctions: CanonicalPhaseResult;
+      let injectedDirectives: CanonicalPhaseResult;
+
+      let injectedCode: string = '';
 
       if (node.parameters.length) {
-        const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.text).join(', ');
+        const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.toString()).join(', ');
 
-        // const getters = node.parameters
-        //   .map(
-        //     ({ parameterName, parameterType }) => `
-        //       const ${typeName}_${parameterName}_offset: usize = 0
+        const accessors = node.parameters
+          .map(({ parameterName, parameterType }) => {
+            // console.log(typeName, parameterName, parameterType, parameterType.toString());
 
-        //       fun get_${parameterName}(
-        //         target: ${typeName}
-        //       ): ${parameterType.toString()} = %wasm {
-        //         (unreachable)
-        //       }
+            return `
+              fun get_${parameterName}(
+                target: ${typeName}
+              ): ${parameterType.toString()} = %wasm {
+                (local $offset i32)
+                (set_local $offset (i32.const 0))
+                (unreachable)
+              }
 
-        //       fun set_${parameterName}(
-        //         target: ${typeName},
-        //         value: ${parameterType.toString()}
-        //       ): void = %wasm {
-        //         (unreachable)
-        //       }
-        //     `
-        //   )
-        //   .join('\n');
+              fun set_${parameterName}(
+                target: ${typeName},
+                value: ${parameterType.toString()}
+              ): void = %wasm {
+                (local $offset i32)
+                (set_local $offset (i32.const 0))
+                (unreachable)
+              }
+            `;
+          })
+          .join('\n');
 
-        // TODO: sizeOf
-        injectedFunctions = CanonicalPhaseResult.fromString(
-          `
-          fun ${allocatorName}(${args}): ${typeName} = %wasm {
-            (local $_newRef i32)
-            (set_local $_newRef (call $system::memory::malloc (i32.const ${size})))
-            (i64.or
-              (i64.const 0x${node.typeNumber.toString(16)}00000000)
-              (i64.extend_u/i32 (get_local $_newRef))
+        injectedCode = `
+          namespace ${typeName} {
+            fun sizeOf(): i32 = 0
+
+            fun ${allocatorName}(${args}): ${typeName} = fromPointer(
+              system::memory::malloc(sizeOf())
             )
-          }
 
-          fun is(a: ${typeName}): boolean = %wasm {
-            (i64.eq
-              (i64.and
-                (i64.const 0xffffffff00000000)
-                (get_local $a)
+            private fun fromPointer(ptr: i32 | u32): ${typeName} = %wasm {
+              (i64.or
+                (i64.const 0x${node.typeNumber.toString(16)}00000000)
+                (i64.extend_u/i32 (get_local $ptr))
               )
-              (i64.const 0x${node.typeNumber.toString(16)}00000000)
-            )
+            }
+
+            fun is(a: ${typeName}): boolean = %wasm {
+              (i64.eq
+                (i64.and
+                  (i64.const 0xffffffff00000000)
+                  (get_local $a)
+                )
+                (i64.const 0x${node.typeNumber.toString(16)}00000000)
+              )
+            }
+
+            ${accessors}
           }
-        `
-        );
+        `;
       } else {
-        injectedFunctions = CanonicalPhaseResult.fromString(
-          `
-          fun ${allocatorName}(): ${typeName} = %wasm {
-            (i64.const 0x${node.typeNumber.toString(16)}00000000)
-          }
-
-          fun is(a: ${typeName}): boolean = %wasm {
-            (i64.eq
-              (i64.and
-                (i64.const 0xffffffff00000000)
-                (get_local $a)
-              )
+        injectedCode = `
+          namespace ${typeName} {
+            fun ${allocatorName}(): ${typeName} = %wasm {
               (i64.const 0x${node.typeNumber.toString(16)}00000000)
-            )
+            }
+
+            fun is(a: ${typeName}): boolean = %wasm {
+              (i64.eq
+                (i64.and
+                  (i64.const 0xffffffff00000000)
+                  (get_local $a)
+                )
+                (i64.const 0x${node.typeNumber.toString(16)}00000000)
+              )
+            }
           }
-        `
-        );
+        `;
       }
 
-      const allocator: Nodes.FunDirectiveNode = injectedFunctions.document.directives.find(
+      injectedDirectives = CanonicalPhaseResult.fromString(injectedCode);
+
+      const namespace: Nodes.NamespaceDirectiveNode = injectedDirectives.document.directives.find(
+        $ => $ instanceof Nodes.NamespaceDirectiveNode && $.reference.toString() === typeName
+      ) as any;
+
+      assert(namespace, 'cannot find namespace ' + printAST(injectedDirectives.document));
+
+      const allocator: Nodes.FunDirectiveNode = namespace.directives.find(
         $ => $ instanceof Nodes.FunDirectiveNode && $.functionNode.functionName.name === allocatorName
       ) as any;
 
-      assert(allocator, 'cannot find allocator ' + printAST(injectedFunctions.document));
+      assert(allocator, 'cannot find allocator ' + printAST(injectedDirectives.document));
 
       allocator.functionNode.internalIdentifier = node.internalIdentifier;
-      injectedFunctions.document.directives.forEach($ => $.annotate(new annotations.Injected()));
 
-      phase.document.directives.push(...injectedFunctions.document.directives);
+      injectedDirectives.document.directives.forEach($ => {
+        $.annotate(new annotations.Injected());
+        if ($ instanceof Nodes.NamespaceDirectiveNode) {
+          $.directives.forEach($ => $.annotate(new annotations.Injected()));
+        }
+      });
+
+      phase.document.directives.push(...injectedDirectives.document.directives);
     }
   },
   (node: Nodes.Node, phase: SemanticPhaseResult) => {
@@ -234,7 +260,7 @@ export class SemanticPhaseResult extends PhaseResult {
   }
 
   protected execute() {
-    this.document.closure = new Closure(this.parsingContext, null, this.moduleName);
+    this.document.closure = new Closure(this.parsingContext, null, this.moduleName, 'document');
 
     createTypes(this.document, this);
 

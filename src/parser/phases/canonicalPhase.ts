@@ -202,24 +202,32 @@ const visitor = {
   AtomicExpression(astNode: IToken) {
     let ret = visit(astNode.children[0]);
 
-    for (let i = 1; i < astNode.children.length; i += 2) {
-      const oldRet = ret;
+    for (let currentChildren = 1; currentChildren < astNode.children.length; currentChildren++) {
+      const operatorNode = astNode.children[currentChildren];
+      currentChildren++;
+      const currentNode = astNode.children[currentChildren];
 
-      const doesItHaveCallArguments = !!astNode.children[i + 1];
+      const nextNode = astNode.children[currentChildren + 1];
 
-      if (doesItHaveCallArguments) {
-        const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
-        x.isInfix = true;
-        const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
-        vrn.variable = new Nodes.QNameNode(astNode.children[i]);
-        const varName = new Nodes.NameIdentifierNode(astNode.children[i]);
-        vrn.variable.names = [varName];
+      if (currentNode.type === 'NameIdentifier') {
+        const member = new Nodes.MemberNode(astNode);
+        member.lhs = ret;
+        member.memberName = visit(currentNode);
+        member.operator = operatorNode.text;
+        ret = member;
 
-        varName.name = astNode.children[i].text;
+        const doesItHaveCallArguments = nextNode && nextNode.type === 'CallArguments';
 
-        x.argumentsNode = [oldRet, ...astNode.children[i + 1].children.map($ => visit($))];
+        if (doesItHaveCallArguments) {
+          currentChildren++;
+          const fnCall = new Nodes.FunctionCallNode(currentNode);
+          fnCall.isInfix = true;
+          fnCall.functionNode = ret;
+          fnCall.argumentsNode = nextNode.children.map($ => visit($));
+          ret = fnCall;
+        }
       } else {
-        // it is a member selection
+        console.log('Dont know what to doooo1' + currentNode.text);
       }
     }
 
@@ -228,36 +236,34 @@ const visitor = {
   Expression(astNode: IToken) {
     let ret = visit(astNode.children[0]);
 
-    for (let i = 1; i < astNode.children.length; i += 2) {
-      const oldRet = ret;
-      if (astNode.children[i].type === 'MatchKeyword') {
-        const match = (ret = new Nodes.PatternMatcherNode(astNode.children[i]));
-        match.lhs = oldRet;
-        match.matchingSet = astNode.children[i + 1].children.map($ => visit($));
-      } else {
-        const doesItHaveCallArguments = !!astNode.children[i + 1];
+    for (let currentChildren = 1; currentChildren < astNode.children.length; currentChildren++) {
+      const currentNode = astNode.children[currentChildren];
 
-        if (doesItHaveCallArguments) {
-          const x = (ret = new Nodes.FunctionCallNode(astNode.children[i]));
-          x.isInfix = true;
-          const vrn = (x.functionNode = new Nodes.VariableReferenceNode(astNode.children[i]));
-          vrn.variable = new Nodes.QNameNode(astNode.children[i]);
-          const varName = new Nodes.NameIdentifierNode(astNode.children[i]);
-          vrn.variable.names = [varName];
+      const nextNode = astNode.children[currentChildren + 1];
 
-          varName.name = astNode.children[i].text;
+      if (currentNode.type === 'MatchKeyword') {
+        const match = new Nodes.PatternMatcherNode(currentNode);
+        match.lhs = ret;
 
-          x.argumentsNode = [oldRet, ...astNode.children[i + 1].children.map($ => visit($))];
+        const doesItHaveMatchingSet = nextNode && nextNode.type === 'MatchBody';
+
+        if (doesItHaveMatchingSet) {
+          currentChildren++;
+          match.matchingSet = nextNode.children.map($ => visit($));
         } else {
-          // it is a member selection
+          match.matchingSet = [];
         }
+
+        ret = match;
+      } else {
+        console.log('Dont know what to doooo2' + currentNode.text);
       }
     }
 
     return ret;
   },
-  VariableReference(astNode: IToken) {
-    const ret = new Nodes.VariableReferenceNode(astNode);
+  Reference(astNode: IToken) {
+    const ret = new Nodes.ReferenceNode(astNode);
     ret.variable = visit(astNode.children[0]);
     return ret;
   },
@@ -288,13 +294,6 @@ const visitor = {
   TypeAlias(astNode: IToken) {
     return visitChildTypeOrNull(astNode, 'Type');
   },
-  TypeReference(astNode: IToken) {
-    const ret = new Nodes.TypeReferenceNode(astNode);
-    ret.variable = visit(astNode.children[0]);
-    // ret.isPointer = findChildrenType(astNode, 'IsPointer') ? 1 : 0;
-    // ret.isArray = !!findChildrenType(astNode, 'IsArray');
-    return ret;
-  },
   FunctionTypeLiteral(child: IToken) {
     const ret = new Nodes.FunctionTypeNode(child);
 
@@ -311,7 +310,12 @@ const visitor = {
     return ret;
   },
   Type(astNode: IToken) {
-    return visit(astNode.children[0]);
+    const ret = visit(astNode.children[0]);
+    if (false === ret instanceof Nodes.TypeNode && false == ret instanceof Nodes.ReferenceNode) {
+      console.error('Node ' + astNode.type + ' did not yield a type node');
+      console.log(ret);
+    }
+    return ret;
   },
   // MatchBody(x: IToken) {
   //   return x.children.map($ => visit($));
@@ -332,7 +336,7 @@ const visitor = {
   CaseIs(x: IToken) {
     const ret = new Nodes.MatchCaseIsNode(x);
     ret.declaredName = visitChildTypeOrNull(x, 'NameIdentifier') as Nodes.NameIdentifierNode;
-    ret.typeReference = visitChildTypeOrNull(x, 'TypeReference') as Nodes.TypeReferenceNode;
+    ret.typeReference = visitChildTypeOrNull(x, 'Reference') as Nodes.ReferenceNode;
 
     const deconstruct = findChildrenType(x, 'DeconstructStruct');
 
@@ -415,6 +419,7 @@ const visitor = {
 
     ret.declaredName = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
     const params = findChildrenType(astNode, 'FunctionParamsList');
+
     if (params) {
       ret.parameters = params.children.map($ => visit($));
     } else {
@@ -450,6 +455,13 @@ const visitor = {
     ret.atoms = astNode.children.map($ => visit($));
     return ret;
   },
+  NamespaceDirective(astNode: IToken) {
+    const ret = new Nodes.NamespaceDirectiveNode(astNode);
+    const decl = astNode.children[0];
+    ret.reference = visitChildTypeOrNull(decl, 'Reference') as Nodes.ReferenceNode;
+    ret.directives = decl.children[1].children.map(visit) as Nodes.DirectiveNode[];
+    return ret;
+  },
   SExpression(astNode: IToken) {
     const ret = new Nodes.WasmAtomNode(astNode);
     const children = astNode.children.slice();
@@ -462,7 +474,7 @@ const visitor = {
 
     if (ret.symbol == 'call' || ret.symbol == 'get_global' || ret.symbol == 'set_global') {
       if (ret.arguments[0] instanceof Nodes.QNameNode) {
-        const varRef = new Nodes.VariableReferenceNode(children[0]);
+        const varRef = new Nodes.ReferenceNode(children[0]);
         varRef.variable = ret.arguments[0] as Nodes.QNameNode;
 
         if (varRef.variable.names[0].name.startsWith('$')) {

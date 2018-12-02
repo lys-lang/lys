@@ -191,7 +191,7 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
 }
 
 function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
-  if (node instanceof Nodes.VariableReferenceNode) {
+  if (node instanceof Nodes.ReferenceNode) {
     const ofType = node.ofType as StructType | FunctionType | Type;
 
     if (ofType && 'internalName' in ofType) {
@@ -299,7 +299,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const ofType = node.resolvedFunctionType;
 
       return t.callInstruction(t.identifier(ofType.internalName), [emit(node.rhs, document)]);
-    } else if (node instanceof Nodes.VariableReferenceNode) {
+    } else if (node instanceof Nodes.ReferenceNode) {
       if (node.hasAnnotation(annotations.ImplicitCall)) {
         const ofType = node.ofType as StructType | FunctionType;
 

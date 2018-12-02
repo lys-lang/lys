@@ -1,4 +1,4 @@
-import { Closure } from './closure';
+import { Closure, Reference } from './closure';
 import { AstNodeError } from './NodeError';
 import { TypeGraph } from './types/TypeGraph';
 import { TypeResolutionContext } from './types/TypePropagator';
@@ -202,7 +202,7 @@ export class RefType extends Type {
 export class PolimorphicType extends RefType {
   of = new Map<string, StructType>();
 
-  constructor(public fqn: string) {
+  constructor(public reference: Reference) {
     super();
     this.superType = RefType.instance;
   }
@@ -213,7 +213,7 @@ export class PolimorphicType extends RefType {
   }
 
   toString() {
-    return this.fqn;
+    return this.reference.toString();
   }
 }
 
@@ -298,25 +298,25 @@ export function getTypeSimilarity(lhs: Type, rhs: Type) {
 }
 
 export class StructType extends RefType {
-  private constructor(public internalName: string, public fqn: string, superType: PolimorphicType = null) {
+  private constructor(public internalName: string, public reference: Reference, superType: PolimorphicType = null) {
     super();
 
     if (superType) {
       this.superType = superType;
-      if (superType.of.has(fqn)) {
-        throw new Error('Supertype already have ' + fqn);
+      if (superType.of.has(reference.referencedNode.name)) {
+        throw new Error('Supertype already have ' + reference);
       }
-      superType.of.set(fqn, this);
+      superType.of.set(reference.referencedNode.name, this);
     } else {
       this.superType = RefType.instance;
     }
   }
 
-  static fromSuperType(internalName: string, fqn: string, superType: PolimorphicType) {
-    if (superType && superType.of.has(fqn)) {
-      return superType.of.get(fqn);
+  static fromSuperType(internalName: string, reference: Reference, superType: PolimorphicType) {
+    if (superType && superType.of.has(reference.referencedNode.name)) {
+      return superType.of.get(reference.referencedNode.name);
     } else {
-      return new StructType(internalName, fqn, superType);
+      return new StructType(internalName, reference, superType);
     }
   }
 
@@ -329,7 +329,7 @@ export class StructType extends RefType {
 
   equals(type: Type) {
     if (!(type instanceof StructType)) return false;
-    if (this.fqn !== type.fqn) return false;
+    if (this.reference !== type.reference) return false;
     if (this.superType !== type.superType) return false;
     if (this.parameterTypes.length != type.parameterTypes.length) return false;
     if (this.parameterTypes.some(($, $$) => !$.equals(type.parameterTypes[$$]))) return false;
@@ -337,7 +337,7 @@ export class StructType extends RefType {
   }
 
   toString() {
-    return this.fqn;
+    return this.reference.toString();
   }
 }
 
@@ -383,7 +383,7 @@ export class ReferenceType extends Type {
   }
 
   resolveType(typeGraph: TypeGraph): Type {
-    const resolvedReference = this.closure.get(this.referencedName);
+    const resolvedReference = this.closure.get(this.referencedName, true);
     const typeNode = typeGraph.findNode(resolvedReference.referencedNode);
 
     // TODO: verify referencedNode is a type declaration and not a variable name
@@ -409,7 +409,8 @@ export class ReferenceType extends Type {
   equals(other: Type) {
     if (!other) return false;
     return (
-      other instanceof ReferenceType && other.closure.get(other.referencedName) == this.closure.get(this.referencedName)
+      other instanceof ReferenceType &&
+      other.closure.get(other.referencedName, true) == this.closure.get(this.referencedName, true)
     );
   }
 }
