@@ -23,9 +23,9 @@
       |-FunDirectiveNode annotations=Injected
         |-FunctionNode
           |-NameIdentifierNode="new"
-          |-ReferenceNode annotations=IsTypeNode
-            |-QNameNode=True annotations=IsTypeNode
-              |-NameIdentifierNode="True" annotations=IsTypeNode
+          |-ReferenceNode
+            |-QNameNode=True
+              |-NameIdentifierNode="True"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x100000000
@@ -35,13 +35,13 @@
         |-FunctionNode
           |-ParameterNode
             |-NameIdentifierNode="a"
-            |-ReferenceNode annotations=IsTypeNode
-              |-QNameNode=True annotations=IsTypeNode
-                |-NameIdentifierNode="True" annotations=IsTypeNode
+            |-ReferenceNode
+              |-QNameNode=True
+                |-NameIdentifierNode="True"
           |-NameIdentifierNode="is"
-          |-ReferenceNode annotations=IsTypeNode
-            |-QNameNode=boolean annotations=IsTypeNode
-              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-ReferenceNode
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode=i64.eq
               |-WasmAtomNode=i64.and
@@ -61,9 +61,9 @@
       |-FunDirectiveNode annotations=Injected
         |-FunctionNode
           |-NameIdentifierNode="new"
-          |-ReferenceNode annotations=IsTypeNode
-            |-QNameNode=False annotations=IsTypeNode
-              |-NameIdentifierNode="False" annotations=IsTypeNode
+          |-ReferenceNode
+            |-QNameNode=False
+              |-NameIdentifierNode="False"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x200000000
@@ -73,13 +73,13 @@
         |-FunctionNode
           |-ParameterNode
             |-NameIdentifierNode="a"
-            |-ReferenceNode annotations=IsTypeNode
-              |-QNameNode=False annotations=IsTypeNode
-                |-NameIdentifierNode="False" annotations=IsTypeNode
+            |-ReferenceNode
+              |-QNameNode=False
+                |-NameIdentifierNode="False"
           |-NameIdentifierNode="is"
-          |-ReferenceNode annotations=IsTypeNode
-            |-QNameNode=boolean annotations=IsTypeNode
-              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-ReferenceNode
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode=i64.eq
               |-WasmAtomNode=i64.and
@@ -96,13 +96,13 @@
       |-FunctionNode type=fun(x: i32) -> Boolean
         |-ParameterNode
           |-NameIdentifierNode="x" type=i32
-          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
-            |-QNameNode=i32 annotations=IsTypeNode
-              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-ReferenceNode type=Type<i32>
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="gt0" type=fun(x: i32) -> Boolean
-        |-ReferenceNode type=Type<Boolean> annotations=IsTypeNode
-          |-QNameNode=Boolean annotations=IsTypeNode
-            |-NameIdentifierNode="Boolean" annotations=IsTypeNode
+        |-ReferenceNode type=Type<Boolean>
+          |-QNameNode=Boolean
+            |-NameIdentifierNode="Boolean"
         |-IfNode type=Boolean annotations=IsValueNode
           |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
             |-NameIdentifierNode=">"
@@ -124,21 +124,21 @@
       |-FunctionNode type=fun(a: Boolean) -> boolean
         |-ParameterNode
           |-NameIdentifierNode="a" type=Boolean
-          |-ReferenceNode type=Type<Boolean> annotations=IsTypeNode
-            |-QNameNode=Boolean annotations=IsTypeNode
-              |-NameIdentifierNode="Boolean" annotations=IsTypeNode
+          |-ReferenceNode type=Type<Boolean>
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
         |-NameIdentifierNode="isTrue" type=fun(a: Boolean) -> boolean
-        |-ReferenceNode type=Type<boolean> annotations=IsTypeNode
-          |-QNameNode=boolean annotations=IsTypeNode
-            |-NameIdentifierNode="boolean" annotations=IsTypeNode
+        |-ReferenceNode type=Type<boolean>
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
         |-PatternMatcherNode type=boolean annotations=IsValueNode
           |-ReferenceNode type=Boolean annotations=IsValueNode
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-MatchCaseIsNode type=boolean annotations=IsValueNode
-            |-ReferenceNode type=Type<True> annotations=IsTypeNode
-              |-QNameNode=True annotations=IsTypeNode
-                |-NameIdentifierNode="True" annotations=IsTypeNode
+            |-ReferenceNode type=Type<True>
+              |-QNameNode=True
+                |-NameIdentifierNode="True"
             |-BooleanLiteral=true type=boolean annotations=IsValueNode
           |-MatchDefaultNode type=boolean annotations=IsValueNode
             |-BooleanLiteral=false type=boolean annotations=IsValueNode
@@ -148,13 +148,13 @@
       |-FunctionNode type=fun(a: Boolean) -> boolean
         |-ParameterNode
           |-NameIdentifierNode="a" type=Boolean
-          |-ReferenceNode type=Type<Boolean> annotations=IsTypeNode
-            |-QNameNode=Boolean annotations=IsTypeNode
-              |-NameIdentifierNode="Boolean" annotations=IsTypeNode
+          |-ReferenceNode type=Type<Boolean>
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
         |-NameIdentifierNode="is" type=fun(a: Boolean) -> boolean
-        |-ReferenceNode type=Type<boolean> annotations=IsTypeNode
-          |-QNameNode=boolean annotations=IsTypeNode
-            |-NameIdentifierNode="boolean" annotations=IsTypeNode
+        |-ReferenceNode type=Type<boolean>
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
         |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
           |-WasmAtomNode=local
             |-QNameNode=$mask
