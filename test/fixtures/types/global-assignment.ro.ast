@@ -16,30 +16,30 @@
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="addOne" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-BlockNode type=i32 annotations=IsValueNode
           |-VarDeclarationNode type=void
             |-NameIdentifierNode="y" type=i32
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=x
                 |-NameIdentifierNode="x"
           |-AssignmentNode type=i32
-            |-VariableReferenceNode type=i32
+            |-ReferenceNode type=i32
               |-QNameNode=y
                 |-NameIdentifierNode="y"
             |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
               |-NameIdentifierNode="+"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
               |-IntegerLiteral=1 type=i32 annotations=IsValueNode
           |-AssignmentNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=i32
+            |-ReferenceNode type=i32
               |-QNameNode=x
                 |-NameIdentifierNode="x"
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=y
                 |-NameIdentifierNode="y"
     |-NameIdentifierNode="addOne" type=fun() -> i32
@@ -47,17 +47,17 @@
     |-FunDirectiveNode type=fun() -> void
       |-FunctionNode type=fun() -> void
         |-NameIdentifierNode="addOneNoReturn" type=fun() -> void
-        |-TypeReferenceNode=void type=void
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
+        |-ReferenceNode type=Type<void> annotations=IsTypeNode
+          |-QNameNode=void annotations=IsTypeNode
+            |-NameIdentifierNode="void" annotations=IsTypeNode
         |-BlockNode type=void
           |-AssignmentNode type=i32
-            |-VariableReferenceNode type=i32
+            |-ReferenceNode type=i32
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
               |-NameIdentifierNode="+"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
               |-IntegerLiteral=1 type=i32 annotations=IsValueNode

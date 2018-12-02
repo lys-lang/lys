@@ -4,7 +4,7 @@ digraph Document {
   2 [label="FunOverload: test\n⟨fun() -> i32⟩", fillcolor=grey];
   3 [label="FunDirective: test\n⟨fun() -> i32⟩", fillcolor=grey];
   4 [label="FunNode: test\n⟨fun() -> i32⟩", fillcolor=grey];
-  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  5 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   6 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
   7 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
@@ -14,9 +14,9 @@ digraph Document {
     10 [label="Name: test\n⟨i32⟩", fillcolor=grey];
     11 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
     12 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
-    13 [label="VarRef: test\n⟨i32⟩", fillcolor=grey];
+    13 [label="Ref: test\n⟨i32⟩", fillcolor=grey];
     14 [label="Int: 2\n⟨i32⟩", fillcolor=grey];
-    15 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    15 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
     9 -> 8[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     10 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     11 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -31,6 +31,6 @@ digraph Document {
   3 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 6[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 3[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 4[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

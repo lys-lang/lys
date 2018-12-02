@@ -25,6 +25,7 @@ export namespace annotations {
   export class ImplicitCall extends Annotation {}
 
   export class IsValueNode extends Annotation {}
+  export class IsTypeNode extends Annotation {}
 
   export class IsReturnExpression extends Annotation {
     targetLocal: null | Local = null;

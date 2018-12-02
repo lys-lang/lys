@@ -14,18 +14,18 @@
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="test" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test" type=fun() -> i32
   |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="test0" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-IntegerLiteral=1 type=i32 annotations=IsValueNode
     |-NameIdentifierNode="test0" type=fun() -> i32
   |-OverloadedFunctionNode type=fun(a: i32) -> i32 annotations=Injected
@@ -33,14 +33,14 @@
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="testa" type=fun(a: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-VariableReferenceNode type=i32 annotations=IsValueNode
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
+        |-ReferenceNode type=i32 annotations=IsValueNode
           |-QNameNode=a
             |-NameIdentifierNode="a"
     |-NameIdentifierNode="testa" type=fun(a: i32) -> i32
@@ -49,19 +49,19 @@
       |-FunctionNode type=fun(a: f32, b: f64) -> f32
         |-ParameterNode
           |-NameIdentifierNode="a" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
+          |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-ParameterNode
           |-NameIdentifierNode="b" type=f64
-          |-TypeReferenceNode=f64 type=f64
-            |-QNameNode=f64
-              |-NameIdentifierNode="f64"
+          |-ReferenceNode type=Type<f64> annotations=IsTypeNode
+            |-QNameNode=f64 annotations=IsTypeNode
+              |-NameIdentifierNode="f64" annotations=IsTypeNode
         |-NameIdentifierNode="floatingPoints" type=fun(a: f32, b: f64) -> f32
-        |-TypeReferenceNode=f32 type=f32
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-VariableReferenceNode type=f32 annotations=IsValueNode
+        |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+          |-QNameNode=f32 annotations=IsTypeNode
+            |-NameIdentifierNode="f32" annotations=IsTypeNode
+        |-ReferenceNode type=f32 annotations=IsValueNode
           |-QNameNode=a
             |-NameIdentifierNode="a"
     |-NameIdentifierNode="floatingPoints" type=fun(a: f32, b: f64) -> f32
@@ -70,24 +70,24 @@
       |-FunctionNode type=fun(a: f32, b: f32) -> f32
         |-ParameterNode
           |-NameIdentifierNode="a" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
+          |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-ParameterNode
           |-NameIdentifierNode="b" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
+          |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-NameIdentifierNode="addFloat" type=fun(a: f32, b: f32) -> f32
-        |-TypeReferenceNode=f32 type=f32
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
+        |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+          |-QNameNode=f32 annotations=IsTypeNode
+            |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-BinaryExpressionNode="+" type=f32 annotations=IsValueNode
           |-NameIdentifierNode="+"
-          |-VariableReferenceNode type=f32 annotations=IsValueNode
+          |-ReferenceNode type=f32 annotations=IsValueNode
             |-QNameNode=a
               |-NameIdentifierNode="a"
-          |-VariableReferenceNode type=f32 annotations=IsValueNode
+          |-ReferenceNode type=f32 annotations=IsValueNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="addFloat" type=fun(a: f32, b: f32) -> f32
@@ -96,24 +96,24 @@
       |-FunctionNode type=fun(a: i32, b: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-ParameterNode
           |-NameIdentifierNode="b" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="addInts" type=fun(a: i32, b: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
           |-NameIdentifierNode="+"
-          |-VariableReferenceNode type=i32 annotations=IsValueNode
+          |-ReferenceNode type=i32 annotations=IsValueNode
             |-QNameNode=a
               |-NameIdentifierNode="a"
-          |-VariableReferenceNode type=i32 annotations=IsValueNode
+          |-ReferenceNode type=i32 annotations=IsValueNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="addInts" type=fun(a: i32, b: i32) -> i32
@@ -122,27 +122,27 @@
       |-FunctionNode type=fun(width: f32, height: f32) -> f32
         |-ParameterNode
           |-NameIdentifierNode="width" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
+          |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-ParameterNode
           |-NameIdentifierNode="height" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
+          |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-NameIdentifierNode="x" type=fun(width: f32, height: f32) -> f32
-        |-TypeReferenceNode=f32 type=f32
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
+        |-ReferenceNode type=Type<f32> annotations=IsTypeNode
+          |-QNameNode=f32 annotations=IsTypeNode
+            |-NameIdentifierNode="f32" annotations=IsTypeNode
         |-BinaryExpressionNode="*" type=f32 annotations=IsValueNode
           |-NameIdentifierNode="*"
           |-BinaryExpressionNode="+" type=f32 annotations=IsValueNode
             |-NameIdentifierNode="+"
-            |-VariableReferenceNode type=f32 annotations=IsValueNode
+            |-ReferenceNode type=f32 annotations=IsValueNode
               |-QNameNode=width
                 |-NameIdentifierNode="width"
             |-FloatLiteral=1 type=f32 annotations=IsValueNode
-          |-VariableReferenceNode type=f32 annotations=IsValueNode
+          |-ReferenceNode type=f32 annotations=IsValueNode
             |-QNameNode=height
               |-NameIdentifierNode="height"
     |-NameIdentifierNode="x" type=fun(width: f32, height: f32) -> f32

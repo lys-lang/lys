@@ -30,13 +30,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_50 (result i32)
+    (block $unknown_block_22 (result i32)
       (if $a_wild_if (result i32) (call $system::core::>_1 (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_51 (result i32)
+            (block $unknown_block_23 (result i32)
                 (if $a_wild_if (call $system::core::>_1 (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_52
+                      (block $unknown_block_24
                           (call $system::core::panic)
                         )
                     )
@@ -47,15 +47,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::>_1 (get_local $newPtr) (call $system::core::<<_1 (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_53
+                      (block $unknown_block_25
                           (set_local $pagesNeeded (call $system::core::>>>_1 (call $system::core::& (call $system::core::+_1 (call $system::core::-_1 (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::~_1 (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_54
+                                (block $unknown_block_26
                                     (if $a_wild_if (call $system::core::<_1 (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_55
+                                          (block $unknown_block_27
                                               (call $system::core::panic)
                                             )
                                         )
@@ -74,7 +74,7 @@
               )
           )
           (else
-            (block $unknown_block_56 (result i32)
+            (block $unknown_block_28 (result i32)
                 (i32.const 0)
               )
           )

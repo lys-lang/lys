@@ -43,535 +43,583 @@
           |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-  |-ExtensionDirectiveNode annotations=Injected
+  |-NamespaceDirectiveNode annotations=Injected
     |-ReferenceNode
       |-QNameNode=Infinity
         |-NameIdentifierNode="Infinity"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Infinity
-            |-NameIdentifierNode="Infinity"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.const
-            |-HexLiteral=0x100000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Infinity
-              |-NameIdentifierNode="Infinity"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-NameIdentifierNode="new"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Infinity annotations=IsTypeNode
+              |-NameIdentifierNode="Infinity" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x100000000
-  |-ExtensionDirectiveNode annotations=Injected
+      |-NameIdentifierNode="new"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="a"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Infinity annotations=IsTypeNode
+                |-NameIdentifierNode="Infinity" annotations=IsTypeNode
+          |-NameIdentifierNode="is"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=boolean annotations=IsTypeNode
+              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=i64.and
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0xffffffff00000000
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$a
+                    |-NameIdentifierNode="$a"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x100000000
+      |-NameIdentifierNode="is"
+  |-NamespaceDirectiveNode annotations=Injected
     |-ReferenceNode
       |-QNameNode=NDet
         |-NameIdentifierNode="NDet"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=NDet
-            |-NameIdentifierNode="NDet"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.const
-            |-HexLiteral=0x200000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=NDet
-              |-NameIdentifierNode="NDet"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-NameIdentifierNode="new"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=NDet annotations=IsTypeNode
+              |-NameIdentifierNode="NDet" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x200000000
-  |-ExtensionDirectiveNode annotations=Injected
+      |-NameIdentifierNode="new"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="a"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=NDet annotations=IsTypeNode
+                |-NameIdentifierNode="NDet" annotations=IsTypeNode
+          |-NameIdentifierNode="is"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=boolean annotations=IsTypeNode
+              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=i64.and
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0xffffffff00000000
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$a
+                    |-NameIdentifierNode="$a"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x200000000
+      |-NameIdentifierNode="is"
+  |-NamespaceDirectiveNode annotations=Injected
     |-ReferenceNode
       |-QNameNode=Real
         |-NameIdentifierNode="Real"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="sizeOf"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=0 annotations=IsValueNode,IsValueNode
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Real
-            |-NameIdentifierNode="Real"
-        |-FunctionCallNode annotations=IsValueNode,IsValueNode
-          |-ReferenceNode
-            |-QNameNode=fromPointer
-              |-NameIdentifierNode="fromPointer"
-          |-FunctionCallNode annotations=IsValueNode,IsValueNode
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-NameIdentifierNode="sizeOf"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-IntegerLiteral=0 annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="number"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=f32 annotations=IsTypeNode
+                |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-NameIdentifierNode="new"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Real annotations=IsTypeNode
+              |-NameIdentifierNode="Real" annotations=IsTypeNode
+          |-FunctionCallNode annotations=IsValueNode
             |-ReferenceNode
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-FunctionCallNode annotations=IsValueNode,IsValueNode
+              |-QNameNode=fromPointer
+                |-NameIdentifierNode="fromPointer"
+            |-FunctionCallNode annotations=IsValueNode
               |-ReferenceNode
-                |-QNameNode=sizeOf
-                  |-NameIdentifierNode="sizeOf"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="ptr"
-          |-UnionTypeNode
-            |-ReferenceNode
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-FunctionCallNode annotations=IsValueNode
+                |-ReferenceNode
+                  |-QNameNode=sizeOf
+                    |-NameIdentifierNode="sizeOf"
+      |-NameIdentifierNode="new"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="ptr"
+            |-UnionTypeNode annotations=IsTypeNode
+              |-ReferenceNode annotations=IsTypeNode
+                |-QNameNode=i32 annotations=IsTypeNode
+                  |-NameIdentifierNode="i32" annotations=IsTypeNode
+              |-ReferenceNode annotations=IsTypeNode
+                |-QNameNode=u32 annotations=IsTypeNode
+                  |-NameIdentifierNode="u32" annotations=IsTypeNode
+          |-NameIdentifierNode="fromPointer"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Real annotations=IsTypeNode
+              |-NameIdentifierNode="Real" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.or
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x300000000
+              |-WasmAtomNode=i64.extend_u/i32
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$ptr
+                    |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="a"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Real annotations=IsTypeNode
+                |-NameIdentifierNode="Real" annotations=IsTypeNode
+          |-NameIdentifierNode="is"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=boolean annotations=IsTypeNode
+              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=i64.and
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0xffffffff00000000
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$a
+                    |-NameIdentifierNode="$a"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x300000000
+      |-NameIdentifierNode="is"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Real annotations=IsTypeNode
+                |-NameIdentifierNode="Real" annotations=IsTypeNode
+          |-NameIdentifierNode="get_number"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-            |-ReferenceNode
-              |-QNameNode=u32
-                |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="fromPointer"
-        |-ReferenceNode
-          |-QNameNode=Real
-            |-NameIdentifierNode="Real"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.or
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
-            |-WasmAtomNode=i64.extend_u/i32
-              |-WasmAtomNode=get_local
-                |-QNameNode=$ptr
-                  |-NameIdentifierNode="$ptr"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-NameIdentifierNode="get_number"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="set_number"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-  |-ExtensionDirectiveNode annotations=Injected
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_number"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Real annotations=IsTypeNode
+                |-NameIdentifierNode="Real" annotations=IsTypeNode
+          |-ParameterNode
+            |-NameIdentifierNode="value"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=f32 annotations=IsTypeNode
+                |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-NameIdentifierNode="set_number"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=void annotations=IsTypeNode
+              |-NameIdentifierNode="void" annotations=IsTypeNode
+          |-WasmExpressionNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_number"
+  |-NamespaceDirectiveNode annotations=Injected
     |-ReferenceNode
       |-QNameNode=Natural
         |-NameIdentifierNode="Natural"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="sizeOf"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=0 annotations=IsValueNode,IsValueNode
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Natural
-            |-NameIdentifierNode="Natural"
-        |-FunctionCallNode annotations=IsValueNode,IsValueNode
-          |-ReferenceNode
-            |-QNameNode=fromPointer
-              |-NameIdentifierNode="fromPointer"
-          |-FunctionCallNode annotations=IsValueNode,IsValueNode
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-NameIdentifierNode="sizeOf"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-IntegerLiteral=0 annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="number"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=i32 annotations=IsTypeNode
+                |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-NameIdentifierNode="new"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Natural annotations=IsTypeNode
+              |-NameIdentifierNode="Natural" annotations=IsTypeNode
+          |-FunctionCallNode annotations=IsValueNode
             |-ReferenceNode
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-FunctionCallNode annotations=IsValueNode,IsValueNode
+              |-QNameNode=fromPointer
+                |-NameIdentifierNode="fromPointer"
+            |-FunctionCallNode annotations=IsValueNode
               |-ReferenceNode
-                |-QNameNode=sizeOf
-                  |-NameIdentifierNode="sizeOf"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="ptr"
-          |-UnionTypeNode
-            |-ReferenceNode
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-FunctionCallNode annotations=IsValueNode
+                |-ReferenceNode
+                  |-QNameNode=sizeOf
+                    |-NameIdentifierNode="sizeOf"
+      |-NameIdentifierNode="new"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="ptr"
+            |-UnionTypeNode annotations=IsTypeNode
+              |-ReferenceNode annotations=IsTypeNode
+                |-QNameNode=i32 annotations=IsTypeNode
+                  |-NameIdentifierNode="i32" annotations=IsTypeNode
+              |-ReferenceNode annotations=IsTypeNode
+                |-QNameNode=u32 annotations=IsTypeNode
+                  |-NameIdentifierNode="u32" annotations=IsTypeNode
+          |-NameIdentifierNode="fromPointer"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Natural annotations=IsTypeNode
+              |-NameIdentifierNode="Natural" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.or
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x400000000
+              |-WasmAtomNode=i64.extend_u/i32
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$ptr
+                    |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="a"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Natural annotations=IsTypeNode
+                |-NameIdentifierNode="Natural" annotations=IsTypeNode
+          |-NameIdentifierNode="is"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=boolean annotations=IsTypeNode
+              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=i64.and
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0xffffffff00000000
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$a
+                    |-NameIdentifierNode="$a"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x400000000
+      |-NameIdentifierNode="is"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Natural annotations=IsTypeNode
+                |-NameIdentifierNode="Natural" annotations=IsTypeNode
+          |-NameIdentifierNode="get_number"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-            |-ReferenceNode
-              |-QNameNode=u32
-                |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="fromPointer"
-        |-ReferenceNode
-          |-QNameNode=Natural
-            |-NameIdentifierNode="Natural"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.or
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x400000000
-            |-WasmAtomNode=i64.extend_u/i32
-              |-WasmAtomNode=get_local
-                |-QNameNode=$ptr
-                  |-NameIdentifierNode="$ptr"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x400000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-NameIdentifierNode="get_number"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="set_number"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-  |-ExtensionDirectiveNode annotations=Injected
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_number"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Natural annotations=IsTypeNode
+                |-NameIdentifierNode="Natural" annotations=IsTypeNode
+          |-ParameterNode
+            |-NameIdentifierNode="value"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=i32 annotations=IsTypeNode
+                |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-NameIdentifierNode="set_number"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=void annotations=IsTypeNode
+              |-NameIdentifierNode="void" annotations=IsTypeNode
+          |-WasmExpressionNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_number"
+  |-NamespaceDirectiveNode annotations=Injected
     |-ReferenceNode
       |-QNameNode=Complex
         |-NameIdentifierNode="Complex"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="sizeOf"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=0 annotations=IsValueNode,IsValueNode
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="real"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-ParameterNode
-          |-NameIdentifierNode="imaginary"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Complex
-            |-NameIdentifierNode="Complex"
-        |-FunctionCallNode annotations=IsValueNode,IsValueNode
-          |-ReferenceNode
-            |-QNameNode=fromPointer
-              |-NameIdentifierNode="fromPointer"
-          |-FunctionCallNode annotations=IsValueNode,IsValueNode
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-NameIdentifierNode="sizeOf"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-IntegerLiteral=0 annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="real"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=f32 annotations=IsTypeNode
+                |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-ParameterNode
+            |-NameIdentifierNode="imaginary"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=f32 annotations=IsTypeNode
+                |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-NameIdentifierNode="new"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Complex annotations=IsTypeNode
+              |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-FunctionCallNode annotations=IsValueNode
             |-ReferenceNode
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-FunctionCallNode annotations=IsValueNode,IsValueNode
+              |-QNameNode=fromPointer
+                |-NameIdentifierNode="fromPointer"
+            |-FunctionCallNode annotations=IsValueNode
               |-ReferenceNode
-                |-QNameNode=sizeOf
-                  |-NameIdentifierNode="sizeOf"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="ptr"
-          |-UnionTypeNode
-            |-ReferenceNode
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-FunctionCallNode annotations=IsValueNode
+                |-ReferenceNode
+                  |-QNameNode=sizeOf
+                    |-NameIdentifierNode="sizeOf"
+      |-NameIdentifierNode="new"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="ptr"
+            |-UnionTypeNode annotations=IsTypeNode
+              |-ReferenceNode annotations=IsTypeNode
+                |-QNameNode=i32 annotations=IsTypeNode
+                  |-NameIdentifierNode="i32" annotations=IsTypeNode
+              |-ReferenceNode annotations=IsTypeNode
+                |-QNameNode=u32 annotations=IsTypeNode
+                  |-NameIdentifierNode="u32" annotations=IsTypeNode
+          |-NameIdentifierNode="fromPointer"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Complex annotations=IsTypeNode
+              |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.or
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x500000000
+              |-WasmAtomNode=i64.extend_u/i32
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$ptr
+                    |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="a"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Complex annotations=IsTypeNode
+                |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-NameIdentifierNode="is"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=boolean annotations=IsTypeNode
+              |-NameIdentifierNode="boolean" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=i64.eq
+              |-WasmAtomNode=i64.and
+                |-WasmAtomNode=i64.const
+                  |-HexLiteral=0xffffffff00000000
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$a
+                    |-NameIdentifierNode="$a"
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0x500000000
+      |-NameIdentifierNode="is"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Complex annotations=IsTypeNode
+                |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-NameIdentifierNode="get_real"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-            |-ReferenceNode
-              |-QNameNode=u32
-                |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="fromPointer"
-        |-ReferenceNode
-          |-QNameNode=Complex
-            |-NameIdentifierNode="Complex"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.or
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x500000000
-            |-WasmAtomNode=i64.extend_u/i32
-              |-WasmAtomNode=get_local
-                |-QNameNode=$ptr
-                  |-NameIdentifierNode="$ptr"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x500000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="get_real"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="set_real"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="get_imaginary"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="set_imaginary"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_real"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Complex annotations=IsTypeNode
+                |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-ParameterNode
+            |-NameIdentifierNode="value"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=f32 annotations=IsTypeNode
+                |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-NameIdentifierNode="set_real"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=void annotations=IsTypeNode
+              |-NameIdentifierNode="void" annotations=IsTypeNode
+          |-WasmExpressionNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_real"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Complex annotations=IsTypeNode
+                |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-NameIdentifierNode="get_imaginary"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=f32 annotations=IsTypeNode
+              |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_imaginary"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode annotations=Injected
+        |-FunctionNode
+          |-ParameterNode
+            |-NameIdentifierNode="target"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Complex annotations=IsTypeNode
+                |-NameIdentifierNode="Complex" annotations=IsTypeNode
+          |-ParameterNode
+            |-NameIdentifierNode="value"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=f32 annotations=IsTypeNode
+                |-NameIdentifierNode="f32" annotations=IsTypeNode
+          |-NameIdentifierNode="set_imaginary"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=void annotations=IsTypeNode
+              |-NameIdentifierNode="void" annotations=IsTypeNode
+          |-WasmExpressionNode
+            |-WasmAtomNode=local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-WasmAtomNode=set_local
+              |-QNameNode=$offset
+                |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=i32.const
+                |-IntegerLiteral=0
+            |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_imaginary"
   |-OverloadedFunctionNode annotations=Injected
     |-FunDirectiveNode
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="test"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
+        |-ReferenceNode annotations=IsTypeNode
+          |-QNameNode=boolean annotations=IsTypeNode
+            |-NameIdentifierNode="boolean" annotations=IsTypeNode
         |-PatternMatcherNode annotations=IsValueNode
           |-ReferenceNode annotations=IsValueNode
             |-QNameNode=a
@@ -587,45 +635,45 @@
       |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Number annotations=IsTypeNode
+              |-NameIdentifierNode="Number" annotations=IsTypeNode
         |-NameIdentifierNode="isComplex"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
+        |-ReferenceNode annotations=IsTypeNode
+          |-QNameNode=boolean annotations=IsTypeNode
+            |-NameIdentifierNode="boolean" annotations=IsTypeNode
         |-PatternMatcherNode annotations=IsValueNode
           |-ReferenceNode annotations=IsValueNode
             |-QNameNode=number
               |-NameIdentifierNode="number"
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="x"
-            |-ReferenceNode
-              |-QNameNode=Real
-                |-NameIdentifierNode="Real"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Real annotations=IsTypeNode
+                |-NameIdentifierNode="Real" annotations=IsTypeNode
             |-NameIdentifierNode="_"
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="x"
-            |-ReferenceNode
-              |-QNameNode=Infinity
-                |-NameIdentifierNode="Infinity"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Infinity annotations=IsTypeNode
+                |-NameIdentifierNode="Infinity" annotations=IsTypeNode
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
-            |-ReferenceNode
-              |-QNameNode=Infinity
-                |-NameIdentifierNode="Infinity"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Infinity annotations=IsTypeNode
+                |-NameIdentifierNode="Infinity" annotations=IsTypeNode
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
-            |-ReferenceNode
-              |-QNameNode=Natural
-                |-NameIdentifierNode="Natural"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Natural annotations=IsTypeNode
+                |-NameIdentifierNode="Natural" annotations=IsTypeNode
             |-NameIdentifierNode="_"
             |-BooleanLiteral=false annotations=IsValueNode
           |-MatchCaseIsNode annotations=IsValueNode
-            |-ReferenceNode
-              |-QNameNode=Complex
-                |-NameIdentifierNode="Complex"
+            |-ReferenceNode annotations=IsTypeNode
+              |-QNameNode=Complex annotations=IsTypeNode
+                |-NameIdentifierNode="Complex" annotations=IsTypeNode
             |-NameIdentifierNode="_"
             |-NameIdentifierNode="imaginary"
             |-BinaryExpressionNode="!=" annotations=IsValueNode
@@ -640,220 +688,15 @@
   |-OverloadedFunctionNode annotations=Injected
     |-FunDirectiveNode annotations=Injected
       |-FunctionNode
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Infinity
-            |-NameIdentifierNode="Infinity"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.const
-            |-HexLiteral=0x100000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=NDet
-            |-NameIdentifierNode="NDet"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.const
-            |-HexLiteral=0x200000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Real
-            |-NameIdentifierNode="Real"
-        |-FunctionCallNode annotations=IsValueNode,IsValueNode
-          |-ReferenceNode
-            |-QNameNode=fromPointer
-              |-NameIdentifierNode="fromPointer"
-          |-FunctionCallNode annotations=IsValueNode,IsValueNode
-            |-ReferenceNode
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-FunctionCallNode annotations=IsValueNode,IsValueNode
-              |-ReferenceNode
-                |-QNameNode=sizeOf
-                  |-NameIdentifierNode="sizeOf"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Natural
-            |-NameIdentifierNode="Natural"
-        |-FunctionCallNode annotations=IsValueNode,IsValueNode
-          |-ReferenceNode
-            |-QNameNode=fromPointer
-              |-NameIdentifierNode="fromPointer"
-          |-FunctionCallNode annotations=IsValueNode,IsValueNode
-            |-ReferenceNode
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-FunctionCallNode annotations=IsValueNode,IsValueNode
-              |-ReferenceNode
-                |-QNameNode=sizeOf
-                  |-NameIdentifierNode="sizeOf"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="real"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-ParameterNode
-          |-NameIdentifierNode="imaginary"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="new"
-        |-ReferenceNode
-          |-QNameNode=Complex
-            |-NameIdentifierNode="Complex"
-        |-FunctionCallNode annotations=IsValueNode,IsValueNode
-          |-ReferenceNode
-            |-QNameNode=fromPointer
-              |-NameIdentifierNode="fromPointer"
-          |-FunctionCallNode annotations=IsValueNode,IsValueNode
-            |-ReferenceNode
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-FunctionCallNode annotations=IsValueNode,IsValueNode
-              |-ReferenceNode
-                |-QNameNode=sizeOf
-                  |-NameIdentifierNode="sizeOf"
-    |-NameIdentifierNode="new"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
         |-ParameterNode
           |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Infinity
-              |-NameIdentifierNode="Infinity"
+          |-ReferenceNode annotations=IsTypeNode
+            |-QNameNode=Number annotations=IsTypeNode
+              |-NameIdentifierNode="Number" annotations=IsTypeNode
         |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x100000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=NDet
-              |-NameIdentifierNode="NDet"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x200000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x400000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x500000000
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
-        |-NameIdentifierNode="is"
-        |-ReferenceNode
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
+        |-ReferenceNode annotations=IsTypeNode
+          |-QNameNode=boolean annotations=IsTypeNode
+            |-NameIdentifierNode="boolean" annotations=IsTypeNode
         |-WasmExpressionNode annotations=IsValueNode
           |-WasmAtomNode=local
             |-QNameNode=$mask
@@ -904,313 +747,3 @@
               |-WasmAtomNode=i64.const
                 |-HexLiteral=0x100000000
     |-NameIdentifierNode="is"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="sizeOf"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=0 annotations=IsValueNode,IsValueNode
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="sizeOf"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=0 annotations=IsValueNode,IsValueNode
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-NameIdentifierNode="sizeOf"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=0 annotations=IsValueNode,IsValueNode
-    |-NameIdentifierNode="sizeOf"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="ptr"
-          |-UnionTypeNode
-            |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
-            |-ReferenceNode
-              |-QNameNode=u32
-                |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="fromPointer"
-        |-ReferenceNode
-          |-QNameNode=Real
-            |-NameIdentifierNode="Real"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.or
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
-            |-WasmAtomNode=i64.extend_u/i32
-              |-WasmAtomNode=get_local
-                |-QNameNode=$ptr
-                  |-NameIdentifierNode="$ptr"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="ptr"
-          |-UnionTypeNode
-            |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
-            |-ReferenceNode
-              |-QNameNode=u32
-                |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="fromPointer"
-        |-ReferenceNode
-          |-QNameNode=Natural
-            |-NameIdentifierNode="Natural"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.or
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x400000000
-            |-WasmAtomNode=i64.extend_u/i32
-              |-WasmAtomNode=get_local
-                |-QNameNode=$ptr
-                  |-NameIdentifierNode="$ptr"
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="ptr"
-          |-UnionTypeNode
-            |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
-            |-ReferenceNode
-              |-QNameNode=u32
-                |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="fromPointer"
-        |-ReferenceNode
-          |-QNameNode=Complex
-            |-NameIdentifierNode="Complex"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=i64.or
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x500000000
-            |-WasmAtomNode=i64.extend_u/i32
-              |-WasmAtomNode=get_local
-                |-QNameNode=$ptr
-                  |-NameIdentifierNode="$ptr"
-    |-NameIdentifierNode="fromPointer"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-NameIdentifierNode="get_number"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-NameIdentifierNode="get_number"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-NameIdentifierNode="get_number"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="set_number"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="set_number"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-NameIdentifierNode="set_number"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="get_real"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-NameIdentifierNode="get_real"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="set_real"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-NameIdentifierNode="set_real"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="get_imaginary"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-        |-WasmExpressionNode annotations=IsValueNode,IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-NameIdentifierNode="get_imaginary"
-  |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Injected
-      |-FunctionNode
-        |-ParameterNode
-          |-NameIdentifierNode="target"
-          |-ReferenceNode
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-ParameterNode
-          |-NameIdentifierNode="value"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="set_imaginary"
-        |-ReferenceNode
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-WasmExpressionNode
-          |-WasmAtomNode=local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$offset
-              |-NameIdentifierNode="$offset"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=0
-          |-WasmAtomNode=unreachable
-    |-NameIdentifierNode="set_imaginary"

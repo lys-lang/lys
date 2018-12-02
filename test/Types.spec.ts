@@ -24,7 +24,7 @@ const phases = function(txt: string): ScopePhaseResult {
   return scope;
 };
 
-describe('Types', function() {
+describe.only('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -91,6 +91,7 @@ describe('Types', function() {
           }
         } catch (e) {
           console.log(printErrors(typePhase.document, typePhase.errors));
+          console.log(printAST(typePhase.document));
           console.log(print(typePhase.typeGraph));
           throw e;
         }
@@ -600,6 +601,7 @@ describe('Types', function() {
           fun() -> BOOLEAN
           fun(a: boolean) -> TRUE | FALSE
         `;
+
         describe('unify complete types', () => {
           checkMainType`
             type Boolean {
@@ -726,7 +728,7 @@ describe('Types', function() {
         ---
         fun(i: i32) -> void & fun(t: Nila) -> void & fun() -> void
         ---
-        Type<x> is not a value, constructor or function.
+        Type mismatch: Type "x" is not a function
       `;
 
       checkMainType`

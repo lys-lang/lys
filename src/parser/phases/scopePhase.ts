@@ -7,6 +7,8 @@ import { SemanticPhaseResult } from './semanticPhase';
 import { AstNodeError } from '../NodeError';
 import { ParsingContext } from '../closure';
 
+const valueNodeAnnotation = new annotations.IsValueNode();
+
 const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   /**
    * This phase traverses all nodes and adds an annotation to the value nodes, value nodes are those nodes that
@@ -15,15 +17,15 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
    */
 
   if (node instanceof Nodes.FunctionCallNode) {
-    node.argumentsNode.forEach($ => $.annotate(new annotations.IsValueNode()));
+    node.argumentsNode.forEach($ => $.annotate(valueNodeAnnotation));
   }
 
   if (node instanceof Nodes.VarDeclarationNode) {
-    node.value.annotate(new annotations.IsValueNode());
+    node.value.annotate(valueNodeAnnotation);
   }
 
   if (node instanceof Nodes.AssignmentNode) {
-    node.value.annotate(new annotations.IsValueNode());
+    node.value.annotate(valueNodeAnnotation);
   }
 
   if (node instanceof Nodes.FunctionNode) {
@@ -35,39 +37,39 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     }
 
     if (!returnsVoidValue) {
-      node.body.annotate(new annotations.IsValueNode());
+      node.body.annotate(valueNodeAnnotation);
     }
   }
 
   if (node instanceof Nodes.BinaryExpressionNode) {
-    node.lhs.annotate(new annotations.IsValueNode());
-    node.rhs.annotate(new annotations.IsValueNode());
+    node.lhs.annotate(valueNodeAnnotation);
+    node.rhs.annotate(valueNodeAnnotation);
   }
 
   if (node instanceof Nodes.IfNode) {
-    node.condition.annotate(new annotations.IsValueNode());
+    node.condition.annotate(valueNodeAnnotation);
 
     if (node.falsePart) {
       if (node.hasAnnotation(annotations.IsValueNode)) {
-        node.truePart.annotate(new annotations.IsValueNode());
-        node.falsePart.annotate(new annotations.IsValueNode());
+        node.truePart.annotate(valueNodeAnnotation);
+        node.falsePart.annotate(valueNodeAnnotation);
       }
     }
   }
 
   if (node instanceof Nodes.PatternMatcherNode) {
-    node.lhs.annotate(new annotations.IsValueNode());
+    node.lhs.annotate(valueNodeAnnotation);
     if (node.hasAnnotation(annotations.IsValueNode)) {
       node.matchingSet.forEach($ => {
-        $.annotate(new annotations.IsValueNode());
-        $.rhs.annotate(new annotations.IsValueNode());
+        $.annotate(valueNodeAnnotation);
+        $.rhs.annotate(valueNodeAnnotation);
       });
     }
   }
 
   if (node instanceof Nodes.BlockNode) {
     if (node.hasAnnotation(annotations.IsValueNode) && node.statements.length > 0) {
-      node.statements[node.statements.length - 1].annotate(new annotations.IsValueNode());
+      node.statements[node.statements.length - 1].annotate(valueNodeAnnotation);
     }
   }
 });

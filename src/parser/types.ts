@@ -143,6 +143,12 @@ export class FunctionType extends Type {
   }
 
   toString() {
+    const ret = this.returnType.toString();
+
+    if (ret.includes(',')) {
+      console.dir(this.returnType);
+    }
+
     return `fun(${this.parameterTypes
       .map(($, $$) => {
         if (this.parameterNames[$$]) {
@@ -298,6 +304,9 @@ export function getTypeSimilarity(lhs: Type, rhs: Type) {
 }
 
 export class StructType extends RefType {
+  parameterTypes: Type[] = [];
+  parameterNames: string[] = [];
+
   private constructor(public internalName: string, public reference: Reference, superType: PolimorphicType = null) {
     super();
 
@@ -319,9 +328,6 @@ export class StructType extends RefType {
       return new StructType(internalName, reference, superType);
     }
   }
-
-  parameterTypes: Type[];
-  parameterNames: string[];
 
   acceptsTypes(types: Type[], strict: boolean) {
     return acceptsTypes(this, types, strict);
@@ -615,7 +621,11 @@ export class TypeType extends Type {
   }
 
   toString() {
-    return `Type<${this.of.toString()}>`;
+    let of = this.of.toString();
+    if (of.startsWith('[object Object]')) {
+      of = '[object Object]' + this.of.constructor.name;
+    }
+    return `Type<${of}>`;
   }
 }
 

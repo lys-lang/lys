@@ -63,7 +63,8 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: Compilati
         throw new AstNodeError(`Value node has no local`, decl);
       }
     } else {
-      throw new AstNodeError(`Cannot emit reference of type ${node.resolvedReference.type}`, decl);
+      // console.error(`Cannot emit reference of type ${node.resolvedReference.type}`);
+      // throw new AstNodeError(`Cannot emit reference of type ${node.resolvedReference.type}`, decl);
     }
   }
 });

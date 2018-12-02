@@ -11,30 +11,30 @@
       |-FunctionNode type=fun(x: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="x" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="gte" type=fun(x: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-BlockNode type=i32 annotations=IsValueNode
           |-VarDeclarationNode type=void
             |-NameIdentifierNode="ttt" type=i32
             |-IntegerLiteral=0 type=i32 annotations=IsValueNode
           |-AssignmentNode type=i32
-            |-VariableReferenceNode type=i32
+            |-ReferenceNode type=i32
               |-QNameNode=ttt
                 |-NameIdentifierNode="ttt"
             |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
               |-NameIdentifierNode="+"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=ttt
                   |-NameIdentifierNode="ttt"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
-          |-VariableReferenceNode type=i32 annotations=IsValueNode
+          |-ReferenceNode type=i32 annotations=IsValueNode
             |-QNameNode=ttt
               |-NameIdentifierNode="ttt"
     |-NameIdentifierNode="gte" type=fun(x: i32) -> i32

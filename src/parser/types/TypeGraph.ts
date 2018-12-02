@@ -83,11 +83,14 @@ export class TypeNode {
           if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
             if (this.resultType()) {
               console.log(
+                'Mutating type',
                 this.astNode.nodeName,
+                this.astNode.toString(),
                 this.typeResolver.constructor.name,
                 this.resultType().toString(),
                 '->',
-                resultType.toString()
+                resultType.toString(),
+                this._incomingEdges.length
               );
             }
 

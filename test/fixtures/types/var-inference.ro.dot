@@ -6,13 +6,13 @@ digraph Document {
   4 [label="FunOverload: getX\n⟨fun() -> i32⟩", fillcolor=grey];
   5 [label="FunDirective: getX\n⟨fun() -> i32⟩", fillcolor=grey];
   6 [label="FunNode: getX\n⟨fun() -> i32⟩", fillcolor=grey];
-  7 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  7 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   8 [label="Name: getX\n⟨fun() -> i32⟩", fillcolor=grey];
   9 [label="Name: getX\n⟨fun() -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    10 [label="VarRef: x\n⟨i32⟩", fillcolor=grey];
-    11 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    10 [label="Ref: x\n⟨i32⟩", fillcolor=grey];
+    11 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   label = "getX()";
 }
   1 -> 7[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -23,6 +23,6 @@ digraph Document {
   5 -> 4[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 8[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 5[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 6[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

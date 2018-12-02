@@ -364,4 +364,12 @@ export class Reference {
   withModule(moduleName: string) {
     return new Reference(this.referencedNode, this.scope, this.type, moduleName);
   }
+
+  toString() {
+    if (this.isLocalReference) {
+      return this.referencedNode.toString();
+    } else {
+      return this.moduleName + '::' + this.referencedNode.toString();
+    }
+  }
 }

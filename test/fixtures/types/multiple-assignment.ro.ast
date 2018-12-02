@@ -15,13 +15,13 @@
       |-FunctionNode type=fun(a: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="flashero" type=fun(a: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-BlockNode type=i32 annotations=IsValueNode
           |-VarDeclarationNode type=void
             |-NameIdentifierNode="x" type=i32
@@ -30,22 +30,22 @@
             |-NameIdentifierNode="y" type=i32
             |-IntegerLiteral=2 type=i32 annotations=IsValueNode
           |-AssignmentNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=i32
+            |-ReferenceNode type=i32
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-BlockNode type=i32 annotations=IsValueNode
               |-AssignmentNode type=i32 annotations=IsValueNode
-                |-VariableReferenceNode type=i32
+                |-ReferenceNode type=i32
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
                 |-BlockNode type=i32 annotations=IsValueNode
                   |-AssignmentNode type=i32 annotations=IsValueNode
-                    |-VariableReferenceNode type=i32
+                    |-ReferenceNode type=i32
                       |-QNameNode=z
                         |-NameIdentifierNode="z"
                     |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
                       |-NameIdentifierNode="+"
-                      |-VariableReferenceNode type=i32 annotations=IsValueNode
+                      |-ReferenceNode type=i32 annotations=IsValueNode
                         |-QNameNode=a
                           |-NameIdentifierNode="a"
                       |-IntegerLiteral=1 type=i32 annotations=IsValueNode

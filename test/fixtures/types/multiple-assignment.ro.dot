@@ -6,9 +6,9 @@ digraph Document {
   4 [label="FunOverload: flashero\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
   5 [label="FunDirective: flashero\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
   6 [label="FunNode: flashero\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
-  7 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  7 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   8 [label="Name: a\n⟨i32⟩", fillcolor=grey];
-  9 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  9 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   10 [label="Name: flashero\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
   11 [label="Name: flashero\n⟨fun(a: i32) -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
@@ -22,17 +22,17 @@ digraph Document {
     18 [label="Name: y\n⟨i32⟩", fillcolor=grey];
     19 [label="Int: 2\n⟨i32⟩", fillcolor=grey];
     20 [label="AssignmentNode\n⟨i32⟩", fillcolor=grey];
-    21 [label="VarRef: x\n⟨i32⟩", fillcolor=grey];
+    21 [label="Ref: x\n⟨i32⟩", fillcolor=grey];
     22 [label="BlockNode\n⟨i32⟩", fillcolor=grey];
     23 [label="AssignmentNode\n⟨i32⟩", fillcolor=grey];
-    24 [label="VarRef: y\n⟨i32⟩", fillcolor=grey];
+    24 [label="Ref: y\n⟨i32⟩", fillcolor=grey];
     25 [label="BlockNode\n⟨i32⟩", fillcolor=grey];
     26 [label="AssignmentNode\n⟨i32⟩", fillcolor=grey];
-    27 [label="VarRef: z\n⟨i32⟩", fillcolor=grey];
+    27 [label="Ref: z\n⟨i32⟩", fillcolor=grey];
     28 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
-    29 [label="VarRef: a\n⟨i32⟩", fillcolor=grey];
+    29 [label="Ref: a\n⟨i32⟩", fillcolor=grey];
     30 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
-    31 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    31 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
     12 -> 29[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     14 -> 13[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     15 -> 21[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -62,8 +62,8 @@ digraph Document {
   5 -> 4[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 10[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   6 -> 5[taillabel="fun(a: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  8 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  9 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 8[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  8 -> 6[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  9 -> 6[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

@@ -4,9 +4,9 @@ digraph Document {
   2 [label="FunOverload: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   3 [label="FunDirective: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   4 [label="FunNode: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
-  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  5 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   6 [label="Name: x\n⟨i32⟩", fillcolor=grey];
-  7 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+  7 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
   8 [label="Name: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   9 [label="Name: gte\n⟨fun(x: i32) -> i32⟩", fillcolor=grey];
   subgraph cluster0 {
@@ -17,12 +17,12 @@ digraph Document {
     13 [label="Name: ttt\n⟨i32⟩", fillcolor=grey];
     14 [label="Int: 0\n⟨i32⟩", fillcolor=grey];
     15 [label="AssignmentNode\n⟨i32⟩", fillcolor=grey];
-    16 [label="VarRef: ttt\n⟨i32⟩", fillcolor=grey];
+    16 [label="Ref: ttt\n⟨i32⟩", fillcolor=grey];
     17 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
-    18 [label="VarRef: ttt\n⟨i32⟩", fillcolor=grey];
-    19 [label="VarRef: x\n⟨i32⟩", fillcolor=grey];
-    20 [label="VarRef: ttt\n⟨i32⟩", fillcolor=grey];
-    21 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
+    18 [label="Ref: ttt\n⟨i32⟩", fillcolor=grey];
+    19 [label="Ref: x\n⟨i32⟩", fillcolor=grey];
+    20 [label="Ref: ttt\n⟨i32⟩", fillcolor=grey];
+    21 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
     10 -> 19[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     12 -> 11[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     13 -> 16[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -44,8 +44,8 @@ digraph Document {
   3 -> 2[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 8[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   4 -> 3[taillabel="fun(x: i32) -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 6[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  6 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 6[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 4[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 4[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

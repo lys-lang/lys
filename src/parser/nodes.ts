@@ -470,7 +470,7 @@ export namespace Nodes {
   export class VarDeclarationNode extends Node {
     mutable = true;
     variableName: NameIdentifierNode;
-    variableType: ReferenceNode;
+    variableType: TypeNode;
     value: ExpressionNode;
     local: LocalGlobalHeapReference;
   }

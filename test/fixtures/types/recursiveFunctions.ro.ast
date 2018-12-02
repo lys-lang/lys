@@ -9,32 +9,32 @@
       |-FunctionNode type=fun(n: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="n" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="factorial" type=fun(n: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-IfNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode=">=" type=boolean annotations=IsValueNode
             |-NameIdentifierNode=">="
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
             |-IntegerLiteral=1 type=i32 annotations=IsValueNode
           |-BinaryExpressionNode="*" type=i32 annotations=IsValueNode
             |-NameIdentifierNode="*"
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
             |-FunctionCallNode type=i32 annotations=IsValueNode
-              |-VariableReferenceNode type=fun(n: i32) -> i32
+              |-ReferenceNode type=fun(n: i32) -> i32
                 |-QNameNode=factorial
                   |-NameIdentifierNode="factorial"
               |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="-"
-                |-VariableReferenceNode type=i32 annotations=IsValueNode
+                |-ReferenceNode type=i32 annotations=IsValueNode
                   |-QNameNode=n
                     |-NameIdentifierNode="n"
                 |-IntegerLiteral=1 type=i32 annotations=IsValueNode
@@ -45,71 +45,71 @@
       |-FunctionNode type=fun(x: i32, y: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="x" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-ParameterNode
           |-NameIdentifierNode="y" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
+          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+            |-QNameNode=i32 annotations=IsTypeNode
+              |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-NameIdentifierNode="gcd" type=fun(x: i32, y: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
+          |-QNameNode=i32 annotations=IsTypeNode
+            |-NameIdentifierNode="i32" annotations=IsTypeNode
         |-IfNode type=i32 annotations=IsValueNode
           |-BinaryExpressionNode=">" type=boolean annotations=IsValueNode
             |-NameIdentifierNode=">"
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=x
                 |-NameIdentifierNode="x"
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=y
                 |-NameIdentifierNode="y"
           |-FunctionCallNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=fun(x: i32, y: i32) -> i32
+            |-ReferenceNode type=fun(x: i32, y: i32) -> i32
               |-QNameNode=gcd
                 |-NameIdentifierNode="gcd"
             |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
               |-NameIdentifierNode="-"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
-            |-VariableReferenceNode type=i32 annotations=IsValueNode
+            |-ReferenceNode type=i32 annotations=IsValueNode
               |-QNameNode=y
                 |-NameIdentifierNode="y"
           |-IfNode type=i32 annotations=IsValueNode
             |-BinaryExpressionNode="<" type=boolean annotations=IsValueNode
               |-NameIdentifierNode="<"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
             |-FunctionCallNode type=i32 annotations=IsValueNode
-              |-VariableReferenceNode type=fun(x: i32, y: i32) -> i32
+              |-ReferenceNode type=fun(x: i32, y: i32) -> i32
                 |-QNameNode=gcd
                   |-NameIdentifierNode="gcd"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
               |-BinaryExpressionNode="-" type=i32 annotations=IsValueNode
                 |-NameIdentifierNode="-"
-                |-VariableReferenceNode type=i32 annotations=IsValueNode
+                |-ReferenceNode type=i32 annotations=IsValueNode
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
-                |-VariableReferenceNode type=i32 annotations=IsValueNode
+                |-ReferenceNode type=i32 annotations=IsValueNode
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
             |-FunctionCallNode type=i32 annotations=IsValueNode
-              |-VariableReferenceNode type=fun(n: i32) -> i32
+              |-ReferenceNode type=fun(n: i32) -> i32
                 |-QNameNode=factorial
                   |-NameIdentifierNode="factorial"
-              |-VariableReferenceNode type=i32 annotations=IsValueNode
+              |-ReferenceNode type=i32 annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
     |-NameIdentifierNode="gcd" type=fun(x: i32, y: i32) -> i32
