@@ -16,3 +16,11 @@ test parsing `type test {}`
 MESSAGE TO FUTURE AGUS:
 
 struct and poly types should not receive a instance of Reference, they should receive only the nameIdentifier used for the declaration.
+
+---
+
+```
+type Test {}
+```
+
+fails while parsing

@@ -269,11 +269,62 @@ describe.only('Types', function() {
       `;
     });
 
-    describe('namespaces', () => {
+    describe.only('namespaces', () => {
       checkMainType`
-        fun abc(): void = {/* empty block */}
+        type Test {
+          Null
+          Some(x: ref)
+        }
+
+        namespace Null {
+          fun xxx(): i32 = ???
+        }
+
+        namespace Some {
+          fun xxx(): f32 = ???
+        }
+
+        var b = Null#xxx()
+        var c = Some#xxx()
         ---
-        fun() -> void
+        b := i32
+        c := f32
+      `;
+
+      checkMainType`
+        type Test {
+          Null
+          Some(x: ref)
+        }
+
+        var b = Null#xxx()
+        var c = Some#xxx()
+
+        namespace Null {
+          fun xxx(): i32 = ???
+        }
+
+        namespace Some {
+          fun xxx(): f32 = ???
+        }
+
+        ---
+        b := i32
+        c := f32
+      `;
+
+      checkMainType`
+        type Test {
+          A
+        }
+
+        namespace Test {
+          fun xxx(): boolean = ???
+        }
+
+        var a = Test#xxx()
+        ---
+        a := boolean
       `;
 
       checkMainType`
@@ -286,21 +337,15 @@ describe.only('Types', function() {
           fun xxx(): boolean = ???
         }
 
-        namespace Null {
-          fun xxx(): i32 = ???
-        }
-
-        namespace Some {
-          fun xxx(): f32 = ???
-        }
-
-        var a = Test#xxx()
-        var b = Null#xxx()
-        var c = Some#xxx()
+        var d = Test#xxx()
         ---
         a := boolean
-        b := i32
-        c := f32
+      `;
+
+      checkMainType`
+        fun abc(): void = {/* empty block */}
+        ---
+        fun() -> void
       `;
     });
 
@@ -1393,6 +1438,47 @@ describe.only('Types', function() {
         type Enum {
           A
           B
+          C
+        }
+
+        type Color {
+          Red
+        }
+
+        var x: ref = ???
+
+        var y = x match {
+          case x is Enum -> x
+          else -> Red
+        }
+        ---
+        x := ref
+        y := Enum | Red
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
+          C
+        }
+
+        type Color {
+          Red
+        }
+
+        fun y(x: ref): Enum | Red = x match {
+          case x is Enum -> x
+          else -> Red
+        }
+        ---
+        fun(x: ref) -> Enum | Red
+      `;
+
+      checkMainType`
+        type Enum {
+          A
+          B
         }
 
         type Enum2 {
@@ -1618,10 +1704,6 @@ describe.only('Types', function() {
           support::test::assert(isRed(Green) == false)
           support::test::assert(isRed(Blue) == false)
           support::test::assert(isRed(Custom(5,5,5)) == false)
-          support::test::assert(Red.isRed() == true)
-          support::test::assert(Green.isRed() == false)
-          support::test::assert(Blue.isRed() == false)
-          support::test::assert(Custom(5,5,5).isRed() == false)
         }
         ---
         fun(color: Color) -> boolean

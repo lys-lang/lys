@@ -226,3 +226,29 @@ export function resolveReturnType(
     return result;
   }
 }
+
+// export function resolveMember(typeGraph: TypeGraph, node: Nodes.MemberNode, ctx: TypeResolutionContext): Type | null {
+//   const context = ctx.currentParsingContext;
+//   const messageCollector = new MessageCollector();
+//   const builder = new TypeGraphBuilder(context, typeGraph, messageCollector);
+
+//   const dataGraph: TypeGraph = builder.buildMemberNode(node);
+
+//   const id = `member${ctx.rootGraph.getNewSubgraphId()}`;
+
+//   ctx.rootGraph.addSubGraph(dataGraph, id);
+//   const propagator = ctx.newExecutorWithContext(node.closure, dataGraph, context);
+//   propagator.run();
+
+//   const value = dataGraph.findNode(node);
+
+//   const result = value.resultType();
+
+//   if (!result && messageCollector.hasErrors()) {
+//     ctx.rootGraph.removeSubGraph(dataGraph, id);
+//   } else {
+//     context.messageCollector.mergeWith(messageCollector);
+//   }
+
+//   return result;
+// }

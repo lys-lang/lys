@@ -146,6 +146,7 @@ export class FunctionType extends Type {
     const ret = this.returnType.toString();
 
     if (ret.includes(',')) {
+      console.log('marker149');
       console.dir(this.returnType);
     }
 
@@ -544,13 +545,13 @@ export class UnionType extends Type {
     } else {
       const superTypes = new Set<PolimorphicType>();
 
-      newTypes.forEach($ => {
+      for (let $ of newTypes) {
         if ($ instanceof RefType && $.superType) {
           if ($.superType instanceof PolimorphicType) {
             superTypes.add($.superType);
           }
         }
-      });
+      }
 
       if (superTypes.size == 1) {
         const superType = superTypes.values().next().value;
@@ -573,7 +574,7 @@ function meetsAllRequirements(types: Type[], superType: PolimorphicType) {
 
   types.forEach(($: StructType) => missing.delete($));
 
-  return missing.size == 0;
+  return missing.size == 0 && types.every($ => $.canBeAssignedTo(superType));
 }
 
 export class TypeAlias extends Type {

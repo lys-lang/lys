@@ -10,9 +10,9 @@
     |-FunDirectiveNode type=fun() -> void
       |-FunctionNode type=fun() -> void
         |-NameIdentifierNode="xx" type=fun() -> void
-        |-ReferenceNode type=Type<void> annotations=IsTypeNode
-          |-QNameNode=void annotations=IsTypeNode
-            |-NameIdentifierNode="void" annotations=IsTypeNode
+        |-ReferenceNode type=Type<void>
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
         |-BlockNode type=void
     |-NameIdentifierNode="xx" type=fun() -> void
   |-OverloadedFunctionNode type=fun(a: i32, b: i32) -> i32 annotations=Injected
@@ -20,18 +20,18 @@
       |-FunctionNode type=fun(a: i32, b: i32) -> i32
         |-ParameterNode
           |-NameIdentifierNode="a" type=i32
-          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
-            |-QNameNode=i32 annotations=IsTypeNode
-              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-ReferenceNode type=Type<i32>
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-ParameterNode
           |-NameIdentifierNode="b" type=i32
-          |-ReferenceNode type=Type<i32> annotations=IsTypeNode
-            |-QNameNode=i32 annotations=IsTypeNode
-              |-NameIdentifierNode="i32" annotations=IsTypeNode
+          |-ReferenceNode type=Type<i32>
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
         |-NameIdentifierNode="add" type=fun(a: i32, b: i32) -> i32
-        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
-          |-QNameNode=i32 annotations=IsTypeNode
-            |-NameIdentifierNode="i32" annotations=IsTypeNode
+        |-ReferenceNode type=Type<i32>
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
         |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
           |-WasmAtomNode=local
             |-QNameNode=$t
@@ -72,9 +72,9 @@
     |-FunDirectiveNode type=fun() -> i32
       |-FunctionNode type=fun() -> i32
         |-NameIdentifierNode="main" type=fun() -> i32
-        |-ReferenceNode type=Type<i32> annotations=IsTypeNode
-          |-QNameNode=i32 annotations=IsTypeNode
-            |-NameIdentifierNode="i32" annotations=IsTypeNode
+        |-ReferenceNode type=Type<i32>
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
         |-FunctionCallNode type=i32 annotations=IsValueNode
           |-ReferenceNode type=fun(a: i32, b: i32) -> i32
             |-QNameNode=add

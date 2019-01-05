@@ -18,6 +18,7 @@ export class LiteralTypeResolver extends TypeResolver {
 
 export class TypeGraph {
   private _subGraph: Map<TypeGraph, string> = new Map();
+  private uniqueIdCounter = 0;
 
   constructor(public nodes: Array<TypeNode>, public parentGraph: TypeGraph = null) {
     //Set Parent to the children
@@ -36,6 +37,15 @@ export class TypeGraph {
 
   addSubGraph(subGraph: TypeGraph, name: string): void {
     this._subGraph.set(subGraph, name);
+  }
+
+  getNewSubgraphId() {
+    if (!this.parentGraph) {
+      this.uniqueIdCounter += 1;
+      return this.uniqueIdCounter;
+    } else {
+      return this.rootGraph.getNewSubgraphId;
+    }
   }
 
   removeSubGraph(subGraph: TypeGraph, name: string): void {
@@ -82,16 +92,16 @@ export class TypeNode {
         if (resultType) {
           if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
             if (this.resultType()) {
-              console.log(
-                'Mutating type',
-                this.astNode.nodeName,
-                this.astNode.toString(),
-                this.typeResolver.constructor.name,
-                this.resultType().toString(),
-                '->',
-                resultType.toString(),
-                this._incomingEdges.length
-              );
+              // console.log(
+              //   'Mutating type',
+              //   this.astNode.nodeName,
+              //   this.astNode.toString(),
+              //   this.typeResolver.constructor.name,
+              //   this.resultType().toString(),
+              //   '->',
+              //   resultType.toString(),
+              //   this._incomingEdges.length
+              // );
             }
 
             // We only add one if the type is new

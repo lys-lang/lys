@@ -41,6 +41,7 @@ const INVALID_TYPE = InvalidType.instance;
 
 export const EdgeLabels = {
   CONDITION: 'CONDITION',
+  FUNCTION: 'FUNCTION',
   TRUE_PART: 'TRUE_PART',
   FALSE_PART: 'FALSE_PART',
   BLOCK: 'BLOCK',
@@ -138,6 +139,26 @@ function getTypeTypeType(node: Nodes.Node, type: Type, ctx: TypeResolutionContex
 export class UnhandledTypeResolver extends TypeResolver {
   execute(_node: TypeNode, _ctx: TypeResolutionContext) {
     return INVALID_TYPE;
+  }
+}
+
+export class TypeFromTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const x = node.incomingEdges();
+
+    if (x.length != 1) {
+      if (ctx.currentParsingContext) {
+        throw new Error(
+          `TypeFromType resolver only works with nodes with one edge but found '${
+            node.incomingEdges().length
+          }' with node ${node.astNode.nodeName}`
+        );
+      } else {
+        return null;
+      }
+    }
+
+    return getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx) || INVALID_TYPE;
   }
 }
 
@@ -339,7 +360,8 @@ export class PatternMatcherTypeResolver extends TypeResolver {
 
 export class OverloadedFunctionTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type | null {
-    const incomingTypes = node.incomingEdges().map(_ => _.incomingType());
+    // TODO: 'FUNCTION' to EdgeNames
+    const incomingTypes = node.incomingEdgesByName(EdgeLabels.FUNCTION).map(_ => _.incomingType());
     const incomingFunctionTypes = new Array<FunctionType>();
 
     // TODO: verify similar overloads
@@ -378,32 +400,29 @@ export class MemberTypeResolver extends TypeResolver {
       const LHSType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
       if (LHSType instanceof TypeType && (LHSType.of instanceof PolimorphicType || LHSType.of instanceof StructType)) {
         const ofType = LHSType.of as PolimorphicType | StructType;
+        const namespaceName = ofType.reference.referencedNode;
+        const memberName = opNode.memberName;
 
-        if (
-          !ofType.reference.referencedNode.namespaceNames ||
-          ofType.reference.referencedNode.namespaceNames.size === 0
-        ) {
+        if (!namespaceName.namespaceNames || namespaceName.namespaceNames.size === 0) {
           ctx.parsingContext.messageCollector.error(
-            `The namespace "${ofType.reference.referencedNode.name}" has no exported members.`,
+            `The namespace "${namespaceName.name}" has no public members.`,
             opNode.lhs
           );
           return INVALID_TYPE;
         }
 
-        if (!ofType.reference.referencedNode.namespaceNames.has(opNode.memberName.name)) {
+        if (!namespaceName.namespaceNames.has(memberName.name)) {
           ctx.parsingContext.messageCollector.error(
-            `The namespace "${ofType.reference.referencedNode.name}" has no exported member "${
-              opNode.memberName.name
-            }".`,
-            opNode.memberName
+            `The namespace "${namespaceName.name}" has no public member "${memberName.name}".`,
+            memberName
           );
           return INVALID_TYPE;
         } else {
-          const resolvedName = ofType.reference.referencedNode.namespaceNames.get(opNode.memberName.name);
+          const resolvedName = namespaceName.namespaceNames.get(memberName.name);
 
           // node.addIncomingEdge(new Edge(resolvedNode, node, EdgeLabels.RHS));
 
-          console.log(resolvedName);
+          console.log('resolvedName', resolvedName);
 
           return resolvedName.ofType; // AKA TRY NEXT ITERATION
         }

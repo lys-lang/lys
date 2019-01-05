@@ -162,6 +162,7 @@ function collectNamespaces(name: Nodes.NameIdentifierNode, directives: Nodes.Dir
     } else if (node instanceof Nodes.FunDirectiveNode) {
       // TODO: this shouldn't happen. Only overloaded directives should be processed
       registerNameIdentifier(node.functionNode.functionName);
+      throw new Error('Unreachable reached');
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       registerNameIdentifier(node.variableName);
     } else {
