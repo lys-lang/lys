@@ -1,15 +1,16 @@
 declare var describe, it, require, console;
 
-import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { folderBasedTest, testParseToken, printAST } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { expect } from 'chai';
+import { ParsingContext } from '../dist/parser/closure';
 
 describe('Parser', () => {
   const phases = function(txt: string): CanonicalPhaseResult {
-    const x = new ParsingPhaseResult('test.ro', txt);
+    const parsingContext = new ParsingContext();
+    const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
 
-    return new CanonicalPhaseResult(x);
+    return new CanonicalPhaseResult(parsing);
   };
   describe('Failing examples', () => {
     folderBasedTest(
@@ -19,7 +20,7 @@ describe('Parser', () => {
         if (!e && result && result.isSuccess()) {
           throw new Error('The test did not fail');
         }
-        return (e || result.errors[0]).message;
+        return (e || result.parsingContext.messageCollector.errors[0]).message;
       },
       '.txt',
       true
@@ -122,28 +123,38 @@ describe('Parser', () => {
 
     describe('namespaces', () => {
       test`
-        namespace Enum {
+        type Enum
+        type Enum=???
+        type Enum = ???
+        type Enum =                    ???
+        ns Enum {
 
         } // a
-        namespace Enum {}
-        namespace Enum {
+        type Enum =??? ns Enum {}
+        type Enum ns Enum {}
+        type Enum ns Enum {
           //
         } // b
-        namespace Enum{
+        type Enum ns Enum{
           //
         } // c
-        namespace Enum
+        type Enum ns Enum
         {
 
         } // d
       `;
       test`
-        namespace Enum {
+        ns Enum {
           val test = 1
         }
       `;
       test`
-        namespace Enum {
+        type AA = BB | CC
+        type BB
+        type CC
+      `;
+      test`
+        ns Enum {
           val test = 1
         }
 
@@ -152,13 +163,7 @@ describe('Parser', () => {
         }
       `;
       test`
-        type Enum {
-          A
-          B
-          C
-        }
-
-        namespace Enum {
+        ns Enum {
           val test = 1
 
           private fun x(): int = test
@@ -166,8 +171,6 @@ describe('Parser', () => {
           fun (as)(self: Test): X = {
             x() as X
           }
-
-          namespace Enum { }
         }
       `;
     });
@@ -412,7 +415,6 @@ describe('Parser', () => {
         var b = 2.0
         var c = true
         var d = false
-        var e = null
         var f = "a string 'single' quote"
         var g = 'a string "double" quote'
       `;
@@ -446,7 +448,6 @@ describe('Parser', () => {
     test`private val test = 1`;
     test`val test = true`;
     test`val test = false`;
-    test`val test = null`;
 
     test`fun test(): Number = 1`;
 
@@ -506,14 +507,14 @@ describe('Parser', () => {
     `;
 
     test`
-      var a = {null}
-      var b = { null }
+      var a = {false}
+      var b = { false }
       var c = {
-        null
+        false
       }
       var d = {
-        null
-        null
+        false
+        false
       }
     `;
 

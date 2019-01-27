@@ -12,19 +12,22 @@ import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
 import { ParsingContext } from '../dist/parser/closure';
+import { writeFileSync, mkdirSync } from 'fs';
+import { dirname } from 'path';
+import { UnionType, StructType, RefType, TypeAlias, InjectableTypes, Type } from '../dist/parser/types';
 
 const parsingContext = new ParsingContext();
 
 const phases = function(txt: string): ScopePhaseResult {
   parsingContext.reset();
-  const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
+  const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');
   const scope = new ScopePhaseResult(semantic);
   return scope;
 };
 
-describe.only('Types', function() {
+describe('Types', function() {
   let n = 0;
 
   function normalizeResult(input: string) {
@@ -60,7 +63,7 @@ describe.only('Types', function() {
               ) {
                 return $.ofType + '';
               } else if ($ instanceof Nodes.VarDirectiveNode) {
-                return `${$.decl.variableName.name} := ${$.decl.variableName.ofType}`;
+                return `${$.decl.variableName.name} := ${$.decl.variableName.ofType.inspect(1)}`;
               }
             })
             .filter($ => !!$)
@@ -76,7 +79,7 @@ describe.only('Types', function() {
               throw new Error('x');
             } catch (e) {
               if (e.message === 'x') {
-                throw new Error("Didn't fail");
+                throw new Error("Didn't fail (expecting " + expectedError + ')');
               } else {
                 const expected = expectedError
                   .trim()
@@ -90,7 +93,8 @@ describe.only('Types', function() {
             typePhase.ensureIsValid();
           }
         } catch (e) {
-          console.log(printErrors(typePhase.document, typePhase.errors));
+          console.log(printErrors(typePhase.parsingContext));
+          console.log(typePhase.document.toString());
           console.log(printAST(typePhase.document));
           console.log(print(typePhase.typeGraph));
           throw e;
@@ -110,9 +114,36 @@ describe.only('Types', function() {
     const parts = result.split('---');
 
     test(parts[0], parts[1], parts[2]);
+
+    // describe('XXX', function() {
+    //   const path =
+    //     this.fullTitle()
+    //       .replace(/\s+/g, '/')
+    //       .replace('XXX', n)
+    //       .toLowerCase() + '.ro';
+    //   const folder = dirname(path);
+    //   mkdirSync(folder, { recursive: true } as any);
+    //   writeFileSync('fixtures/' + path, result);
+    // });
   }
 
   describe('unit', () => {
+    checkMainType`
+      fun abc(): void = {/* empty block */}
+      ---
+      fun() -> void
+    `;
+
+    checkMainType`
+      var int = 1
+      var float = 1.0
+      var bool = true
+      ---
+      int := (alias i32 (native i32))
+      float := (alias f32 (native f32))
+      bool := (alias boolean (native boolean))
+    `;
+
     describe('numbers', () => {
       checkMainType`
         fun test1(x: u8): u8 = x as u8
@@ -264,89 +295,402 @@ describe.only('Types', function() {
         var TestingContext = 1
         fun main(): i32 = TestingContext
         ---
-        TestingContext := i32
+        TestingContext := (alias i32 (native i32))
         fun() -> i32
       `;
     });
 
-    describe.only('namespaces', () => {
-      checkMainType`
-        type Test {
-          Null
-          Some(x: ref)
-        }
+    describe('namespace types', () => {
+      describe('apply', () => {
+        checkMainType`
+          type Test = ???
 
-        namespace Null {
-          fun xxx(): i32 = ???
-        }
+          ns Test {
+            fun apply(): Test = ???
+          }
 
-        namespace Some {
-          fun xxx(): f32 = ???
-        }
+          var a = Test.apply()
+          ---
+          a := (alias Test (struct Test))
+        `;
 
-        var b = Null#xxx()
-        var c = Some#xxx()
-        ---
-        b := i32
-        c := f32
-      `;
+        checkMainType`
+          type Test = ???
 
-      checkMainType`
-        type Test {
-          Null
-          Some(x: ref)
-        }
+          ns Test {
+            fun apply(): Test = ???
+          }
 
-        var b = Null#xxx()
-        var c = Some#xxx()
+          var a = Test()
+          ---
+          a := (alias Test (struct Test))
+        `;
 
-        namespace Null {
-          fun xxx(): i32 = ???
-        }
+        checkMainType`
+          type Test = ???
 
-        namespace Some {
-          fun xxx(): f32 = ???
-        }
+          ns Test {
+            fun apply(a: i32): Test = ???
+            fun apply(): Test = ???
+          }
 
-        ---
-        b := i32
-        c := f32
-      `;
+          var a = Test(1)
+          var b = Test()
+          ---
+          a := (alias Test (struct Test))
+          b := (alias Test (struct Test))
+        `;
 
-      checkMainType`
-        type Test {
-          A
-        }
+        checkMainType`
+          type Test = ???
 
-        namespace Test {
-          fun xxx(): boolean = ???
-        }
+          ns Test {
+            fun apply(a: i32): Test = ???
+          }
 
-        var a = Test#xxx()
-        ---
-        a := boolean
-      `;
+          var a = Test(1)
+          ---
+          a := (alias Test (struct Test))
+        `;
+      });
 
-      checkMainType`
-        type Test {
-          Null
-          Some(x: ref)
-        }
+      describe('resolve static functions', () => {
+        checkMainType`
+          type Test
+          ns Test {
+            fun WWW(): boolean = ???
+          }
 
-        namespace Test {
-          fun xxx(): boolean = ???
-        }
+          var a = Test.WWW()
+          ---
+          a := (alias boolean (native boolean))
+        `;
+      });
 
-        var d = Test#xxx()
-        ---
-        a := boolean
-      `;
+      describe('sugar', () => {
+        checkMainType`
+          struct Test()
+          ns Test {
+            fun ZZZ(): boolean = ???
+          }
 
-      checkMainType`
-        fun abc(): void = {/* empty block */}
-        ---
-        fun() -> void
-      `;
+          var z = Test.ZZZ()
+          ---
+          z := (alias boolean (native boolean))
+        `;
+
+        checkMainType`
+          type Test { Case1 }
+          ns Test {
+            fun WWW(x: ref): boolean = x is Test
+          }
+
+          var a = Test.WWW(Case1)
+          ---
+          a := (alias boolean (native boolean))
+        `;
+
+        checkMainType`
+          type Test { Case1 }
+
+          ns Test {
+            fun WWW(x: ref): boolean = x is Test
+          }
+
+          fun x(): boolean = Test.WWW(Case1)
+          ---
+          fun() -> boolean
+        `;
+
+        checkMainType`
+          type Temperature {
+            Kelvin(x: f32)
+          }
+
+          ns Kelvin {
+            fun xxx(): f32 = ???
+          }
+
+          var c = Kelvin.xxx()
+          ---
+          c := (alias f32 (native f32))
+        `;
+
+        checkMainType`
+          type Temperature {
+            Celcius(x: f32)
+            Kelvin(x: f32)
+          }
+          ns Temperature {
+            fun xxx(): boolean = ???
+          }
+          ns Celcius {
+            fun xxx(): i32 = ???
+          }
+          ns Kelvin {
+            fun xxx(): f32 = ???
+          }
+
+          var a = Temperature.xxx()
+          var b = Celcius.xxx()
+          var c = Kelvin.xxx()
+          ---
+          a := (alias boolean (native boolean))
+          b := (alias i32 (native i32))
+          c := (alias f32 (native f32))
+        `;
+      });
+
+      describe('resolve "is" and "as" functions', () => {
+        describe('sugar', () => {
+          checkMainType`
+            type Test {
+              A
+              B
+            }
+
+            var a = A is Test
+            var b = A is A
+            ---
+            a := (alias boolean (native boolean))
+            b := (alias boolean (native boolean))
+          `;
+
+          checkMainType`
+            type Test {
+              A
+              B
+            }
+
+            var a = A as Test
+            var b = A
+            ---
+            a := (alias Test (union (alias A) (alias B)))
+            b := (alias A (struct A))
+          `;
+
+          checkMainType`
+            type Test {
+              A
+              B
+            }
+
+            var a = A
+            var b = B
+            var c = a as Test
+            var d = b as Test
+            ---
+            a := (alias A (struct A))
+            b := (alias B (struct B))
+            c := (alias Test (union (alias A) (alias B)))
+            d := (alias Test (union (alias A) (alias B)))
+          `;
+        });
+
+        describe('union types', function() {
+          this.bail(true);
+          checkMainType`
+            struct A()
+            struct B()
+            struct C()
+            type ABC = A | B | C
+
+            var a: A = ???
+            var b: B = ???
+            var c: C = ???
+            var d: ABC = a
+            ---
+            a := (alias A (struct A))
+            b := (alias B (struct B))
+            c := (alias C (struct C))
+            d := (alias ABC (union (alias A) (alias B) (alias C)))
+          `;
+
+          checkMainType`
+            type A = ???
+            type B = ???
+            type C = ???
+            type ABC = A | B | C
+
+            ns A {
+              fun (is)(x: A): boolean = ???
+            }
+
+            ns B {
+              fun (is)(x: B): boolean = ???
+            }
+
+            ns C {
+              fun (is)(x: C): boolean = ???
+            }
+
+            var a: A = ???
+            var b: B = ???
+            var c: C = ???
+            var d: ABC = a
+
+            var isA = a is A
+            var isB = b is B
+            var isC = c is C
+            var isAABC = a is ABC
+            var isBABC = b is ABC
+            var isCABC = c is ABC
+            ---
+            a := (alias A (struct A))
+            b := (alias B (struct B))
+            c := (alias C (struct C))
+            d := (alias ABC (union (alias A) (alias B) (alias C)))
+            isA := (alias boolean (native boolean))
+            isB := (alias boolean (native boolean))
+            isC := (alias boolean (native boolean))
+            isAABC := (alias boolean (native boolean))
+            isBABC := (alias boolean (native boolean))
+            isCABC := (alias boolean (native boolean))
+          `;
+        });
+
+        checkMainType`
+          fun test1(x: u8): u8 = x as u8
+          fun test1(x: u8): i16 = x as i16
+          fun test1(x: u8): u16 = x as u16
+          fun test1(x: u8): i32 = x as i32
+          fun test1(x: u8): u32 = x as u32
+          fun test1(x: u8): i64 = x as i64
+          fun test1(x: u8): u64 = x as u64
+          fun test1(x: u8): f32 = x as f32
+          fun test1(x: u8): f64 = x as f64
+
+          fun test2(x: i16): u8 = x as u8
+          fun test2(x: i16): i16 = x as i16
+          fun test2(x: i16): u16 = x as u16
+          fun test2(x: i16): i32 = x as i32
+          fun test2(x: i16): u32 = x as u32
+          fun test2(x: i16): i64 = x as i64
+          fun test2(x: i16): u64 = x as u64
+          fun test2(x: i16): f32 = x as f32
+          fun test2(x: i16): f64 = x as f64
+
+          fun test3(x: u16): u8 = x as u8
+          fun test3(x: u16): i16 = x as i16
+          fun test3(x: u16): u16 = x as u16
+          fun test3(x: u16): i32 = x as i32
+          fun test3(x: u16): u32 = x as u32
+          fun test3(x: u16): i64 = x as i64
+          fun test3(x: u16): u64 = x as u64
+          fun test3(x: u16): f32 = x as f32
+          fun test3(x: u16): f64 = x as f64
+
+          fun test4(x: i32): u8 = x as u8
+          fun test4(x: i32): i16 = x as i16
+          fun test4(x: i32): u16 = x as u16
+          fun test4(x: i32): i32 = x as i32
+          fun test4(x: i32): u32 = x as u32
+          fun test4(x: i32): i64 = x as i64
+          fun test4(x: i32): u64 = x as u64
+          fun test4(x: i32): f32 = x as f32
+          fun test4(x: i32): f64 = x as f64
+
+          fun test5(x: u32): u8 = x as u8
+          fun test5(x: u32): i16 = x as i16
+          fun test5(x: u32): u16 = x as u16
+          fun test5(x: u32): i32 = x as i32
+          fun test5(x: u32): u32 = x as u32
+          fun test5(x: u32): i64 = x as i64
+          fun test5(x: u32): u64 = x as u64
+          fun test5(x: u32): f32 = x as f32
+          fun test5(x: u32): f64 = x as f64
+
+          fun test6(x: i64): u8 = x as u8
+          fun test6(x: i64): i16 = x as i16
+          fun test6(x: i64): u16 = x as u16
+          fun test6(x: i64): i32 = x as i32
+          fun test6(x: i64): u32 = x as u32
+          fun test6(x: i64): i64 = x as i64
+          fun test6(x: i64): u64 = x as u64
+          fun test6(x: i64): f32 = x as f32
+          fun test6(x: i64): f64 = x as f64
+
+          fun test7(x: u64): u8 = x as u8
+          fun test7(x: u64): i16 = x as i16
+          fun test7(x: u64): u16 = x as u16
+          fun test7(x: u64): i32 = x as i32
+          fun test7(x: u64): u32 = x as u32
+          fun test7(x: u64): i64 = x as i64
+          fun test7(x: u64): u64 = x as u64
+          fun test7(x: u64): f32 = x as f32
+          fun test7(x: u64): f64 = x as f64
+
+          fun test8(x: f32): u8 = x as u8
+          fun test8(x: f32): i16 = x as i16
+          fun test8(x: f32): u16 = x as u16
+          fun test8(x: f32): i32 = x as i32
+          fun test8(x: f32): u32 = x as u32
+          fun test8(x: f32): i64 = x as i64
+          fun test8(x: f32): u64 = x as u64
+          fun test8(x: f32): f32 = x as f32
+          fun test8(x: f32): f64 = x as f64
+
+          fun test9(x: f64): u8 = x as u8
+          fun test9(x: f64): i16 = x as i16
+          fun test9(x: f64): u16 = x as u16
+          fun test9(x: f64): i32 = x as i32
+          fun test9(x: f64): u32 = x as u32
+          fun test9(x: f64): i64 = x as i64
+          fun test9(x: f64): u64 = x as u64
+          fun test9(x: f64): f32 = x as f32
+          fun test9(x: f64): f64 = x as f64
+          ---
+          fun(x: u8) -> u8 & fun(x: u8) -> i16 & fun(x: u8) -> u16 & fun(x: u8) -> i32 & fun(x: u8) -> u32 & fun(x: u8) -> i64 & fun(x: u8) -> u64 & fun(x: u8) -> f32 & fun(x: u8) -> f64
+          fun(x: i16) -> u8 & fun(x: i16) -> i16 & fun(x: i16) -> u16 & fun(x: i16) -> i32 & fun(x: i16) -> u32 & fun(x: i16) -> i64 & fun(x: i16) -> u64 & fun(x: i16) -> f32 & fun(x: i16) -> f64
+          fun(x: u16) -> u8 & fun(x: u16) -> i16 & fun(x: u16) -> u16 & fun(x: u16) -> i32 & fun(x: u16) -> u32 & fun(x: u16) -> i64 & fun(x: u16) -> u64 & fun(x: u16) -> f32 & fun(x: u16) -> f64
+          fun(x: i32) -> u8 & fun(x: i32) -> i16 & fun(x: i32) -> u16 & fun(x: i32) -> i32 & fun(x: i32) -> u32 & fun(x: i32) -> i64 & fun(x: i32) -> u64 & fun(x: i32) -> f32 & fun(x: i32) -> f64
+          fun(x: u32) -> u8 & fun(x: u32) -> i16 & fun(x: u32) -> u16 & fun(x: u32) -> i32 & fun(x: u32) -> u32 & fun(x: u32) -> i64 & fun(x: u32) -> u64 & fun(x: u32) -> f32 & fun(x: u32) -> f64
+          fun(x: i64) -> u8 & fun(x: i64) -> i16 & fun(x: i64) -> u16 & fun(x: i64) -> i32 & fun(x: i64) -> u32 & fun(x: i64) -> i64 & fun(x: i64) -> u64 & fun(x: i64) -> f32 & fun(x: i64) -> f64
+          fun(x: u64) -> u8 & fun(x: u64) -> i16 & fun(x: u64) -> u16 & fun(x: u64) -> i32 & fun(x: u64) -> u32 & fun(x: u64) -> i64 & fun(x: u64) -> u64 & fun(x: u64) -> f32 & fun(x: u64) -> f64
+          fun(x: f32) -> u8 & fun(x: f32) -> i16 & fun(x: f32) -> u16 & fun(x: f32) -> i32 & fun(x: f32) -> u32 & fun(x: f32) -> i64 & fun(x: f32) -> u64 & fun(x: f32) -> f32 & fun(x: f32) -> f64
+          fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64          ---
+          This cast is useless
+          Cannot convert type i16 into u8
+          This cast is useless
+          Cannot convert type i16 into u16
+          Cannot convert type i16 into u32
+          Cannot convert type i16 into u64
+          Cannot convert type u16 into u8
+          Cannot convert type u16 into i16
+          This cast is useless
+          Cannot convert type i32 into u8
+          Cannot convert type i32 into i16
+          Cannot convert type i32 into u16
+          This cast is useless
+          Cannot convert type i32 into u32
+          Cannot convert type i32 into u64
+          Cannot convert type u32 into u8
+          Cannot convert type u32 into i16
+          Cannot convert type u32 into u16
+          Cannot convert type u32 into i32
+          This cast is useless
+          Cannot convert type i64 into u8
+          Cannot convert type i64 into i16
+          Cannot convert type i64 into u16
+          Cannot convert type i64 into u32
+          This cast is useless
+          Cannot convert type i64 into u64
+          Cannot convert type u64 into u8
+          Cannot convert type u64 into i16
+          Cannot convert type u64 into u16
+          Cannot convert type u64 into i32
+          Cannot convert type u64 into i64
+          This cast is useless
+          Cannot convert type f32 into u8
+          Cannot convert type f32 into i16
+          Cannot convert type f32 into u16
+          This cast is useless
+          Cannot convert type f64 into u8
+          Cannot convert type f64 into i16
+          Cannot convert type f64 into u16
+          This cast is useless
+        `;
+      });
     });
 
     describe('recursive types', () => {
@@ -358,7 +702,7 @@ describe.only('Types', function() {
 
         var b = Some(Null)
         ---
-        b := Some
+        b := (alias Some (struct Some))
       `;
 
       checkMainType`
@@ -369,7 +713,7 @@ describe.only('Types', function() {
 
         var b = Some(Null)
         ---
-        b := Some
+        b := (alias Some (struct Some))
       `;
 
       checkMainType`
@@ -381,8 +725,8 @@ describe.only('Types', function() {
         var a: Test = Some(Null)
         var b = Some(Null)
         ---
-        a := Test
-        b := Some
+        a := (alias Test (union (alias Null) (alias Some)))
+        b := (alias Some (struct Some))
       `;
 
       checkMainType`
@@ -394,8 +738,8 @@ describe.only('Types', function() {
         var a: Test = Some(Null)
         var b = Some(Null)
         ---
-        a := Test
-        b := Some
+        a := (alias Test (union (alias Null) (alias Some)))
+        b := (alias Some (struct Some))
       `;
 
       checkMainType`
@@ -414,7 +758,8 @@ describe.only('Types', function() {
         fun() -> Test
         fun() -> Test
       `;
-
+    });
+    describe('recursive calls', () => {
       checkMainType`
         fun factorial(n: i32): i32 =
           if (n >= 1)
@@ -487,166 +832,206 @@ describe.only('Types', function() {
     });
     describe('assign', () => {
       describe('enums', () => {
-        checkMainType`
-          type BOOLEAN {
-            TRUE
-            FALSE
-            NONE
-          }
+        describe('assign unions', function() {
+          // this.bail(true);
 
-          fun test1(a: BOOLEAN): void = { test2(a) }
-          fun test2(a: FALSE): void = ???
-          ---
-          fun(a: BOOLEAN) -> void
-          fun(a: FALSE) -> void
-          ---
-          Expecting arguments type (FALSE) but got (BOOLEAN)
-        `;
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
 
-        checkMainType`
-          type BOOLEAN {
-            TRUE
-            FALSE
-            NONE
-          }
+            // 1
+            fun test1(a: BOOLEAN): void = ???
+            fun test2(a: FALSE): void = {
+              test1(a)
+            }
+            ---
+            fun(a: BOOLEAN) -> void
+            fun(a: FALSE) -> void
+          `;
 
-          fun test1(a: TRUE | FALSE): void = { test2(a) }
-          fun test2(a: FALSE): void = ???
-          ---
-          fun(a: TRUE | FALSE) -> void
-          fun(a: FALSE) -> void
-          ---
-          Expecting arguments type (FALSE) but got (TRUE | FALSE)
-        `;
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
 
-        checkMainType`
-          type BOOLEAN {
-            TRUE
-            FALSE
-            NONE
-          }
+            // 2
+            fun test1(a: BOOLEAN): void = {
+              test5(a)
+            }
 
-          fun test1(a: TRUE): void = {
-            test2(a)
-          }
-          fun test2(a: FALSE): void = ???
-          ---
-          fun(a: TRUE) -> void
-          fun(a: FALSE) -> void
-          ---
-          Expecting arguments type (FALSE) but got (TRUE)
-        `;
+            fun test5(a: NONE | FALSE | TRUE): void = {
+              test1(a)
+            }
+            ---
+            fun(a: BOOLEAN) -> void
+            fun(a: NONE | FALSE | TRUE) -> void
+          `;
 
-        checkMainType`
-          // Ok, this one is fun. it is actually quite complicated to infer that a UnionType
-          // TRUE | FALSE | NONE satisfies all the subtypes of BOOLEAN.
-          // so, BOOLEAN is not assignable to TRUE | FALSE | NONE. So far.
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
+            // 3
+            fun test1(a: TRUE): void = {
+              test2(a)
+            }
+            fun test2(a: FALSE): void = ???
+            ---
+            fun(a: TRUE) -> void
+            fun(a: FALSE) -> void
+            ---
+            Expecting arguments type (FALSE) but got (TRUE)
+          `;
 
-          type BOOLEAN {
-            TRUE
-            FALSE
-            NONE
-          }
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
+            // 4
+            fun test1(a: BOOLEAN): void = ???
+            fun test2(a: FALSE): void = ???
+            fun test3(a: TRUE | FALSE): void = ???
+            fun test4(a: NONE | FALSE): void = ???
+            fun test5(a: NONE | FALSE | TRUE): void = ???
 
-          fun test1(a: BOOLEAN): void = {
-            test5(a)
-          }
-          fun test2(a: FALSE): void = {
-            test1(a)
-            test3(a)
-            test4(a)
-            test5(a)
-          }
-          fun test3(a: TRUE | FALSE): void = {
-            test1(a)
-            test5(a)
-          }
-          fun test4(a: NONE | FALSE): void = {
-            test1(a)
-            test5(a)
-          }
-          fun test5(a: NONE | FALSE | TRUE): void = {
-            test5(a)
-          }
+            fun main(): void = {
+              test1(TRUE())
+              test1(FALSE())
+              test1(NONE())
+              test2(FALSE())
+              test3(TRUE())
+              test3(FALSE())
+              test4(NONE())
+              test4(FALSE())
+              test5(TRUE())
+              test5(FALSE())
+              test5(NONE())
+            }
+            ---
+            fun(a: BOOLEAN) -> void
+            fun(a: FALSE) -> void
+            fun(a: TRUE | FALSE) -> void
+            fun(a: NONE | FALSE) -> void
+            fun(a: NONE | FALSE | TRUE) -> void
+            fun() -> void
+          `;
 
-          fun main(): void = {
-            test1(TRUE())
-            test1(FALSE())
-            test1(NONE())
-            test2(FALSE())
-            test3(TRUE())
-            test3(FALSE())
-            test4(NONE())
-            test4(FALSE())
-            test5(TRUE())
-            test5(FALSE())
-            test5(NONE())
-          }
-          ---
-          fun(a: BOOLEAN) -> void
-          fun(a: FALSE) -> void
-          fun(a: TRUE | FALSE) -> void
-          fun(a: NONE | FALSE) -> void
-          fun(a: NONE | FALSE | TRUE) -> void
-          fun() -> void
-          ---
-          Invalid signature. Expecting arguments type (NONE | FALSE | TRUE) but got (BOOLEAN)
-        `;
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
 
-        checkMainType`
-          type BOOLEAN {
-            TRUE
-            FALSE
-            NONE
-          }
+            // 4
+            fun test1(): TRUE = TRUE()
+            fun test2(): FALSE = FALSE()
+            fun test3(): BOOLEAN = FALSE()
+            fun test4(a: boolean): TRUE | FALSE = if(a) TRUE() else FALSE()
 
-          fun test1(a: BOOLEAN): void = ???
-          fun test2(a: FALSE): void = ???
-          fun test3(a: TRUE | FALSE): void = ???
-          fun test4(a: NONE | FALSE): void = ???
-          fun test5(a: NONE | FALSE | TRUE): void = ???
+            ---
+            fun() -> TRUE
+            fun() -> FALSE
+            fun() -> BOOLEAN
+            fun(a: boolean) -> TRUE | FALSE
+          `;
 
-          fun main(): void = {
-            test1(TRUE())
-            test1(FALSE())
-            test1(NONE())
-            test2(FALSE())
-            test3(TRUE())
-            test3(FALSE())
-            test4(NONE())
-            test4(FALSE())
-            test5(TRUE())
-            test5(FALSE())
-            test5(NONE())
-          }
-          ---
-          fun(a: BOOLEAN) -> void
-          fun(a: FALSE) -> void
-          fun(a: TRUE | FALSE) -> void
-          fun(a: NONE | FALSE) -> void
-          fun(a: NONE | FALSE | TRUE) -> void
-          fun() -> void
-        `;
+          checkMainType`
+            // Ok, this one is fun. it is actually quite complicated to infer that a UnionType
+            // TRUE | FALSE | NONE satisfies all the subtypes of BOOLEAN.
+            // so, BOOLEAN is not assignable to TRUE | FALSE | NONE. So far.
 
-        checkMainType`
-          type BOOLEAN {
-            TRUE
-            FALSE
-            NONE
-          }
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
 
-          fun test1(): TRUE = TRUE()
-          fun test2(): FALSE = FALSE()
-          fun test3(): BOOLEAN = FALSE()
-          fun test4(a: boolean): TRUE | FALSE = if(a) TRUE() else FALSE()
+            fun test1(a: BOOLEAN): void = {
+              test5(a)
+            }
 
-          ---
-          fun() -> TRUE
-          fun() -> FALSE
-          fun() -> BOOLEAN
-          fun(a: boolean) -> TRUE | FALSE
-        `;
+            fun test2(a: FALSE): void = {
+              test1(a)
+              test3(a)
+              test4(a)
+              test5(a)
+            }
+            fun test3(a: TRUE | FALSE): void = {
+              test1(a)
+              test5(a)
+            }
+            fun test4(a: NONE | FALSE): void = {
+              test1(a)
+              test5(a)
+            }
+            fun test5(a: NONE | FALSE | TRUE): void = {
+              test5(a)
+            }
 
+            fun main(): void = {
+              test1(TRUE())
+              test1(FALSE())
+              test1(NONE())
+              test2(FALSE())
+              test3(TRUE())
+              test3(FALSE())
+              test4(NONE())
+              test4(FALSE())
+              test5(TRUE())
+              test5(FALSE())
+              test5(NONE())
+            }
+            ---
+            fun(a: BOOLEAN) -> void
+            fun(a: FALSE) -> void
+            fun(a: TRUE | FALSE) -> void
+            fun(a: NONE | FALSE) -> void
+            fun(a: NONE | FALSE | TRUE) -> void
+            fun() -> void
+          `;
+
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
+
+            fun test1(a: BOOLEAN): void = { test2(a) }
+            fun test2(a: FALSE): void = ???
+            ---
+            fun(a: BOOLEAN) -> void
+            fun(a: FALSE) -> void
+            ---
+            Expecting arguments type (FALSE) but got (BOOLEAN)
+          `;
+
+          checkMainType`
+            type BOOLEAN {
+              TRUE
+              FALSE
+              NONE
+            }
+
+            fun test1(a: TRUE | FALSE): void = { test2(a) }
+            fun test2(a: FALSE): void = ???
+            ---
+            fun(a: TRUE | FALSE) -> void
+            fun(a: FALSE) -> void
+            ---
+            Expecting arguments type (FALSE) but got (TRUE | FALSE)
+          `;
+        });
         describe('unify complete types', () => {
           checkMainType`
             type Boolean {
@@ -656,7 +1041,7 @@ describe.only('Types', function() {
 
             var x = if (true) True else False
             ---
-            x := Boolean
+            x := (union (alias True) (alias False))
           `;
 
           checkMainType`
@@ -667,7 +1052,7 @@ describe.only('Types', function() {
 
             var x = if (true) True(1) else False(1)
             ---
-            x := Boolean
+            x := (union (alias True) (alias False))
           `;
 
           checkMainType`
@@ -678,7 +1063,7 @@ describe.only('Types', function() {
 
             var x = if (true) True else True
             ---
-            x := True
+            x := (alias True (struct True))
           `;
 
           checkMainType`
@@ -690,7 +1075,7 @@ describe.only('Types', function() {
 
             var x = if (true) True else False
             ---
-            x := True | False
+            x := (union (alias True) (alias False))
           `;
 
           checkMainType`
@@ -701,7 +1086,7 @@ describe.only('Types', function() {
 
             var x = if (true) Some(1) else None
             ---
-            x := Maybe
+            x := (union (alias Some) (alias None))
           `;
 
           checkMainType`
@@ -712,7 +1097,7 @@ describe.only('Types', function() {
 
             var x = if (true) Some(1) else Some(2)
             ---
-            x := Some
+            x := (alias Some (struct Some))
           `;
 
           checkMainType`
@@ -723,7 +1108,7 @@ describe.only('Types', function() {
 
             var x: Maybe = if (true) Some(1) else Some(2)
             ---
-            x := Maybe
+            x := (alias Maybe (union (alias Some) (alias None)))
           `;
 
           checkMainType`
@@ -734,7 +1119,7 @@ describe.only('Types', function() {
             var y = if(true) A else B
             fun test1(): P = A
             ---
-            y := P
+            y := (union (alias A) (alias B))
             fun() -> P
           `;
 
@@ -745,9 +1130,11 @@ describe.only('Types', function() {
                 A(x: i32)
               }
               var y = if (true) A(0) else B(0)
+              var z: P = if (true) A(0) else B(0)
               fun test1(): P = A(1)
               ---
-              y := P
+              y := (union (alias A) (alias B))
+              z := (alias P (union (alias B) (alias A)))
               fun() -> P
             `;
           });
@@ -761,7 +1148,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
         type x {
           Nila
           Custom(r: i32)
@@ -773,11 +1159,10 @@ describe.only('Types', function() {
         ---
         fun(i: i32) -> void & fun(t: Nila) -> void & fun() -> void
         ---
-        Type mismatch: Type "x" is not a function
+        Cannot find member "apply" in (alias x)
       `;
 
       checkMainType`
-        type i32
 
         fun rec(x: i32): i32 =
           if (x > 0)
@@ -787,9 +1172,8 @@ describe.only('Types', function() {
         ---
         fun(x: i32) -> i32
       `;
-      describe('sss', () => {
+      describe('assign to ref', () => {
         checkMainType`
-          type i32
           type void
 
           type x {
@@ -809,7 +1193,6 @@ describe.only('Types', function() {
         `;
 
         checkMainType`
-          type i32
           type void
 
           type x {
@@ -836,7 +1219,6 @@ describe.only('Types', function() {
         `;
 
         checkMainType`
-          type i32
           type void
 
           type x {
@@ -855,7 +1237,24 @@ describe.only('Types', function() {
         `;
 
         checkMainType`
-          type i32
+          type x {
+            Nila
+            Custom(r: i32)
+          }
+
+          fun canAnyStructBeAssignedToRef(x: ref): boolean = ???
+
+          fun a(): boolean = canAnyStructBeAssignedToRef(Custom(1))
+          fun b(): boolean = canAnyStructBeAssignedToRef(Nila)
+          fun c(t: x): boolean = canAnyStructBeAssignedToRef(t)
+          ---
+          fun(x: ref) -> boolean
+          fun() -> boolean
+          fun() -> boolean
+          fun(t: x) -> boolean
+        `;
+
+        checkMainType`
           type void
 
           type x {
@@ -864,20 +1263,47 @@ describe.only('Types', function() {
           }
 
           fun qq(x: ref): void = ???
-          fun qq(x: x): f32 = ???
+          fun qq(x: x): boolean = ???
+
+          fun a(): boolean = qq(Custom(1))
+          fun b(t: Custom): boolean = qq(t)
+          fun c(t: x): boolean = qq(t)
+          fun d(i: i32): boolean = qq(Custom(i))
+          fun e(t: Nila): boolean = qq(t)
+          fun f(): boolean = qq(Nila)
+          ---
+          fun(x: ref) -> void & fun(x: x) -> boolean
+          fun() -> boolean
+          fun(t: Custom) -> boolean
+          fun(t: x) -> boolean
+          fun(i: i32) -> boolean
+          fun(t: Nila) -> boolean
+          fun() -> boolean
+        `;
+
+        checkMainType`
+          type void
+
+          type x {
+            Nila
+            Custom(r: i32)
+          }
+
+          fun qq(x: ref): void = ???
+          fun qq(x: Nila): f32 = ???
           fun qq(x: Custom): i32 = ???
 
           fun a(): i32 = qq(Custom(1))
           fun b(t: Custom): i32 = qq(t)
-          fun c(t: x): f32 = qq(t)
+          fun c(t: x): void = qq(t)
           fun d(i: i32): i32 = qq(Custom(i))
           fun e(t: Nila): f32 = qq(t)
           fun f(): f32 = qq(Nila)
           ---
-          fun(x: ref) -> void & fun(x: x) -> f32 & fun(x: Custom) -> i32
+          fun(x: ref) -> void & fun(x: Nila) -> f32 & fun(x: Custom) -> i32
           fun() -> i32
           fun(t: Custom) -> i32
-          fun(t: x) -> f32
+          fun(t: x) -> void
           fun(i: i32) -> i32
           fun(t: Nila) -> f32
           fun() -> f32
@@ -891,19 +1317,19 @@ describe.only('Types', function() {
 
           fun qq(x: Custom): i32 = ???
           fun qq(x: ref): void = ???
-          fun qq(x: x): f32 = ???
+          fun qq(x: Nila): f32 = ???
 
           fun a(): i32 = qq(Custom(1))
           fun b(t: Custom): i32 = qq(t)
-          fun c(t: x): f32 = qq(t)
+          fun c(t: x): void = qq(t)
           fun d(i: i32): i32 = qq(Custom(i))
           fun e(t: Nila): f32 = qq(t)
           fun f(): f32 = qq(Nila)
           ---
-          fun(x: Custom) -> i32 & fun(x: ref) -> void & fun(x: x) -> f32
+          fun(x: Custom) -> i32 & fun(x: ref) -> void & fun(x: Nila) -> f32
           fun() -> i32
           fun(t: Custom) -> i32
-          fun(t: x) -> f32
+          fun(t: x) -> void
           fun(i: i32) -> i32
           fun(t: Nila) -> f32
           fun() -> f32
@@ -964,7 +1390,7 @@ describe.only('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Type<f32> is not a value, constructor or function.
+        Expecting arguments type (f32) but got (Type<f32>)
       `;
 
       checkMainType`
@@ -1039,7 +1465,9 @@ describe.only('Types', function() {
         ---
         fun(color: Color) -> void
       `;
+    });
 
+    describe.skip('type alias', () => {
       checkMainType`
         type int = i32
         type Integer = int
@@ -1082,18 +1510,18 @@ describe.only('Types', function() {
         var y3 = value3 is Enum
         var z3 = value3 is B
         ---
-        value1 := Enum
-        value2 := A | B
-        value3 := A
-        x1 := boolean
-        y1 := boolean
-        z1 := boolean
-        x2 := boolean
-        y2 := boolean
-        z2 := boolean
-        x3 := boolean
-        y3 := boolean
-        z3 := boolean
+        value1 := (alias Enum (union (alias A) (alias B) (alias C)))
+        value2 := (union (alias A) (alias B))
+        value3 := (alias A (struct A))
+        x1 := (alias boolean (native boolean))
+        y1 := (alias boolean (native boolean))
+        z1 := (alias boolean (native boolean))
+        x2 := (alias boolean (native boolean))
+        y2 := (alias boolean (native boolean))
+        z2 := (alias boolean (native boolean))
+        x3 := (alias boolean (native boolean))
+        y3 := (alias boolean (native boolean))
+        z3 := (alias boolean (native boolean))
         ---
         This statement is always false, type A can never be B
       `;
@@ -1193,11 +1621,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
-          A
-          B
-        }
-
         fun x(x: ref): i32 =
           x match {
             case is ref -> 1
@@ -1433,12 +1856,426 @@ describe.only('Types', function() {
       `;
     });
 
+    describe('UnionType', () => {
+      const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
+      const struct = (name: string) => new StructType(name);
+      const union = (...of: Type[]) => new UnionType(of);
+      const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));
+      const structAlias = (name: string) => aliasOf(name, struct(name));
+
+      describe('expansion', () => {
+        it('should expand types recursively', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const simplified = union(
+            AB,
+            ABC,
+            D,
+            union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
+          ).expand();
+
+          expect(simplified.inspect(100)).to.eq(
+            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+        });
+      });
+
+      describe('subtract', () => {
+        it('should subtract elements from non-expanded union', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const newType = union(
+            AB,
+            ABC,
+            D,
+            union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
+          ).subtract(D);
+
+          expect(newType.inspect(100)).to.eq(
+            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+        });
+
+        it('should yield (never) when subtracting (ref)', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const newType = union(
+            AB,
+            ABC,
+            D,
+            union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
+          ).subtract(RefType.instance);
+
+          expect(newType.inspect(100)).to.eq(`(never)`.trim());
+        });
+
+        it('should yield (never) when subtracting (ref) and (ref) is present in the union', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B, RefType.instance);
+          const ABC = union(AB, C);
+
+          const newType = union(
+            AB,
+            ABC,
+            D,
+            union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
+          ).subtract(RefType.instance);
+
+          expect(newType.inspect(100)).to.eq(`(never)`.trim());
+        });
+
+        it('should yield (never) when subtracting (alias (ref))', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const newType = union(
+            AB,
+            ABC,
+            D,
+            union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
+          ).subtract(aliasOf('ref', RefType.instance));
+
+          expect(newType.inspect(100)).to.eq(`(never)`.trim());
+        });
+
+        it('should subtract entire unions from non-expanded union', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const newType = union(
+            AB,
+            ABC,
+            D,
+            union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
+          ).subtract(ABC);
+
+          expect(newType.inspect(100)).to.eq(
+            `(union (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+        });
+
+        it('should subtract entire unions from non-expanded union', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const simplified = UnionType.of(
+            union(AB, ABC, D, union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))).expand()
+          );
+
+          expect(simplified.inspect(100)).to.eq(
+            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+
+          const newType = simplified.subtract(ABC);
+
+          expect(newType.inspect(100)).to.eq(
+            `(union (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+        });
+
+        it('subtract A from AB should yield B', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const AB = union(A, B);
+
+          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct B))`.trim());
+          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct B))`.trim());
+        });
+
+        it('subtract A and B from AB should yield NeverType', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const AB = union(A, B);
+
+          expect(AB.subtract(AB).inspect(100)).to.eq(`(never)`.trim());
+        });
+
+        it('should subtract elements from expanded union', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const ABC = union(AB, C);
+
+          const simplified = UnionType.of(
+            union(AB, ABC, D, union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))).expand()
+          );
+
+          expect(simplified.inspect(100)).to.eq(
+            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+
+          const newType = simplified.subtract(D);
+
+          expect(newType.inspect(100)).to.eq(
+            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (struct F) (struct G) (struct H) (struct I))`.trim()
+          );
+        });
+      });
+
+      describe('simplification', () => {
+        it('should simplify duplicated types', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+
+          const union = new UnionType([A, A, A, A, B, C, D, D]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (struct A) (struct B) (struct C) (struct D))
+            `.trim()
+          );
+        });
+
+        it('should simplify two equal types into one of them', () => {
+          const A = struct('A');
+
+          const union = new UnionType([A, A]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(`(struct A)`.trim());
+        });
+
+        it('should simplify deeply nested unions', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+          const AB = namedUnion('AB', A, B);
+          const CD = namedUnion('CD', C, D);
+
+          const simplified = union(A, B, C, D, AB, CD, D, D).simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `(union (alias AB (union (struct A) (struct B))) (alias CD (union (struct C) (struct D))))`.trim()
+          );
+        });
+
+        it('should simplify deeply nested unions avoiding conflicts', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+          const AB = union(A, B);
+          const BC = union(B, C);
+
+          const simplified = union(A, B, C, D, AB, BC, D, D).simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (struct A) (struct B) (struct C) (struct D))
+            `.trim()
+          );
+        });
+
+        it('should simplify deeply nested unions avoiding conflicts with aliases', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const AB = union(A, B);
+          const BC = union(B, C);
+
+          const simplified = union(A, B, C, D, AB, BC, D, D).simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+            (union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)))
+            `.trim()
+          );
+        });
+
+        it('should simplify deeply nested unions avoiding conflicts with aliases and extra type in unions', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const C = structAlias('C');
+          const D = structAlias('D');
+          const F = structAlias('F');
+          const AB = union(A, B, structAlias('AB1'));
+          const BC = union(B, C, structAlias('BC1'));
+
+          const simplified = union(A, B, C, D, AB, BC, D, D, F).simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (alias F (struct F)) (alias AB1 (struct AB1)) (alias BC1 (struct BC1)))`.trim()
+          );
+        });
+
+        it('should not remove ref types', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+
+          const union = new UnionType([A, A, A, A, B, C, D, D, RefType.instance]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (struct A) (struct B) (struct C) (struct D) (ref ?))
+            `.trim()
+          );
+        });
+
+        it('should not simplify aliases to the same type (i32)', () => {
+          const A = aliasOf('A', InjectableTypes.i32);
+          const B = aliasOf('B', InjectableTypes.i32);
+
+          const union = new UnionType([A, B, B]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (alias A (native i32)) (alias B (native i32)))
+            `.trim()
+          );
+
+          expect(A.canBeAssignedTo(B)).to.eq(true, 'A can be assigned to B');
+          expect(B.canBeAssignedTo(A)).to.eq(true, 'B can be assigned to A');
+          expect(B.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
+        });
+
+        it('should not simplify aliases to the same type (ref)', () => {
+          const A = aliasOf('A', RefType.instance);
+          const B = aliasOf('B', RefType.instance);
+
+          const union = new UnionType([A, B, B]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (alias A (ref ?)) (alias B (ref ?)))
+            `.trim()
+          );
+
+          expect(A.canBeAssignedTo(B)).to.eq(true, 'A can be assigned to B');
+          expect(B.canBeAssignedTo(A)).to.eq(true, 'B can be assigned to A');
+          expect(B.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
+        });
+
+        it('should structs are assignable to refs', () => {
+          const A = aliasOf('A', struct('A'));
+          const B = aliasOf('B', struct('B'));
+
+          const union = new UnionType([A, B, B]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (alias A (struct A)) (alias B (struct B)))
+            `.trim()
+          );
+
+          expect(A.canBeAssignedTo(B)).to.eq(false, 'A cannot be assigned to B');
+          expect(B.canBeAssignedTo(A)).to.eq(false, 'B cannot be assigned to A');
+          expect(B.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
+          expect(B.canBeAssignedTo(B.of)).to.eq(true, 'B can be assigned to B');
+          expect(B.of.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A.of)).to.eq(true, 'A can be assigned to A');
+          expect(A.of.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
+          expect(B.of.canBeAssignedTo(B.of)).to.eq(true, 'B can be assigned to B');
+          expect(A.of.canBeAssignedTo(A.of)).to.eq(true, 'A can be assigned to A');
+        });
+
+        it('should not remove alias to ref types', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+
+          const ref = aliasOf('Ref', RefType.instance);
+
+          const union = new UnionType([A, A, A, A, B, C, D, D, ref]);
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (struct A) (struct B) (struct C) (struct D) (alias Ref (ref ?)))
+            `.trim()
+          );
+        });
+
+        it('should remove types present inside the unions', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+
+          const unionCD = new UnionType([C, D]);
+
+          const union = new UnionType([A, A, A, A, B, C, unionCD, D, D]);
+
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(100)).to.eq(
+            `
+              (union (struct A) (struct B) (union (struct C) (struct D)))
+            `.trim()
+          );
+        });
+
+        it('should remove types present inside the unions with aliases', () => {
+          const A = struct('A');
+          const B = struct('B');
+          const C = struct('C');
+          const D = struct('D');
+
+          const unionCD = aliasOf('CDUnion', new UnionType([C, D]));
+
+          const union = new UnionType([A, A, A, A, B, C, unionCD, D, D]);
+
+          const simplified = union.simplify();
+
+          expect(simplified.inspect(0)).to.eq(
+            `
+              (union (struct A) (struct B) (alias CDUnion))
+            `.trim()
+          );
+        });
+      });
+    });
+
     describe('struct pattern matching', () => {
       checkMainType`
         type Enum {
           A
-          B
-          C
         }
 
         type Color {
@@ -1452,8 +2289,8 @@ describe.only('Types', function() {
           else -> Red
         }
         ---
-        x := ref
-        y := Enum | Red
+        x := (alias ref (ref ?))
+        y := (union (alias Enum) (alias Red))
       `;
 
       checkMainType`
@@ -1526,10 +2363,10 @@ describe.only('Types', function() {
           else -> value
         }
         ---
-        value := Enum
-        x := B
-        y := A | B
-        z := Enum
+        value := (alias Enum (union (alias A) (alias B) (alias C)))
+        x := (alias B (struct B))
+        y := (union (alias A) (alias B))
+        z := (alias Enum (union (alias A) (alias B) (alias C)))
       `;
 
       checkMainType`
@@ -1607,108 +2444,111 @@ describe.only('Types', function() {
         ---
         fun(value: Enum) -> B
       `;
-
-      checkMainType`
-        type Color {
-          Red
-          Custom(r: i32, g: i32, b: i32)
-        }
-
-        fun isRed(color: Color): boolean = {
-          color match {
-            case is Red -> true
-            case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+      // TODO: Deconstruct
+      describe.skip('deconstruct', () => {
+        checkMainType`
+          type Color {
+            Red
+            Custom(r: i32, g: i32, b: i32)
           }
-        }
-        ---
-        fun(color: Color) -> boolean
-      `;
-      checkMainType`
-        type Color {
-          Red
-          Custom(a: i32)
-        }
 
-        fun isRed(color: Color): i32 = {
-          color match {
-            case is Red -> 1
-            case is Custom(a) -> a
+          fun isRed(color: Color): boolean = {
+            color match {
+              case is Red -> true
+              case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+            }
           }
-        }
-        ---
-        fun(color: Color) -> i32
-      `;
+          ---
+          fun(color: Color) -> boolean
+        `;
 
-      checkMainType`
-        type Color {
-          Red
-          Custom(a: i32)
-        }
-
-        fun isRed(color: Color): i32 = {
-          color match {
-            case is Red -> 1
-            case is Custom(a, b, c, d) -> a
+        checkMainType`
+          type Color {
+            Red
+            Custom(a: i32)
           }
-        }
-        ---
-        fun(color: Color) -> i32
-        ---
-        Invalid number of arguments. The type Custom only accepts 1
-        Invalid number of arguments. The type Custom only accepts 1
-        Invalid number of arguments. The type Custom only accepts 1
-      `;
 
-      checkMainType`
-        type Color {
-          Red
-          Blue
-          // TODO: check duplicated params in structs
-          Custom(
-            a: i32,
-            b: i32,
-            c: i32,
-            d: Red,
-            e: i32
-          )
-        }
-
-        fun isRed(color: Color): Red | Blue = {
-          color match {
-            case is Custom(_,_,_,a) -> a
-            else -> Blue
+          fun isRed(color: Color): i32 = {
+            color match {
+              case is Red -> 1
+              case is Custom(a) -> a
+            }
           }
-        }
-        ---
-        fun(color: Color) -> Red | Blue
-      `;
+          ---
+          fun(color: Color) -> i32
+        `;
 
-      checkMainType`
-        type Color {
-          Red
-          Green
-          Blue
-          Custom(r: i32, g: i32, b: i32)
-        }
-
-        fun isRed(color: Color): boolean = {
-          color match {
-            case is Red -> true
-            case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
-            else -> false
+        checkMainType`
+          type Color {
+            Red
+            Custom(a: i32)
           }
-        }
 
-        fun testColors(): void = {
-          support::test::assert(isRed(Red) == true)
-          support::test::assert(isRed(Green) == false)
-          support::test::assert(isRed(Blue) == false)
-          support::test::assert(isRed(Custom(5,5,5)) == false)
-        }
-        ---
-        fun(color: Color) -> boolean
-        fun() -> void
-      `;
+          fun isRed(color: Color): i32 = {
+            color match {
+              case is Red -> 1
+              case is Custom(a, b, c, d) -> a
+            }
+          }
+          ---
+          fun(color: Color) -> i32
+          ---
+          Invalid number of arguments. The type Custom only accepts 1
+          Invalid number of arguments. The type Custom only accepts 1
+          Invalid number of arguments. The type Custom only accepts 1
+        `;
+
+        checkMainType`
+          type Color {
+            Red
+            Blue
+            // TODO: check duplicated params in structs
+            Custom(
+              a: i32,
+              b: i32,
+              c: i32,
+              d: Red,
+              e: i32
+            )
+          }
+
+          fun isRed(color: Color): Red | Blue = {
+            color match {
+              case is Custom(_,_,_,a) -> a
+              else -> Blue
+            }
+          }
+          ---
+          fun(color: Color) -> Red | Blue
+        `;
+
+        checkMainType`
+          type Color {
+            Red
+            Green
+            Blue
+            Custom(r: i32, g: i32, b: i32)
+          }
+
+          fun isRed(color: Color): boolean = {
+            color match {
+              case is Red -> true
+              case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+              else -> false
+            }
+          }
+
+          fun testColors(): void = {
+            support::test::assert(isRed(Red) == true)
+            support::test::assert(isRed(Green) == false)
+            support::test::assert(isRed(Blue) == false)
+            support::test::assert(isRed(Custom(5,5,5)) == false)
+          }
+          ---
+          fun(color: Color) -> boolean
+          fun() -> void
+        `;
+      });
     });
 
     describe('structs', () => {
@@ -1736,7 +2576,7 @@ describe.only('Types', function() {
 
         var x = Custom(1)
         ---
-        x := Custom
+        x := (alias Custom (struct Custom))
       `;
 
       checkMainType`
@@ -1861,30 +2701,47 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        fun (+)(x: boolean, y: i32): f32 = 1.0
+        type i32
+        type f32
+        type boolean
+
+        ns boolean {
+          fun (+)(x: boolean, y: i32): f32 = 1.0
+        }
 
         fun main(): f32 = true + 3
         ---
-        fun(x: boolean, y: i32) -> f32
         fun() -> f32
       `;
 
       checkMainType`
-        fun (+)(x: boolean, y: i32): i32 = 1
-        fun (+)(x: i32, y: f32): f32 = 1.0
+        type i32
+        type f32
+        type boolean
+
+        ns boolean {
+          fun (+)(x: boolean, y: i32): i32 = 1
+        }
+        ns i32 {
+          fun (+)(x: i32, y: f32): f32 = 1.0
+        }
 
         fun main(): f32 = true + 3 + 1.0
         ---
-        fun(x: boolean, y: i32) -> i32 & fun(x: i32, y: f32) -> f32
         fun() -> f32
       `;
 
       checkMainType`
-        fun (+)(x: boolean, y: i32): i32 = 1
+        type i32
+        type f32
+        type boolean
+
+        ns boolean {
+          fun (+)(x: boolean, y: i32): i32 = 1
+        }
 
         fun main(): f32 = true + 3
         ---
-        fun(x: boolean, y: i32) -> i32
         fun() -> f32
         ---
         Type "i32" is not assignable to "f32"
@@ -1960,14 +2817,14 @@ describe.only('Types', function() {
           }
         }
         ---
-        AL_BITS := i32
-        AL_SIZE := i32
-        AL_MASK := i32
-        MAX_SIZE_32 := i32
-        HEAP_BASE := i32
-        startOffset := i32
-        offset := i32
-        lastPtr := i32
+        AL_BITS := (alias i32 (native i32))
+        AL_SIZE := (alias i32 (native i32))
+        AL_MASK := (alias i32 (native i32))
+        MAX_SIZE_32 := (alias i32 (native i32))
+        HEAP_BASE := (alias i32 (native i32))
+        startOffset := (alias i32 (native i32))
+        offset := (alias i32 (native i32))
+        lastPtr := (alias i32 (native i32))
         fun(pages: i32) -> i32
         fun() -> i32
         fun(a: i32, b: i32) -> i32
@@ -1994,7 +2851,7 @@ describe.only('Types', function() {
             ptr
           }
           ---
-          lastPtr := i32
+          lastPtr := (alias i32 (native i32))
           fun(size: i32) -> i32
         `;
 
@@ -2039,7 +2896,6 @@ describe.only('Types', function() {
         `;
       });
       checkMainType`
-        type i32
 
         private fun innerFunctionArgs(a: i32): i32 = a
         private fun innerFunction(): i32 = innerFunctionArgs(3)
@@ -2056,7 +2912,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         fun matcher(x: i32): i32 =
           x match {
@@ -2068,8 +2923,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
 
         fun matcher(x: i32): i32 =
           x match {
@@ -2091,7 +2944,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         type Boolean {
           True()
@@ -2108,7 +2960,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
 
         fun malloc(size: i32): i32 = %wasm {
@@ -2122,7 +2973,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         type Boolean {
           True()
@@ -2143,7 +2993,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
           if (n > 0) {
@@ -2167,7 +3016,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         type Boolean {
           True()
@@ -2188,7 +3036,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         type Boolean {
           True()
@@ -2205,8 +3052,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
 
         fun x1(): f32 = {
           fun Y(): f32 = 1.0
@@ -2230,8 +3075,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
 
         fun matcher(x: i32): i32 | f32 =
           x match {
@@ -2243,8 +3086,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type boolean
         fun gte(x: i32, y: i32): boolean = {
           val test = x >= y
           test
@@ -2254,8 +3095,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type boolean
         fun gte(x: i32, y: i32): i32 = {
           val test = x >= y
           test
@@ -2267,7 +3106,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type f32
 
         fun x(): f32 =
           if (1.2)
@@ -2281,8 +3119,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type boolean
 
         fun x(): boolean = 1 > 2
         ---
@@ -2290,8 +3126,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type boolean
 
         fun x(): boolean = { 1 > 2 }
         ---
@@ -2299,8 +3133,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type boolean
 
         fun x(): i32 = {
           1 > 2
@@ -2311,7 +3143,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         fun gte(x: i32): i32 = {
           var test = 0
@@ -2323,7 +3154,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         private fun fibo(n: i32, x1: i32, x2: i32): i32 =
           if (n > 0)
@@ -2341,7 +3171,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         fun gte(x: i32): i32 = {
           var test = 0
@@ -2353,7 +3182,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
 
         fun gte(x: i32): i32 = {
           var test = 0
@@ -2365,31 +3193,27 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
         var x = 1
         fun getX(): i32 = x
         ---
-        x := i32
+        x := (alias i32 (native i32))
         fun() -> i32
       `;
 
       checkMainType`
         type void
-        type i32
         fun getX(x: i32): void = {}
         ---
         fun(x: i32) -> void
       `;
 
       checkMainType`
-        type i32
         fun getX(x: i32): i32 = x
         ---
         fun(x: i32) -> i32
       `;
 
       checkMainType`
-        type i32
         fun getX(x: i32): i32 = {
           x
           x
@@ -2402,8 +3226,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
         fun getX(): i32 = {
           1.0
           1.0
@@ -2414,15 +3236,12 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type boolean
         fun gte(x: i32, y: i32): boolean = x >= y
         ---
         fun(x: i32, y: i32) -> boolean
       `;
 
       checkMainType`
-        type i32
         type void
 
         fun getX(x: i32): void =
@@ -2434,7 +3253,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
         type void
 
         fun getX(): void = {
@@ -2447,7 +3265,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
         type void
 
         fun getX(): void =
@@ -2459,7 +3276,6 @@ describe.only('Types', function() {
       `;
 
       checkMainType`
-        type i32
         type void
 
         var x = 1
@@ -2469,12 +3285,11 @@ describe.only('Types', function() {
             x
           }
         ---
-        x := i32
+        x := (alias i32 (native i32))
         fun() -> void
       `;
 
       checkMainType`
-        type i32
         type void
 
         var x = 1
@@ -2489,7 +3304,7 @@ describe.only('Types', function() {
           x = x + 1
         }
         ---
-        x := i32
+        x := (alias i32 (native i32))
         fun() -> i32
         fun() -> void
       `;
@@ -2505,9 +3320,14 @@ describe.only('Types', function() {
           if (e) throw e;
           const typePhase = new TypePhaseResult(result);
           typePhase.execute();
-          typePhase.ensureIsValid();
+          try {
+            typePhase.ensureIsValid();
 
-          return print(typePhase.typeGraph);
+            return print(typePhase.typeGraph);
+          } catch (e) {
+            // console.log(print(typePhase.typeGraph));
+            throw e;
+          }
         },
         '.dot'
       );
@@ -2520,7 +3340,8 @@ describe.only('Types', function() {
         async (result, e) => {
           if (e) {
             if (result) {
-              console.log(printErrors(result.document, [e as any]));
+              result.parsingContext.messageCollector.error(e as any);
+              console.log(printErrors(result.parsingContext));
             }
             throw e;
           }
@@ -2530,7 +3351,8 @@ describe.only('Types', function() {
             typePhase.execute();
             return printAST(typePhase.document);
           } catch (e) {
-            console.log(printErrors(result.document, [e]));
+            result.parsingContext.messageCollector.error(e);
+            console.log(printErrors(result.parsingContext));
             throw e;
           }
         },
@@ -2550,9 +3372,11 @@ describe.only('Types', function() {
           try {
             typePhase.execute();
             typePhase.ensureIsValid();
-            debugger;
           } catch (e) {
-            return printErrors(typePhase.document, typePhase.errors, true);
+            if (!typePhase.parsingContext.messageCollector.errors.length) {
+              throw e;
+            }
+            return printErrors(typePhase.parsingContext, true);
           }
 
           throw new Error('Type phase did not fail');

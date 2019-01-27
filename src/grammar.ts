@@ -13,17 +13,17 @@ Directive         ::= ( FunctionDirective
                       | TypeDirective
                       | ImportDirective
                       | EffectDirective
-                      | NamespaceDirective
+                      | NSDirective
                       ) {fragment=true}
 
 ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
 FunctionDirective ::= PrivateModifier? InlineModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
-TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
+TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') ValueType)? {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
-NamespaceDirective::= PrivateModifier? NAMESPACE_KEYWORD NamespaceDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+NSDirective       ::= PrivateModifier? NAMESPACE_KEYWORD NamespaceDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
 InlineModifier    ::= INLINE_KEYWORD
@@ -31,9 +31,7 @@ InlineModifier    ::= INLINE_KEYWORD
 TypeKind          ::= TYPE_KEYWORD
 
 UnknownExpression ::= '???'
-
-
-
+ValueType         ::= '=' WS* (Type | UnknownExpression) {fragment=true}
 
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
@@ -50,7 +48,7 @@ ParameterList     ::= Parameter NthParameter* {fragment=true}
 NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 Parameter         ::= NameIdentifier WS* OfType? {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
-StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
+StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? (WS* &'{' NamespaceElementList)? {pin=1}
 EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType {pin=1}
 TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
@@ -83,9 +81,7 @@ NamespaceElementList ::= '{' (WS* Directive)* WS* '}' {pin=1,recoverUntil=BLOCK_
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
 EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-TypeDeclaration   ::= '{' TypeDeclElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-
-TypeAlias         ::= '=' WS* Type {pin=1}
+TypeDeclaration   ::= '{' TypeDeclElements? WS* '}' (WS* &'{' NamespaceElementList)? {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 FunctionEffect    ::= '<' WS* (Type WS*)? '>' {pin=1}
 Type              ::= UnionType
@@ -174,7 +170,6 @@ Reference         ::= QName
 
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
-NullLiteral       ::= NULL_KEYWORD
 NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
 StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
@@ -182,7 +177,6 @@ Literal           ::= ( StringLiteral
                       | HexLiteral
                       | NumberLiteral
                       | BooleanLiteral
-                      | NullLiteral
                       ) {fragment=true}
 
 NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])*
@@ -196,7 +190,7 @@ SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
 
 /* Tokens */
 
@@ -204,7 +198,7 @@ FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
-NAMESPACE_KEYWORD ::= 'namespace' WS+
+NAMESPACE_KEYWORD ::= 'ns'        WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
 
 TYPE_KEYWORD      ::= ( 'type'
@@ -250,7 +244,6 @@ RESERVED_WORDS    ::= ( 'async'
 
 TRUE_KEYWORD      ::= 'true'    ![A-Za-z0-9_]
 FALSE_KEYWORD     ::= 'false'   ![A-Za-z0-9_]
-NULL_KEYWORD      ::= 'null'    ![A-Za-z0-9_]
 IF_KEYWORD        ::= 'if'      ![A-Za-z0-9_]
 ELSE_KEYWORD      ::= 'else'    ![A-Za-z0-9_]
 CASE_KEYWORD      ::= 'case'    ![A-Za-z0-9_]

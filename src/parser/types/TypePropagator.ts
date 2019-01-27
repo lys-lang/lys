@@ -208,10 +208,16 @@ export function resolveReturnType(
     );
 
     ctx.addFunctionSubGraph(functionNode, argTypes, dataGraph);
-    const functionName = functionNode.functionName.name + '(' + argTypes.join(',') + ')';
+    const functionName = functionNode.functionName.internalIdentifier + '(' + argTypes.join(',') + ')';
     ctx.rootGraph.addSubGraph(dataGraph, functionName);
     const propagator = ctx.newExecutorWithContext(functionNode.closure, dataGraph, context);
-    propagator.run();
+
+    try {
+      propagator.run();
+    } catch (e) {
+      context.messageCollector.error(e, functionNode);
+    }
+
     const value = dataGraph.findNode(functionNode.body);
 
     const result = value.resultType();
@@ -227,28 +233,30 @@ export function resolveReturnType(
   }
 }
 
-// export function resolveMember(typeGraph: TypeGraph, node: Nodes.MemberNode, ctx: TypeResolutionContext): Type | null {
-//   const context = ctx.currentParsingContext;
-//   const messageCollector = new MessageCollector();
-//   const builder = new TypeGraphBuilder(context, typeGraph, messageCollector);
+export function resolveNode(node: Nodes.Node, ctx: TypeResolutionContext): Type | null {
+  if (node.ofType) {
+    return node.ofType;
+  }
 
-//   const dataGraph: TypeGraph = builder.buildMemberNode(node);
+  const graphName = 'expression';
+  const context = ctx.currentParsingContext;
+  const messageCollector = new MessageCollector();
 
-//   const id = `member${ctx.rootGraph.getNewSubgraphId()}`;
+  const dataGraph: TypeGraph = ctx.currentGraph.createNameResolverFor(node);
 
-//   ctx.rootGraph.addSubGraph(dataGraph, id);
-//   const propagator = ctx.newExecutorWithContext(node.closure, dataGraph, context);
-//   propagator.run();
+  ctx.rootGraph.addSubGraph(dataGraph, graphName);
+  const propagator = ctx.newExecutorWithContext(node.closure, dataGraph, context);
+  propagator.run();
 
-//   const value = dataGraph.findNode(node);
+  const value = dataGraph.findNode(node);
 
-//   const result = value.resultType();
+  const result = value.resultType();
 
-//   if (!result && messageCollector.hasErrors()) {
-//     ctx.rootGraph.removeSubGraph(dataGraph, id);
-//   } else {
-//     context.messageCollector.mergeWith(messageCollector);
-//   }
+  if (!result && messageCollector.hasErrors()) {
+    ctx.rootGraph.removeSubGraph(dataGraph, graphName);
+  } else {
+    context.messageCollector.mergeWith(messageCollector);
+  }
 
-//   return result;
-// }
+  return result;
+}

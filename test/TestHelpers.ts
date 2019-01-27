@@ -22,8 +22,8 @@ export function testParseToken<T extends PhaseResult>(
     txt,
     target,
     async (doc: T, e) => {
-      if (doc && doc.errors && doc.errors.length) {
-        throw doc.errors[0];
+      if (doc && doc.parsingContext.messageCollector.errors && doc.parsingContext.messageCollector.errors.length) {
+        throw doc.parsingContext.messageCollector.errors[0];
       }
 
       if (customTest) {
@@ -74,7 +74,7 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
 
 export function printAST(token: IToken | Nodes.Node, level = 0) {
   if (token instanceof Nodes.Node) {
-    const ofType = token.ofType ? ' type=' + token.ofType.toString() : '';
+    const ofType = token.ofType ? ' type=' + token.ofType.inspect(100) : '';
     const text = token.text ? '=' + token.text.replace(/\n/g, '\\n') : '';
     const annotations =
       token.getAnnotations().length > 0

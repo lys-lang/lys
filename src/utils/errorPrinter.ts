@@ -1,8 +1,10 @@
-import { Nodes } from '../parser/nodes';
 declare var require;
 const colors = require('colors/safe');
 import { LineMapper, ITextPosition } from './LineMapper';
 import { IErrorPositionCapable } from '../parser/NodeError';
+import { ParsingContext } from '../parser/closure';
+import { ParsingPhaseResult } from '../parser/phases/parsingPhase';
+import { indent } from './astPrinter';
 
 function mapSet<T, V>(set: Set<T>, fn: (x: T) => V): V[] {
   const out = [];
@@ -14,6 +16,7 @@ interface ILocalError {
   message: string;
   start: ITextPosition;
   end: ITextPosition;
+  stack?: string;
 }
 
 const ansiRegex = new RegExp(
@@ -24,8 +27,57 @@ const ansiRegex = new RegExp(
   'g'
 );
 
-export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapable[], stripAnsi = false) {
-  let source = root.textContent;
+export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
+  const errorByFile = new Map<string, IErrorPositionCapable[]>();
+
+  parsingContext.messageCollector.errors.forEach($ => {
+    const document = ($.position && $.position.document) || '(no document)';
+    if (!errorByFile.has(document)) {
+      errorByFile.set(document, []);
+    }
+    errorByFile.get(document).push($);
+  });
+
+  const out = [];
+
+  errorByFile.forEach((errors, fileName) => {
+    out.push(printErrors_(fileName, parsingContext, errors, stripAnsi));
+  });
+
+  return out.join('\n');
+}
+function printErrors_(
+  fileName: string,
+  parsingContext: ParsingContext,
+  errors: IErrorPositionCapable[],
+  stripAnsi = false
+) {
+  const printLines = [];
+
+  printLines.push(colors.cyan(fileName || '(no file)'));
+
+  let parsing: ParsingPhaseResult;
+
+  try {
+    parsing = parsingContext.getParsingPhaseForFile(fileName);
+  } catch {}
+
+  if (!parsing) {
+    errors.forEach((err: IErrorPositionCapable & Error) => {
+      printLines.push(colors.red(err.message));
+      if (err.stack) {
+        printLines.push(indent(colors.gray(err.stack), '  '));
+      }
+    });
+
+    if (stripAnsi) {
+      return printLines.join('\n').replace(ansiRegex, '');
+    }
+
+    return printLines.join('\n');
+  }
+
+  const source = parsing.content;
 
   let lineMapper = new LineMapper(source, Math.random().toString());
 
@@ -38,19 +90,19 @@ export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapa
   const errorOnLines: Set<ILocalError>[] = new Array(lines.length + 1).fill(null).map(_ => new Set());
   const printableErrors = new Set<ILocalError>();
 
-  errors.forEach(err => {
+  errors.forEach((err: IErrorPositionCapable & Error) => {
     try {
-      if (err.start === undefined) {
-        return;
+      if (!err.position) {
+        throw null;
       }
 
-      const start = lineMapper.position(err.start);
-      const end = lineMapper.position(err.end);
+      const start = lineMapper.position(err.position.start);
+      const end = lineMapper.position(err.position.end);
 
       if (start.line >= 0) {
         errorOnLines[start.line] = errorOnLines[start.line] || new Set();
 
-        const error = { start, end, message: err.message || err.toString() };
+        const error = { start, end, message: err.message || err.toString(), stack: err.stack };
         printableErrors.add(error);
 
         for (let l = start.line; l <= end.line; l++) {
@@ -58,7 +110,7 @@ export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapa
         }
       }
     } catch (e) {
-      printableErrors.add({ start: null, end: null, message: err.message || err.toString() });
+      printableErrors.add({ start: null, end: null, message: err.message || err.toString(), stack: err.stack });
     }
   });
 
@@ -66,7 +118,7 @@ export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapa
 
   const ln = n => colors.bgBlack(colors.gray(('    ' + (n + 1).toString()).substr(-5)) + '│') + ' ';
   const printedErrors: Set<ILocalError> = new Set();
-  const printLines = [];
+
   const printableLines = [];
   const linesAbove = 10;
 
@@ -87,12 +139,6 @@ export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapa
     lines.forEach((_, y) => {
       printableLines[y] = true;
     });
-  }
-
-  if (root.file) {
-    printLines.push(colors.cyan(root.file));
-  } else {
-    printLines.push(colors.cyan('(unknown file)'));
   }
 
   printableLines.forEach((printable, i) => {
@@ -143,6 +189,9 @@ export function printErrors(root: Nodes.DocumentNode, errors: IErrorPositionCapa
   printableErrors.forEach(err => {
     if (!printedErrors.has(err)) {
       printLines.push(colors.red(err.message));
+      // if (err.stack) {
+      //   printLines.push(indent(colors.gray(err.stack), '  '));
+      // }
     }
   });
 

@@ -4,31 +4,28 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="boolean" type=Type<boolean>
-  |-OverloadedFunctionNode type=fun(a: boolean, b: boolean) -> boolean annotations=Injected
-    |-FunDirectiveNode type=fun(a: boolean, b: boolean) -> boolean
-      |-FunctionNode type=fun(a: boolean, b: boolean) -> boolean
-        |-ParameterNode
-          |-NameIdentifierNode="a" type=boolean
-          |-ReferenceNode type=Type<boolean>
-            |-QNameNode=boolean
-              |-NameIdentifierNode="boolean"
-        |-ParameterNode
-          |-NameIdentifierNode="b" type=boolean
-          |-ReferenceNode type=Type<boolean>
-            |-QNameNode=boolean
-              |-NameIdentifierNode="boolean"
-        |-NameIdentifierNode="test" type=fun(a: boolean, b: boolean) -> boolean
-        |-ReferenceNode type=Type<boolean>
+  |-OverloadedFunctionNode type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean)) annotations=Injected
+    |-FunctionNode type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean))
+      |-ParameterNode
+        |-NameIdentifierNode="a" type=(alias boolean (native boolean))
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-BinaryExpressionNode="&&" type=boolean annotations=IsValueNode
-          |-NameIdentifierNode="&&"
-          |-ReferenceNode type=boolean annotations=IsValueNode
-            |-QNameNode=a
-              |-NameIdentifierNode="a"
-          |-ReferenceNode type=boolean annotations=IsValueNode
-            |-QNameNode=b
-              |-NameIdentifierNode="b"
-    |-NameIdentifierNode="test" type=fun(a: boolean, b: boolean) -> boolean
+      |-ParameterNode
+        |-NameIdentifierNode="b" type=(alias boolean (native boolean))
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+      |-NameIdentifierNode="test"
+      |-ReferenceNode type=(type (alias boolean (native boolean)))
+        |-QNameNode=boolean
+          |-NameIdentifierNode="boolean"
+      |-BinaryExpressionNode="&&" type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-NameIdentifierNode="&&"
+        |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
+        |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-QNameNode=b
+            |-NameIdentifierNode="b"
+    |-NameIdentifierNode="test" type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean))

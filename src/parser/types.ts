@@ -1,8 +1,5 @@
-import { Closure, Reference } from './closure';
-import { AstNodeError } from './NodeError';
-import { TypeGraph } from './types/TypeGraph';
-import { TypeResolutionContext } from './types/TypePropagator';
 import { flatten } from './helpers';
+import { Nodes } from './nodes';
 
 export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
 
@@ -114,15 +111,14 @@ export abstract class Type {
     return false;
   }
 
-  toString() {
-    return `???<${NativeTypes[this.nativeType]}>`;
-  }
+  abstract toString(): string;
+  abstract inspect(levels: number): string;
 }
 
 export class FunctionType extends Type {
   nativeType: NativeTypes = NativeTypes.func;
 
-  constructor(public internalName: string) {
+  constructor(public name: Nodes.NameIdentifierNode) {
     super();
   }
 
@@ -143,13 +139,6 @@ export class FunctionType extends Type {
   }
 
   toString() {
-    const ret = this.returnType.toString();
-
-    if (ret.includes(',')) {
-      console.log('marker149');
-      console.dir(this.returnType);
-    }
-
     return `fun(${this.parameterTypes
       .map(($, $$) => {
         if (this.parameterNames[$$]) {
@@ -160,16 +149,33 @@ export class FunctionType extends Type {
       })
       .join(', ')}) -> ${this.returnType}`;
   }
+
+  inspect() {
+    return `(fun ${JSON.stringify(this.name.name)} (${this.parameterTypes
+      .map($ => $.inspect(0))
+      .join(' ')}) ${this.returnType.inspect(0)})`;
+  }
 }
 
 export class RefType extends Type {
   nativeType: NativeTypes = NativeTypes.u64;
-  superType: RefType | null = null;
 
   static instance: RefType = new RefType();
 
+  protected constructor() {
+    super();
+  }
+
+  static isRefType(otherType: Type) {
+    return getUnderlyingTypeFromAlias(otherType) === RefType.instance;
+  }
+
   toString() {
     return 'ref';
+  }
+
+  inspect() {
+    return '(ref ?)';
   }
 
   canBeAssignedTo(otherType: Type) {
@@ -177,11 +183,7 @@ export class RefType extends Type {
       return true;
     }
 
-    if (this.superType && this.superType.canBeAssignedTo(otherType)) {
-      return true;
-    }
-
-    if (otherType instanceof RefType && otherType.toString() == 'ref') {
+    if (RefType.isRefType(otherType)) {
       return true;
     }
 
@@ -193,40 +195,22 @@ export class RefType extends Type {
       return 1 / depth;
     }
 
-    if (this.superType) {
-      return this.superType.typeSimilarity(to, depth + 1);
-    }
-
     return 0;
-  }
-
-  equals(other: Type) {
-    if (!other) return false;
-    return other instanceof RefType && other.toString() == 'ref';
-  }
-}
-
-export class PolimorphicType extends RefType {
-  of = new Map<string, StructType>();
-
-  constructor(public reference: Reference) {
-    super();
-    this.superType = RefType.instance;
   }
 
   equals(otherType: Type) {
     if (!otherType) return false;
-    return this === otherType;
-  }
-
-  toString() {
-    return this.reference.toString();
+    return RefType.isRefType(otherType);
   }
 }
 
 export class StringType extends RefType {
   toString() {
     return 'string';
+  }
+
+  inspect() {
+    return '(ref string)';
   }
 
   equals(other: Type) {
@@ -308,26 +292,8 @@ export class StructType extends RefType {
   parameterTypes: Type[] = [];
   parameterNames: string[] = [];
 
-  private constructor(public internalName: string, public reference: Reference, superType: PolimorphicType = null) {
+  constructor(public structName: string) {
     super();
-
-    if (superType) {
-      this.superType = superType;
-      if (superType.of.has(reference.referencedNode.name)) {
-        throw new Error('Supertype already have ' + reference);
-      }
-      superType.of.set(reference.referencedNode.name, this);
-    } else {
-      this.superType = RefType.instance;
-    }
-  }
-
-  static fromSuperType(internalName: string, reference: Reference, superType: PolimorphicType) {
-    if (superType && superType.of.has(reference.referencedNode.name)) {
-      return superType.of.get(reference.referencedNode.name);
-    } else {
-      return new StructType(internalName, reference, superType);
-    }
   }
 
   acceptsTypes(types: Type[], strict: boolean) {
@@ -335,16 +301,15 @@ export class StructType extends RefType {
   }
 
   equals(type: Type) {
-    if (!(type instanceof StructType)) return false;
-    if (this.reference !== type.reference) return false;
-    if (this.superType !== type.superType) return false;
-    if (this.parameterTypes.length != type.parameterTypes.length) return false;
-    if (this.parameterTypes.some(($, $$) => !$.equals(type.parameterTypes[$$]))) return false;
-    return true;
+    return type === this;
   }
 
   toString() {
-    return this.reference.toString();
+    return this.structName.toString();
+  }
+
+  inspect() {
+    return '(struct ' + this.structName.toString() + ')';
   }
 }
 
@@ -357,6 +322,10 @@ export class IntersectionType extends Type {
 
   toString() {
     return this.of.map($ => $.toString()).join(' & ');
+  }
+
+  inspect(levels: number = 0) {
+    return '(intersection ' + this.of.map($ => $.inspect(levels - 1)).join(' ') + ')';
   }
 
   simplify() {
@@ -381,44 +350,11 @@ export class IntersectionType extends Type {
   }
 }
 
-export class ReferenceType extends Type {
-  constructor(public referencedName: string, public closure: Closure) {
-    super();
-    if (!closure) {
-      debugger;
-    }
-  }
-
-  resolveType(typeGraph: TypeGraph): Type {
-    const resolvedReference = this.closure.get(this.referencedName, true);
-    const typeNode = typeGraph.findNode(resolvedReference.referencedNode);
-
-    // TODO: verify referencedNode is a type declaration and not a variable name
-
-    if (!typeNode) {
-      throw new AstNodeError('Node has no type node', resolvedReference.referencedNode);
-    }
-    if (!typeNode.resultType()) {
-      throw new AstNodeError(
-        `Node ${resolvedReference.referencedNode.parent.nodeName}.${
-          resolvedReference.referencedNode.nodeName
-        } has no resolved type (${resolvedReference.referencedNode.name})`,
-        resolvedReference.referencedNode
-      );
-    }
-    return typeNode.resultType();
-  }
-
-  toString() {
-    return `TypeRef(${this.referencedName})`;
-  }
-
-  equals(other: Type) {
-    if (!other) return false;
-    return (
-      other instanceof ReferenceType &&
-      other.closure.get(other.referencedName, true) == this.closure.get(this.referencedName, true)
-    );
+export function getUnderlyingTypeFromAlias(type: Type): Type {
+  if (type instanceof TypeAlias) {
+    return getUnderlyingTypeFromAlias(type.of);
+  } else {
+    return type;
   }
 }
 
@@ -437,7 +373,7 @@ export class UnionType extends Type {
     }
   }
 
-  constructor(public of: Type[] = [], public readonly simplified = false) {
+  constructor(public readonly of: Type[] = [], public readonly simplified = false) {
     super();
   }
 
@@ -445,7 +381,7 @@ export class UnionType extends Type {
     if (x instanceof UnionType) {
       return x;
     } else if (x instanceof Type) {
-      return new UnionType([x]);
+      return new UnionType([x], true);
     } else if (x instanceof Array) {
       return new UnionType(x);
     }
@@ -455,6 +391,11 @@ export class UnionType extends Type {
   toString() {
     if (this.of.length == 0) return '(empty union)';
     return this.of.map($ => $.toString()).join(' | ');
+  }
+
+  inspect(levels: number = 0) {
+    if (this.of.length == 0) return `(union EMPTY)`;
+    return '(union ' + this.of.map($ => $.inspect(levels - 1)).join(' ') + ')';
   }
 
   canBeAssignedTo(otherType: Type) {
@@ -469,49 +410,91 @@ export class UnionType extends Type {
     );
   }
 
-  expand(): UnionType {
+  /**
+   * This method expands the union type made by other union types into a single
+   * union made of the atoms of every member of the initial union. Recursively.
+   */
+  expand(): Type {
     const newSet = new Set<Type>();
 
-    function add(type: Type) {
-      if (newSet.has(type)) return;
-      for (let $ of newSet) {
-        if ($.equals(type) && type.equals($)) return;
-      }
-      newSet.add(type);
-    }
+    function add(typeToAdd: Type) {
+      const candidate = getUnderlyingTypeFromAlias(typeToAdd);
 
-    for (let $ of this.of) {
-      if ($ instanceof UnionType) {
-        $.expand().of.forEach($ => add($));
-      } else if ($ instanceof PolimorphicType) {
-        $.of.forEach($ => add($));
+      if (candidate instanceof UnionType) {
+        // If it is an union, we must expand it for each atom
+        candidate.of.forEach($ => add($));
       } else {
-        add($);
+        // finalize if already present
+        if (newSet.has(typeToAdd)) {
+          return;
+        }
+        for (let $ of newSet) {
+          // finalize if we already have a type A == B && B == A
+          if ($.equals(typeToAdd) && typeToAdd.equals($)) {
+            return;
+          }
+        }
+        newSet.add(typeToAdd);
       }
     }
 
-    return new UnionType(Array.from(newSet.values()));
+    this.of.forEach(add);
+
+    const newTypes = Array.from(newSet.values());
+
+    return new UnionType(newTypes).simplify();
   }
 
+  /**
+   * This method removes an element from the union
+   * @param type type to subtract
+   */
   subtract(type: Type): Type {
+    const removingRefType = RefType.isRefType(type);
+
+    if (!this.simplified) {
+      return UnionType.of(this.expand()).subtract(type);
+    }
+
     const newSet = new Set<Type>();
 
     for (let $ of this.of) {
-      if ($.canBeAssignedTo(type)) {
-        // do nothing
-      } else newSet.add($);
+      if ((!removingRefType && RefType.isRefType($)) || !$.canBeAssignedTo(type)) {
+        newSet.add($);
+      }
     }
 
-    if (newSet.size == 1) {
-      return newSet.values().next().value;
-    } else if (newSet.size == 0) {
+    if (newSet.size == 0) {
       return NeverType.instance;
     }
 
-    return new UnionType(Array.from(newSet.values()));
+    const newTypes = Array.from(newSet.values());
+
+    if (newTypes.length == 1) {
+      return newTypes[0];
+    }
+
+    return new UnionType(newTypes);
   }
 
+  /**
+   * This method simplifies the union type. e.g:
+   *
+   *   type T0 = A | A | A | B
+   *   type T0Simplified = A | B
+   *
+   * It removes types present in unions
+   *
+   *   type T1 = T0Simplified | B | C | A
+   *   type T1Simplified = T0Simplified | C
+   *
+   *
+   */
   simplify() {
+    if (this.of.length === 1) {
+      return this.of[0];
+    }
+
     let newTypes: Type[] = [];
 
     this.of.forEach($ => {
@@ -526,61 +509,86 @@ export class UnionType extends Type {
       return InvalidType.instance;
     }
 
-    let didChange = false;
+    let unions: UnionType[] = [];
 
-    do {
-      didChange = false;
-      newTypes.forEach(($, i) => {
-        if ($ instanceof RefType && $.superType && newTypes.includes($.superType)) {
-          newTypes[i] = null;
-          didChange = true;
+    function collectUnion($: Type) {
+      const candidate = getUnderlyingTypeFromAlias($);
+
+      if (candidate instanceof UnionType) {
+        if (!unions.includes(candidate)) {
+          unions.push(candidate);
+          candidate.of.forEach($ => {
+            collectUnion($);
+          });
         }
-      });
-    } while (didChange);
+      }
+    }
 
+    // Collect unions
+    newTypes.forEach(collectUnion);
+
+    // This are the unions that generate some conflict with other unions,
+    // therefore we need to expand those unions to the atoms
+    const blackListedUnionAtoms: Type[] = [];
+    const unionsToRemove: UnionType[] = [];
+
+    // Find the conflictive atoms
+    unions.forEach((union, ix) => {
+      const expanded = UnionType.of(union.expand());
+
+      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ != ix && atom.canBeAssignedTo($)));
+      if (hasConflict) {
+        blackListedUnionAtoms.push(...expanded.of);
+
+        // we are removing the union, it might have elements not present in the
+        // newTypes, we add them
+        expanded.of.forEach($ => {
+          if (!newTypes.some($1 => $1.equals($))) {
+            newTypes.push($);
+          }
+        });
+        unionsToRemove.push(union);
+      }
+    });
+
+    unions = unions.filter($ => !unionsToRemove.includes($));
+
+    // Eliminate types present in unions
+    newTypes.forEach((newType, i) => {
+      const candidate = getUnderlyingTypeFromAlias(newType);
+
+      if (unionsToRemove.includes(candidate as any)) {
+        newTypes[i] = null;
+        return;
+      }
+
+      if (RefType.isRefType(candidate) || blackListedUnionAtoms.some(x => candidate.canBeAssignedTo(x))) {
+        return;
+      }
+
+      if (unions.some(union => !union.equals(candidate) && candidate.canBeAssignedTo(union))) {
+        newTypes[i] = null;
+      }
+    });
+
+    // Remove eliminated types
     newTypes = newTypes.filter($ => !!$);
 
     if (newTypes.length === 1) {
       return newTypes[0];
     } else {
-      const superTypes = new Set<PolimorphicType>();
-
-      for (let $ of newTypes) {
-        if ($ instanceof RefType && $.superType) {
-          if ($.superType instanceof PolimorphicType) {
-            superTypes.add($.superType);
-          }
-        }
-      }
-
-      if (superTypes.size == 1) {
-        const superType = superTypes.values().next().value;
-
-        if (meetsAllRequirements(newTypes, superType)) {
-          return superType;
-        }
-      }
       return new UnionType(newTypes, true);
     }
   }
 }
 
-function meetsAllRequirements(types: Type[], superType: PolimorphicType) {
-  const missing = new Set(superType.of.values());
-
-  if (types.length < missing.size) {
-    return false;
+export class TypeAlias extends Type {
+  constructor(public name: Nodes.NameIdentifierNode, public readonly of: Type) {
+    super();
   }
 
-  types.forEach(($: StructType) => missing.delete($));
-
-  return missing.size == 0 && types.every($ => $.canBeAssignedTo(superType));
-}
-
-export class TypeAlias extends Type {
-  of: Type = null;
-  constructor(public name: string) {
-    super();
+  get binaryenType() {
+    return this.of.binaryenType;
   }
 
   get nativeType(): NativeTypes {
@@ -592,11 +600,15 @@ export class TypeAlias extends Type {
   }
 
   equals(other: Type) {
-    return other == this;
+    return other === this;
   }
 
   toString() {
-    return this.name;
+    return this.name.toString();
+  }
+
+  inspect(levels: number = 0) {
+    return '(alias ' + this.name.toString() + (levels > 0 ? ' ' + this.of.inspect(levels - 1) : '') + ')';
   }
 }
 
@@ -621,12 +633,12 @@ export class TypeType extends Type {
     return other instanceof TypeType && other.of.equals(this.of);
   }
 
+  inspect(levels: number = 0) {
+    return `(type ${this.of.inspect(levels - 1)})`;
+  }
+
   toString() {
-    let of = this.of.toString();
-    if (of.startsWith('[object Object]')) {
-      of = '[object Object]' + this.of.constructor.name;
-    }
-    return `Type<${of}>`;
+    return `Type<${this.of}>`;
   }
 }
 
@@ -643,10 +655,18 @@ export abstract class NativeType extends Type {
   toString() {
     return NativeTypes[this.nativeType] as string;
   }
+
+  inspect() {
+    return '(native ' + (NativeTypes[this.nativeType] as string) + ')';
+  }
 }
 
 export class VoidType extends NativeType {
   static instance = new VoidType(NativeTypes.void);
+
+  inspect() {
+    return '(void)';
+  }
 }
 
 export class NeverType extends NativeType {
@@ -665,8 +685,8 @@ export class NeverType extends NativeType {
     return super.equals(other);
   }
 
-  toString() {
-    return 'never';
+  inspect() {
+    return '(never)';
   }
 }
 
@@ -724,7 +744,7 @@ export class u64 extends NativeType {
 
 export class UnknownType extends VoidType {
   toString() {
-    return 'UNKNOWN';
+    return '(unknown)';
   }
 
   equals(_: Type) {
@@ -740,7 +760,7 @@ export class UnknownType extends VoidType {
 
 export class InvalidType extends VoidType {
   toString() {
-    return 'INVALID_TYPE';
+    return '(invalid)';
   }
 
   equals(otherType: Type) {
@@ -755,29 +775,21 @@ export class InvalidType extends VoidType {
 }
 
 export const InjectableTypes: Record<string, Type> = {
-  u8: TypeType.of(u8.instance),
-  boolean: TypeType.of(bool.instance),
-  char: TypeType.of(char.instance),
-  usize: TypeType.of(usize.instance),
-  isize: TypeType.of(isize.instance),
-  i32: TypeType.of(i32.instance),
-  u32: TypeType.of(u32.instance),
-  i64: TypeType.of(i64.instance),
-  u64: TypeType.of(u64.instance),
-  i16: TypeType.of(i16.instance),
-  u16: TypeType.of(u16.instance),
-  f32: TypeType.of(f32.instance),
-  f64: TypeType.of(f64.instance),
-  void: TypeType.of(VoidType.instance),
-  ref: TypeType.of(RefType.instance),
-  string: TypeType.of(StringType.instance),
-  never: TypeType.of(NeverType.instance)
+  u8: u8.instance,
+  boolean: bool.instance,
+  char: char.instance,
+  usize: usize.instance,
+  isize: isize.instance,
+  i32: i32.instance,
+  u32: u32.instance,
+  i64: i64.instance,
+  u64: u64.instance,
+  i16: i16.instance,
+  u16: u16.instance,
+  f32: f32.instance,
+  f64: f64.instance,
+  void: VoidType.instance,
+  ref: RefType.instance,
+  string: StringType.instance,
+  never: NeverType.instance
 };
-
-export function toConcreteType(type: Type, ctx: TypeResolutionContext) {
-  if (type instanceof ReferenceType) {
-    return type.resolveType(ctx.currentGraph);
-  }
-
-  return type;
-}

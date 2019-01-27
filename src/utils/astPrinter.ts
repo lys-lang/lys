@@ -1,7 +1,7 @@
 import { Nodes } from '../parser/nodes';
 
 export function printAST(token: Nodes.Node, level = 0) {
-  const ofType = token.ofType ? ' type=' + token.ofType.toString() : '';
+  const ofType = token.ofType ? ' type=' + token.ofType.inspect(100) : '';
   const text = token.text ? '=' + token.text.replace(/\n/g, '\\n') : '';
   const annotations =
     token.getAnnotations().length > 0

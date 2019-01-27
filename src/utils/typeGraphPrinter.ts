@@ -61,7 +61,7 @@ export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
   graph.nodes.forEach(node => {
     if (!printedNodes.has(node)) {
       writer.printIndent();
-      let label = nodeLabel(node) + (node.resultType() ? '\\n⟨' + node.resultType().toString() + '⟩' : '');
+      let label = nodeLabel(node) + (node.resultType() ? '\\n' + node.resultType().inspect(100) : '');
 
       let color = 'grey';
 
@@ -82,7 +82,7 @@ export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
 
 export function edgeLabel(edge: Edge): string {
   if (edge.incomingTypeDefined()) {
-    return edge.incomingType().toString();
+    return '';
   } else {
     if (!edge.label) {
       return 'Not Defined';
@@ -116,7 +116,7 @@ export function nodeLabel(node: TypeNode): string {
   } else if (node.astNode instanceof Nodes.TypeDirectiveNode) {
     return `TypeDirective: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.FunDirectiveNode) {
-    return `FunDirective: ${node.astNode.functionNode.functionName.name}`;
+    return `!!! FunDirective: ${node.astNode.functionNode.functionName.name}`;
   }
   return node.astNode ? node.astNode.nodeName + node.astNode.text : '<no node>';
 }

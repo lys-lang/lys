@@ -1,11 +1,7 @@
-test/fixtures/type-error/global-assignment.ro
-    1│ type i32
-    2│ type f32
-    3│ 
-    4│ var x = 1
-    5│ 
-    6│ fun addOne(): i32 = {
-    7│   x = x + 1.0
-     │       ^^^^^^^ Could not find a valid overload for function of type fun(lhs: u32, rhs: u32) -> u32 & fun(lhs: i32, rhs: i32) -> i32 & fun(lhs: u64, rhs: u64) -> u64 & fun(lhs: i64, rhs: i64) -> i64 & fun(lhs: f32, rhs: f32) -> f32 & fun(lhs: f64, rhs: f64) -> f64 with the arguments of type (i32, f32)
-     │       ^^^^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "i32"
-    8│ }
+test.ro
+    1│ var x = 1
+    2│ 
+    3│ fun addOne(): i32 = {
+    4│   x = x + 1.0
+     │       ^^^^^^^ Invalid signature. Expecting arguments type (i32, i32) but got (i32, f32)
+    5│ }

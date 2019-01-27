@@ -1,14 +1,219 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="StructDeclarationNode\n⟨Type<Simple>⟩", fillcolor=grey];
-  2 [label="Name: Simple\n⟨Type<Simple>⟩", fillcolor=grey];
-  3 [label="StructDeclarationNode\n⟨Type<WithInt>⟩", fillcolor=grey];
-  4 [label="Ref: i32\n⟨Type<i32>⟩", fillcolor=grey];
-  5 [label="Name: a\n⟨Type<i32>⟩", fillcolor=grey];
-  6 [label="Name: WithInt\n⟨Type<WithInt>⟩", fillcolor=grey];
-  1 -> 2[taillabel="Type<Simple>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 6[taillabel="Type<WithInt>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  4 -> 5[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 3[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 [label="Name: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
+  2 [label="FunOverload: apply\n(fun 'apply' () (alias Simple))", fillcolor=grey];
+  3 [label="FunNode: apply\n(fun 'apply' () (alias Simple))", fillcolor=grey];
+  4 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
+  5 [label="Name: apply\n(fun 'apply' () (alias Simple))", fillcolor=grey];
+  6 [label="FunOverload: is\n(fun 'is' ((alias Simple)) (alias boolean))", fillcolor=grey];
+  7 [label="FunNode: is\n(fun 'is' ((alias Simple)) (alias boolean))", fillcolor=grey];
+  8 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
+  9 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
+  10 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  11 [label="Name: is\n(fun 'is' ((alias Simple)) (alias boolean))", fillcolor=grey];
+  12 [label="FunOverload: ==\n(fun '==' ((alias Simple) (alias ref)) (alias boolean))", fillcolor=grey];
+  13 [label="FunNode: ==\n(fun '==' ((alias Simple) (alias ref)) (alias boolean))", fillcolor=grey];
+  14 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
+  15 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
+  16 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
+  17 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
+  18 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  19 [label="Name: ==\n(fun '==' ((alias Simple) (alias ref)) (alias boolean))", fillcolor=grey];
+  20 [label="FunOverload: !=\n(fun '!=' ((alias Simple) (alias ref)) (alias boolean))", fillcolor=grey];
+  21 [label="FunNode: !=\n(fun '!=' ((alias Simple) (alias ref)) (alias boolean))", fillcolor=grey];
+  22 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
+  23 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
+  24 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
+  25 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
+  26 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  27 [label="Name: !=\n(fun '!=' ((alias Simple) (alias ref)) (alias boolean))", fillcolor=grey];
+  28 [label="Name: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  29 [label="FunOverload: sizeOf\n(fun 'sizeOf' () (alias i32))", fillcolor=grey];
+  30 [label="FunNode: sizeOf\n(fun 'sizeOf' () (alias i32))", fillcolor=grey];
+  31 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  32 [label="Name: sizeOf\n(fun 'sizeOf' () (alias i32))", fillcolor=grey];
+  33 [label="FunOverload: apply\n(fun 'apply' ((alias i32)) (alias WithInt))", fillcolor=grey];
+  34 [label="FunNode: apply\n(fun 'apply' ((alias i32)) (alias WithInt))", fillcolor=grey];
+  35 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  36 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
+  37 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  38 [label="Name: apply\n(fun 'apply' ((alias i32)) (alias WithInt))", fillcolor=grey];
+  39 [label="FunOverload: fromPointer\n(fun 'fromPointer' ((union (alias i32) (alias u32))) (alias WithInt))", fillcolor=grey];
+  40 [label="FunNode: fromPointer\n(fun 'fromPointer' ((union (alias i32) (alias u32))) (alias WithInt))", fillcolor=grey];
+  41 [label="UnionTypeNode\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
+  42 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  43 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
+  44 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
+  45 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  46 [label="Name: fromPointer\n(fun 'fromPointer' ((union (alias i32) (alias u32))) (alias WithInt))", fillcolor=grey];
+  47 [label="FunOverload: get_a\n(fun 'get_a' ((alias WithInt)) (alias i32))", fillcolor=grey];
+  48 [label="FunNode: get_a\n(fun 'get_a' ((alias WithInt)) (alias i32))", fillcolor=grey];
+  49 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  50 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
+  51 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  52 [label="Name: get_a\n(fun 'get_a' ((alias WithInt)) (alias i32))", fillcolor=grey];
+  53 [label="FunOverload: set_a\n(fun 'set_a' ((alias WithInt) (alias i32)) (alias void))", fillcolor=grey];
+  54 [label="FunNode: set_a\n(fun 'set_a' ((alias WithInt) (alias i32)) (alias void))", fillcolor=grey];
+  55 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  56 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
+  57 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  58 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
+  59 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  60 [label="Name: set_a\n(fun 'set_a' ((alias WithInt) (alias i32)) (alias void))", fillcolor=grey];
+  61 [label="FunOverload: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
+  62 [label="FunNode: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
+  63 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  64 [label="Name: a\n(alias WithInt (struct WithInt))", fillcolor=grey];
+  65 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  66 [label="Name: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
+  subgraph cluster0 {
+    node [style=filled, fillcolor=grey];
+    67 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
+    68 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  label = "test::sizeOf()";
+}
+  subgraph cluster1 {
+    node [style=filled, fillcolor=grey];
+    69 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    70 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
+  label = "test::apply()";
+}
+  subgraph cluster2 {
+    node [style=filled, fillcolor=grey];
+    71 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
+    72 [label="FunctionCallNode\n(alias WithInt (struct WithInt))", fillcolor=grey];
+    73 [label="Ref: fromPointer\n(fun 'fromPointer' ((union (alias i32) (alias u32))) (alias WithInt))", fillcolor=grey];
+    74 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
+    75 [label="Ref: system::memory::malloc\n(fun 'malloc' ((alias i32)) (alias i32))", fillcolor=grey];
+    76 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
+    77 [label="Ref: sizeOf\n(fun 'sizeOf' () (alias i32))", fillcolor=grey];
+    78 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+    73 -> 72[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    74 -> 72[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    75 -> 74[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    76 -> 74[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    77 -> 76[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  label = "test::apply_2(i32)";
+}
+  subgraph cluster3 {
+    node [style=filled, fillcolor=grey];
+    79 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
+    80 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    81 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
+  label = "test::fromPointer_1(i32 | u32)";
+}
+  subgraph cluster4 {
+    node [style=filled, fillcolor=grey];
+    82 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
+    83 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    84 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  label = "test::is(Simple)";
+}
+  subgraph cluster5 {
+    node [style=filled, fillcolor=grey];
+    85 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
+    86 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
+    87 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    88 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  label = "test::==(Simple,ref)";
+}
+  subgraph cluster6 {
+    node [style=filled, fillcolor=grey];
+    89 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
+    90 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
+    91 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    92 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  label = "test::!=(Simple,ref)";
+}
+  subgraph cluster7 {
+    node [style=filled, fillcolor=grey];
+    93 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
+    94 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    95 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  label = "test::get_a(WithInt)";
+}
+  subgraph cluster8 {
+    node [style=filled, fillcolor=grey];
+    96 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
+    97 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
+    98 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    99 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  label = "test::set_a(WithInt,i32)";
+}
+  subgraph cluster9 {
+    node [style=filled, fillcolor=grey];
+    100 [label="Name: a\n(alias WithInt (struct WithInt))", fillcolor=grey];
+    101 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    102 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  label = "test::is_2(WithInt)";
+}
+  1 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 14[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 22[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 70[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 5[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 2[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 3[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  6 -> 11[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  7 -> 6[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  8 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  9 -> 7[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  10 -> 7[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  12 -> 19[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  13 -> 12[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  14 -> 15[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  15 -> 13[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  16 -> 17[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  17 -> 13[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  18 -> 13[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  20 -> 27[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  21 -> 20[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  22 -> 23[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  23 -> 21[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  24 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  25 -> 21[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  26 -> 21[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 37[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 45[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 49[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 55[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 63[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 78[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  28 -> 81[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  29 -> 32[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  30 -> 29[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  31 -> 30[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  32 -> 77[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  33 -> 38[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  34 -> 33[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  35 -> 36[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  36 -> 34[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  37 -> 34[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  39 -> 46[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  40 -> 39[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  41 -> 44[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  42 -> 41[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  43 -> 41[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  44 -> 40[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  45 -> 40[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  46 -> 73[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  47 -> 52[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  48 -> 47[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  49 -> 50[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  50 -> 48[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  51 -> 48[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  53 -> 60[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  54 -> 53[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  55 -> 56[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  56 -> 54[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  57 -> 58[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  58 -> 54[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  59 -> 54[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  61 -> 66[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  62 -> 61[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  63 -> 64[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  64 -> 62[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  65 -> 62[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

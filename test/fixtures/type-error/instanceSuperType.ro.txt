@@ -1,4 +1,4 @@
-test/fixtures/type-error/instanceSuperType.ro
+test.ro
     1│ type x {
     2│   Nila
     3│   Custom(r: i32)
@@ -9,23 +9,23 @@ test/fixtures/type-error/instanceSuperType.ro
     8│ fun qq(x: Custom): i32 = ???
     9│ 
    10│ fun a(): void = x(Custom(1))
-     │                 ^ Type mismatch: Type "x" is not a function
-     │          ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                 ^ Error: Cannot find member "apply" in (alias x)
+     │          ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"
    11│ fun b(t: Custom): void = x(t)
-     │                          ^ Type mismatch: Type "x" is not a function
-     │                   ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                          ^ Error: Cannot find member "apply" in (alias x)
+     │                   ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"
    12│ fun c(t: x): void = x(t)
-     │                     ^ Type mismatch: Type "x" is not a function
-     │              ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                     ^ Error: Cannot find member "apply" in (alias x)
+     │              ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"
    13│ fun d(i: i32): void = x(Custom(i))
-     │                       ^ Type mismatch: Type "x" is not a function
-     │                ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                       ^ Error: Cannot find member "apply" in (alias x)
+     │                ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"
    14│ fun d(t: Nila): void = x(t)
-     │                        ^ Type mismatch: Type "x" is not a function
-     │                 ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                        ^ Error: Cannot find member "apply" in (alias x)
+     │                 ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"
    15│ fun d(): void = x(Nila)
-     │                 ^ Type mismatch: Type "x" is not a function
-     │          ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                 ^ Error: Cannot find member "apply" in (alias x)
+     │          ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"
    16│ fun e(): void = x()
-     │                 ^ Type mismatch: Type "x" is not a function
-     │          ^^^^ Type mismatch: Type "INVALID_TYPE" is not assignable to "void"
+     │                 ^ Error: Cannot find member "apply" in (alias x)
+     │          ^^^^ Type mismatch: Type "(invalid)" is not assignable to "void"

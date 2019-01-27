@@ -52,18 +52,23 @@ function getStarterFunction(statements: any[]) {
 }
 
 function getTypeForFunction(fn: Nodes.FunctionNode) {
-  const fnType = fn.functionName.ofType as FunctionType;
-  const ret = fnType.returnType;
+  const fnType = fn.ofType;
 
-  const retType = ret.binaryenType ? [ret.binaryenType] : [];
+  if (fnType && fnType instanceof FunctionType) {
+    const ret = fnType.returnType;
 
-  return t.signature(
-    fn.parameters.map(($, $$) => ({
-      id: $.parameterName.name,
-      valtype: fnType.parameterTypes[$$].binaryenType
-    })),
-    retType
-  );
+    const retType = ret.binaryenType ? [ret.binaryenType] : [];
+
+    return t.signature(
+      fn.parameters.map(($, $$) => ({
+        id: $.parameterName.name,
+        valtype: fnType.parameterTypes[$$].binaryenType
+      })),
+      retType
+    );
+  } else {
+    throw new Error(fnType + ' is not afunction');
+  }
 }
 
 function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
@@ -74,7 +79,7 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   );
 
   const moduleFun = t.func(
-    t.identifier(fn.internalIdentifier), // name
+    t.identifier(fn.functionName.internalIdentifier), // name
     fnType, // signature
     [...locals, ...emitList(fn.body, document)] // body
   );
@@ -106,9 +111,12 @@ function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.Document
   } else {
     const ofType = node.resolvedFunctionType;
 
-    assert(ofType.internalName, `${ofType}.internalName is falsy`);
+    assert(ofType.name.internalIdentifier, `${ofType}.internalName is falsy`);
 
-    return t.callInstruction(t.identifier(ofType.internalName), node.argumentsNode.map($ => emit($, document)));
+    return t.callInstruction(
+      t.identifier(ofType.name.internalIdentifier),
+      node.argumentsNode.map($ => emit($, document))
+    );
   }
 }
 
@@ -132,7 +140,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
 
-        const condition = t.callInstruction(t.identifier(ofType.internalName), [
+        const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           emit(node.literal, document),
           t.instruction('get_local', [t.identifier(match.local.name)])
         ]);
@@ -146,7 +154,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
 
-        const condition = t.callInstruction(t.identifier(ofType.internalName), [
+        const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           t.instruction('get_local', [t.identifier(match.local.name)])
         ]);
 
@@ -194,8 +202,8 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
   if (node instanceof Nodes.ReferenceNode) {
     const ofType = node.ofType as StructType | FunctionType | Type;
 
-    if (ofType && 'internalName' in ofType) {
-      return t.identifier(ofType.internalName);
+    if (ofType && 'name' in ofType) {
+      return t.identifier(ofType.name.internalIdentifier);
     } else {
       return t.identifier(node.variable.text);
     }
@@ -286,31 +294,30 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document), emit(node.rhs, document)]);
+      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
+        emit(node.lhs, document),
+        emit(node.rhs, document)
+      ]);
     } else if (node instanceof Nodes.AsExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document)]);
+      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
     } else if (node instanceof Nodes.IsExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.lhs, document)]);
+      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
     } else if (node instanceof Nodes.UnaryExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.internalName), [emit(node.rhs, document)]);
+      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
       if (node.hasAnnotation(annotations.ImplicitCall)) {
-        const ofType = node.ofType as StructType | FunctionType;
+        const ofType = node.getAnnotation(annotations.ImplicitCall).functionType;
 
-        assert(
-          ofType instanceof StructType || ofType instanceof FunctionType,
-          'implicit call is not a function or struct'
-        );
-
+        assert(ofType instanceof FunctionType, 'implicit call is not a function or struct');
         assert(ofType.parameterNames.length == 0, 'implicit call only works without parameters');
 
-        return t.callInstruction(t.identifier(ofType.internalName), []);
+        return t.callInstruction(t.identifier(ofType.name.internalIdentifier), []);
       } else {
         const instr = node.isLocal ? 'get_local' : 'get_global';
         return t.instruction(instr, [t.identifier(node.local.name)]);
@@ -371,7 +378,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.validate();
     } catch (e) {
       console.log(text);
-      this.errors.push(e);
+      this.parsingContext.messageCollector.error(e);
       throw e;
     }
 
@@ -384,7 +391,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const module = binaryen.readBinary(this.buffer);
 
       if (module.validate() == 0) {
-        this.errors.push(new AstNodeError('binaryen validation failed', this.document));
+        this.parsingContext.messageCollector.error(new AstNodeError('binaryen validation failed', this.document));
       }
 
       if (optimize) {
@@ -461,20 +468,20 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const canBeExported = $.functions.length === 1;
 
       $.functions.forEach(fun => {
-        createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
+        createdFunctions.push(emitFunction(fun, compilationPhase.document));
         // TODO: decorate exported functions
-        if (fun.isExported && exports && !fun.hasAnnotation(annotations.Injected)) {
+        if ($.isExported && exports && !fun.hasAnnotation(annotations.Injected)) {
           if (canBeExported) {
             exportedElements.push(
               t.moduleExport(
-                fun.functionNode.functionName.name,
-                t.moduleExportDescr('Func', t.identifier(fun.functionNode.internalIdentifier))
+                fun.functionName.name,
+                t.moduleExportDescr('Func', t.identifier(fun.functionName.internalIdentifier))
               )
             );
           } else {
             throw new AstNodeError(
-              `You cannot export overloaded functions (${fun.functionNode.functionName.text})`,
-              fun.functionNode.functionName
+              `You cannot export overloaded functions (${fun.functionName.text})`,
+              fun.functionName
             );
           }
         }

@@ -1,5 +1,5 @@
 import { Nodes } from './nodes';
-import { AstNodeError } from './NodeError';
+import { AstNodeError, PositionCapableError, IErrorPositionCapable } from './NodeError';
 import { ScopePhaseResult } from './phases/scopePhase';
 import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
@@ -9,30 +9,22 @@ import { ParsingPhaseResult } from './phases/parsingPhase';
 import { TypePhaseResult } from './phases/typePhase';
 import { CompilationPhaseResult } from './phases/compilationPhase';
 import { assert } from 'console';
+import { TypeGraph } from './types/TypeGraph';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
-
-export interface IOverloadedInfix {
-  [operator: string]: {
-    [lhs: number]: {
-      [rhs: number]: {
-        fn: Nodes.FunDirectiveNode;
-        directive: Nodes.DirectiveNode;
-        executionContext: ParsingContext;
-      };
-    };
-  };
-}
 
 export class ParsingContext {
   messageCollector = new MessageCollector();
 
-  private typeNumbers = new Set<Nodes.StructDeclarationNode | Nodes.TypeDeclarationNode>();
+  private typeNumbers = new Set<Nodes.TypeDirectiveNode>();
   private programTakenNames = new Set<string>();
   private modulesInContext: string[] = [];
   private moduleScopes = new Map<string, ScopePhaseResult>();
   private moduleTypes = new Map<string, TypePhaseResult>();
   private moduleCompilation = new Map<string, CompilationPhaseResult>();
+  public registeredParsingPhase = new Map<string, ParsingPhaseResult>();
+
+  public typeGraph = new TypeGraph([], null);
 
   private ensureModule(moduleName: string) {
     if (!this.modulesInContext.includes(moduleName)) {
@@ -51,6 +43,7 @@ export class ParsingContext {
     const relative = moduleName.replace(/::/g, '/') + '.ro';
 
     let x = resolve(process.cwd(), relative);
+
     if (existsSync(x)) {
       return x;
     }
@@ -76,22 +69,13 @@ export class ParsingContext {
     }
   }
 
-  registerTypeDeclaration(typeDecl: Nodes.TypeDeclarationNode) {
-    if (this.typeNumbers.has(typeDecl)) return;
-    assert(!typeDecl.typeNumber, `type ${typeDecl} already had a number`);
-    typeDecl.typeNumber = this.typeNumbers.size + 1;
-    this.typeNumbers.add(typeDecl);
-  }
-
-  registerType(struct: Nodes.StructDeclarationNode) {
-    if (struct.parent instanceof Nodes.TypeDeclarationNode) {
-      this.registerTypeDeclaration(struct.parent);
-    }
-
+  registerType(struct: Nodes.TypeDirectiveNode) {
     if (this.typeNumbers.has(struct)) return;
-    assert(!struct.typeNumber, `type ${struct} already had a number`);
-    struct.typeNumber = this.typeNumbers.size + 1;
-    struct.internalIdentifier = this.getUnusedName(struct.declaredName.name + 'Type');
+    assert(!struct.typeDeterminant, `type ${struct} already had a number`);
+    struct.typeDeterminant = this.typeNumbers.size + 1;
+    if (!struct.variableName.internalIdentifier) {
+      struct.variableName.internalIdentifier = this.getUnusedName(struct.variableName.name + 'Type');
+    }
     this.typeNumbers.add(struct);
   }
 
@@ -102,14 +86,29 @@ export class ParsingContext {
       throw new Error(`Cannot find module ${moduleName}`);
     }
 
-    const content = readFileSync(modulePath);
+    const parsing = this.getParsingPhaseForFile(modulePath);
 
-    const parsing = new ParsingPhaseResult(modulePath, content.toString(), this);
     const canonical = new CanonicalPhaseResult(parsing);
     const semantic = new SemanticPhaseResult(canonical, moduleName);
     const scope = new ScopePhaseResult(semantic);
 
     this.moduleScopes.set(moduleName, scope);
+  }
+
+  getParsingPhaseForFile(fileName: string) {
+    if (this.registeredParsingPhase.has(fileName)) {
+      return this.registeredParsingPhase.get(fileName);
+    } else {
+      const content = readFileSync(fileName).toString();
+      return this.getParsingPhaseForContent(fileName, content);
+    }
+  }
+
+  getParsingPhaseForContent(fileName: string, content: string) {
+    const parsing = new ParsingPhaseResult(fileName, content, this, true);
+    this.registeredParsingPhase.set(fileName, parsing);
+    parsing.execute();
+    return parsing;
   }
 
   getScopePhase(moduleName: string): ScopePhaseResult {
@@ -151,18 +150,26 @@ export class ParsingContext {
 }
 
 export class MessageCollector {
-  errors: AstNodeError[] = [];
+  errors: IErrorPositionCapable[] = [];
 
-  error(error: AstNodeError);
+  error(error: IErrorPositionCapable);
   error(message: string, node: Nodes.Node);
-  error(error: string | AstNodeError, node?: Nodes.Node) {
-    if (error instanceof AstNodeError) {
-      if (!this.errors.some($ => $.message == error.message && $.node == error.node)) {
+  error(error: string | Error, node?: Nodes.Node) {
+    if (error instanceof AstNodeError || error instanceof PositionCapableError) {
+      if (
+        error instanceof PositionCapableError ||
+        !this.errors.some($ => $.message == error.message && $.node == error.node)
+      ) {
         this.errors.push(error);
       }
     } else {
       if (!this.errors.some($ => $.message == error && $.node == node)) {
-        this.errors.push(new AstNodeError(error, node));
+        const err = new AstNodeError(error.toString(), node);
+        if (error instanceof Error && error.stack) {
+          err.stack = error.stack;
+        }
+
+        this.errors.push(err);
       }
     }
   }
@@ -210,7 +217,7 @@ export class Closure {
     public parsingContext: ParsingContext,
     public parent: Closure = null,
     public readonly moduleName: string = null,
-    nameHint: string = ''
+    public nameHint: string = ''
   ) {
     this.name = this.parsingContext.getUnusedName(nameHint + '_scope');
   }
@@ -236,6 +243,10 @@ export class Closure {
       prefix = node.declaredName.name || 'anonType';
     } else if (node instanceof Nodes.NameIdentifierNode) {
       prefix = node.name || 'anonName';
+    }
+
+    if (this.nameHint && this.nameHint.endsWith('#')) {
+      prefix = this.nameHint + prefix;
     }
 
     return this.parsingContext.getUnusedName(`${this.moduleName ? this.moduleName + '::' : ''}${prefix}`);

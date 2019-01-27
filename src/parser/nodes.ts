@@ -1,20 +1,24 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure, Reference } from './closure';
-import { Type, NativeTypes, FunctionType, StructType } from './types';
+import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor } from './annotations';
 import { indent } from '../utils/astPrinter';
 
 export namespace Nodes {
+  export interface ASTNode extends IToken {
+    document: string;
+    children: Array<ASTNode>;
+  }
+
   export abstract class Node {
     hasParentheses: boolean = false;
-    errors: Error[] = [];
     closure: Closure;
     parent: Node;
     ofType: Type = null;
 
     private annotations: Set<Annotation>;
 
-    constructor(public astNode?: IToken) {}
+    constructor(public astNode?: ASTNode) {}
 
     /** Name of the node constructor */
     get nodeName(): string {
@@ -95,11 +99,15 @@ export namespace Nodes {
       }
       return ret;
     }
+
+    abstract toString(): string;
   }
 
   export abstract class ExpressionNode extends Node {}
 
   export class NameIdentifierNode extends Node {
+    internalIdentifier: string;
+
     name: string;
 
     namespaceNames: Map<string, NameIdentifierNode>;
@@ -151,9 +159,13 @@ export namespace Nodes {
     }
   }
 
-  export class TypeNode extends Node {}
+  export abstract class TypeNode extends Node {}
 
-  export class TypeReducerNode extends Node {}
+  export class TypeReducerNode extends Node {
+    toString() {
+      return '';
+    }
+  }
 
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
@@ -184,6 +196,10 @@ export namespace Nodes {
     typeParameters: string[];
     parameters: FunctionParameterTypeNode[];
     returnType: TypeNode;
+
+    toString(): string {
+      throw `${this.nodeName}.toString not implemented yet`;
+    }
   }
 
   export class ReferenceNode extends ExpressionNode {
@@ -204,7 +220,7 @@ export namespace Nodes {
     statements: Node[];
 
     toString() {
-      if (this.statements.length) return '{}';
+      if (!this.statements.length) return '{}';
       return '{\n' + indent(this.statements.join('\n')) + '\n}';
     }
   }
@@ -231,7 +247,7 @@ export namespace Nodes {
     textContent: string;
 
     toString() {
-      return this.directives.join('\n');
+      return this.directives.join('\n\n');
     }
   }
 
@@ -254,8 +270,6 @@ export namespace Nodes {
     functionReturnType: TypeNode;
     parameters: ParameterNode[] = [];
     body: ExpressionNode;
-
-    internalIdentifier: string;
 
     localsByName: Map<string, Local> = new Map();
 
@@ -441,30 +455,56 @@ export namespace Nodes {
       this.breakContext = null;
       this.tempI32s = this.tempI64s = this.tempF32s = this.tempF64s = null;
     }
+
+    toString() {
+      return `fun ${this.functionName}(${this.parameters.join(', ')}): ${this.functionReturnType} = ${
+        this.body instanceof BlockNode ? this.body : '\n' + indent(this.body.toString())
+      }`;
+    }
+  }
+
+  export class NameSpaceDirective extends DirectiveNode {
+    reference: ReferenceNode;
+    directives: DirectiveNode[];
+
+    toString() {
+      return `ns ${this.reference} {\n${indent(this.directives.join('\n\n'))}\n}`;
+    }
   }
 
   export class ImportDirectiveNode extends DirectiveNode {
     allItems: boolean = true;
     module: QNameNode;
     alias: NameIdentifierNode | null = null;
+
+    toString() {
+      return `import ${this.module}`;
+    }
   }
 
   export class FunDirectiveNode extends DirectiveNode {
     functionNode: FunctionNode;
-  }
 
-  export class NamespaceDirectiveNode extends DirectiveNode {
-    reference: ReferenceNode;
-    directives: DirectiveNode[];
+    toString() {
+      return (this.isExported ? '' : 'private ') + this.functionNode;
+    }
   }
 
   export class EffectDirectiveNode extends DirectiveNode {
     effect: EffectDeclarationNode;
+
+    toString() {
+      return (this.isExported ? '' : 'private ') + this.effect;
+    }
   }
 
   export class OverloadedFunctionNode extends DirectiveNode {
     functionName: NameIdentifierNode;
-    functions: FunDirectiveNode[] = [];
+    functions: FunctionNode[] = [];
+
+    toString() {
+      return this.functions.join('\n');
+    }
   }
 
   export class VarDeclarationNode extends Node {
@@ -473,6 +513,16 @@ export namespace Nodes {
     variableType: TypeNode;
     value: ExpressionNode;
     local: LocalGlobalHeapReference;
+
+    toString() {
+      return (
+        (this.mutable ? 'var ' : 'val ') +
+        this.variableName +
+        (this.variableType ? ': ' + this.variableType : '') +
+        ' = ' +
+        this.value
+      );
+    }
   }
 
   export class ValDeclarationNode extends VarDeclarationNode {
@@ -481,6 +531,10 @@ export namespace Nodes {
 
   export class VarDirectiveNode extends DirectiveNode {
     decl: VarDeclarationNode;
+
+    toString() {
+      return (this.isExported ? '' : 'private ') + this.decl.toString();
+    }
   }
 
   export class ValDirectiveNode extends VarDirectiveNode {
@@ -490,17 +544,34 @@ export namespace Nodes {
   export class AssignmentNode extends Node {
     variable: ReferenceNode;
     value: ExpressionNode;
+
+    toString() {
+      return `${this.variable} = ${this.value}`;
+    }
   }
 
   export class TypeDirectiveNode extends DirectiveNode {
     variableName: NameIdentifierNode;
     valueType: TypeNode;
+    typeDeterminant: number | null = null;
+
+    toString() {
+      if (this.valueType) {
+        return `type ${this.variableName} = ${this.valueType}`;
+      } else {
+        return `type ${this.variableName}`;
+      }
+    }
   }
 
   export abstract class LiteralNode<T> extends ExpressionNode {
     value: T;
     get text() {
       return JSON.stringify(this.value);
+    }
+
+    toString() {
+      return `${this.astNode.text}`;
     }
   }
 
@@ -522,7 +593,11 @@ export namespace Nodes {
     }
   }
 
-  export class UnknownExpressionNode extends ExpressionNode {}
+  export class UnknownExpressionNode extends ExpressionNode {
+    toString() {
+      return '???';
+    }
+  }
 
   export class HexLiteral extends IntegerLiteral {
     // TODO: support bignumber here
@@ -548,10 +623,6 @@ export namespace Nodes {
     }
   }
 
-  export class NullLiteral extends LiteralNode<null> {
-    value: null = null;
-  }
-
   export class StringLiteral extends LiteralNode<string> {
     value: string;
   }
@@ -560,7 +631,11 @@ export namespace Nodes {
     isInfix: boolean = false;
     functionNode: ExpressionNode;
     argumentsNode: ExpressionNode[];
-    resolvedFunctionType: FunctionType | StructType;
+    resolvedFunctionType: FunctionType;
+
+    toString() {
+      return this.functionNode.toString() + '(' + this.argumentsNode.join(', ') + ')';
+    }
   }
 
   export class BinaryExpressionNode extends ExpressionNode {
@@ -574,6 +649,10 @@ export namespace Nodes {
       if (!this.operator) throw new Error('BinaryExpressionNode w/o operator');
       return this.operator.text;
     }
+
+    toString() {
+      return `${this.lhs} ${this.operator.name} ${this.rhs}`;
+    }
   }
 
   export class AsExpressionNode extends ExpressionNode {
@@ -584,6 +663,10 @@ export namespace Nodes {
 
     get text() {
       return 'as';
+    }
+
+    toString() {
+      return `${this.lhs} as ${this.rhs}`;
     }
   }
 
@@ -596,6 +679,10 @@ export namespace Nodes {
     get text() {
       return 'is';
     }
+
+    toString() {
+      return `${this.lhs} is ${this.rhs}`;
+    }
   }
 
   export class UnaryExpressionNode extends ExpressionNode {
@@ -607,6 +694,10 @@ export namespace Nodes {
     get text() {
       return this.operator.text;
     }
+
+    toString() {
+      return `${this.operator.name}${this.rhs}`;
+    }
   }
 
   export class WasmAtomNode extends ExpressionNode {
@@ -616,10 +707,18 @@ export namespace Nodes {
     get text() {
       return this.symbol;
     }
+
+    toString() {
+      return `(${this.symbol}${this.arguments.map($ => ' ' + $).join(' ')})`;
+    }
   }
 
   export class WasmExpressionNode extends ExpressionNode {
     atoms: WasmAtomNode[];
+
+    toString() {
+      return `%wasm {\n${indent(this.atoms.join('\n'))}\n}`;
+    }
   }
 
   export abstract class MatcherNode extends ExpressionNode {
@@ -633,25 +732,67 @@ export namespace Nodes {
     condition: ExpressionNode;
     truePart: ExpressionNode;
     falsePart: ExpressionNode;
+
+    private printTrue() {
+      if (this.truePart instanceof BlockNode) {
+        return ' ' + this.truePart.toString() + (this.falsePart ? ' ' : '');
+      } else {
+        return '\n' + indent(this.truePart.toString()) + '\n';
+      }
+    }
+
+    private printFalse() {
+      if (this.falsePart instanceof IfNode) {
+        return ' ' + this.falsePart.toString();
+      } else if (this.falsePart instanceof BlockNode) {
+        return ' ' + this.falsePart.toString();
+      } else {
+        return '\n' + indent(this.falsePart.toString()) + '\n';
+      }
+    }
+
+    toString() {
+      if (this.falsePart) {
+        return `if (${this.condition})${this.printTrue()}else${this.printFalse()}`;
+      } else {
+        return `if (${this.condition})${this.printTrue()}`;
+      }
+    }
   }
 
   export class MatchConditionNode extends MatcherNode {
     condition: ExpressionNode;
+
+    toString(): string {
+      return `case if ${this.condition} -> ${this.rhs}`;
+    }
   }
 
   export class MatchCaseIsNode extends MatcherNode {
     typeReference: ReferenceNode;
     deconstructorNames: NameIdentifierNode[];
     resolvedFunctionType: FunctionType;
+
+    toString(): string {
+      if (this.deconstructorNames && this.deconstructorNames.length) {
+        return `case is ${this.typeReference}(${this.deconstructorNames.join(', ')}) -> ${this.rhs}`;
+      } else {
+        return `case is ${this.typeReference} -> ${this.rhs}`;
+      }
+    }
   }
 
   export class MatchLiteralNode extends MatcherNode {
     literal: LiteralNode<any>;
     resolvedFunctionType: FunctionType;
+
+    toString(): string {
+      return `case ${this.literal} -> ${this.rhs}`;
+    }
   }
 
   export class UnionTypeNode extends TypeNode {
-    of: TypeNode[];
+    of: TypeNode[] = [];
 
     toString() {
       return this.of.length > 1 ? '(' + this.of.join(' | ') + ')' : this.of.join(' | ');
@@ -667,23 +808,36 @@ export namespace Nodes {
   }
 
   export class StructDeclarationNode extends TypeNode {
-    internalIdentifier: string;
     declaredName: NameIdentifierNode;
     parameters: ParameterNode[];
-    typeNumber: number | null = null;
+
+    toString() {
+      return `struct ${this.declaredName}(${this.parameters.join(', ')})`;
+    }
   }
 
   export class TypeDeclarationNode extends TypeNode {
-    typeNumber: number | null = null;
     declarations: StructDeclarationNode[];
+
+    toString() {
+      return `{\n` + indent(this.declarations.join('\n')) + `\n}`;
+    }
   }
 
   export class EffectDeclarationNode extends Node {
     name: NameIdentifierNode;
     elements: FunctionTypeNode[];
+
+    toString(): string {
+      return `effect ${this.name} {\n${indent(this.elements.join('\n'))}\n}`;
+    }
   }
 
-  export class MatchDefaultNode extends MatcherNode {}
+  export class MatchDefaultNode extends MatcherNode {
+    toString(): string {
+      return `else -> ${this.rhs}`;
+    }
+  }
 
   export class PatternMatcherNode extends ExpressionNode {
     lhs: ExpressionNode;
@@ -691,6 +845,10 @@ export namespace Nodes {
 
     /** local index in the function's scope */
     local: LocalGlobalHeapReference;
+
+    toString(): string {
+      return `${this.lhs} match {\n${indent(this.matchingSet.join('\n'))}\n}`;
+    }
   }
 
   /////// Non-grammar nodes
@@ -698,6 +856,10 @@ export namespace Nodes {
   /** This node replaces the function body */
   export class TailRecLoopNode extends Nodes.ExpressionNode {
     body: Nodes.ExpressionNode;
+
+    toString(): string {
+      throw `${this.nodeName}.toString not implemented yet`;
+    }
   }
 }
 

@@ -4,7 +4,6 @@ import * as expect from 'expect';
 import { findNodesByType, Nodes } from '../dist/parser/nodes';
 import { walkPreOrder } from '../dist/parser/walker';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
-import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
@@ -21,11 +20,19 @@ const parsingContext = new ParsingContext();
 describe('Semantic', function() {
   const phases = function(txt: string): ScopePhaseResult {
     parsingContext.reset();
-    const parsing = new ParsingPhaseResult('test.ro', txt, parsingContext);
+    const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
     const canonical = new CanonicalPhaseResult(parsing);
     const semantic = new SemanticPhaseResult(canonical, 'test');
     const scope = new ScopePhaseResult(semantic);
     return scope;
+  };
+
+  const phases1 = function(txt: string): SemanticPhaseResult {
+    parsingContext.reset();
+    const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+    const canonical = new CanonicalPhaseResult(parsing);
+    const semantic = new SemanticPhaseResult(canonical, 'test');
+    return semantic;
   };
 
   describe('Files', () => {
@@ -40,6 +47,18 @@ describe('Semantic', function() {
         return printAST(result.document);
       },
       '.ast'
+    );
+    folderBasedTest(
+      'test/fixtures/semantics/*.ro',
+      phases1,
+      async (result, err) => {
+        if (err) {
+          // console.log(printErrors(result.document, result.errors));
+          throw err;
+        }
+        return result.document.toString();
+      },
+      '.desugar'
     );
   });
 
@@ -93,11 +112,9 @@ describe('Semantic', function() {
   }
   describe('Duplicated parameters', () => {
     test`
-      type i32
       fun test(a: i32, b: i32): i32 = 1
     `;
     testToFail`
-      type i32
       fun test(a: i32, a: i32): i32 = 1
     `;
   });
@@ -144,7 +161,6 @@ describe('Semantic', function() {
 
   describe('conditionals', () => {
     test`
-      type i32
       fun gcd(x: i32, y: i32): i32 =
         if (x > y)
           gcd(x - y, y)
@@ -156,9 +172,8 @@ describe('Semantic', function() {
 
     testParseToken(
       `
-        type i32
         var x = 1
-        var b = null
+        var b = false
         fun a(): void = {
           if (x < 3) a()
           b
@@ -175,9 +190,8 @@ describe('Semantic', function() {
 
     testParseToken(
       `
-        type i32
         var x = 1
-        var b = null
+        var b = false
         fun a(): void = {
           if (x < 3) { a() }
           b
@@ -195,35 +209,34 @@ describe('Semantic', function() {
 
   describe('namespaces', () => {
     test`
-      type i32
-      type boolean
 
-      namespace i32 {
+      type BB
+      type AA = BB
+      ns BB {
         fun gta(): i32 = 1
       }
 
-      fun test(a: i32): boolean = i32#gta()
+      fun test(a: i32): boolean = BB#gta()
     `;
 
     testToFail`
-      type i32
-      type boolean
 
-      namespace i32 {
-
+      type AA = BB | CC
+      type BB
+      type CC
+      ns CC {
+        fun gta(): i32 = 1
       }
 
-      namespace boolean {
-        fun gta(): boolean = true
-      }
-
-      fun test(a: i32): boolean = i32#gta()
+      fun test(a: i32): boolean = BB#gta()
     `;
 
     testToFail`
-      type i32
 
-      namespace i32 {
+      type BB
+      type AA = BB
+
+      ns BB {
         fun gtax(): i32 = 1
       }
 
@@ -231,57 +244,46 @@ describe('Semantic', function() {
     `;
 
     test`
-      type i32
 
-      namespace i32 {
-        fun gta(): i32 = 1
+      type BB
+
+      ns BB {
+        var x = 1
+        fun gtax(): i32 = x
       }
 
-      fun test(a: i32): i32 = i32#gta()
+      fun test(a: i32): i32 = BB.gtax()
     `;
 
-    testToFail`
-      import Support::Test
-
-      namespace TestStruct {
-        // stub
-      }
-    `;
-
-    testToFail`
-      namespace Support::Test::TestStruct {
-        // stub
-      }
-    `;
-
-    testToFail`
-      namespace NonExistentType {
+    test`
+      struct ExistentType()
+      ns ExistentType {
         // stub
       }
     `;
 
     test`
       struct ExistentType()
-      namespace ExistentType {
-        // stub
+
+      ns ExistentType {
+        fun gtax(): i32 = 1
       }
+
+      fun test(a: i32): i32 = ExistentType#gtax()
     `;
   });
 
   describe('Pattern matching', () => {
     test`
-      type i32
       fun test(a: i32): boolean = a match {
         case 1 -> true
         else -> false
       }
     `;
     testToFail`
-      type i32
       fun test(a: i32): void = a match { }
     `;
     testToFail`
-      type i32
       fun test(a: i32): i32 = a match { else -> 1 }
     `;
   });
@@ -289,7 +291,6 @@ describe('Semantic', function() {
   describe('block', () => {
     testParseToken(
       `
-        type i32
         fun map(a: i32,b: i32): i32 = a
 
         fun a(): i32 = {
@@ -306,7 +307,6 @@ describe('Semantic', function() {
     );
     testParseToken(
       `
-        type i32
         fun main(): i32 = {
           var a: i32 = 1
           a = 2
@@ -324,9 +324,8 @@ describe('Semantic', function() {
     );
     testParseToken(
       `
-        type i32
         fun map(a: i32,b: i32): i32 = a
-        var b = null
+        var b = false
         fun a(): i32 = {
           (1).map(3)
           b
@@ -414,7 +413,6 @@ describe('Semantic', function() {
 
     testParseToken(
       `
-        type i32
         var a = 1
         fun x(a: i32): i32 = a
       `,
@@ -445,7 +443,6 @@ describe('Semantic', function() {
     );
     testParseToken(
       `
-        type i32
         var a = 1
         fun x(b: i32): i32 = a
       `,
@@ -481,19 +478,16 @@ describe('Semantic', function() {
       fun test(): void = test
     `;
     test`
-      type i32
       var a = 1
       fun test(a: i32): i32 = a
     `;
 
     testToFail`var a = a`;
     testToFail`
-      type i32
-      type boolean
       fun isComplex(number: i32): boolean =
         number match {
           case x is Real(_) -> false
-          case -> false
+          case 2 -> false
           else -> false
         }
     `;
@@ -509,7 +503,6 @@ describe('Semantic', function() {
     test`var a = 1 var b = a`;
 
     testToFail`
-      type i32
       fun test(a: i32): i32 = b
     `;
   });

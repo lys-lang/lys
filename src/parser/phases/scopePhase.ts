@@ -46,6 +46,14 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     node.rhs.annotate(valueNodeAnnotation);
   }
 
+  if (node instanceof Nodes.IsExpressionNode) {
+    node.lhs.annotate(valueNodeAnnotation);
+  }
+
+  if (node instanceof Nodes.AsExpressionNode) {
+    node.lhs.annotate(valueNodeAnnotation);
+  }
+
   if (node instanceof Nodes.IfNode) {
     node.condition.annotate(valueNodeAnnotation);
 
@@ -74,80 +82,93 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-const createClosures = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, parent: Nodes.Node) => {
-  if (parent) {
-    if (!node.closure) {
-      node.closure = parent.closure;
-    }
-
-    if (node instanceof Nodes.MatcherNode) {
-      node.rhs.closure = node.closure.newChildClosure('MatcherRHS');
-
-      if (node.declaredName) {
-        node.rhs.closure.set(node.declaredName, 'VALUE');
+const createClosures = walkPreOrder(
+  (node: Nodes.Node, _: ScopePhaseResult, parent: Nodes.Node) => {
+    if (parent) {
+      if (!node.closure) {
+        node.closure = parent.closure;
       }
 
-      if (node instanceof Nodes.MatchCaseIsNode) {
-        if (node.deconstructorNames) {
-          // TODO: check duplicated names
-          node.deconstructorNames.forEach($ => {
-            if ($.name !== '_') {
-              node.rhs.closure.set($, 'VALUE');
-            }
-          });
+      if (node instanceof Nodes.MatcherNode) {
+        node.rhs.closure = node.closure.newChildClosure('MatcherRHS');
+
+        if (node.declaredName) {
+          node.rhs.closure.set(node.declaredName, 'VALUE');
         }
+
+        if (node instanceof Nodes.MatchCaseIsNode) {
+          if (node.deconstructorNames) {
+            // TODO: check duplicated names
+            node.deconstructorNames.forEach($ => {
+              if ($.name !== '_') {
+                node.rhs.closure.set($, 'VALUE');
+              }
+            });
+          }
+        }
+      } else if (node instanceof Nodes.OverloadedFunctionNode) {
+        node.closure.set(node.functionName, 'FUNCTION');
+      } else if (node instanceof Nodes.ReferenceNode) {
+        node.closure = node.closure.newChildClosure('Reference');
+      } else if (node instanceof Nodes.VarDeclarationNode) {
+        node.value.closure = node.closure.newChildClosure('VarDeclaration');
+        node.closure.set(node.variableName, 'VALUE');
+      } else if (node instanceof Nodes.NameSpaceDirective) {
+        node.closure = node.closure.newChildClosure('NSDirective');
+      } else if (node instanceof Nodes.TypeDirectiveNode) {
+        node.closure.set(node.variableName, 'TYPE');
+      } else if (node instanceof Nodes.FunctionNode) {
+        if (!node.body) {
+          throw new AstNodeError('Function has no value', node);
+        }
+
+        if (!(parent instanceof Nodes.DirectiveNode)) {
+          node.closure.set(node.functionName, 'VALUE');
+        }
+
+        if (!node.functionName.internalIdentifier) {
+          node.functionName.internalIdentifier = node.closure.getInternalIdentifier(node);
+        }
+
+        node.body.closure = node.closure.newChildClosure('FunctionBody');
+
+        node.parameters.forEach($ => {
+          node.body.closure.set($.parameterName, 'VALUE');
+        });
+
+        node.processParameters();
       }
-    } else if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure.set(node.functionName, 'FUNCTION');
-    } else if (node instanceof Nodes.NamespaceDirectiveNode) {
-      node.closure = node.closure.newChildClosure('NamespaceDirective_' + node.reference.text);
-    } else if (node instanceof Nodes.ReferenceNode) {
-      node.closure = node.closure.newChildClosure('Reference');
-    } else if (node instanceof Nodes.VarDeclarationNode) {
-      node.value.closure = node.closure.newChildClosure('VarDeclaration');
-      node.closure.set(node.variableName, 'VALUE');
-    } else if (node instanceof Nodes.TypeDirectiveNode) {
-      node.closure.set(node.variableName, 'TYPE');
-    } else if (node instanceof Nodes.StructDeclarationNode) {
-      node.closure.set(node.declaredName, 'TYPE');
+    }
+  },
+  node => {
+    if (node instanceof Nodes.NameIdentifierNode) {
       if (!node.internalIdentifier) {
         node.internalIdentifier = node.closure.getInternalIdentifier(node);
       }
-    } else if (node instanceof Nodes.FunctionNode) {
-      if (!node.body) {
-        throw new AstNodeError('Function has no value', node);
-      }
-
-      if (!(parent instanceof Nodes.DirectiveNode)) {
-        node.closure.set(node.functionName, 'VALUE');
-      }
-
-      if (!node.internalIdentifier) {
-        node.internalIdentifier = node.closure.getInternalIdentifier(node);
-      }
-
-      node.body.closure = node.closure.newChildClosure('FunctionBody');
-
-      node.parameters.forEach($ => {
-        node.body.closure.set($.parameterName, 'VALUE');
-      });
-
-      node.processParameters();
     }
   }
-});
+);
 
-function collectNamespaces(name: Nodes.NameIdentifierNode, directives: Nodes.DirectiveNode[]) {
-  if (!name.namespaceNames) {
-    name.namespaceNames = new Map();
+function collectNamespaces(
+  namespace: Nodes.NameIdentifierNode,
+  directives: Nodes.DirectiveNode[],
+  parsingContext: ParsingContext
+) {
+  if (!namespace.namespaceNames) {
+    namespace.namespaceNames = new Map();
   }
 
-  const { namespaceNames } = name;
+  const { namespaceNames } = namespace;
 
   function registerNameIdentifier(nameNode: Nodes.NameIdentifierNode) {
-    if (namespaceNames.has(nameNode.name)) {
-      nameNode.errors.push(
-        new AstNodeError(`The name ${nameNode.name} is already registered in this namespace`, nameNode)
+    if (namespaceNames.has(nameNode.name) && namespaceNames.get(nameNode.name) !== nameNode) {
+      parsingContext.messageCollector.error(
+        `The name "${nameNode.name}" is already registered in the namespace "${namespace.name}"`,
+        nameNode
+      );
+      parsingContext.messageCollector.error(
+        `This is the registered name "${nameNode.name}" of "${namespace.name}"`,
+        namespaceNames.get(nameNode.name)
       );
     } else {
       namespaceNames.set(nameNode.name, nameNode);
@@ -159,14 +180,10 @@ function collectNamespaces(name: Nodes.NameIdentifierNode, directives: Nodes.Dir
       registerNameIdentifier(node.functionName);
     } else if (node instanceof Nodes.VarDirectiveNode) {
       registerNameIdentifier(node.decl.variableName);
-    } else if (node instanceof Nodes.FunDirectiveNode) {
-      // TODO: this shouldn't happen. Only overloaded directives should be processed
-      registerNameIdentifier(node.functionNode.functionName);
-      throw new Error('Unreachable reached');
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       registerNameIdentifier(node.variableName);
     } else {
-      node.errors.push(new AstNodeError(`Don't know how to register this directive ${node.nodeName}`, node));
+      parsingContext.messageCollector.error(`Don't know how to register this directive ${node.nodeName}`, node);
     }
   });
 }
@@ -181,32 +198,16 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult:
     node.isLocal = !isGlobal;
     node.resolvedReference = resolved;
     node.closure.incrementUsageQName(node.variable);
-  } else if (node instanceof Nodes.NamespaceDirectiveNode) {
-    if (node.reference.variable.names.length > 1) {
-      throw new AstNodeError(`A single name was expected. Got a fully qualified name.`, node.reference);
-    }
-
-    if (!node.reference.resolvedReference.isLocalReference) {
-      throw new AstNodeError(
-        `Namespaces are only allowed for local file declarations. The name ${
-          node.reference.resolvedReference.referencedNode.name
-        } belongs to the module ${node.reference.resolvedReference.moduleName}`,
-        node.reference
-      );
-    }
-
-    collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives);
+  } else if (node instanceof Nodes.NameSpaceDirective) {
+    collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, phaseResult.parsingContext);
   } else if (node instanceof Nodes.MemberNode) {
-    if (node.lhs instanceof Nodes.ReferenceNode) {
+    if (node.lhs instanceof Nodes.ReferenceNode && node.lhs.resolvedReference) {
       if (node.lhs.resolvedReference.type === 'TYPE') {
         const { namespaceNames } = node.lhs.resolvedReference.referencedNode;
 
-        if (namespaceNames && namespaceNames.has(node.memberName.name)) {
-          // fiesta
-          // node.resolvedReference = extensions
-        } else {
+        if (!namespaceNames || !namespaceNames.has(node.memberName.name)) {
           throw new AstNodeError(
-            `The namespace "${node.lhs.resolvedReference.referencedNode.toString()}" has no exported member "${
+            `The type "${node.lhs.resolvedReference.referencedNode.toString()}" has no public member "${
               node.memberName.name
             }"`,
             node
@@ -225,6 +226,18 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: Sc
       const { moduleName, variable } = node.variable.deconstruct();
       node.closure.registerImport(moduleName, new Set([variable]));
       scopePhaseResult.importedModules.add(moduleName);
+    }
+  }
+});
+
+const injectImplicitCalls = walkPreOrder((node: Nodes.Node, _scopePhaseResult: ScopePhaseResult) => {
+  if (node instanceof Nodes.FunctionCallNode && node.functionNode instanceof Nodes.ReferenceNode) {
+    if (node.functionNode.resolvedReference && node.functionNode.resolvedReference.type == 'TYPE') {
+      const member = new Nodes.MemberNode(node.functionNode.astNode);
+      member.lhs = node.functionNode;
+      member.memberName = new Nodes.NameIdentifierNode(node.functionNode.astNode);
+      member.memberName.name = 'apply';
+      node.functionNode = member;
     }
   }
 });
@@ -280,6 +293,8 @@ export class ScopePhaseResult extends PhaseResult {
 
     resolveVariables(this.document, this, null);
     findValueNodes(this.document, this, null);
+
+    injectImplicitCalls(this.document, this, null);
 
     failIfErrors('Scope phase', this.document, this);
   }

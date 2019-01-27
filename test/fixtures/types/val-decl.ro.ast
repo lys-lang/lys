@@ -4,23 +4,20 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=Type<i32>
-  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test" type=fun() -> i32
-        |-ReferenceNode type=Type<i32>
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-BlockNode type=i32 annotations=IsValueNode
-          |-ValDeclarationNode type=void
-            |-NameIdentifierNode="test" type=i32
-            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-          |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-            |-NameIdentifierNode="+"
-            |-ReferenceNode type=i32 annotations=IsValueNode
-              |-QNameNode=test
-                |-NameIdentifierNode="test"
-            |-IntegerLiteral=2 type=i32 annotations=IsValueNode
-    |-NameIdentifierNode="test" type=fun() -> i32
+  |-OverloadedFunctionNode type=(fun "test" () (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "test" () (alias i32))
+      |-NameIdentifierNode="test"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ValDeclarationNode type=(void)
+          |-NameIdentifierNode="test" type=(alias i32 (native i32))
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+          |-NameIdentifierNode="+"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-QNameNode=test
+              |-NameIdentifierNode="test"
+          |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-NameIdentifierNode="test" type=(fun "test" () (alias i32))
