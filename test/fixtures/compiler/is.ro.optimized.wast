@@ -5,13 +5,13 @@
  (global $global$2 (mut i64) (i64.const 0))
  (start $0)
  (func $0 (; 0 ;) (type $0)
-  (set_global $global$0
+  (global.set $global$0
    (i64.const 8589934592)
   )
-  (set_global $global$1
+  (global.set $global$1
    (i64.const 8589934592)
   )
-  (set_global $global$2
+  (global.set $global$2
    (i64.const 8589934592)
   )
  )

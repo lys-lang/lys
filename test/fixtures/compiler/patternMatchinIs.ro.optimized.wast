@@ -16,83 +16,83 @@
  (start $5)
  (func $0 (; 0 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.and
-   (get_local $0)
-   (get_local $1)
+   (local.get $0)
+   (local.get $1)
   )
  )
  (func $1 (; 1 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.add
-   (get_local $0)
-   (get_local $1)
+   (local.get $0)
+   (local.get $1)
   )
  )
  (func $2 (; 2 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.sub
-   (get_local $0)
-   (get_local $1)
+   (local.get $0)
+   (local.get $1)
   )
  )
  (func $3 (; 3 ;) (type $0) (param $0 i32) (result i32)
   (i32.xor
-   (get_local $0)
+   (local.get $0)
    (i32.const -1)
   )
  )
  (func $4 (; 4 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.shl
-   (get_local $0)
-   (get_local $1)
+   (local.get $0)
+   (local.get $1)
   )
  )
  (func $5 (; 5 ;) (type $1)
-  (set_global $global$0
+  (global.set $global$0
    (i32.const 3)
   )
-  (set_global $global$1
+  (global.set $global$1
    (call $4
     (i32.const 1)
-    (get_global $global$0)
+    (global.get $global$0)
    )
   )
-  (set_global $global$2
+  (global.set $global$2
    (call $2
-    (get_global $global$1)
+    (global.get $global$1)
     (i32.const 1)
    )
   )
-  (set_global $global$3
+  (global.set $global$3
    (call $4
     (i32.const 1)
     (i32.const 30)
    )
   )
-  (set_global $global$4
+  (global.set $global$4
    (i32.const 0)
   )
-  (set_global $global$5
+  (global.set $global$5
    (call $0
     (call $1
-     (get_global $global$4)
-     (get_global $global$2)
+     (global.get $global$4)
+     (global.get $global$2)
     )
     (call $3
-     (get_global $global$2)
+     (global.get $global$2)
     )
    )
   )
-  (set_global $global$6
-   (get_global $global$5)
+  (global.set $global$6
+   (global.get $global$5)
   )
-  (set_global $global$7
+  (global.set $global$7
    (i32.const 0)
   )
-  (set_global $global$8
+  (global.set $global$8
    (i64.const 8589934592)
   )
-  (set_global $global$9
+  (global.set $global$9
    (i64.const 8589934592)
   )
-  (set_global $global$10
+  (global.set $global$10
    (i64.const 8589934592)
   )
  )

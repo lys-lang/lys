@@ -161,11 +161,12 @@ export namespace Nodes {
 
   export abstract class TypeNode extends Node {}
 
+
   export class TypeReducerNode extends Node {
     toString() {
       return '';
-    }
   }
+}
 
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;

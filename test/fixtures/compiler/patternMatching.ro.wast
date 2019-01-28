@@ -1,13 +1,13 @@
 (module
   (memory 0 1)
-  (global $system::memory::AL_BITS (mut i32) (i32.const 0))
-  (global $system::memory::AL_SIZE (mut i32) (i32.const 0))
-  (global $system::memory::AL_MASK (mut i32) (i32.const 0))
-  (global $system::memory::MAX_SIZE_32 (mut i32) (i32.const 0))
-  (global $system::memory::HEAP_BASE (mut i32) (i32.const 0))
-  (global $system::memory::startOffset (mut i32) (i32.const 0))
-  (global $system::memory::offset (mut i32) (i32.const 0))
-  (global $system::memory::lastPtr (mut i32) (i32.const 0))
+  (global $system::memory::AL_BITS_2 (mut i32) (i32.const 0))
+  (global $system::memory::AL_SIZE_2 (mut i32) (i32.const 0))
+  (global $system::memory::AL_MASK_5 (mut i32) (i32.const 0))
+  (global $system::memory::MAX_SIZE_32_2 (mut i32) (i32.const 0))
+  (global $system::memory::HEAP_BASE_2 (mut i32) (i32.const 0))
+  (global $system::memory::startOffset_2 (mut i32) (i32.const 0))
+  (global $system::memory::offset_3 (mut i32) (i32.const 0))
+  (global $system::memory::lastPtr_1 (mut i32) (i32.const 0))
   (func $system::memory::growMemory (param $pages i32) (result i32)
     (grow_memory (get_local $pages))
   )
@@ -30,32 +30,32 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_57 (result i32)
+    (block $unknown_block_15 (result i32)
       (if $a_wild_if (result i32) (call $system::core::> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_58 (result i32)
-                (if $a_wild_if (call $system::core::> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
+            (block $unknown_block_16 (result i32)
+                (if $a_wild_if (call $system::core::> (get_local $size) (get_global $system::memory::MAX_SIZE_32_2))
                     (then
-                      (block $unknown_block_59
+                      (block $unknown_block_17
                           (call $system::core::panic_1)
                         )
                     )
                     (else)
                   )
-                (set_local $ptr (get_global $system::memory::offset))
-                (set_local $newPtr (call $system::core::& (call $system::core::+ (call $system::core::+ (get_local $ptr) (get_local $size)) (get_global $system::memory::AL_MASK)) (call $system::core::~ (get_global $system::memory::AL_MASK))))
+                (set_local $ptr (get_global $system::memory::offset_3))
+                (set_local $newPtr (call $system::core::& (call $system::core::+ (call $system::core::+ (get_local $ptr) (get_local $size)) (get_global $system::memory::AL_MASK_5)) (call $system::core::~ (get_global $system::memory::AL_MASK_5))))
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::> (get_local $newPtr) (call $system::core::<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_60
+                      (block $unknown_block_18
                           (set_local $pagesNeeded (call $system::core::>>> (call $system::core::& (call $system::core::+ (call $system::core::- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_61
+                                (block $unknown_block_19
                                     (if $a_wild_if (call $system::core::< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_62
+                                          (block $unknown_block_20
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -69,12 +69,12 @@
                     )
                     (else)
                   )
-                (set_global $system::memory::offset (get_local $newPtr))
+                (set_global $system::memory::offset_3 (get_local $newPtr))
                 (get_local $ptr)
               )
           )
           (else
-            (block $unknown_block_63 (result i32)
+            (block $unknown_block_21 (result i32)
                 (i32.const 0)
               )
           )
@@ -788,14 +788,14 @@
     )
   )
   (func $%%START%%
-    (set_global $system::memory::AL_BITS (i32.const 3))
-    (set_global $system::memory::AL_SIZE (call $system::core::<< (i32.const 1) (get_global $system::memory::AL_BITS)))
-    (set_global $system::memory::AL_MASK (call $system::core::- (get_global $system::memory::AL_SIZE) (i32.const 1)))
-    (set_global $system::memory::MAX_SIZE_32 (call $system::core::<< (i32.const 1) (i32.const 30)))
-    (set_global $system::memory::HEAP_BASE (i32.const 0))
-    (set_global $system::memory::startOffset (call $system::core::& (call $system::core::+ (get_global $system::memory::HEAP_BASE) (get_global $system::memory::AL_MASK)) (call $system::core::~ (get_global $system::memory::AL_MASK))))
-    (set_global $system::memory::offset (get_global $system::memory::startOffset))
-    (set_global $system::memory::lastPtr (i32.const 0))
+    (set_global $system::memory::AL_BITS_2 (i32.const 3))
+    (set_global $system::memory::AL_SIZE_2 (call $system::core::<< (i32.const 1) (get_global $system::memory::AL_BITS_2)))
+    (set_global $system::memory::AL_MASK_5 (call $system::core::- (get_global $system::memory::AL_SIZE_2) (i32.const 1)))
+    (set_global $system::memory::MAX_SIZE_32_2 (call $system::core::<< (i32.const 1) (i32.const 30)))
+    (set_global $system::memory::HEAP_BASE_2 (i32.const 0))
+    (set_global $system::memory::startOffset_2 (call $system::core::& (call $system::core::+ (get_global $system::memory::HEAP_BASE_2) (get_global $system::memory::AL_MASK_5)) (call $system::core::~ (get_global $system::memory::AL_MASK_5))))
+    (set_global $system::memory::offset_3 (get_global $system::memory::startOffset_2))
+    (set_global $system::memory::lastPtr_1 (i32.const 0))
   )
   (start $%%START%%)
 )
