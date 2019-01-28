@@ -409,8 +409,8 @@ export class TypeGraphBuilder {
     return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNoded));
   }
 
-  private findLocalNode(referenceNoded: Nodes.Node): TypeNode | null {
-    return this._nodeMap.get(referenceNoded);
+  private findLocalNode(referenceNode: Nodes.Node): TypeNode | null {
+    return this._nodeMap.get(referenceNode);
   }
 
   traverseChildren(node: Nodes.Node, result: TypeNode) {
