@@ -68,15 +68,15 @@ digraph Document {
   66 [label="Name: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    67 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
+    67 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     68 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::sizeOf()";
+  label = "test/fixtures/types/struct.ro::sizeOf()";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
     69 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     70 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
-  label = "test::apply()";
+  label = "test/fixtures/types/struct.ro::apply()";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
@@ -93,21 +93,21 @@ digraph Document {
     75 -> 74[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     76 -> 74[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     77 -> 76[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::apply_2(i32)";
+  label = "test/fixtures/types/struct.ro::apply_2(i32)";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
     79 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
     80 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     81 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
-  label = "test::fromPointer_1(i32 | u32)";
+  label = "test/fixtures/types/struct.ro::fromPointer_1(i32 | u32)";
 }
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
     82 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
     83 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     84 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::is(Simple)";
+  label = "test/fixtures/types/struct.ro::is(Simple)";
 }
   subgraph cluster5 {
     node [style=filled, fillcolor=grey];
@@ -115,7 +115,7 @@ digraph Document {
     86 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     87 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     88 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::==(Simple,ref)";
+  label = "test/fixtures/types/struct.ro::==(Simple,ref)";
 }
   subgraph cluster6 {
     node [style=filled, fillcolor=grey];
@@ -123,14 +123,14 @@ digraph Document {
     90 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     91 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     92 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::!=(Simple,ref)";
+  label = "test/fixtures/types/struct.ro::!=(Simple,ref)";
 }
   subgraph cluster7 {
     node [style=filled, fillcolor=grey];
     93 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
     94 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     95 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::get_a(WithInt)";
+  label = "test/fixtures/types/struct.ro::get_a(WithInt)";
 }
   subgraph cluster8 {
     node [style=filled, fillcolor=grey];
@@ -138,14 +138,14 @@ digraph Document {
     97 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
     98 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     99 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
-  label = "test::set_a(WithInt,i32)";
+  label = "test/fixtures/types/struct.ro::set_a(WithInt,i32)";
 }
   subgraph cluster9 {
     node [style=filled, fillcolor=grey];
     100 [label="Name: a\n(alias WithInt (struct WithInt))", fillcolor=grey];
     101 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     102 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::is_2(WithInt)";
+  label = "test/fixtures/types/struct.ro::is_2(WithInt)";
 }
   1 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

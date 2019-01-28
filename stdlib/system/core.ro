@@ -15,6 +15,16 @@ type isize
 type ref
 type string
 
+fun assert(x: boolean): void =
+  if (x == false)
+    panic()
+
+fun addressFromRef(pointer: ref): u32 = %wasm {
+  (i32.wrap/i64 (get_local $pointer))
+}
+
+fun panic(): void = %wasm { (unreachable) }
+
 ns u8 {
   fun sizeOf(lhs: u8): u32 = %wasm { (i32.const 1) }
   fun (as)(lhs: u8): i16 = %wasm { (get_local $lhs) }
@@ -29,6 +39,33 @@ ns u8 {
   fun (==)(lhs: u8, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun (==)(lhs: u8, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun (==)(lhs: u8, rhs: u8): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
+
+  fun store(lhs: ref, rhs: u8): void = %wasm {
+    (i32.store8 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: u8, offset: i32): void = %wasm {
+    (i32.store8
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): u8 = %wasm {
+    (i32.load8_u (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): u8 = %wasm {
+    (i32.load8_u
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 ns i16 {
@@ -40,6 +77,10 @@ ns i16 {
 
   fun (==)(lhs: i16, rhs: i16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun (==)(lhs: i16, rhs: i32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
+
+  fun store(lhs: ref, rhs: i16): void = %wasm {
+    (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
 }
 
 ns u16 {
@@ -54,6 +95,10 @@ ns u16 {
   fun (==)(lhs: u16, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun (==)(lhs: u16, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun (==)(lhs: u16, rhs: u8): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
+
+  fun store(lhs: ref, rhs: u16): void = %wasm {
+    (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
 }
 
 ns i32 {
@@ -84,8 +129,36 @@ ns i32 {
   fun (>)(lhs: i32, rhs: i32): boolean = %wasm { (i32.gt_s (get_local $lhs) (get_local $rhs)) }
   fun (<)(lhs: i32, rhs: i32): boolean = %wasm { (i32.lt_s (get_local $lhs) (get_local $rhs)) }
 
-  // #[explicit]
+  // @[explicit]
   fun (as)(lhs: i32): /* may fail */ f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
+
+
+  fun store(lhs: ref, rhs: i32): void = %wasm {
+    (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: i32, offset: i32): void = %wasm {
+    (i32.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): i32 = %wasm {
+    (i32.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): i32 = %wasm {
+    (i32.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 
@@ -119,6 +192,10 @@ ns u32 {
 
   // #[explicit]
   fun (as)(lhs: u32): /* may fail */ f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
+
+  fun store(lhs: ref, rhs: u32): void = %wasm {
+    (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
 }
 
 ns i64 {
@@ -209,6 +286,10 @@ ns f32 {
 
   // #[explicit]
   fun (as)(lhs: f32): /* may fail */ u32 = %wasm { (i32.trunc_u/f32 (get_local $lhs)) }
+
+  fun store(lhs: ref, rhs: f32): void = %wasm {
+    (f32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
 }
 
 ns f64 {
@@ -239,6 +320,10 @@ ns f64 {
 
   // #[explicit]
   fun (as)(lhs: f64): /* may fail */ u32 = %wasm { (i32.trunc_u/f64 (get_local $lhs)) }
+
+  fun store(lhs: ref, rhs: f64): void = %wasm {
+    (f64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
 }
 
 ns boolean {
@@ -312,13 +397,3 @@ ns string {
  *   u64    f32, f64
  */
 
-
-fun assert(x: boolean): void =
-  if (x == false)
-    panic()
-
-fun addressFromRef(pointer: ref): u32 = %wasm {
-  (i32.wrap/i64 (get_local $pointer))
-}
-
-fun panic(): void = %wasm { (unreachable) }

@@ -6,9 +6,9 @@ import { expect } from 'chai';
 import { ParsingContext } from '../dist/parser/closure';
 
 describe('Parser', () => {
-  const phases = function(txt: string): CanonicalPhaseResult {
+  const phases = function(txt: string, fileName: string): CanonicalPhaseResult {
     const parsingContext = new ParsingContext();
-    const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
 
     return new CanonicalPhaseResult(parsing);
   };
@@ -27,6 +27,12 @@ describe('Parser', () => {
     );
   });
 
+  let testCount = 0;
+
+  function getFileName() {
+    return `parser_tests_${testCount++}.ro`;
+  }
+
   describe('Basic sanity tests', function() {
     function test(literals, ...placeholders) {
       let result = '';
@@ -39,7 +45,7 @@ describe('Parser', () => {
 
       // add the last literal
       result += literals[literals.length - 1];
-      testParseToken(result, 'Document', null, phases);
+      testParseToken(result, getFileName(), 'Document', null, phases);
     }
 
     function testEquivalence(a: string, b: string) {
@@ -47,6 +53,7 @@ describe('Parser', () => {
 
       testParseToken(
         a,
+        getFileName(),
         'Document',
         async (doc, err) => {
           if (err) throw err;
@@ -56,6 +63,7 @@ describe('Parser', () => {
       );
       testParseToken(
         b,
+        getFileName(),
         'Document',
         async (doc, err) => {
           if (err) throw err;

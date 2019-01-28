@@ -887,3 +887,16 @@ export function findNodesByType<T>(astRoot: { children: any[] }, type: { new (..
   astRoot.children.forEach($ => findNodesByType($, type, list));
   return list;
 }
+
+export function findNodesByTypeInChildren<T>(
+  astRoot: { children: any[] },
+  type: { new (...args): T },
+  list: T[] = []
+): T[] {
+  astRoot.children.forEach($ => {
+    if ($ instanceof type) {
+      list.push($);
+    }
+  });
+  return list;
+}

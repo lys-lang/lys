@@ -3,7 +3,7 @@ declare var describe;
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
-describe.skip('execution tests', () => {
+describe('execution tests', () => {
   describe('numbers', () => {
     test(
       'casts',
@@ -17,7 +17,7 @@ describe.skip('execution tests', () => {
     );
   });
 
-  describe('named types', () => {
+  describe.skip('named types', () => {
     test(
       'type alias of native',
       `
@@ -274,6 +274,43 @@ describe.skip('execution tests', () => {
     test(
       'store values',
       `
+        struct Custom(r: i32, g: i32)
+
+        val x = Custom(0,0)
+        val y = Custom(0,0)
+
+        fun getX(): u32 = addressFromRef(x)
+        fun getY(): u32 = addressFromRef(y)
+
+        fun testLoad(): void = {
+          support::test::assert(i32.load(x) == 0)
+          support::test::assert(i32.load(y) == 0)
+        }
+
+        fun testStore(): void = {
+          i32.store(x, 3)
+          i32.store(y, 2882400001) // 0xabcdef01
+          i32.store(y, 5, 5)
+        }
+
+        fun assert(): void = {
+          support::test::assert(i32.load(x) == 3)
+          support::test::assert(i32.load(y) == 0xABCDEF01)
+          support::test::assert(u8.load(y) as i32 == 0x01)
+          support::test::assert(u8.load(y, 5) as i32 == 5)
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testLoad();
+        x.exports.testStore();
+        x.exports.assert();
+      }
+    );
+
+    test(
+      'store values 2',
+      `
         type x {
           Custom(r: i32, g: i32)
         }
@@ -282,17 +319,17 @@ describe.skip('execution tests', () => {
           val x = Custom(0,0)
           val y = Custom(0,0)
 
-          support::test::assert(system::i32::load(x) == 0)
-          support::test::assert(system::i32::load(y) == 0)
+          support::test::assert(i32.load(x) == 0)
+          support::test::assert(i32.load(y) == 0)
 
-          system::i32::store(x, 3)
-          system::i32::store(y, 2882400001) // 0xabcdef01
-          system::i32::store(y, 5, 5)
+          i32.store(x, 3)
+          i32.store(y, 2882400001) // 0xabcdef01
+          i32.store(y, 5, 5)
 
-          support::test::assert(system::i32::load(x) == 3)
-          support::test::assert(system::i32::load(y) == 0xABCDEF01)
-          support::test::assert(system::u8::load(y) as i32 == 0x01)
-          support::test::assert(system::u8::load(y, 5) as i32 == 5)
+          support::test::assert(i32.load(x) == 3)
+          support::test::assert(i32.load(y) == 0xABCDEF01)
+          support::test::assert(u8.load(y) as i32 == 0x01)
+          support::test::assert(u8.load(y, 5) as i32 == 5)
         }
 
         fun retRef(): u32 = addressFromRef(Custom(0, 0))
@@ -312,9 +349,17 @@ describe.skip('execution tests', () => {
     test(
       'single addition, overrides core',
       `
-        private fun (+)(a: f32, b: i32): i32 = 0
-        private fun (+)(a: i32, b: i32): i32 = 1
-        private fun (+)(a: i32, b: f32): i32 = 4
+        type i32
+        type f32
+
+        ns f32 {
+          fun (+)(a: f32, b: i32): i32 = 0
+        }
+
+        ns i32 {
+          fun (+)(a: i32, b: i32): i32 = 1
+          fun (+)(a: i32, b: f32): i32 = 4
+        }
 
         fun main1(a: i32, b: f32): i32 = {
           a + b
@@ -753,11 +798,11 @@ describe.skip('execution tests', () => {
         private fun sum(a: i32): i32 = a + 100
         private fun sum(a: f32): f32 = a + 100.0
 
-        fun testInt(a: i32, b: i32): i32 = a.sum(b)
-        fun testFloat(a: f32, b: f32): f32 = a.sum(b)
+        fun testInt(a: i32, b: i32): i32 = sum(a,b)
+        fun testFloat(a: f32, b: f32): f32 = sum(a,b)
 
-        fun testInt2(a: i32): i32 = a.sum()
-        fun testFloat2(a: f32): f32 = a.sum()
+        fun testInt2(a: i32): i32 = sum(a)
+        fun testFloat2(a: f32): f32 = sum(a)
       `,
       async x => {
         expect(x.exports.testInt(46, 3)).to.eq(49);

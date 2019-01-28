@@ -15,11 +15,11 @@ import { ParsingContext } from '../dist/parser/closure';
 
 const compilerTestParsingContext = new ParsingContext();
 
-const compilationPhases = function(txt: string): CompilationPhaseResult {
+const compilationPhases = function(txt: string, fileName: string): CompilationPhaseResult {
   compilerTestParsingContext.reset();
-  const parsing = compilerTestParsingContext.getParsingPhaseForContent('test.ro', txt);
+  const parsing = compilerTestParsingContext.getParsingPhaseForContent(fileName, txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical, 'test');
+  const semantic = new SemanticPhaseResult(canonical, fileName);
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
   types.execute(true);
@@ -29,8 +29,8 @@ const compilationPhases = function(txt: string): CompilationPhaseResult {
   return compiler;
 };
 
-const phases = function(txt: string): CodeGenerationPhaseResult {
-  const compiler = compilationPhases(txt);
+const phases = function(txt: string, fileName: string): CodeGenerationPhaseResult {
+  const compiler = compilationPhases(txt, fileName);
   return new CodeGenerationPhaseResult(compiler);
 };
 
@@ -50,6 +50,7 @@ describe('Compiler', function() {
   describe('AST', () => {
     folderBasedTest('**/compiler/*.ro', phases, async result => printAST(result.document), '.ast');
   });
+
   describe('Compilation', () => {
     folderBasedTest('**/compiler/*.ro', phases, async (result, e) => {
       if (e) throw e;

@@ -14,13 +14,13 @@ digraph Document {
     10 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
     11 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     9 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::x(i32)";
+  label = "test/fixtures/types/overloaded-fun.ro::x(i32)";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
     12 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     13 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::x_1()";
+  label = "test/fixtures/types/overloaded-fun.ro::x_1()";
 }
   1 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

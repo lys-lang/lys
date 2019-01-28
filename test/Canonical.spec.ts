@@ -17,6 +17,12 @@ describe('FileBasedCanonical', () => {
 });
 
 describe('Canonical', function() {
+  let testCount = 0;
+
+  function getFileName() {
+    return `canonical_tests_${testCount++}.ro`;
+  }
+
   function test(literals, ...placeholders) {
     let result = '';
 
@@ -28,7 +34,7 @@ describe('Canonical', function() {
 
     // add the last literal
     result += literals[literals.length - 1];
-    testParseToken(result, 'Document', null, phases);
+    testParseToken(result, getFileName(), 'Document', null, phases);
   }
 
   test`var a = 1`;
