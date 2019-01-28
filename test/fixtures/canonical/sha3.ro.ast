@@ -4,11 +4,11 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_theta"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -791,16 +791,16 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="rotation_consts"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_rho"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -884,11 +884,11 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_pi"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -1243,11 +1243,11 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_chi"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -1589,11 +1589,11 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_permute"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -1652,14 +1652,14 @@
                 |-QNameNode=$done
                   |-NameIdentifierNode="$done"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=keccak_theta
                   |-NameIdentifierNode="keccak_theta"
               |-WasmAtomNode=get_local
                 |-QNameNode=$context_offset
                   |-NameIdentifierNode="$context_offset"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=keccak_rho
                   |-NameIdentifierNode="keccak_rho"
               |-WasmAtomNode=get_local
@@ -1669,14 +1669,14 @@
                 |-QNameNode=$rotation_consts
                   |-NameIdentifierNode="$rotation_consts"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=keccak_pi
                   |-NameIdentifierNode="keccak_pi"
               |-WasmAtomNode=get_local
                 |-QNameNode=$context_offset
                   |-NameIdentifierNode="$context_offset"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=keccak_chi
                   |-NameIdentifierNode="keccak_chi"
               |-WasmAtomNode=get_local
@@ -1718,21 +1718,21 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="input_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="input_length"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_block"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -2111,7 +2111,7 @@
                 |-WasmAtomNode=i32.const
                   |-IntegerLiteral=128
         |-WasmAtomNode=call
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=keccak_permute
               |-NameIdentifierNode="keccak_permute"
           |-WasmAtomNode=get_local
@@ -2121,11 +2121,11 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_init"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -2140,7 +2140,7 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-WasmAtomNode=call
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=keccak_reset
               |-NameIdentifierNode="keccak_reset"
           |-WasmAtomNode=get_local
@@ -2600,19 +2600,19 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_reset"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-BlockNode
         |-FunctionCallNode
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=memset
               |-NameIdentifierNode="memset"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=context_offset
               |-NameIdentifierNode="context_offset"
           |-IntegerLiteral=0
@@ -2621,21 +2621,21 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="input_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="input_length"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_update"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -2716,7 +2716,7 @@
                   |-QNameNode=$input_length
                     |-NameIdentifierNode="$input_length"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=memcpy
                   |-NameIdentifierNode="memcpy"
               |-WasmAtomNode=i32.add
@@ -2750,7 +2750,7 @@
                 |-WasmAtomNode=i32.const
                   |-IntegerLiteral=136
               |-WasmAtomNode=call
-                |-VariableReferenceNode
+                |-ReferenceNode
                   |-QNameNode=keccak_block
                     |-NameIdentifierNode="keccak_block"
                 |-WasmAtomNode=get_local
@@ -2800,7 +2800,7 @@
                 |-QNameNode=$done
                   |-NameIdentifierNode="$done"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=keccak_block
                   |-NameIdentifierNode="keccak_block"
               |-WasmAtomNode=get_local
@@ -2841,7 +2841,7 @@
               |-IntegerLiteral=0
           |-WasmAtomNode=then
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=memcpy
                   |-NameIdentifierNode="memcpy"
               |-WasmAtomNode=i32.add
@@ -2878,16 +2878,16 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="output_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak_finish"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -2943,7 +2943,7 @@
             |-QNameNode=$residue_index
               |-NameIdentifierNode="$residue_index"
         |-WasmAtomNode=call
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=memset
               |-NameIdentifierNode="memset"
           |-WasmAtomNode=i32.add
@@ -3003,7 +3003,7 @@
             |-WasmAtomNode=i32.const
               |-HexLiteral=0x80
         |-WasmAtomNode=call
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=keccak_block
               |-NameIdentifierNode="keccak_block"
           |-WasmAtomNode=get_local
@@ -3068,59 +3068,59 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="context_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="input_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="input_length"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="output_offset"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="keccak"
-      |-TypeReferenceNode=i32
+      |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode
         |-FunctionCallNode
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=keccak_init
               |-NameIdentifierNode="keccak_init"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=context_offset
               |-NameIdentifierNode="context_offset"
         |-FunctionCallNode
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=keccak_update
               |-NameIdentifierNode="keccak_update"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=context_offset
               |-NameIdentifierNode="context_offset"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=input_offset
               |-NameIdentifierNode="input_offset"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=input_length
               |-NameIdentifierNode="input_length"
         |-FunctionCallNode
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=keccak_finish
               |-NameIdentifierNode="keccak_finish"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=context_offset
               |-NameIdentifierNode="context_offset"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=output_offset
               |-NameIdentifierNode="output_offset"
-        |-VariableReferenceNode
+        |-ReferenceNode
           |-QNameNode=output_offset
             |-NameIdentifierNode="output_offset"

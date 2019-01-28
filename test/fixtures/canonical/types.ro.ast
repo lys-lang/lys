@@ -14,31 +14,31 @@
   |-TypeDirectiveNode
     |-NameIdentifierNode="theFn1"
     |-FunctionTypeNode
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
   |-TypeDirectiveNode
     |-NameIdentifierNode="theFn2"
     |-FunctionTypeNode
       |-FunctionParameterTypeNode
-        |-TypeReferenceNode=bool
+        |-ReferenceNode
           |-QNameNode=bool
             |-NameIdentifierNode="bool"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
   |-TypeDirectiveNode
     |-NameIdentifierNode="theFn3"
     |-FunctionTypeNode
       |-FunctionParameterTypeNode
-        |-TypeReferenceNode=bool
+        |-ReferenceNode
           |-QNameNode=bool
             |-NameIdentifierNode="bool"
       |-FunctionParameterTypeNode
-        |-TypeReferenceNode=bool
+        |-ReferenceNode
           |-QNameNode=bool
             |-NameIdentifierNode="bool"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
   |-TypeDirectiveNode
@@ -46,10 +46,10 @@
     |-FunctionTypeNode
       |-FunctionParameterTypeNode
         |-NameIdentifierNode="x"
-        |-TypeReferenceNode=bool
+        |-ReferenceNode
           |-QNameNode=bool
             |-NameIdentifierNode="bool"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
   |-TypeDirectiveNode
@@ -57,15 +57,15 @@
     |-FunctionTypeNode
       |-FunctionParameterTypeNode
         |-NameIdentifierNode="x"
-        |-TypeReferenceNode=bool
+        |-ReferenceNode
           |-QNameNode=bool
             |-NameIdentifierNode="bool"
       |-FunctionParameterTypeNode
         |-NameIdentifierNode="b"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
   |-TypeDirectiveNode
@@ -73,55 +73,55 @@
     |-FunctionTypeNode
       |-FunctionParameterTypeNode
         |-NameIdentifierNode="x"
-        |-TypeReferenceNode=bool
+        |-ReferenceNode
           |-QNameNode=bool
             |-NameIdentifierNode="bool"
       |-FunctionParameterTypeNode
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-TypeReferenceNode=i32
+      |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
   |-FunDirectiveNode
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="a"
-        |-TypeReferenceNode=Color
+        |-ReferenceNode
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
       |-ParameterNode
         |-NameIdentifierNode="b"
-        |-TypeReferenceNode=Color
+        |-ReferenceNode
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
       |-NameIdentifierNode="compare"
-      |-TypeReferenceNode=bool
+      |-ReferenceNode
         |-QNameNode=bool
           |-NameIdentifierNode="bool"
       |-BlockNode
         |-BinaryExpressionNode="=="
           |-NameIdentifierNode="=="
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=a
               |-NameIdentifierNode="a"
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
   |-FunDirectiveNode
     |-FunctionNode
       |-NameIdentifierNode="main"
-      |-TypeReferenceNode=i32
+      |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-FunctionCallNode
-        |-VariableReferenceNode
+        |-ReferenceNode
           |-QNameNode=compare
             |-NameIdentifierNode="compare"
-        |-VariableReferenceNode
+        |-ReferenceNode
           |-QNameNode=Red
             |-NameIdentifierNode="Red"
-        |-VariableReferenceNode
+        |-ReferenceNode
           |-QNameNode=Green
             |-NameIdentifierNode="Green"
   |-VarDirectiveNode
@@ -129,16 +129,16 @@
       |-NameIdentifierNode="test"
       |-FunctionTypeNode
         |-UnionTypeNode
-          |-TypeReferenceNode=void
+          |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionTypeNode
             |-FunctionParameterTypeNode
               |-NameIdentifierNode="a"
-              |-TypeReferenceNode=i32
+              |-ReferenceNode
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
-            |-TypeReferenceNode=i32
+            |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
       |-IntegerLiteral=1
@@ -146,21 +146,21 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="test"
       |-UnionTypeNode
-        |-TypeReferenceNode=a
+        |-ReferenceNode
           |-QNameNode=a
             |-NameIdentifierNode="a"
         |-IntersectionTypeNode
-          |-TypeReferenceNode=b
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
-          |-TypeReferenceNode=c
+          |-ReferenceNode
             |-QNameNode=c
               |-NameIdentifierNode="c"
         |-IntersectionTypeNode
-          |-TypeReferenceNode=d
+          |-ReferenceNode
             |-QNameNode=d
               |-NameIdentifierNode="d"
-          |-TypeReferenceNode=b
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
       |-IntegerLiteral=1
@@ -168,10 +168,10 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="test"
       |-UnionTypeNode
-        |-TypeReferenceNode=_
+        |-ReferenceNode
           |-QNameNode=_
             |-NameIdentifierNode="_"
-        |-TypeReferenceNode=_
+        |-ReferenceNode
           |-QNameNode=_
             |-NameIdentifierNode="_"
       |-IntegerLiteral=1
@@ -179,7 +179,7 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="test"
       |-FunctionTypeNode
-        |-TypeReferenceNode=void
+        |-ReferenceNode
           |-QNameNode=void
             |-NameIdentifierNode="void"
       |-IntegerLiteral=1
@@ -188,15 +188,15 @@
       |-NameIdentifierNode="test"
       |-FunctionTypeNode
         |-IntersectionTypeNode
-          |-TypeReferenceNode=void
+          |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionTypeNode
             |-FunctionParameterTypeNode
-              |-TypeReferenceNode=i32
+              |-ReferenceNode
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
-            |-TypeReferenceNode=i32
+            |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
       |-IntegerLiteral=1
@@ -204,21 +204,21 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="test"
       |-UnionTypeNode
-        |-TypeReferenceNode=a
+        |-ReferenceNode
           |-QNameNode=a
             |-NameIdentifierNode="a"
         |-IntersectionTypeNode
-          |-TypeReferenceNode=b
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
-          |-TypeReferenceNode=c
+          |-ReferenceNode
             |-QNameNode=c
               |-NameIdentifierNode="c"
         |-IntersectionTypeNode
-          |-TypeReferenceNode=d
+          |-ReferenceNode
             |-QNameNode=d
               |-NameIdentifierNode="d"
-          |-TypeReferenceNode=b
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
       |-IntegerLiteral=1
@@ -226,21 +226,21 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="test"
       |-UnionTypeNode
-        |-TypeReferenceNode=a
+        |-ReferenceNode
           |-QNameNode=a
             |-NameIdentifierNode="a"
         |-IntersectionTypeNode
-          |-TypeReferenceNode=b
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
-          |-TypeReferenceNode=c
+          |-ReferenceNode
             |-QNameNode=c
               |-NameIdentifierNode="c"
         |-IntersectionTypeNode
-          |-TypeReferenceNode=d
+          |-ReferenceNode
             |-QNameNode=d
               |-NameIdentifierNode="d"
-          |-TypeReferenceNode=b
+          |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
       |-IntegerLiteral=1
@@ -250,10 +250,10 @@
       |-FunctionTypeNode
         |-FunctionParameterTypeNode
           |-NameIdentifierNode="a"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-TypeReferenceNode=void
+        |-ReferenceNode
           |-QNameNode=void
             |-NameIdentifierNode="void"
       |-IntegerLiteral=1
@@ -263,19 +263,19 @@
       |-FunctionTypeNode
         |-FunctionParameterTypeNode
           |-NameIdentifierNode="a"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-FunctionParameterTypeNode
           |-NameIdentifierNode="b"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-UnionTypeNode
-          |-TypeReferenceNode=void
+          |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
       |-IntegerLiteral=1
@@ -284,18 +284,18 @@
       |-NameIdentifierNode="test"
       |-FunctionTypeNode
         |-FunctionParameterTypeNode
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-FunctionParameterTypeNode
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-UnionTypeNode
-          |-TypeReferenceNode=void
+          |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
       |-IntegerLiteral=1
@@ -310,25 +310,25 @@
         |-NameIdentifierNode="Real"
         |-ParameterNode
           |-NameIdentifierNode="number"
-          |-TypeReferenceNode=f32
+          |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
       |-StructDeclarationNode
         |-NameIdentifierNode="Natural"
         |-ParameterNode
           |-NameIdentifierNode="number"
-          |-TypeReferenceNode=i32
+          |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
       |-StructDeclarationNode
         |-NameIdentifierNode="Complex"
         |-ParameterNode
           |-NameIdentifierNode="real"
-          |-TypeReferenceNode=f32
+          |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
         |-ParameterNode
           |-NameIdentifierNode="imaginary"
-          |-TypeReferenceNode=f32
+          |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"

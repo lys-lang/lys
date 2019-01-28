@@ -1,23 +1,19 @@
 import { TypeResolver, TypeNode, Edge, LiteralTypeResolver } from './TypeGraph';
-import { TypeResolutionContext, resolveReturnType } from './TypePropagator';
+import { TypeResolutionContext, resolveReturnType, resolveNode } from './TypePropagator';
 import {
   VoidType,
   UnionType,
   FunctionType,
   Type,
   IntersectionType,
-  toConcreteType,
   InvalidType,
   StructType,
   bool,
   UnknownType,
   TypeType,
-  f32,
-  i32,
-  TypeAlias,
-  PolimorphicType,
   RefType,
-  NeverType
+  NeverType,
+  TypeAlias
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -41,6 +37,8 @@ const INVALID_TYPE = InvalidType.instance;
 
 export const EdgeLabels = {
   CONDITION: 'CONDITION',
+  EXPECTED_TYPE: 'EXPECTED_TYPE',
+  FUNCTION: 'FUNCTION',
   TRUE_PART: 'TRUE_PART',
   FALSE_PART: 'FALSE_PART',
   BLOCK: 'BLOCK',
@@ -62,18 +60,14 @@ export const EdgeLabels = {
 
 export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   if (astNode instanceof Nodes.IntegerLiteral) {
-    return new LiteralTypeResolver(i32.instance);
+    return new PassThroughTypeTypeResolver();
   } else if (astNode instanceof Nodes.FloatLiteral) {
-    return new LiteralTypeResolver(f32.instance);
+    return new PassThroughTypeTypeResolver();
   } else if (astNode instanceof Nodes.BooleanLiteral) {
-    return new LiteralTypeResolver(bool.instance);
+    return new PassThroughTypeTypeResolver();
   } else if (astNode instanceof Nodes.IfNode) {
     return new IfElseTypeResolver();
-  } else if (astNode instanceof Nodes.DocumentNode) {
-    return new UnhandledTypeResolver();
   } else if (astNode instanceof Nodes.NameIdentifierNode) {
-    return new PassThroughTypeResolver();
-  } else if (astNode instanceof Nodes.FunDirectiveNode) {
     return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.VarDeclarationNode) {
     return new LiteralTypeResolver(VoidType.instance);
@@ -81,12 +75,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new OverloadedFunctionTypeResolver();
   } else if (astNode instanceof Nodes.FunctionNode) {
     return new FunctionTypeResolver();
-  } else if (astNode instanceof Nodes.VariableReferenceNode) {
-    return new VariableReferenceResolver();
-  } else if (astNode instanceof Nodes.StructDeclarationNode) {
-    return new StructTypeResolver();
-  } else if (astNode instanceof Nodes.TypeReferenceNode) {
-    return new TypeReferenceResolver();
+  } else if (astNode instanceof Nodes.ReferenceNode) {
+    return new ReferenceResolver();
   } else if (astNode instanceof Nodes.UnionTypeNode) {
     return new UnionTypeResolver();
   } else if (astNode instanceof Nodes.IntersectionTypeNode) {
@@ -119,6 +109,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new UnknownTypeResolver();
   } else if (astNode instanceof Nodes.TypeReducerNode) {
     return new TypeReducerResolver();
+  } else if (astNode instanceof Nodes.MemberNode) {
+    return new MemberTypeResolver();
   }
 
   console.log(`Node ${astNode.nodeName} has no type resolver`);
@@ -126,9 +118,38 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   return new UnhandledTypeResolver();
 }
 
+function getTypeTypeType(node: Nodes.Node, type: Type, ctx: TypeResolutionContext): Type {
+  if (type instanceof TypeType) {
+    return type.of;
+  } else {
+    ctx.parsingContext.messageCollector.error(new NotAValidType(node.toString(), node));
+    return INVALID_TYPE;
+  }
+}
+
 export class UnhandledTypeResolver extends TypeResolver {
   execute(_node: TypeNode, _ctx: TypeResolutionContext) {
     return INVALID_TYPE;
+  }
+}
+
+export class TypeFromTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const x = node.incomingEdges();
+
+    if (x.length != 1) {
+      if (ctx.currentParsingContext) {
+        throw new Error(
+          `TypeFromType resolver only works with nodes with one edge but found '${
+            node.incomingEdges().length
+          }' with node ${node.astNode.nodeName}`
+        );
+      } else {
+        return null;
+      }
+    }
+
+    return getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx) || INVALID_TYPE;
   }
 }
 
@@ -158,35 +179,122 @@ export class PassThroughTypeResolver extends TypeResolver {
   }
 }
 
-export class FunctionArgumentTypeResolver extends TypeResolver {
+export class PassThroughTypeTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext) {
-    const [defaultValue] = node.incomingEdgesByName(EdgeLabels.DEFAULT_VALUE);
-    const [parameterType] = node.incomingEdges().filter($ => $ != defaultValue);
+    const x = node.incomingEdges();
 
-    if (defaultValue) {
-      if (!defaultValue.incomingType().canBeAssignedTo(parameterType.incomingType())) {
-        ctx.parsingContext.messageCollector.error(
-          new TypeMismatch(defaultValue.incomingType(), parameterType.incomingType(), defaultValue.source.astNode)
+    if (x.length != 1) {
+      if (ctx.currentParsingContext) {
+        throw new Error(
+          `PassThrough resolver only works with nodes with one edge but found '${
+            node.incomingEdges().length
+          }' with node ${node.astNode.nodeName}`
         );
+      } else {
+        return null;
       }
     }
 
-    return parameterType.incomingType();
+    return getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx);
+  }
+}
+
+export class ExpressionTypeResolver extends TypeResolver {
+  constructor(public expressionNode: Nodes.ExpressionNode) {
+    super();
+  }
+
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const valueType = resolveNode(this.expressionNode, ctx);
+
+    const [parameterEdge] = node.incomingEdgesByName(EdgeLabels.EXPECTED_TYPE);
+
+    if (parameterEdge) {
+      const parameterType = getTypeTypeType(parameterEdge.source.astNode, parameterEdge.incomingType(), ctx);
+
+      if (!valueType.canBeAssignedTo(parameterType)) {
+        ctx.parsingContext.messageCollector.error(
+          new TypeMismatch(valueType, parameterType, parameterEdge.source.astNode)
+        );
+      }
+
+      return parameterType;
+    }
+
+    return valueType;
+  }
+}
+
+export class TypeDirectiveResolver extends TypeResolver {
+  constructor(public originalType: TypeType) {
+    super();
+  }
+
+  execute(node: TypeNode, _ctx: TypeResolutionContext) {
+    const [incommingType] = node.incomingEdges().map($ => $.incomingType() as TypeType);
+
+    if (incommingType) {
+      const typeAlias = this.originalType.of as TypeAlias;
+
+      if (typeAlias instanceof TypeAlias) {
+        const aliasedType = typeAlias.of;
+
+        if (incommingType.of instanceof UnionType) {
+          if (aliasedType instanceof UnionType) {
+            if (!aliasedType.of.length) {
+              incommingType.of.of.forEach($ => aliasedType.of.push($));
+              const simplification = aliasedType.simplify();
+              if (simplification instanceof UnionType) {
+                aliasedType.of.length = 0;
+                aliasedType.of.push(...simplification.of);
+              } else {
+                aliasedType.of.length = 0;
+                aliasedType.of.push(simplification);
+              }
+            }
+          } else {
+            throw new Error('aliased type is not union');
+          }
+        } else if (incommingType.of instanceof IntersectionType) {
+          if (aliasedType instanceof IntersectionType) {
+            if (!aliasedType.of.length) {
+              incommingType.of.of.forEach($ => aliasedType.of.push($));
+              const simplification = aliasedType.simplify();
+              if (simplification instanceof IntersectionType) {
+                aliasedType.of = simplification.of;
+              } else {
+                aliasedType.of = [simplification];
+              }
+            }
+          } else {
+            throw new Error('aliased type is not intersection');
+          }
+        }
+      } else {
+        throw new Error('type is not an alias');
+      }
+    }
+
+    return this.originalType;
   }
 }
 
 export class VarDeclarationTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext) {
     const [defaultValue] = node.incomingEdgesByName(EdgeLabels.DEFAULT_VALUE);
-    const [parameterType] = node.incomingEdges().filter($ => $ != defaultValue);
+
+    const [parameterType] = node
+      .incomingEdges()
+      .filter($ => $ != defaultValue)
+      .map($ => getTypeTypeType($.source.astNode, $.incomingType(), ctx));
 
     if (parameterType) {
-      if (!defaultValue.incomingType().canBeAssignedTo(parameterType.incomingType())) {
+      if (!defaultValue.incomingType().canBeAssignedTo(parameterType)) {
         ctx.parsingContext.messageCollector.error(
-          new TypeMismatch(defaultValue.incomingType(), parameterType.incomingType(), defaultValue.source.astNode)
+          new TypeMismatch(defaultValue.incomingType(), parameterType, defaultValue.source.astNode)
         );
       }
-      return parameterType.incomingType();
+      return parameterType;
     }
 
     return defaultValue.incomingType();
@@ -252,46 +360,37 @@ export class IfElseTypeResolver extends TypeResolver {
 }
 
 export class UnionTypeResolver extends TypeResolver {
-  execute(node: TypeNode, _ctx: TypeResolutionContext) {
-    return new UnionType(node.incomingEdges().map($ => $.incomingType()));
-  }
-}
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const astNode = node.astNode as Nodes.UnionTypeNode;
 
-export class AliasTypeResolver extends TypeResolver {
-  constructor(public typeName: string) {
-    super();
-  }
+    const types = node.incomingEdges().map(($, ix) => getTypeTypeType(astNode[ix], $.incomingType(), ctx));
 
-  execute(node: TypeNode, _ctx: TypeResolutionContext) {
-    const type = new TypeAlias(this.typeName);
+    const ret = new UnionType(types);
 
-    const edges = node.incomingEdges();
-
-    if (edges.length) {
-      type.of = node.incomingEdges()[0].incomingType();
-    } else {
-      type.of = INVALID_TYPE;
-    }
-
-    return TypeType.of(type);
+    return TypeType.of(ret);
   }
 }
 
 export class IntersectionTypeResolver extends TypeResolver {
-  execute(node: TypeNode, _ctx: TypeResolutionContext) {
-    const type = new IntersectionType();
-    type.of = node.incomingEdges().map($ => $.incomingType());
-    return type.simplify();
+  execute(node: TypeNode, ctx: TypeResolutionContext) {
+    const astNode = node.astNode as Nodes.IntersectionTypeNode;
+
+    const types = node.incomingEdges().map(($, ix) => getTypeTypeType(astNode[ix], $.incomingType(), ctx));
+
+    const ret = new IntersectionType(types).simplify();
+
+    return TypeType.of(ret);
   }
 }
 
 export class PatternMatcherTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext) {
-    const type = new UnionType();
-    type.of = node
-      .incomingEdges()
-      .filter($ => $.incomingTypeDefined() && $.source.astNode instanceof Nodes.MatcherNode)
-      .map($ => $.incomingType());
+    const type = new UnionType(
+      node
+        .incomingEdges()
+        .filter($ => $.incomingTypeDefined() && $.source.astNode instanceof Nodes.MatcherNode)
+        .map($ => $.incomingType())
+    );
 
     const patternMatcherNode = node.astNode as Nodes.PatternMatcherNode;
 
@@ -316,7 +415,7 @@ export class PatternMatcherTypeResolver extends TypeResolver {
 
 export class OverloadedFunctionTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type | null {
-    const incomingTypes = node.incomingEdges().map(_ => _.incomingType());
+    const incomingTypes = node.incomingEdgesByName(EdgeLabels.FUNCTION).map(_ => _.incomingType());
     const incomingFunctionTypes = new Array<FunctionType>();
 
     // TODO: verify similar overloads
@@ -341,28 +440,71 @@ export class OverloadedFunctionTypeResolver extends TypeResolver {
   }
 }
 
+function resolveTypeMember(type: Type, memberName: string, ctx: TypeResolutionContext): Type {
+  if (type instanceof TypeAlias) {
+    const resolvedName = type.name.namespaceNames && type.name.namespaceNames.get(memberName);
+
+    if (resolvedName) {
+      const resolvedType = resolveNode(resolvedName, ctx);
+      if (resolvedType) {
+        return resolvedType;
+      } else {
+        throw new Error(`Cannot resolve type of member "${memberName}" in ${type}`);
+      }
+    } else {
+      throw new Error(`Cannot find member "${memberName}" in ${type.inspect(0)}`);
+    }
+  } else if (type instanceof InvalidType) {
+    return type;
+  } else {
+    throw new Error(`Type "${type}" has no members`);
+  }
+}
+
+export class MemberTypeResolver extends TypeResolver {
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
+    const opNode = node.astNode as Nodes.MemberNode;
+
+    const LHSType = getTypeTypeType(opNode.lhs, node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(), ctx);
+
+    try {
+      return resolveTypeMember(LHSType, opNode.memberName.name, ctx);
+    } catch (e) {
+      if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
+        if (e instanceof AstNodeError) {
+          ctx.parsingContext.messageCollector.error(e);
+        } else {
+          ctx.parsingContext.messageCollector.error(e.toString(), opNode);
+        }
+      }
+      return INVALID_TYPE;
+    }
+  }
+}
+
 export class BinaryOpTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.BinaryExpressionNode;
 
-    const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+    const lhsType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
+    const rhsType = node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType();
+    const argTypes = [lhsType, rhsType];
 
-    const argTypes = [
-      node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(),
-      node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()
-    ];
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector);
+      const valueType = resolveTypeMember(lhsType, opNode.operator.name, ctx);
+      const fun = findFunctionOverload(valueType, argTypes, opNode, ctx.parsingContext.messageCollector);
 
       if (fun instanceof FunctionType) {
         opNode.resolvedFunctionType = fun;
         return fun.returnType;
       }
-
-      ctx.parsingContext.messageCollector.error(`Error with ${opNode.operator.text}`, opNode.operator);
     } catch (e) {
       if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
-        ctx.parsingContext.messageCollector.error(e);
+        if (e instanceof AstNodeError) {
+          ctx.parsingContext.messageCollector.error(e);
+        } else {
+          ctx.parsingContext.messageCollector.error(e.toString(), opNode);
+        }
       }
     }
 
@@ -374,47 +516,47 @@ export class AsOpTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.AsExpressionNode;
 
-    const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
-
     const lhsType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
-    const retType = node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType();
+    const rhsType = getTypeTypeType(opNode.rhs, node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType(), ctx);
 
-    const argTypes = [lhsType];
-
-    if (lhsType.equals(retType) && retType.equals(lhsType)) {
-      ctx.parsingContext.messageCollector.error(
-        new AstNodeError(`This cast is useless ${lhsType} as ${retType}`, opNode)
-      );
-      return retType;
-    }
-
-    try {
-      const fun = findFunctionOverload(
-        incommingType,
-        argTypes,
-        opNode,
-        ctx.parsingContext.messageCollector,
-        retType,
-        true
-      );
-
-      if (fun instanceof FunctionType) {
-        opNode.resolvedFunctionType = fun;
-        return fun.returnType;
+    if (rhsType != INVALID_TYPE) {
+      if (lhsType.equals(rhsType) && rhsType.equals(lhsType)) {
+        ctx.parsingContext.messageCollector.warning(`This cast is useless ${lhsType} as ${rhsType}`, opNode);
+        return rhsType;
       }
 
-      throw new AstNodeError(`Cannot convert type ${lhsType} into ${retType}`, opNode);
-    } catch (e) {
-      const previousError = ctx.parsingContext.messageCollector.errors.findIndex($ => $.node === opNode);
+      try {
+        const valueType = resolveTypeMember(lhsType, 'as', ctx);
 
-      if (previousError != -1) {
-        ctx.parsingContext.messageCollector.errors.splice(previousError, 1);
+        const fun = findFunctionOverload(
+          valueType,
+          [lhsType],
+          opNode,
+          ctx.parsingContext.messageCollector,
+          rhsType,
+          true
+        );
+
+        if (fun instanceof FunctionType) {
+          opNode.resolvedFunctionType = fun;
+          return fun.returnType;
+        }
+
+        throw new AstNodeError(`Cannot convert type ${lhsType} into ${rhsType}`, opNode);
+      } catch (e) {
+        const previousError = ctx.parsingContext.messageCollector.errors.findIndex($ => $.node === opNode);
+
+        if (previousError != -1) {
+          ctx.parsingContext.messageCollector.errors.splice(previousError, 1);
+        }
+
+        ctx.parsingContext.messageCollector.error(e, opNode);
       }
 
-      ctx.parsingContext.messageCollector.error(e);
+      return rhsType;
+    } else {
+      return INVALID_TYPE;
     }
-
-    return retType;
   }
 }
 
@@ -422,44 +564,45 @@ export class IsOpTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.IsExpressionNode;
 
-    const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+    let rhsType = getTypeTypeType(opNode.rhs, node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType(), ctx);
+    let booleanType = getTypeTypeType(opNode, node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType(), ctx);
 
-    const argTypes = [node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()];
+    if (rhsType != INVALID_TYPE) {
+      try {
+        const LHSType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
 
-    try {
-      // TODO: Verify LHS is assignable to RHS, otherwise it is false always
+        if (!LHSType.canBeAssignedTo(RefType.instance)) {
+          ctx.parsingContext.messageCollector.error(
+            `"is" expression can only be used with reference types, used with: ${LHSType}`,
+            opNode
+          );
+          return booleanType;
+        }
 
-      const LHSType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
+        if (!rhsType.canBeAssignedTo(LHSType) && !LHSType.canBeAssignedTo(rhsType)) {
+          ctx.parsingContext.messageCollector.error(
+            `This statement is always false, type ${LHSType} can never be ${rhsType}`,
+            opNode
+          );
+          return booleanType;
+        }
 
-      if (!LHSType.canBeAssignedTo(RefType.instance)) {
-        ctx.parsingContext.messageCollector.error(
-          `"is" expression can only be used with reference types, used with: ${LHSType}`,
-          opNode
-        );
-        return bool.instance;
+        const valueType = resolveTypeMember(rhsType, 'is', ctx);
+
+        const fun = findFunctionOverload(valueType, [rhsType], opNode, ctx.parsingContext.messageCollector, null);
+
+        if (fun instanceof FunctionType) {
+          opNode.resolvedFunctionType = fun;
+          return fun.returnType;
+        }
+
+        ctx.parsingContext.messageCollector.error(`Error with "is"`, opNode);
+      } catch (e) {
+        ctx.parsingContext.messageCollector.error(e, opNode);
       }
-
-      if (!argTypes[0].canBeAssignedTo(LHSType) && !LHSType.canBeAssignedTo(argTypes[0])) {
-        ctx.parsingContext.messageCollector.error(
-          `This statement is always false, type ${LHSType} can never be ${argTypes[0]}`,
-          opNode
-        );
-        return bool.instance;
-      }
-
-      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector, null);
-
-      if (fun instanceof FunctionType) {
-        opNode.resolvedFunctionType = fun;
-        return fun.returnType;
-      }
-
-      ctx.parsingContext.messageCollector.error(`Error with "is"`, opNode);
-    } catch (e) {
-      ctx.parsingContext.messageCollector.error(e);
     }
 
-    return bool.instance;
+    return booleanType;
   }
 }
 
@@ -467,18 +610,16 @@ export class UnaryOpTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.UnaryExpressionNode;
 
-    const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
-
-    const argTypes = [node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType()];
+    const rhsType = node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType();
 
     try {
-      const fun = findFunctionOverload(incommingType, argTypes, opNode, ctx.parsingContext.messageCollector);
+      const valueType = resolveTypeMember(rhsType, opNode.operator.name, ctx);
+
+      const fun = findFunctionOverload(valueType, [rhsType], opNode, ctx.parsingContext.messageCollector);
 
       if (fun instanceof FunctionType) {
         opNode.resolvedFunctionType = fun;
         return fun.returnType;
-      } else if (fun instanceof StructType) {
-        ctx.parsingContext.messageCollector.error(`Cannot use a type as operator ${opNode.operator.text}`, opNode);
       }
     } catch (e) {
       if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
@@ -510,25 +651,23 @@ export class MatchLiteralTypeResolver extends TypeResolver {
     const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
 
     {
-      // Find the operator ==
       const opNode = node.astNode as Nodes.MatchLiteralNode;
-
-      const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
-
-      let matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
-
-      if (NeverType.instance.equals(matchingValueType)) {
-        const opNode = node.astNode as Nodes.MatchLiteralNode;
-        ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
-        return UnknownType.instance;
-      }
-
+      const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
       const argTypes = [matchingValueType, node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()];
-
       try {
+        // Find the operator ==
+
+        const valueType = resolveTypeMember(matchingValueType, '==', ctx);
+
+        if (NeverType.instance.equals(matchingValueType)) {
+          const opNode = node.astNode as Nodes.MatchLiteralNode;
+          ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+          return UnknownType.instance;
+        }
+
         const collector = new MessageCollector();
 
-        const fun = findFunctionOverload(incommingType, argTypes, opNode, collector);
+        const fun = findFunctionOverload(valueType, argTypes, opNode, collector);
 
         if (fun instanceof FunctionType) {
           opNode.resolvedFunctionType = fun;
@@ -558,21 +697,43 @@ export class StructDeconstructorTypeResolver extends TypeResolver {
     super();
   }
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const structType = node.incomingEdges()[0].incomingType() as StructType;
+    const edge = node.incomingEdges()[0];
 
-    if (
-      !structType.parameterTypes ||
-      structType.parameterTypes.length == 0 ||
-      this.parameterIndex >= structType.parameterTypes.length
-    ) {
-      ctx.currentParsingContext.messageCollector.error(
-        `Invalid number of arguments. The type ${structType} only accepts ${structType.parameterTypes.length} `,
-        node.astNode
-      );
+    const structAliasType = getTypeTypeType(edge.source.astNode, edge.incomingType(), ctx);
+
+    if (structAliasType instanceof TypeAlias) {
+      const structType = structAliasType.of;
+
+      if (structType instanceof StructType) {
+        if (
+          !structType.parameterTypes ||
+          structType.parameterTypes.length == 0 ||
+          this.parameterIndex >= structType.parameterTypes.length
+        ) {
+          if (!structType.parameterTypes) {
+            ctx.currentParsingContext.messageCollector.error(
+              `Invalid number of arguments. ${structType}`,
+              node.astNode
+            );
+          } else {
+            ctx.currentParsingContext.messageCollector.error(
+              `Invalid number of arguments. The type ${structType} only accepts ${structType.parameterTypes.length} `,
+              node.astNode
+            );
+          }
+
+          return INVALID_TYPE;
+        }
+
+        return structType.parameterTypes[this.parameterIndex];
+      } else {
+        ctx.currentParsingContext.messageCollector.error(`Type ${structType} is not a struct`, node.astNode);
+        return INVALID_TYPE;
+      }
+    } else {
+      ctx.currentParsingContext.messageCollector.error(`Type ${structAliasType.inspect(10)} is an alias`, node.astNode);
       return INVALID_TYPE;
     }
-
-    return structType.parameterTypes[this.parameterIndex];
   }
 }
 
@@ -583,6 +744,7 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
     {
       // Find the operator ==
       const opNode = node.astNode as Nodes.MatchCaseIsNode;
+
       const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
 
       if (NeverType.instance.equals(matchingValueType)) {
@@ -594,32 +756,39 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
           opNode
         );
       } else {
-        const argTypes = [node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()];
-        const incommingType = node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType();
+        let argType = getTypeTypeType(
+          opNode.typeReference,
+          node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(),
+          ctx
+        );
 
-        try {
-          if (!argTypes[0].canBeAssignedTo(matchingValueType) && !matchingValueType.canBeAssignedTo(argTypes[0])) {
-            throw 'this is only to fall into the catch hanler';
-          }
+        if (argType != INVALID_TYPE) {
+          const incommingType = resolveTypeMember(argType, 'is', ctx);
 
-          const collector = new MessageCollector();
-
-          const fun = findFunctionOverload(incommingType, argTypes, opNode, collector);
-
-          if (fun instanceof FunctionType) {
-            opNode.resolvedFunctionType = fun;
-
-            if (!fun.returnType.canBeAssignedTo(bool.instance)) {
-              ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, bool.instance, opNode));
+          try {
+            if (!argType.canBeAssignedTo(matchingValueType) && !matchingValueType.canBeAssignedTo(argType)) {
+              throw 'this is only to fall into the catch hanler';
             }
-          } else {
-            throw 'this is only to fall into the catch hanler';
+
+            const collector = new MessageCollector();
+
+            const fun = findFunctionOverload(incommingType, [argType], opNode, collector);
+
+            if (fun instanceof FunctionType) {
+              opNode.resolvedFunctionType = fun;
+
+              if (!fun.returnType.canBeAssignedTo(bool.instance)) {
+                ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, bool.instance, opNode));
+              }
+            } else {
+              throw 'this is only to fall into the catch hanler';
+            }
+          } catch {
+            ctx.parsingContext.messageCollector.error(
+              new TypeMismatch(matchingValueType, argType, opNode.typeReference)
+            );
+            ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
           }
-        } catch {
-          ctx.parsingContext.messageCollector.error(
-            new TypeMismatch(matchingValueType, argTypes[0], opNode.typeReference)
-          );
-          ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
         }
       }
     }
@@ -633,22 +802,28 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
 }
 
 export class TypeReducerResolver extends TypeResolver {
-  execute(node: TypeNode, _ctx: TypeResolutionContext): Type {
-    let matchingValueType = UnionType.of(
-      node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType()
-    ).expand();
+  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
+    let incomming = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
+
+    if (incomming instanceof UnionType) {
+      incomming = incomming.expand();
+    } else {
+      incomming = UnionType.of(incomming).expand();
+    }
+
+    let matchingValueType = incomming instanceof UnionType ? incomming : UnionType.of(incomming);
 
     const removedTypes = node.incomingEdgesByName(EdgeLabels.REMOVED_TYPE);
 
     if (removedTypes.length) {
       removedTypes.forEach($ => {
-        const type = $.incomingType();
+        const type = getTypeTypeType($.source.astNode, $.incomingType(), ctx);
         const newType = matchingValueType.subtract(type);
         matchingValueType = UnionType.of(newType);
       });
     }
 
-    return matchingValueType;
+    return matchingValueType.simplify();
   }
 }
 
@@ -672,16 +847,16 @@ export class MatchDefaultTypeResolver extends TypeResolver {
   }
 }
 
+function readParameterTypes(list: Nodes.ParameterNode[], node: TypeNode, ctx: TypeResolutionContext) {
+  return list.map($ => getTypeTypeType($, node.incomingEdgesByName($.parameterName.name)[0].incomingType(), ctx));
+}
+
 export class FunctionTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const functionNode: Nodes.FunctionNode = node.astNode as Nodes.FunctionNode;
-    const fnType = new FunctionType(functionNode.internalIdentifier);
+    const fnType = new FunctionType(functionNode.functionName);
 
-    fnType.parameterTypes = functionNode.parameters
-      .map($ => {
-        return node.incomingEdgesByName($.parameterName.name)[0].incomingType();
-      })
-      .map($ => toConcreteType($, ctx));
+    fnType.parameterTypes = readParameterTypes(functionNode.parameters, node, ctx);
 
     fnType.parameterNames = functionNode.parameters.map($ => $.parameterName.name);
 
@@ -690,8 +865,11 @@ export class FunctionTypeResolver extends TypeResolver {
     });
 
     if (functionNode.functionReturnType) {
-      const returnType = node.incomingEdgesByName(EdgeLabels.RETURN_TYPE)[0].incomingType();
-      fnType.returnType = returnType;
+      fnType.returnType = getTypeTypeType(
+        functionNode.functionReturnType,
+        node.incomingEdgesByName(EdgeLabels.RETURN_TYPE)[0].incomingType(),
+        ctx
+      );
     }
 
     const inferedReturnType = resolveReturnType(node.parentGraph, functionNode, fnType.parameterTypes, ctx);
@@ -724,68 +902,34 @@ export class FunctionTypeResolver extends TypeResolver {
   }
 }
 
-export class StructTypeResolver extends TypeResolver {
-  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const structNode: Nodes.StructDeclarationNode = node.astNode as Nodes.StructDeclarationNode;
-
-    const superTypeEdge = node.incomingEdgesByName(EdgeLabels.SUPER_TYPE);
-
-    const superType =
-      ((superTypeEdge.length && (superTypeEdge[0].incomingType() as TypeType).of) as PolimorphicType) || null;
-
-    const fnType = StructType.fromSuperType(structNode.internalIdentifier, structNode.declaredName.name, superType);
-
-    fnType.parameterTypes = structNode.parameters
-      .map($ => {
-        return node.incomingEdgesByName($.parameterName.name)[0].incomingType();
-      })
-      .map($ => toConcreteType($, ctx));
-
-    fnType.parameterNames = structNode.parameters.map($ => $.parameterName.name);
-
-    return TypeType.of(fnType);
-  }
-}
-
-export class VariableReferenceResolver extends TypeResolver {
+export class ReferenceResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const referencedEdge = node.incomingEdges()[0];
     const type = referencedEdge.incomingType();
 
-    const ret = toConcreteType(type, ctx);
+    if (type instanceof TypeType && node.astNode.hasAnnotation(annotations.IsValueNode)) {
+      if (type.of instanceof TypeAlias) {
+        try {
+          const fnType = resolveTypeMember(type.of, 'apply', ctx);
 
-    if (ret instanceof TypeType) {
-      if (ret.of instanceof StructType) {
-        if (ret.of.parameterTypes.length == 0) {
-          if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
-            node.astNode.annotate(new annotations.ImplicitCall());
+          const fun = findFunctionOverload(fnType, [], node.astNode, ctx.parsingContext.messageCollector);
+
+          if (fun instanceof FunctionType) {
+            if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
+              node.astNode.annotate(new annotations.ImplicitCall(fun));
+            }
+
+            return fun.returnType;
           }
-          return ret.of;
+        } catch (e) {
+          ctx.parsingContext.messageCollector.error(e, node.astNode);
         }
-
-        return ret;
+        return type;
       }
-      ctx.parsingContext.messageCollector.error(new UnexpectedType(ret, node.astNode));
-      // return UnknownType.instance;
-      return null;
+      ctx.parsingContext.messageCollector.error(new UnexpectedType(type, node.astNode));
     }
 
-    return ret || INVALID_TYPE;
-  }
-}
-
-export class TypeReferenceResolver extends TypeResolver {
-  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const type = node.incomingEdges()[0].incomingType();
-
-    const ret = toConcreteType(type, ctx);
-
-    if (ret instanceof TypeType) {
-      return ret.of;
-    } else {
-      ctx.parsingContext.messageCollector.error(new NotAValidType(node.astNode.text, node.astNode));
-      return INVALID_TYPE;
-    }
+    return type || INVALID_TYPE;
   }
 }
 
@@ -806,9 +950,6 @@ export class FunctionCallResolver extends TypeResolver {
       if (fun instanceof FunctionType) {
         functionCallNode.resolvedFunctionType = fun;
         return fun.returnType;
-      } else if (fun instanceof StructType) {
-        functionCallNode.resolvedFunctionType = fun;
-        return fun;
       } else if (fun instanceof UnionType) {
         // return type
         return fun.simplify();
@@ -834,7 +975,6 @@ function findFunctionOverload(
   if (incommingType instanceof TypeType) {
     return findFunctionOverload(incommingType.of, argTypes, errorNode, messageCollector);
   }
-
   if (incommingType instanceof IntersectionType) {
     const matchList: { fun: FunctionType; score: number }[] = [];
 
@@ -873,6 +1013,7 @@ function findFunctionOverload(
       if (matchList[0].score > matchList[1].score) {
         return matchList[0].fun;
       }
+      console.log(matchList);
     }
 
     messageCollector.error(new InvalidOverload(incommingType, argTypes, errorNode));

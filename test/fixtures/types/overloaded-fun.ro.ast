@@ -4,28 +4,24 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=Type<i32>
-  |-OverloadedFunctionNode type=fun(a: i32) -> i32 & fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun(a: i32) -> i32
-      |-FunctionNode type=fun(a: i32) -> i32
-        |-ParameterNode
-          |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="x" type=fun(a: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
+  |-OverloadedFunctionNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32))) annotations=Injected
+    |-FunctionNode type=(fun "x" ((alias i32)) (alias i32))
+      |-ParameterNode
+        |-NameIdentifierNode="a" type=(alias i32 (native i32))
+        |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-VariableReferenceNode type=i32 annotations=IsValueNode
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="x" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-    |-NameIdentifierNode="x" type=fun(a: i32) -> i32 & fun() -> i32
+      |-NameIdentifierNode="x"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-QNameNode=a
+          |-NameIdentifierNode="a"
+    |-FunctionNode type=(fun "x" () (alias i32))
+      |-NameIdentifierNode="x"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-NameIdentifierNode="x" type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32)))

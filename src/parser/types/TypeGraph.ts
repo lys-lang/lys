@@ -18,10 +18,15 @@ export class LiteralTypeResolver extends TypeResolver {
 
 export class TypeGraph {
   private _subGraph: Map<TypeGraph, string> = new Map();
+  private uniqueIdCounter = 0;
 
-  constructor(public nodes: Array<TypeNode>, public parentGraph: TypeGraph = null) {
-    //Set Parent to the children
+  constructor(public nodes: Array<TypeNode>, public parentGraph: TypeGraph) {
+    // Set Parent to the children
     nodes.forEach($ => ($.parentGraph = this));
+
+    if (parentGraph) {
+      parentGraph.addSubGraph(this, 'child');
+    }
   }
 
   get rootGraph(): TypeGraph {
@@ -38,6 +43,15 @@ export class TypeGraph {
     this._subGraph.set(subGraph, name);
   }
 
+  getNewSubgraphId() {
+    if (!this.parentGraph) {
+      this.uniqueIdCounter += 1;
+      return this.uniqueIdCounter;
+    } else {
+      return this.rootGraph.getNewSubgraphId;
+    }
+  }
+
   removeSubGraph(subGraph: TypeGraph, name: string): void {
     this._subGraph.forEach(($, $$) => {
       if ($ == name && $$ == subGraph) {
@@ -50,12 +64,56 @@ export class TypeGraph {
     return this._subGraph;
   }
 
+  createNameResolverFor(node: Nodes.Node): TypeGraph {
+    const nodes = [];
+
+    function traverseUp(base: TypeNode) {
+      if (!nodes.includes(base)) {
+        if (!base.resultType()) {
+          nodes.push(base);
+
+          base
+            .incomingEdges()
+            .map($ => $.source)
+            .forEach(traverseUp);
+        }
+      }
+    }
+
+    const base = this.rootGraph.findNodeInAllGraphs(node);
+
+    if (!base) {
+      throw new Error('cannot find node ' + node);
+    }
+
+    traverseUp(base[0]);
+
+    return new TypeGraph(nodes, this);
+  }
+
   findNode(astNode: Nodes.Node): TypeNode | null {
     return (
       this.nodes.find(node => node.astNode == astNode) ||
       (this.parentGraph && this.parentGraph.findNode(astNode)) ||
       null
     );
+  }
+
+  findNodeInAllGraphs(astNode: Nodes.Node): [TypeNode, TypeGraph] | null {
+    const local = this.nodes.find(node => node.astNode == astNode);
+
+    if (local) {
+      return [local, this];
+    }
+
+    for (let [childGraph] of this.subGraphs) {
+      const childResult = childGraph.findNodeInAllGraphs(astNode);
+      if (childResult) {
+        return childResult;
+      }
+    }
+
+    return null;
   }
 }
 
@@ -69,6 +127,8 @@ export class TypeNode {
   public readonly MAX_ATTEMPTS = 50;
   private _outgoingEdges: Array<Edge> = [];
   private _incomingEdges: Array<Edge> = [];
+  private succeed: boolean;
+
   amount = 0;
 
   parentGraph: TypeGraph | null = null;
@@ -81,21 +141,22 @@ export class TypeNode {
 
         if (resultType) {
           if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
+            this.succeed = true;
             if (this.resultType()) {
-              console.log(
-                this.astNode.nodeName,
-                this.typeResolver.constructor.name,
-                this.resultType().toString(),
-                '->',
-                resultType.toString()
-              );
+              // console.log(
+              //   'Mutating type',
+              //   this.astNode.nodeName,
+              //   this.astNode.toString(),
+              //   this.typeResolver.constructor.name,
+              //   this.resultType().toString(),
+              //   '->',
+              //   resultType.toString(),
+              //   this._incomingEdges.length
+              // );
             }
 
             // We only add one if the type is new
-            const newType = resultType;
-            // this.astNode instanceof Nodes.VariableReferenceNode ? toConcreteType(resultType, ctx) : resultType;
-
-            this.astNode.ofType = newType;
+            this.astNode.ofType = resultType;
           }
           if (!this.astNode.ofType) {
             debugger;
@@ -132,7 +193,11 @@ export class TypeNode {
   }
 
   resultType(): Type | null {
-    return this.astNode.ofType || null;
+    if (this.succeed) {
+      return this.astNode.ofType || null;
+    } else {
+      return null;
+    }
   }
 
   addOutgoingEdge(edge: Edge): void {

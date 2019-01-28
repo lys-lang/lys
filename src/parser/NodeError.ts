@@ -4,23 +4,35 @@ import { Type, IntersectionType } from './types';
 export interface IPositionCapable {
   readonly start: number;
   readonly end: number;
+  readonly document: string;
 }
 
-export interface IErrorPositionCapable extends IPositionCapable {
+export type IErrorPositionCapable = {
   readonly message: string;
-}
+  readonly node?: Nodes.Node;
+  readonly warning?: boolean;
+  readonly position?: IPositionCapable;
+} & Error;
 
 export class AstNodeError extends Error implements IErrorPositionCapable {
-  get start() {
-    return this.node.astNode.start;
-  }
-
-  get end() {
-    return this.node.astNode.end;
+  get position() {
+    return this.node.astNode;
   }
 
   constructor(public message: string, public node: Nodes.Node, public warning: boolean = false) {
     super(message);
+    if (!node) {
+      throw new Error('node is required');
+    }
+  }
+}
+
+export class PositionCapableError extends Error implements IErrorPositionCapable {
+  constructor(public message: string, public readonly position: IPositionCapable, public warning: boolean = false) {
+    super(message);
+    if (!position) {
+      throw new Error('position is required');
+    }
   }
 }
 

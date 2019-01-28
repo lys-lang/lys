@@ -4,156 +4,35 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=Type<i32>
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="f32" type=Type<f32>
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="boolean" type=Type<boolean>
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="Number" type=Type<Number>
-    |-TypeDeclarationNode
-      |-StructDeclarationNode type=Type<Infinity>
-        |-NameIdentifierNode="Infinity" type=Type<Infinity>
-      |-StructDeclarationNode type=Type<NDet>
-        |-NameIdentifierNode="NDet" type=Type<NDet>
-      |-StructDeclarationNode type=Type<Real>
-        |-NameIdentifierNode="Real" type=Type<Real>
-        |-ParameterNode
-          |-NameIdentifierNode="number" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-      |-StructDeclarationNode type=Type<Natural>
-        |-NameIdentifierNode="Natural" type=Type<Natural>
-        |-ParameterNode
-          |-NameIdentifierNode="number" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-      |-StructDeclarationNode type=Type<Complex>
-        |-NameIdentifierNode="Complex" type=Type<Complex>
-        |-ParameterNode
-          |-NameIdentifierNode="real" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-ParameterNode
-          |-NameIdentifierNode="imaginary" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-  |-OverloadedFunctionNode type=fun(number: Number) -> boolean annotations=Injected
-    |-FunDirectiveNode type=fun(number: Number) -> boolean
-      |-FunctionNode type=fun(number: Number) -> boolean
-        |-ParameterNode
-          |-NameIdentifierNode="number" type=Number
-          |-TypeReferenceNode=Number type=Number
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
-        |-NameIdentifierNode="isComplex" type=fun(number: Number) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-PatternMatcherNode type=boolean annotations=IsValueNode
-          |-VariableReferenceNode type=Number annotations=IsValueNode
-            |-QNameNode=number
-              |-NameIdentifierNode="number"
-          |-MatchCaseIsNode type=boolean annotations=IsValueNode
-            |-TypeReferenceNode=Real type=Real
-              |-QNameNode=Real
-                |-NameIdentifierNode="Real"
-            |-NameIdentifierNode="_"
-            |-BooleanLiteral=false type=boolean annotations=IsValueNode
-          |-MatchCaseIsNode type=boolean annotations=IsValueNode
-            |-TypeReferenceNode=Natural type=Natural
-              |-QNameNode=Natural
-                |-NameIdentifierNode="Natural"
-            |-NameIdentifierNode="_"
-            |-BooleanLiteral=false type=boolean annotations=IsValueNode
-          |-MatchCaseIsNode type=boolean annotations=IsValueNode
-            |-TypeReferenceNode=Complex type=Complex
-              |-QNameNode=Complex
-                |-NameIdentifierNode="Complex"
-            |-NameIdentifierNode="_"
-            |-NameIdentifierNode="imaginary" type=f32
-            |-BinaryExpressionNode="!=" type=boolean annotations=IsValueNode
-              |-NameIdentifierNode="!="
-              |-VariableReferenceNode type=f32 annotations=IsValueNode
-                |-QNameNode=imaginary
-                  |-NameIdentifierNode="imaginary"
-              |-FloatLiteral=0 type=f32 annotations=IsValueNode
-          |-MatchDefaultNode type=boolean annotations=IsValueNode
-            |-BooleanLiteral=false type=boolean annotations=IsValueNode
-    |-NameIdentifierNode="isComplex" type=fun(number: Number) -> boolean
-  |-OverloadedFunctionNode type=fun() -> void annotations=Injected
-    |-FunDirectiveNode type=fun() -> void
-      |-FunctionNode type=fun() -> void
-        |-NameIdentifierNode="main" type=fun() -> void
-        |-TypeReferenceNode=void type=void
-          |-QNameNode=void
-            |-NameIdentifierNode="void"
-        |-BlockNode type=void
-          |-FunctionCallNode type=boolean
-            |-VariableReferenceNode type=fun(number: Number) -> boolean
-              |-QNameNode=isComplex
-                |-NameIdentifierNode="isComplex"
-            |-VariableReferenceNode type=Infinity annotations=IsValueNode,ImplicitCall
-              |-QNameNode=Infinity
-                |-NameIdentifierNode="Infinity"
-          |-FunctionCallNode type=boolean
-            |-VariableReferenceNode type=fun(number: Number) -> boolean
-              |-QNameNode=isComplex
-                |-NameIdentifierNode="isComplex"
-            |-FunctionCallNode type=Real annotations=IsValueNode
-              |-VariableReferenceNode type=Type<Real>
-                |-QNameNode=Real
-                  |-NameIdentifierNode="Real"
-              |-FloatLiteral=0 type=f32 annotations=IsValueNode
-          |-FunctionCallNode type=boolean
-            |-VariableReferenceNode type=fun(number: Number) -> boolean
-              |-QNameNode=isComplex
-                |-NameIdentifierNode="isComplex"
-            |-FunctionCallNode type=Natural annotations=IsValueNode
-              |-VariableReferenceNode type=Type<Natural>
-                |-QNameNode=Natural
-                  |-NameIdentifierNode="Natural"
-              |-IntegerLiteral=123 type=i32 annotations=IsValueNode
-          |-FunctionCallNode type=boolean
-            |-VariableReferenceNode type=fun(number: Number) -> boolean
-              |-QNameNode=isComplex
-                |-NameIdentifierNode="isComplex"
-            |-FunctionCallNode type=Complex annotations=IsValueNode
-              |-VariableReferenceNode type=Type<Complex>
-                |-QNameNode=Complex
-                  |-NameIdentifierNode="Complex"
-              |-FloatLiteral=0 type=f32 annotations=IsValueNode
-              |-FloatLiteral=99.1 type=f32 annotations=IsValueNode
-    |-NameIdentifierNode="main" type=fun() -> void
-  |-OverloadedFunctionNode type=fun() -> Infinity annotations=Injected
-    |-FunDirectiveNode type=fun() -> Infinity annotations=Injected
-      |-FunctionNode type=fun() -> Infinity
-        |-NameIdentifierNode="InfinityAllocator" type=fun() -> Infinity
-        |-TypeReferenceNode=Infinity type=Infinity
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Infinity" type=(type (alias Infinity (struct Infinity)))
+    |-UnknownExpressionNode
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Infinity
+        |-NameIdentifierNode="Infinity"
+    |-OverloadedFunctionNode type=(fun "apply" () (alias Infinity)) annotations=Injected
+      |-FunctionNode type=(fun "apply" () (alias Infinity))
+        |-NameIdentifierNode="apply"
+        |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
           |-QNameNode=Infinity
             |-NameIdentifierNode="Infinity"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x100000000
-    |-NameIdentifierNode="InfinityAllocator" type=fun() -> Infinity
-  |-OverloadedFunctionNode type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean & fun(a: Number) -> boolean annotations=Injected
-    |-FunDirectiveNode type=fun(a: Infinity) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: Infinity) -> boolean
+      |-NameIdentifierNode="apply" type=(fun "apply" () (alias Infinity))
+    |-OverloadedFunctionNode type=(fun "is" ((alias Infinity)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias Infinity)) (alias boolean))
         |-ParameterNode
-          |-NameIdentifierNode="a" type=Infinity
-          |-TypeReferenceNode=Infinity type=Infinity
+          |-NameIdentifierNode="a" type=(type (alias Infinity (struct Infinity)))
+          |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
-        |-NameIdentifierNode="is" type=fun(a: Infinity) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -163,18 +42,86 @@
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x100000000
-    |-FunDirectiveNode type=fun(a: NDet) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: NDet) -> boolean
+      |-NameIdentifierNode="is" type=(fun "is" ((alias Infinity)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "==" ((alias Infinity) (alias ref)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "==" ((alias Infinity) (alias ref)) (alias boolean))
         |-ParameterNode
-          |-NameIdentifierNode="a" type=NDet
-          |-TypeReferenceNode=NDet type=NDet
-            |-QNameNode=NDet
-              |-NameIdentifierNode="NDet"
-        |-NameIdentifierNode="is" type=fun(a: NDet) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
+          |-NameIdentifierNode="a" type=(alias Infinity (struct Infinity))
+          |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
+            |-QNameNode=Infinity
+              |-NameIdentifierNode="Infinity"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="=="
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=get_local
+              |-QNameNode=$a
+                |-NameIdentifierNode="$a"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$b
+                |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="==" type=(fun "==" ((alias Infinity) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "!=" ((alias Infinity) (alias ref)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "!=" ((alias Infinity) (alias ref)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(alias Infinity (struct Infinity))
+          |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
+            |-QNameNode=Infinity
+              |-NameIdentifierNode="Infinity"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="!="
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.ne
+            |-WasmAtomNode=get_local
+              |-QNameNode=$a
+                |-NameIdentifierNode="$a"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$b
+                |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias Infinity) (alias ref)) (alias boolean))
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="NDet" type=(type (alias NDet (struct NDet)))
+    |-UnknownExpressionNode
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=NDet
+        |-NameIdentifierNode="NDet"
+    |-OverloadedFunctionNode type=(fun "apply" () (alias NDet)) annotations=Injected
+      |-FunctionNode type=(fun "apply" () (alias NDet))
+        |-NameIdentifierNode="apply"
+        |-ReferenceNode type=(type (alias NDet (struct NDet)))
+          |-QNameNode=NDet
+            |-NameIdentifierNode="NDet"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x200000000
+      |-NameIdentifierNode="apply" type=(fun "apply" () (alias NDet))
+    |-OverloadedFunctionNode type=(fun "is" ((alias NDet)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias NDet)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(type (alias NDet (struct NDet)))
+          |-ReferenceNode type=(type (alias NDet (struct NDet)))
+            |-QNameNode=NDet
+              |-NameIdentifierNode="NDet"
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -184,254 +131,834 @@
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x200000000
-    |-FunDirectiveNode type=fun(a: Real) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: Real) -> boolean
+      |-NameIdentifierNode="is" type=(fun "is" ((alias NDet)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "==" ((alias NDet) (alias ref)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "==" ((alias NDet) (alias ref)) (alias boolean))
         |-ParameterNode
-          |-NameIdentifierNode="a" type=Real
-          |-TypeReferenceNode=Real type=Real
-            |-QNameNode=Real
-              |-NameIdentifierNode="Real"
-        |-NameIdentifierNode="is" type=fun(a: Real) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
+          |-NameIdentifierNode="a" type=(alias NDet (struct NDet))
+          |-ReferenceNode type=(type (alias NDet (struct NDet)))
+            |-QNameNode=NDet
+              |-NameIdentifierNode="NDet"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="=="
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
-    |-FunDirectiveNode type=fun(a: Natural) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: Natural) -> boolean
+            |-WasmAtomNode=get_local
+              |-QNameNode=$a
+                |-NameIdentifierNode="$a"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$b
+                |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="==" type=(fun "==" ((alias NDet) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "!=" ((alias NDet) (alias ref)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "!=" ((alias NDet) (alias ref)) (alias boolean))
         |-ParameterNode
-          |-NameIdentifierNode="a" type=Natural
-          |-TypeReferenceNode=Natural type=Natural
-            |-QNameNode=Natural
-              |-NameIdentifierNode="Natural"
-        |-NameIdentifierNode="is" type=fun(a: Natural) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
+          |-NameIdentifierNode="a" type=(alias NDet (struct NDet))
+          |-ReferenceNode type=(type (alias NDet (struct NDet)))
+            |-QNameNode=NDet
+              |-NameIdentifierNode="NDet"
+        |-ParameterNode
+          |-NameIdentifierNode="b" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="!="
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x400000000
-    |-FunDirectiveNode type=fun(a: Complex) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: Complex) -> boolean
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.ne
+            |-WasmAtomNode=get_local
+              |-QNameNode=$a
+                |-NameIdentifierNode="$a"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$b
+                |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias NDet) (alias ref)) (alias boolean))
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Real" type=(type (alias Real (struct Real)))
+    |-UnknownExpressionNode
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Real
+        |-NameIdentifierNode="Real"
+    |-OverloadedFunctionNode type=(fun "sizeOf" () (alias i32)) annotations=Injected
+      |-FunctionNode type=(fun "sizeOf" () (alias i32))
+        |-NameIdentifierNode="sizeOf"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf" type=(fun "sizeOf" () (alias i32))
+    |-OverloadedFunctionNode type=(fun "apply" ((alias f32)) (alias Real)) annotations=Injected
+      |-FunctionNode type=(fun "apply" ((alias f32)) (alias Real))
         |-ParameterNode
-          |-NameIdentifierNode="a" type=Complex
-          |-TypeReferenceNode=Complex type=Complex
-            |-QNameNode=Complex
-              |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="is" type=fun(a: Complex) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=i64.eq
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-            |-WasmAtomNode=i64.const
-              |-HexLiteral=0x500000000
-    |-FunDirectiveNode type=fun(a: Number) -> boolean annotations=Injected
-      |-FunctionNode type=fun(a: Number) -> boolean
-        |-ParameterNode
-          |-NameIdentifierNode="a" type=Number
-          |-TypeReferenceNode=Number type=Number
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
-        |-NameIdentifierNode="is" type=fun(a: Number) -> boolean
-        |-TypeReferenceNode=boolean type=boolean
-          |-QNameNode=boolean
-            |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$mask
-              |-NameIdentifierNode="$mask"
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$mask
-              |-NameIdentifierNode="$mask"
-            |-WasmAtomNode=i64.and
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0xffffffff00000000
-              |-WasmAtomNode=get_local
-                |-QNameNode=$a
-                  |-NameIdentifierNode="$a"
-          |-WasmAtomNode=i32.or
-            |-WasmAtomNode=i32.or
-              |-WasmAtomNode=i32.or
-                |-WasmAtomNode=i32.or
-                  |-WasmAtomNode=i64.eq
-                    |-WasmAtomNode=get_local
-                      |-QNameNode=$mask
-                        |-NameIdentifierNode="$mask"
-                    |-WasmAtomNode=i64.const
-                      |-HexLiteral=0x500000000
-                  |-WasmAtomNode=i64.eq
-                    |-WasmAtomNode=get_local
-                      |-QNameNode=$mask
-                        |-NameIdentifierNode="$mask"
-                    |-WasmAtomNode=i64.const
-                      |-HexLiteral=0x400000000
-                |-WasmAtomNode=i64.eq
-                  |-WasmAtomNode=get_local
-                    |-QNameNode=$mask
-                      |-NameIdentifierNode="$mask"
-                  |-WasmAtomNode=i64.const
-                    |-HexLiteral=0x300000000
-              |-WasmAtomNode=i64.eq
-                |-WasmAtomNode=get_local
-                  |-QNameNode=$mask
-                    |-NameIdentifierNode="$mask"
-                |-WasmAtomNode=i64.const
-                  |-HexLiteral=0x200000000
-            |-WasmAtomNode=i64.eq
-              |-WasmAtomNode=get_local
-                |-QNameNode=$mask
-                  |-NameIdentifierNode="$mask"
-              |-WasmAtomNode=i64.const
-                |-HexLiteral=0x100000000
-    |-NameIdentifierNode="is" type=fun(a: Infinity) -> boolean & fun(a: NDet) -> boolean & fun(a: Real) -> boolean & fun(a: Natural) -> boolean & fun(a: Complex) -> boolean & fun(a: Number) -> boolean
-  |-OverloadedFunctionNode type=fun() -> NDet annotations=Injected
-    |-FunDirectiveNode type=fun() -> NDet annotations=Injected
-      |-FunctionNode type=fun() -> NDet
-        |-NameIdentifierNode="NDetAllocator" type=fun() -> NDet
-        |-TypeReferenceNode=NDet type=NDet
-          |-QNameNode=NDet
-            |-NameIdentifierNode="NDet"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=i64.const
-            |-HexLiteral=0x200000000
-    |-NameIdentifierNode="NDetAllocator" type=fun() -> NDet
-  |-OverloadedFunctionNode type=fun(number: f32) -> Real annotations=Injected
-    |-FunDirectiveNode type=fun(number: f32) -> Real annotations=Injected
-      |-FunctionNode type=fun(number: f32) -> Real
-        |-ParameterNode
-          |-NameIdentifierNode="number" type=f32
-          |-TypeReferenceNode=f32 type=f32
+          |-NameIdentifierNode="number" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="RealAllocator" type=fun(number: f32) -> Real
-        |-TypeReferenceNode=Real type=Real
+        |-NameIdentifierNode="apply"
+        |-ReferenceNode type=(type (alias Real (struct Real)))
           |-QNameNode=Real
             |-NameIdentifierNode="Real"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
-          |-WasmAtomNode=local
-            |-QNameNode=$_newRef
-              |-NameIdentifierNode="$_newRef"
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-WasmAtomNode=set_local
-            |-QNameNode=$_newRef
-              |-NameIdentifierNode="$_newRef"
-            |-WasmAtomNode=call
-              |-VariableReferenceNode type=fun(size: i32) -> i32
-                |-QNameNode=system::memory::malloc
-                  |-NameIdentifierNode="system"
-                  |-NameIdentifierNode="memory"
-                  |-NameIdentifierNode="malloc"
-              |-WasmAtomNode=i32.const
-                |-IntegerLiteral=8
+        |-FunctionCallNode type=(alias Real (struct Real)) annotations=IsValueNode
+          |-ReferenceNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Real))
+            |-QNameNode=fromPointer
+              |-NameIdentifierNode="fromPointer"
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+              |-QNameNode=system::memory::malloc
+                |-NameIdentifierNode="system"
+                |-NameIdentifierNode="memory"
+                |-NameIdentifierNode="malloc"
+            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(fun "sizeOf" () (alias i32))
+                |-QNameNode=sizeOf
+                  |-NameIdentifierNode="sizeOf"
+      |-NameIdentifierNode="apply" type=(fun "apply" ((alias f32)) (alias Real))
+    |-OverloadedFunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Real)) annotations=Injected
+      |-FunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Real))
+        |-ParameterNode
+          |-NameIdentifierNode="ptr" type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+          |-UnionTypeNode type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-ReferenceNode type=(type (alias u32 (native u32)))
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
+        |-NameIdentifierNode="fromPointer"
+        |-ReferenceNode type=(type (alias Real (struct Real)))
+          |-QNameNode=Real
+            |-NameIdentifierNode="Real"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x300000000
             |-WasmAtomNode=i64.extend_u/i32
               |-WasmAtomNode=get_local
-                |-QNameNode=$_newRef
-                  |-NameIdentifierNode="$_newRef"
-    |-NameIdentifierNode="RealAllocator" type=fun(number: f32) -> Real
-  |-OverloadedFunctionNode type=fun(number: i32) -> Natural annotations=Injected
-    |-FunDirectiveNode type=fun(number: i32) -> Natural annotations=Injected
-      |-FunctionNode type=fun(number: i32) -> Natural
+                |-QNameNode=$ptr
+                  |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Real))
+    |-OverloadedFunctionNode type=(fun "get_number" ((alias Real)) (alias f32)) annotations=Injected
+      |-FunctionNode type=(fun "get_number" ((alias Real)) (alias f32))
         |-ParameterNode
-          |-NameIdentifierNode="number" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="NaturalAllocator" type=fun(number: i32) -> Natural
-        |-TypeReferenceNode=Natural type=Natural
-          |-QNameNode=Natural
-            |-NameIdentifierNode="Natural"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-NameIdentifierNode="target" type=(alias Real (struct Real))
+          |-ReferenceNode type=(type (alias Real (struct Real)))
+            |-QNameNode=Real
+              |-NameIdentifierNode="Real"
+        |-NameIdentifierNode="get_number"
+        |-ReferenceNode type=(type (alias f32 (native f32)))
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=local
-            |-QNameNode=$_newRef
-              |-NameIdentifierNode="$_newRef"
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
           |-WasmAtomNode=set_local
-            |-QNameNode=$_newRef
-              |-NameIdentifierNode="$_newRef"
-            |-WasmAtomNode=call
-              |-VariableReferenceNode type=fun(size: i32) -> i32
-                |-QNameNode=system::memory::malloc
-                  |-NameIdentifierNode="system"
-                  |-NameIdentifierNode="memory"
-                  |-NameIdentifierNode="malloc"
-              |-WasmAtomNode=i32.const
-                |-IntegerLiteral=8
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_number" type=(fun "get_number" ((alias Real)) (alias f32))
+    |-OverloadedFunctionNode type=(fun "set_number" ((alias Real) (alias f32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set_number" ((alias Real) (alias f32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(alias Real (struct Real))
+          |-ReferenceNode type=(type (alias Real (struct Real)))
+            |-QNameNode=Real
+              |-NameIdentifierNode="Real"
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="set_number"
+        |-ReferenceNode type=(type (alias void (void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(void)
+          |-WasmAtomNode=local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_number" type=(fun "set_number" ((alias Real) (alias f32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "is" ((alias Real)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias Real)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(type (alias Real (struct Real)))
+          |-ReferenceNode type=(type (alias Real (struct Real)))
+            |-QNameNode=Real
+              |-NameIdentifierNode="Real"
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x300000000
+      |-NameIdentifierNode="is" type=(fun "is" ((alias Real)) (alias boolean))
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Natural" type=(type (alias Natural (struct Natural)))
+    |-UnknownExpressionNode
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Natural
+        |-NameIdentifierNode="Natural"
+    |-OverloadedFunctionNode type=(fun "sizeOf" () (alias i32)) annotations=Injected
+      |-FunctionNode type=(fun "sizeOf" () (alias i32))
+        |-NameIdentifierNode="sizeOf"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf" type=(fun "sizeOf" () (alias i32))
+    |-OverloadedFunctionNode type=(fun "apply" ((alias i32)) (alias Natural)) annotations=Injected
+      |-FunctionNode type=(fun "apply" ((alias i32)) (alias Natural))
+        |-ParameterNode
+          |-NameIdentifierNode="number" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="apply"
+        |-ReferenceNode type=(type (alias Natural (struct Natural)))
+          |-QNameNode=Natural
+            |-NameIdentifierNode="Natural"
+        |-FunctionCallNode type=(alias Natural (struct Natural)) annotations=IsValueNode
+          |-ReferenceNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Natural))
+            |-QNameNode=fromPointer
+              |-NameIdentifierNode="fromPointer"
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+              |-QNameNode=system::memory::malloc
+                |-NameIdentifierNode="system"
+                |-NameIdentifierNode="memory"
+                |-NameIdentifierNode="malloc"
+            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(fun "sizeOf" () (alias i32))
+                |-QNameNode=sizeOf
+                  |-NameIdentifierNode="sizeOf"
+      |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32)) (alias Natural))
+    |-OverloadedFunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Natural)) annotations=Injected
+      |-FunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Natural))
+        |-ParameterNode
+          |-NameIdentifierNode="ptr" type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+          |-UnionTypeNode type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-ReferenceNode type=(type (alias u32 (native u32)))
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
+        |-NameIdentifierNode="fromPointer"
+        |-ReferenceNode type=(type (alias Natural (struct Natural)))
+          |-QNameNode=Natural
+            |-NameIdentifierNode="Natural"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x400000000
             |-WasmAtomNode=i64.extend_u/i32
               |-WasmAtomNode=get_local
-                |-QNameNode=$_newRef
-                  |-NameIdentifierNode="$_newRef"
-    |-NameIdentifierNode="NaturalAllocator" type=fun(number: i32) -> Natural
-  |-OverloadedFunctionNode type=fun(real: f32, imaginary: f32) -> Complex annotations=Injected
-    |-FunDirectiveNode type=fun(real: f32, imaginary: f32) -> Complex annotations=Injected
-      |-FunctionNode type=fun(real: f32, imaginary: f32) -> Complex
+                |-QNameNode=$ptr
+                  |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Natural))
+    |-OverloadedFunctionNode type=(fun "get_number" ((alias Natural)) (alias i32)) annotations=Injected
+      |-FunctionNode type=(fun "get_number" ((alias Natural)) (alias i32))
         |-ParameterNode
-          |-NameIdentifierNode="real" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-ParameterNode
-          |-NameIdentifierNode="imaginary" type=f32
-          |-TypeReferenceNode=f32 type=f32
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="ComplexAllocator" type=fun(real: f32, imaginary: f32) -> Complex
-        |-TypeReferenceNode=Complex type=Complex
-          |-QNameNode=Complex
-            |-NameIdentifierNode="Complex"
-        |-WasmExpressionNode type=UNKNOWN annotations=IsValueNode
+          |-NameIdentifierNode="target" type=(alias Natural (struct Natural))
+          |-ReferenceNode type=(type (alias Natural (struct Natural)))
+            |-QNameNode=Natural
+              |-NameIdentifierNode="Natural"
+        |-NameIdentifierNode="get_number"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=local
-            |-QNameNode=$_newRef
-              |-NameIdentifierNode="$_newRef"
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
           |-WasmAtomNode=set_local
-            |-QNameNode=$_newRef
-              |-NameIdentifierNode="$_newRef"
-            |-WasmAtomNode=call
-              |-VariableReferenceNode type=fun(size: i32) -> i32
-                |-QNameNode=system::memory::malloc
-                  |-NameIdentifierNode="system"
-                  |-NameIdentifierNode="memory"
-                  |-NameIdentifierNode="malloc"
-              |-WasmAtomNode=i32.const
-                |-IntegerLiteral=8
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_number" type=(fun "get_number" ((alias Natural)) (alias i32))
+    |-OverloadedFunctionNode type=(fun "set_number" ((alias Natural) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set_number" ((alias Natural) (alias i32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(alias Natural (struct Natural))
+          |-ReferenceNode type=(type (alias Natural (struct Natural)))
+            |-QNameNode=Natural
+              |-NameIdentifierNode="Natural"
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="set_number"
+        |-ReferenceNode type=(type (alias void (void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(void)
+          |-WasmAtomNode=local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_number" type=(fun "set_number" ((alias Natural) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "is" ((alias Natural)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias Natural)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(type (alias Natural (struct Natural)))
+          |-ReferenceNode type=(type (alias Natural (struct Natural)))
+            |-QNameNode=Natural
+              |-NameIdentifierNode="Natural"
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x400000000
+      |-NameIdentifierNode="is" type=(fun "is" ((alias Natural)) (alias boolean))
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Complex" type=(type (alias Complex (struct Complex)))
+    |-UnknownExpressionNode
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Complex
+        |-NameIdentifierNode="Complex"
+    |-OverloadedFunctionNode type=(fun "sizeOf" () (alias i32)) annotations=Injected
+      |-FunctionNode type=(fun "sizeOf" () (alias i32))
+        |-NameIdentifierNode="sizeOf"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf" type=(fun "sizeOf" () (alias i32))
+    |-OverloadedFunctionNode type=(fun "apply" ((alias f32) (alias f32)) (alias Complex)) annotations=Injected
+      |-FunctionNode type=(fun "apply" ((alias f32) (alias f32)) (alias Complex))
+        |-ParameterNode
+          |-NameIdentifierNode="real" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-ParameterNode
+          |-NameIdentifierNode="imaginary" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="apply"
+        |-ReferenceNode type=(type (alias Complex (struct Complex)))
+          |-QNameNode=Complex
+            |-NameIdentifierNode="Complex"
+        |-FunctionCallNode type=(alias Complex (struct Complex)) annotations=IsValueNode
+          |-ReferenceNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Complex))
+            |-QNameNode=fromPointer
+              |-NameIdentifierNode="fromPointer"
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+              |-QNameNode=system::memory::malloc
+                |-NameIdentifierNode="system"
+                |-NameIdentifierNode="memory"
+                |-NameIdentifierNode="malloc"
+            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(fun "sizeOf" () (alias i32))
+                |-QNameNode=sizeOf
+                  |-NameIdentifierNode="sizeOf"
+      |-NameIdentifierNode="apply" type=(fun "apply" ((alias f32) (alias f32)) (alias Complex))
+    |-OverloadedFunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Complex)) annotations=Injected
+      |-FunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Complex))
+        |-ParameterNode
+          |-NameIdentifierNode="ptr" type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+          |-UnionTypeNode type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-ReferenceNode type=(type (alias u32 (native u32)))
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
+        |-NameIdentifierNode="fromPointer"
+        |-ReferenceNode type=(type (alias Complex (struct Complex)))
+          |-QNameNode=Complex
+            |-NameIdentifierNode="Complex"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x500000000
             |-WasmAtomNode=i64.extend_u/i32
               |-WasmAtomNode=get_local
-                |-QNameNode=$_newRef
-                  |-NameIdentifierNode="$_newRef"
-    |-NameIdentifierNode="ComplexAllocator" type=fun(real: f32, imaginary: f32) -> Complex
+                |-QNameNode=$ptr
+                  |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Complex))
+    |-OverloadedFunctionNode type=(fun "get_real" ((alias Complex)) (alias f32)) annotations=Injected
+      |-FunctionNode type=(fun "get_real" ((alias Complex)) (alias f32))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(alias Complex (struct Complex))
+          |-ReferenceNode type=(type (alias Complex (struct Complex)))
+            |-QNameNode=Complex
+              |-NameIdentifierNode="Complex"
+        |-NameIdentifierNode="get_real"
+        |-ReferenceNode type=(type (alias f32 (native f32)))
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_real" type=(fun "get_real" ((alias Complex)) (alias f32))
+    |-OverloadedFunctionNode type=(fun "set_real" ((alias Complex) (alias f32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set_real" ((alias Complex) (alias f32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(alias Complex (struct Complex))
+          |-ReferenceNode type=(type (alias Complex (struct Complex)))
+            |-QNameNode=Complex
+              |-NameIdentifierNode="Complex"
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="set_real"
+        |-ReferenceNode type=(type (alias void (void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(void)
+          |-WasmAtomNode=local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_real" type=(fun "set_real" ((alias Complex) (alias f32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "get_imaginary" ((alias Complex)) (alias f32)) annotations=Injected
+      |-FunctionNode type=(fun "get_imaginary" ((alias Complex)) (alias f32))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(alias Complex (struct Complex))
+          |-ReferenceNode type=(type (alias Complex (struct Complex)))
+            |-QNameNode=Complex
+              |-NameIdentifierNode="Complex"
+        |-NameIdentifierNode="get_imaginary"
+        |-ReferenceNode type=(type (alias f32 (native f32)))
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="get_imaginary" type=(fun "get_imaginary" ((alias Complex)) (alias f32))
+    |-OverloadedFunctionNode type=(fun "set_imaginary" ((alias Complex) (alias f32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set_imaginary" ((alias Complex) (alias f32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(alias Complex (struct Complex))
+          |-ReferenceNode type=(type (alias Complex (struct Complex)))
+            |-QNameNode=Complex
+              |-NameIdentifierNode="Complex"
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="set_imaginary"
+        |-ReferenceNode type=(type (alias void (void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(void)
+          |-WasmAtomNode=local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode=set_local
+            |-QNameNode=$offset
+              |-NameIdentifierNode="$offset"
+            |-WasmAtomNode=i32.const
+              |-IntegerLiteral=0
+          |-WasmAtomNode=unreachable
+      |-NameIdentifierNode="set_imaginary" type=(fun "set_imaginary" ((alias Complex) (alias f32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "is" ((alias Complex)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias Complex)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(type (alias Complex (struct Complex)))
+          |-ReferenceNode type=(type (alias Complex (struct Complex)))
+            |-QNameNode=Complex
+              |-NameIdentifierNode="Complex"
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x500000000
+      |-NameIdentifierNode="is" type=(fun "is" ((alias Complex)) (alias boolean))
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="Number" type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+    |-UnionTypeNode type=(type (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex))))
+      |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
+        |-QNameNode=Infinity
+          |-NameIdentifierNode="Infinity"
+      |-ReferenceNode type=(type (alias NDet (struct NDet)))
+        |-QNameNode=NDet
+          |-NameIdentifierNode="NDet"
+      |-ReferenceNode type=(type (alias Real (struct Real)))
+        |-QNameNode=Real
+          |-NameIdentifierNode="Real"
+      |-ReferenceNode type=(type (alias Natural (struct Natural)))
+        |-QNameNode=Natural
+          |-NameIdentifierNode="Natural"
+      |-ReferenceNode type=(type (alias Complex (struct Complex)))
+        |-QNameNode=Complex
+          |-NameIdentifierNode="Complex"
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Number
+        |-NameIdentifierNode="Number"
+    |-OverloadedFunctionNode type=(fun "is" ((alias Number)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias Number)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-NameIdentifierNode="||"
+            |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="||"
+              |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode
+                |-NameIdentifierNode="||"
+                |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode
+                  |-NameIdentifierNode="||"
+                  |-IsExpressionNode=is type=(alias boolean (native boolean)) annotations=IsValueNode
+                    |-ReferenceNode type=(alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))) annotations=IsValueNode
+                      |-QNameNode=a
+                        |-NameIdentifierNode="a"
+                    |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
+                      |-QNameNode=Infinity
+                        |-NameIdentifierNode="Infinity"
+                  |-IsExpressionNode=is type=(alias boolean (native boolean)) annotations=IsValueNode
+                    |-ReferenceNode type=(alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))) annotations=IsValueNode
+                      |-QNameNode=a
+                        |-NameIdentifierNode="a"
+                    |-ReferenceNode type=(type (alias NDet (struct NDet)))
+                      |-QNameNode=NDet
+                        |-NameIdentifierNode="NDet"
+                |-IsExpressionNode=is type=(alias boolean (native boolean)) annotations=IsValueNode
+                  |-ReferenceNode type=(alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))) annotations=IsValueNode
+                    |-QNameNode=a
+                      |-NameIdentifierNode="a"
+                  |-ReferenceNode type=(type (alias Real (struct Real)))
+                    |-QNameNode=Real
+                      |-NameIdentifierNode="Real"
+              |-IsExpressionNode=is type=(alias boolean (native boolean)) annotations=IsValueNode
+                |-ReferenceNode type=(alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))) annotations=IsValueNode
+                  |-QNameNode=a
+                    |-NameIdentifierNode="a"
+                |-ReferenceNode type=(type (alias Natural (struct Natural)))
+                  |-QNameNode=Natural
+                    |-NameIdentifierNode="Natural"
+            |-IsExpressionNode=is type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-ReferenceNode type=(alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))) annotations=IsValueNode
+                |-QNameNode=a
+                  |-NameIdentifierNode="a"
+              |-ReferenceNode type=(type (alias Complex (struct Complex)))
+                |-QNameNode=Complex
+                  |-NameIdentifierNode="Complex"
+      |-NameIdentifierNode="is" type=(fun "is" ((alias Number)) (alias boolean))
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Infinity
+        |-NameIdentifierNode="Infinity"
+    |-OverloadedFunctionNode type=(fun "as" ((alias Infinity)) (alias Number)) annotations=Injected
+      |-FunctionNode type=(fun "as" ((alias Infinity)) (alias Number))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(alias Infinity (struct Infinity))
+          |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
+            |-QNameNode=Infinity
+              |-NameIdentifierNode="Infinity"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as" type=(fun "as" ((alias Infinity)) (alias Number))
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=NDet
+        |-NameIdentifierNode="NDet"
+    |-OverloadedFunctionNode type=(fun "as" ((alias NDet)) (alias Number)) annotations=Injected
+      |-FunctionNode type=(fun "as" ((alias NDet)) (alias Number))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(alias NDet (struct NDet))
+          |-ReferenceNode type=(type (alias NDet (struct NDet)))
+            |-QNameNode=NDet
+              |-NameIdentifierNode="NDet"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as" type=(fun "as" ((alias NDet)) (alias Number))
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Real
+        |-NameIdentifierNode="Real"
+    |-OverloadedFunctionNode type=(fun "as" ((alias Real)) (alias Number)) annotations=Injected
+      |-FunctionNode type=(fun "as" ((alias Real)) (alias Number))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(alias Real (struct Real))
+          |-ReferenceNode type=(type (alias Real (struct Real)))
+            |-QNameNode=Real
+              |-NameIdentifierNode="Real"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as" type=(fun "as" ((alias Real)) (alias Number))
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Natural
+        |-NameIdentifierNode="Natural"
+    |-OverloadedFunctionNode type=(fun "as" ((alias Natural)) (alias Number)) annotations=Injected
+      |-FunctionNode type=(fun "as" ((alias Natural)) (alias Number))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(alias Natural (struct Natural))
+          |-ReferenceNode type=(type (alias Natural (struct Natural)))
+            |-QNameNode=Natural
+              |-NameIdentifierNode="Natural"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as" type=(fun "as" ((alias Natural)) (alias Number))
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Complex
+        |-NameIdentifierNode="Complex"
+    |-OverloadedFunctionNode type=(fun "as" ((alias Complex)) (alias Number)) annotations=Injected
+      |-FunctionNode type=(fun "as" ((alias Complex)) (alias Number))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(alias Complex (struct Complex))
+          |-ReferenceNode type=(type (alias Complex (struct Complex)))
+            |-QNameNode=Complex
+              |-NameIdentifierNode="Complex"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as" type=(fun "as" ((alias Complex)) (alias Number))
+  |-NameSpaceDirective
+    |-ReferenceNode
+      |-QNameNode=Number
+        |-NameIdentifierNode="Number"
+    |-OverloadedFunctionNode type=(intersection (fun "as" ((union (alias Infinity) (alias NDet) (alias Real) (alias Natural) (alias Complex))) (alias Number)) (fun "as" ((alias Number)) (alias ref))) annotations=Injected
+      |-FunctionNode type=(fun "as" ((union (alias Infinity) (alias NDet) (alias Real) (alias Natural) (alias Complex))) (alias Number))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))
+          |-UnionTypeNode type=(type (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex))))
+            |-ReferenceNode type=(type (alias Infinity (struct Infinity)))
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
+            |-ReferenceNode type=(type (alias NDet (struct NDet)))
+              |-QNameNode=NDet
+                |-NameIdentifierNode="NDet"
+            |-ReferenceNode type=(type (alias Real (struct Real)))
+              |-QNameNode=Real
+                |-NameIdentifierNode="Real"
+            |-ReferenceNode type=(type (alias Natural (struct Natural)))
+              |-QNameNode=Natural
+                |-NameIdentifierNode="Natural"
+            |-ReferenceNode type=(type (alias Complex (struct Complex)))
+              |-QNameNode=Complex
+                |-NameIdentifierNode="Complex"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-FunctionNode type=(fun "as" ((alias Number)) (alias ref))
+        |-ParameterNode
+          |-NameIdentifierNode="a" type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+        |-NameIdentifierNode="as"
+        |-ReferenceNode type=(type (alias ref (ref ?)))
+          |-QNameNode=ref
+            |-NameIdentifierNode="ref"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=get_local
+            |-QNameNode=$a
+              |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((union (alias Infinity) (alias NDet) (alias Real) (alias Natural) (alias Complex))) (alias Number)) (fun "as" ((alias Number)) (alias ref)))
+  |-OverloadedFunctionNode type=(fun "isComplex" ((alias Number)) (alias boolean)) annotations=Injected
+    |-FunctionNode type=(fun "isComplex" ((alias Number)) (alias boolean))
+      |-ParameterNode
+        |-NameIdentifierNode="number" type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+        |-ReferenceNode type=(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))
+          |-QNameNode=Number
+            |-NameIdentifierNode="Number"
+      |-NameIdentifierNode="isComplex"
+      |-ReferenceNode type=(type (alias boolean (native boolean)))
+        |-QNameNode=boolean
+          |-NameIdentifierNode="boolean"
+      |-PatternMatcherNode type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-ReferenceNode type=(alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))) annotations=IsValueNode
+          |-QNameNode=number
+            |-NameIdentifierNode="number"
+        |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-ReferenceNode type=(type (alias Real (struct Real)))
+            |-QNameNode=Real
+              |-NameIdentifierNode="Real"
+          |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-ReferenceNode type=(type (alias Natural (struct Natural)))
+            |-QNameNode=Natural
+              |-NameIdentifierNode="Natural"
+          |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-MatchDefaultNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+    |-NameIdentifierNode="isComplex" type=(fun "isComplex" ((alias Number)) (alias boolean))
+  |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
+    |-FunctionNode type=(fun "main" () (alias void))
+      |-NameIdentifierNode="main"
+      |-ReferenceNode type=(type (alias void (void)))
+        |-QNameNode=void
+          |-NameIdentifierNode="void"
+      |-BlockNode type=(void)
+        |-FunctionCallNode type=(alias boolean (native boolean))
+          |-ReferenceNode type=(fun "isComplex" ((alias Number)) (alias boolean))
+            |-QNameNode=isComplex
+              |-NameIdentifierNode="isComplex"
+          |-ReferenceNode type=(alias Infinity (struct Infinity)) annotations=IsValueNode,ImplicitCall
+            |-QNameNode=Infinity
+              |-NameIdentifierNode="Infinity"
+        |-FunctionCallNode type=(alias boolean (native boolean))
+          |-ReferenceNode type=(fun "isComplex" ((alias Number)) (alias boolean))
+            |-QNameNode=isComplex
+              |-NameIdentifierNode="isComplex"
+          |-FunctionCallNode type=(alias Real (struct Real)) annotations=IsValueNode
+            |-MemberNode type=(fun "apply" ((alias f32)) (alias Real))
+              |-ReferenceNode type=(type (alias Real (struct Real)))
+                |-QNameNode=Real
+                  |-NameIdentifierNode="Real"
+              |-NameIdentifierNode="apply"
+            |-FloatLiteral=0 type=(alias f32 (native f32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias boolean (native boolean))
+          |-ReferenceNode type=(fun "isComplex" ((alias Number)) (alias boolean))
+            |-QNameNode=isComplex
+              |-NameIdentifierNode="isComplex"
+          |-FunctionCallNode type=(alias Natural (struct Natural)) annotations=IsValueNode
+            |-MemberNode type=(fun "apply" ((alias i32)) (alias Natural))
+              |-ReferenceNode type=(type (alias Natural (struct Natural)))
+                |-QNameNode=Natural
+                  |-NameIdentifierNode="Natural"
+              |-NameIdentifierNode="apply"
+            |-IntegerLiteral=123 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias boolean (native boolean))
+          |-ReferenceNode type=(fun "isComplex" ((alias Number)) (alias boolean))
+            |-QNameNode=isComplex
+              |-NameIdentifierNode="isComplex"
+          |-FunctionCallNode type=(alias Complex (struct Complex)) annotations=IsValueNode
+            |-MemberNode type=(fun "apply" ((alias f32) (alias f32)) (alias Complex))
+              |-ReferenceNode type=(type (alias Complex (struct Complex)))
+                |-QNameNode=Complex
+                  |-NameIdentifierNode="Complex"
+              |-NameIdentifierNode="apply"
+            |-FloatLiteral=0 type=(alias f32 (native f32)) annotations=IsValueNode
+            |-FloatLiteral=99.1 type=(alias f32 (native f32)) annotations=IsValueNode
+    |-NameIdentifierNode="main" type=(fun "main" () (alias void))

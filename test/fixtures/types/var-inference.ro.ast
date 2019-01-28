@@ -4,20 +4,17 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=Type<i32>
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="x" type=i32
-      |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="getX" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-VariableReferenceNode type=i32 annotations=IsValueNode
-          |-QNameNode=x
-            |-NameIdentifierNode="x"
-    |-NameIdentifierNode="getX" type=fun() -> i32
+      |-NameIdentifierNode="x" type=(alias i32 (native i32))
+      |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+  |-OverloadedFunctionNode type=(fun "getX" () (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "getX" () (alias i32))
+      |-NameIdentifierNode="getX"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-QNameNode=x
+          |-NameIdentifierNode="x"
+    |-NameIdentifierNode="getX" type=(fun "getX" () (alias i32))

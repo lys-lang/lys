@@ -3,9 +3,11 @@ declare var describe;
 import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
+import { ParsingContext } from '../dist/parser/closure';
 
 const phases = function(txt: string): CanonicalPhaseResult {
-  const parsing = new ParsingPhaseResult('test.ro', txt);
+  const parsingContext = new ParsingContext();
+  const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
 };
@@ -34,28 +36,28 @@ describe('Canonical', function() {
   test`var a: Number = 0x0`;
   test`var a: Number = 0x1facbeda0192830190238019283`;
   test`var a: Number = -0x1facbeda0192830190238019283`;
-  test`var a = null`;
+  test`var a = false`;
 
   test`
-    var a = {null}
-    var b = { null }
+    var a = {false}
+    var b = { false }
     var c = {
-      null
+      false
     }
     var d = {
-      null
-      null
+      false
+      false
     }
   `;
 
   test`
-    var a = null
-    var b = null
-    var c = null
+    var a = false
+    var b = false
+    var c = false
 
     var d = {
       1
-      null
+      false
     }
 
     fun x(): void = a

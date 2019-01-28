@@ -4,91 +4,85 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=Type<i32>
-  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-BlockNode type=i32 annotations=IsValueNode
-          |-ValDeclarationNode type=void
-            |-NameIdentifierNode="test" type=i32
-            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-          |-AssignmentNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=i32
-              |-QNameNode=test
-                |-NameIdentifierNode="test"
-            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="+"
-              |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-              |-IntegerLiteral=2 type=i32 annotations=IsValueNode
-    |-NameIdentifierNode="test" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test1" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-BlockNode type=i32 annotations=IsValueNode
-          |-ValDeclarationNode type=void
-            |-NameIdentifierNode="test" type=i32
-            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-          |-AssignmentNode type=i32
-            |-VariableReferenceNode type=i32
-              |-QNameNode=test
-                |-NameIdentifierNode="test"
-            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="+"
-              |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-              |-IntegerLiteral=2 type=i32 annotations=IsValueNode
-          |-VariableReferenceNode type=i32 annotations=IsValueNode
+  |-OverloadedFunctionNode type=(fun "test" () (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "test" () (alias i32))
+      |-NameIdentifierNode="test"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ValDeclarationNode type=(void)
+          |-NameIdentifierNode="test" type=(alias i32 (native i32))
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode type=(alias i32 (native i32))
             |-QNameNode=test
               |-NameIdentifierNode="test"
-    |-NameIdentifierNode="test1" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test2" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-BlockNode type=i32 annotations=IsValueNode
-          |-ValDeclarationNode type=void
-            |-NameIdentifierNode="test" type=i32
-            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-          |-AssignmentNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=i32
-              |-QNameNode=test
-                |-NameIdentifierNode="test"
-            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="+"
-              |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-              |-IntegerLiteral=2 type=i32 annotations=IsValueNode
-    |-NameIdentifierNode="test2" type=fun() -> i32
-  |-OverloadedFunctionNode type=fun() -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun() -> i32
-      |-FunctionNode type=fun() -> i32
-        |-NameIdentifierNode="test3" type=fun() -> i32
-        |-TypeReferenceNode=i32 type=i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-BlockNode type=i32 annotations=IsValueNode
-          |-ValDeclarationNode type=void
-            |-NameIdentifierNode="test" type=i32
-            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-          |-AssignmentNode type=i32
-            |-VariableReferenceNode type=i32
-              |-QNameNode=test
-                |-NameIdentifierNode="test"
-            |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-              |-NameIdentifierNode="+"
-              |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-              |-IntegerLiteral=2 type=i32 annotations=IsValueNode
-          |-VariableReferenceNode type=i32 annotations=IsValueNode
+          |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+            |-NameIdentifierNode="+"
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-NameIdentifierNode="test" type=(fun "test" () (alias i32))
+  |-OverloadedFunctionNode type=(fun "test1" () (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "test1" () (alias i32))
+      |-NameIdentifierNode="test1"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ValDeclarationNode type=(void)
+          |-NameIdentifierNode="test" type=(alias i32 (native i32))
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-AssignmentNode type=(alias i32 (native i32))
+          |-ReferenceNode type=(alias i32 (native i32))
             |-QNameNode=test
               |-NameIdentifierNode="test"
-    |-NameIdentifierNode="test3" type=fun() -> i32
+          |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+            |-NameIdentifierNode="+"
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=test
+            |-NameIdentifierNode="test"
+    |-NameIdentifierNode="test1" type=(fun "test1" () (alias i32))
+  |-OverloadedFunctionNode type=(fun "test2" () (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "test2" () (alias i32))
+      |-NameIdentifierNode="test2"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ValDeclarationNode type=(void)
+          |-NameIdentifierNode="test" type=(alias i32 (native i32))
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode type=(alias i32 (native i32))
+            |-QNameNode=test
+              |-NameIdentifierNode="test"
+          |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+            |-NameIdentifierNode="+"
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-NameIdentifierNode="test2" type=(fun "test2" () (alias i32))
+  |-OverloadedFunctionNode type=(fun "test3" () (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "test3" () (alias i32))
+      |-NameIdentifierNode="test3"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ValDeclarationNode type=(void)
+          |-NameIdentifierNode="test" type=(alias i32 (native i32))
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-AssignmentNode type=(alias i32 (native i32))
+          |-ReferenceNode type=(alias i32 (native i32))
+            |-QNameNode=test
+              |-NameIdentifierNode="test"
+          |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+            |-NameIdentifierNode="+"
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=test
+            |-NameIdentifierNode="test"
+    |-NameIdentifierNode="test3" type=(fun "test3" () (alias i32))
