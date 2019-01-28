@@ -4,49 +4,46 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="i32" type=Type<i32>
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="z" type=i32
-      |-IntegerLiteral=3 type=i32 annotations=IsValueNode
-  |-OverloadedFunctionNode type=fun(a: i32) -> i32 annotations=Injected
-    |-FunDirectiveNode type=fun(a: i32) -> i32
-      |-FunctionNode type=fun(a: i32) -> i32
-        |-ParameterNode
-          |-NameIdentifierNode="a" type=i32
-          |-TypeReferenceNode=i32 type=i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="flashero" type=fun(a: i32) -> i32
-        |-TypeReferenceNode=i32 type=i32
+      |-NameIdentifierNode="z" type=(alias i32 (native i32))
+      |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode
+  |-OverloadedFunctionNode type=(fun "flashero" ((alias i32)) (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "flashero" ((alias i32)) (alias i32))
+      |-ParameterNode
+        |-NameIdentifierNode="a" type=(alias i32 (native i32))
+        |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BlockNode type=i32 annotations=IsValueNode
-          |-VarDeclarationNode type=void
-            |-NameIdentifierNode="x" type=i32
-            |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-          |-VarDeclarationNode type=void
-            |-NameIdentifierNode="y" type=i32
-            |-IntegerLiteral=2 type=i32 annotations=IsValueNode
-          |-AssignmentNode type=i32 annotations=IsValueNode
-            |-VariableReferenceNode type=i32
-              |-QNameNode=x
-                |-NameIdentifierNode="x"
-            |-BlockNode type=i32 annotations=IsValueNode
-              |-AssignmentNode type=i32 annotations=IsValueNode
-                |-VariableReferenceNode type=i32
-                  |-QNameNode=y
-                    |-NameIdentifierNode="y"
-                |-BlockNode type=i32 annotations=IsValueNode
-                  |-AssignmentNode type=i32 annotations=IsValueNode
-                    |-VariableReferenceNode type=i32
-                      |-QNameNode=z
-                        |-NameIdentifierNode="z"
-                    |-BinaryExpressionNode="+" type=i32 annotations=IsValueNode
-                      |-NameIdentifierNode="+"
-                      |-VariableReferenceNode type=i32 annotations=IsValueNode
-                        |-QNameNode=a
-                          |-NameIdentifierNode="a"
-                      |-IntegerLiteral=1 type=i32 annotations=IsValueNode
-    |-NameIdentifierNode="flashero" type=fun(a: i32) -> i32
+      |-NameIdentifierNode="flashero"
+      |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-QNameNode=i32
+          |-NameIdentifierNode="i32"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-VarDeclarationNode type=(void)
+          |-NameIdentifierNode="x" type=(alias i32 (native i32))
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-VarDeclarationNode type=(void)
+          |-NameIdentifierNode="y" type=(alias i32 (native i32))
+          |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode type=(alias i32 (native i32))
+            |-QNameNode=x
+              |-NameIdentifierNode="x"
+          |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(alias i32 (native i32))
+                |-QNameNode=y
+                  |-NameIdentifierNode="y"
+              |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-ReferenceNode type=(alias i32 (native i32))
+                    |-QNameNode=z
+                      |-NameIdentifierNode="z"
+                  |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-NameIdentifierNode="+"
+                    |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-QNameNode=a
+                        |-NameIdentifierNode="a"
+                    |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-NameIdentifierNode="flashero" type=(fun "flashero" ((alias i32)) (alias i32))

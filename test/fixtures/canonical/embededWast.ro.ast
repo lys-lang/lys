@@ -3,21 +3,21 @@
   |-FunDirectiveNode
     |-FunctionNode
       |-NameIdentifierNode="test"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
   |-FunDirectiveNode
     |-FunctionNode
       |-NameIdentifierNode="test"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
   |-FunDirectiveNode
     |-FunctionNode
       |-NameIdentifierNode="test"
-      |-TypeReferenceNode=void
+      |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -29,11 +29,11 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="size"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="malloc"
-      |-TypeReferenceNode=i32
+      |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-WasmExpressionNode
@@ -46,11 +46,11 @@
           |-QNameNode=$address
             |-NameIdentifierNode="$address"
           |-WasmAtomNode=get_global
-            |-VariableReferenceNode
+            |-ReferenceNode
               |-QNameNode=freeblock
                 |-NameIdentifierNode="freeblock"
         |-WasmAtomNode=set_global
-          |-VariableReferenceNode
+          |-ReferenceNode
             |-QNameNode=freeblock
               |-NameIdentifierNode="freeblock"
           |-WasmAtomNode=i32.add
@@ -67,16 +67,16 @@
     |-FunctionNode
       |-ParameterNode
         |-NameIdentifierNode="a"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="b"
-        |-TypeReferenceNode=i32
+        |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="strAdd"
-      |-TypeReferenceNode=i32
+      |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-WasmExpressionNode
@@ -119,7 +119,7 @@
             |-QNameNode=$newStr
               |-NameIdentifierNode="$newStr"
             |-WasmAtomNode=call
-              |-VariableReferenceNode
+              |-ReferenceNode
                 |-QNameNode=malloc
                   |-NameIdentifierNode="malloc"
               |-WasmAtomNode=i32.add
@@ -136,7 +136,7 @@
               |-QNameNode=$sum
                 |-NameIdentifierNode="$sum"
           |-WasmAtomNode=call
-            |-VariableReferenceNode
+            |-ReferenceNode
               |-QNameNode=string_copy
                 |-NameIdentifierNode="string_copy"
             |-WasmAtomNode=get_local
@@ -146,7 +146,7 @@
               |-QNameNode=$newStr
                 |-NameIdentifierNode="$newStr"
           |-WasmAtomNode=call
-            |-VariableReferenceNode
+            |-ReferenceNode
               |-QNameNode=string_copy
                 |-NameIdentifierNode="string_copy"
             |-WasmAtomNode=get_local

@@ -1,0 +1,41 @@
+digraph Document {
+  node [shape=box,fixedsize=shape fontsize=10]
+  1 [label="FunOverload: test\n(fun 'test' ((alias i32)) (alias boolean))", fillcolor=grey];
+  2 [label="FunNode: test\n(fun 'test' ((alias i32)) (alias boolean))", fillcolor=grey];
+  3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  4 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
+  5 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+  6 [label="Name: test\n(fun 'test' ((alias i32)) (alias boolean))", fillcolor=grey];
+  subgraph cluster0 {
+    node [style=filled, fillcolor=grey];
+    7 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
+    8 [label="PatternMatcherNode\n(alias boolean (native boolean))", fillcolor=grey];
+    9 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
+    10 [label="MatchLiteralNode\n(alias boolean (native boolean))", fillcolor=grey];
+    11 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
+    12 [label="BooleanLiteraltrue\n(alias boolean (native boolean))", fillcolor=grey];
+    13 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
+    14 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
+    15 [label="BooleanLiteralfalse\n(alias boolean (native boolean))", fillcolor=grey];
+    16 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
+    17 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
+    7 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    9 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    9 -> 13[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    10 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    11 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    12 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    13 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    13 -> 16[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    14 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    15 -> 14[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    16 -> 14[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  label = "test::test(i32)";
+}
+  1 -> 6[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  4 -> 2[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  5 -> 2[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  label="";
+}

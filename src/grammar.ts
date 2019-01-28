@@ -13,15 +13,17 @@ Directive         ::= ( FunctionDirective
                       | TypeDirective
                       | ImportDirective
                       | EffectDirective
+                      | NSDirective
                       ) {fragment=true}
 
 ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
 FunctionDirective ::= PrivateModifier? InlineModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
-TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') TypeAlias)? {pin=2}
+TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') ValueType)? {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+NSDirective       ::= PrivateModifier? NAMESPACE_KEYWORD NamespaceDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
 InlineModifier    ::= INLINE_KEYWORD
@@ -29,9 +31,7 @@ InlineModifier    ::= INLINE_KEYWORD
 TypeKind          ::= TYPE_KEYWORD
 
 UnknownExpression ::= '???'
-
-
-
+ValueType         ::= '=' WS* (Type | UnknownExpression) {fragment=true}
 
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
@@ -40,7 +40,7 @@ TypeParameters     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
 AssignExpression  ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
 FunAssignExpression ::= '=' WS* (Expression | UnknownExpression | WasmExpression) {pin=1,fragment=true}
-AssignStatement   ::= VariableReference WS* '=' !('=') WS* Expression {pin=3}
+AssignStatement   ::= Reference WS* '=' !('=') WS* Expression {pin=3}
 OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
@@ -48,7 +48,7 @@ ParameterList     ::= Parameter NthParameter* {fragment=true}
 NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 Parameter         ::= NameIdentifier WS* OfType? {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
-StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
+StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? (WS* &'{' NamespaceElementList)? {pin=1}
 EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType {pin=1}
 TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
@@ -76,20 +76,19 @@ FunOperator       ::= ( BitNotPreOperator
                       | NotPreOperator
                       )
 
+NamespaceDeclaration ::= Reference WS* NamespaceElementList {pin=1}
+NamespaceElementList ::= '{' (WS* Directive)* WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
 EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-TypeDeclaration   ::= '{' TypeDeclElements WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-
-TypeAlias         ::= '=' WS* Type {pin=1}
+TypeDeclaration   ::= '{' TypeDeclElements? WS* '}' (WS* &'{' NamespaceElementList)? {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 FunctionEffect    ::= '<' WS* (Type WS*)? '>' {pin=1}
 Type              ::= UnionType
 UnionType         ::= IntersectionType (WS* '|' WS* IntersectionType)* {simplifyWhenOneChildren=true}
 IntersectionType  ::= AtomType (WS* '&' WS* AtomType)* {simplifyWhenOneChildren=true}
-AtomType          ::= TypeParen | FunctionTypeLiteral | TypeReference {fragment=true}
+AtomType          ::= TypeParen | FunctionTypeLiteral | Reference {fragment=true}
 TypeParen         ::= '(' WS* Type WS* ')' {pin=1}
-TypeReference     ::= QName
 
 FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* '->' WS* Type {pin=1}
 FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,recoverUntil=PAREN_RECOVERY}
@@ -108,7 +107,9 @@ Statement         ::= ValDeclaration
 
 MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
 
-BinaryExpression  ::= '.' NameIdentifier CallArguments? {pin=2,fragment=true}
+BinMemberOperator ::= '.' | '#'
+
+BinaryExpression  ::= BinMemberOperator NameIdentifier CallArguments? {pin=1,fragment=true}
 
 OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
 AndExpression     ::= BitOrExpression (WS+ AndKeyword WS+ BitOrExpression)* {simplifyWhenOneChildren=true}
@@ -133,7 +134,7 @@ UnaryMinus        ::= !NumberLiteral '-' AtomicExpression {pin=2}
 
 
 Value             ::= ( Literal
-                      | VariableReference
+                      | Reference
                       | &'(' ParenExpression
                       | &'{' CodeBlock
                       ) {fragment=true}
@@ -153,7 +154,7 @@ MatchElements     ::= (CaseCondition | CaseIs | CaseLiteral | CaseElse) WS*  {fr
 
 CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression WS* '->' WS* Expression {pin=5}
 CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
-CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ TypeReference WS* DeconstructStruct? '->' WS* Expression {pin=4}
+CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ Reference WS* DeconstructStruct? '->' WS* Expression {pin=4}
 CaseElse          ::= ELSE_KEYWORD WS* (NameIdentifier WS+)? '->' WS* Expression {pin=4}
 
 DeconstructStruct ::= '(' (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
@@ -164,12 +165,11 @@ CallArguments     ::= OPEN_PAREN Arguments? CLOSE_PAREN {pin=1,recoverUntil=PARE
 Arguments         ::= WS* Expression WS* NthArgument* {fragment=true}
 NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
-VariableReference ::= QName
+Reference         ::= QName
 
 
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
-NullLiteral       ::= NULL_KEYWORD
 NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
 StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
@@ -177,7 +177,6 @@ Literal           ::= ( StringLiteral
                       | HexLiteral
                       | NumberLiteral
                       | BooleanLiteral
-                      | NullLiteral
                       ) {fragment=true}
 
 NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])*
@@ -191,15 +190,16 @@ SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | NULL_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
 
 /* Tokens */
 
-FUN_KEYWORD       ::= 'fun'    WS+
-VAL_KEYWORD       ::= 'val'    WS+
-VAR_KEYWORD       ::= 'var'    WS+
-EFFECT_KEYWORD    ::= 'effect' WS+
-IMPORT_KEYWORD    ::= 'import' WS+
+FUN_KEYWORD       ::= 'fun'       WS+
+VAL_KEYWORD       ::= 'val'       WS+
+VAR_KEYWORD       ::= 'var'       WS+
+EFFECT_KEYWORD    ::= 'effect'    WS+
+NAMESPACE_KEYWORD ::= 'ns'        WS+
+IMPORT_KEYWORD    ::= 'import'    WS+
 
 TYPE_KEYWORD      ::= ( 'type'
                       | 'cotype'
@@ -244,7 +244,6 @@ RESERVED_WORDS    ::= ( 'async'
 
 TRUE_KEYWORD      ::= 'true'    ![A-Za-z0-9_]
 FALSE_KEYWORD     ::= 'false'   ![A-Za-z0-9_]
-NULL_KEYWORD      ::= 'null'    ![A-Za-z0-9_]
 IF_KEYWORD        ::= 'if'      ![A-Za-z0-9_]
 ELSE_KEYWORD      ::= 'else'    ![A-Za-z0-9_]
 CASE_KEYWORD      ::= 'case'    ![A-Za-z0-9_]
@@ -269,7 +268,7 @@ AndKeyword        ::= '&&'      ![A-Za-z0-9_]
 OrKeyword         ::= '||'      ![A-Za-z0-9_]
 
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

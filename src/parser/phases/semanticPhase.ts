@@ -5,53 +5,263 @@ import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
 import { AstNodeError } from '../NodeError';
-import { assert } from 'console';
-import { printAST } from '../../utils/astPrinter';
 import { annotations } from '../annotations';
 
-const overloadFunctions = function(document: Nodes.DocumentNode, phase: SemanticPhaseResult) {
-  const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode | Nodes.FunDirectiveNode> = new Map();
+const overloadFunctions = function(
+  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
+  phase: SemanticPhaseResult
+) {
+  const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode> = new Map();
 
-  const process = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult) => {
+  document.directives.slice().forEach((node: Nodes.Node, ix: number) => {
     if (node instanceof Nodes.FunDirectiveNode) {
       const functionName = node.functionNode.functionName.name;
       const x = overloadedFunctions.get(functionName);
       if (x && x instanceof Nodes.OverloadedFunctionNode) {
-        x.functions.push(node);
+        x.functions.push(node.functionNode);
+        node.functionNode.parent = x;
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
         overloaded.annotate(new annotations.Injected());
         overloaded.functionName = Nodes.NameIdentifierNode.fromString(functionName);
+        overloaded.functionName.astNode = node.functionNode.functionName.astNode;
+        overloaded.functions = [node.functionNode];
+        node.functionNode.parent = overloaded;
         overloadedFunctions.set(functionName, overloaded);
-        overloaded.functions = [node];
+        document.directives[ix] = overloaded;
       }
+    } else if (node instanceof Nodes.NameSpaceDirective) {
+      overloadFunctions(node, phase);
     }
   });
 
-  process(document, phase);
-
   document.directives = document.directives.filter($ => !($ instanceof Nodes.FunDirectiveNode));
 
-  overloadedFunctions.forEach($ => {
-    document.directives.push($);
+  return document;
+};
+
+function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseResult): Nodes.DirectiveNode[] {
+  const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.toString()).join(', ');
+  const typeName = node.declaredName.name;
+
+  const typeDirective = new Nodes.TypeDirectiveNode();
+  typeDirective.variableName = node.declaredName;
+  typeDirective.valueType = new Nodes.UnknownExpressionNode();
+  typeDirective.annotate(new annotations.Injected());
+
+  phase.parsingContext.registerType(typeDirective);
+
+  if (node.parameters.length) {
+    const accessors = node.parameters
+      .map(({ parameterName, parameterType }) => {
+        return `
+            fun get_${parameterName}(
+              target: ${typeName}
+            ): ${parameterType.toString()} = %wasm {
+              (local $offset i32)
+              (set_local $offset (i32.const 0))
+              (unreachable)
+            }
+
+            fun set_${parameterName}(
+              target: ${typeName},
+              value: ${parameterType.toString()}
+            ): void = %wasm {
+              (local $offset i32)
+              (set_local $offset (i32.const 0))
+              (unreachable)
+            }
+          `;
+      })
+      .join('\n');
+
+    const canonical = new CanonicalPhaseResult(
+      phase.parsingContext.getParsingPhaseForContent(
+        phase.moduleName + '#' + typeName,
+        `
+            ns ${typeName} {
+              // fun determinant(): i64 = 0x${typeDirective.typeDeterminant.toString(16)}00000000
+
+              fun sizeOf(): i32 = 0
+
+              fun apply(${args}): ${typeName} =
+                fromPointer(
+                  system::memory::malloc(
+                    sizeOf()
+                  )
+                )
+
+              private fun fromPointer(ptr: i32 | u32): ${typeName} = %wasm {
+                (i64.or
+                  (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+                  (i64.extend_u/i32 (get_local $ptr))
+                )
+              }
+
+              ${accessors}
+
+              fun is(a: ${typeName}): boolean = %wasm {
+                (i64.eq
+                  (i64.and
+                    (i64.const 0xffffffff00000000)
+                    (get_local $a)
+                  )
+                  (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+                )
+              }
+            }
+          `
+      )
+    );
+
+    return [typeDirective, ...canonical.document.directives];
+  } else {
+    const canonical = new CanonicalPhaseResult(
+      phase.parsingContext.getParsingPhaseForContent(
+        phase.moduleName + '#' + typeName,
+        `
+          ns ${typeName} {
+            fun apply(): ${typeName} = %wasm {
+              (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+            }
+
+            fun is(a: ${typeName}): boolean = %wasm {
+              (i64.eq
+                (i64.and
+                  (i64.const 0xffffffff00000000)
+                  (get_local $a)
+                )
+                (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+              )
+            }
+
+            fun (==)(a: ${typeName}, b: ref): boolean = %wasm {
+              (i64.eq
+                (get_local $a)
+                (get_local $b)
+              )
+            }
+
+            fun (!=)(a: ${typeName}, b: ref): boolean = %wasm {
+              (i64.ne
+                (get_local $a)
+                (get_local $b)
+              )
+            }
+          }
+        `
+      )
+    );
+
+    return [typeDirective, ...canonical.document.directives];
+  }
+}
+
+const preprocessStructs = function(
+  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
+  phase: SemanticPhaseResult
+) {
+  document.directives.slice().forEach((node: Nodes.Node) => {
+    if (node instanceof Nodes.TypeDirectiveNode && node.valueType instanceof Nodes.TypeDeclarationNode) {
+      const decls = node.valueType;
+
+      const union = (node.valueType = new Nodes.UnionTypeNode());
+      union.of = [];
+      phase.parsingContext.registerType(node);
+
+      const newDirectives = [];
+
+      decls.declarations.forEach($ => {
+        newDirectives.push(...processStruct($, phase));
+        const refNode = new Nodes.ReferenceNode();
+        refNode.variable = Nodes.QNameNode.fromString($.declaredName.name);
+        union.of.push(refNode);
+      });
+
+      document.directives.splice(document.directives.indexOf(node) + 1, 0, ...newDirectives);
+    } else if (node instanceof Nodes.StructDeclarationNode) {
+      const newDirectives = processStruct(node, phase);
+      document.directives.splice(document.directives.indexOf(node as any), 1, ...newDirectives);
+    }
   });
 
   return document;
 };
 
-const validateSignatures = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
+const processUnions = function(
+  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
+  phase: SemanticPhaseResult
+) {
+  document.directives.slice().forEach((node: Nodes.Node) => {
+    if (node instanceof Nodes.TypeDirectiveNode) {
+      const { valueType, variableName } = node;
+
+      phase.parsingContext.registerType(node);
+
+      if (valueType instanceof Nodes.UnionTypeNode) {
+        const referenceTypes = valueType.of.filter($ => $ instanceof Nodes.ReferenceNode) as Nodes.ReferenceNode[];
+
+        if (valueType.of.length != referenceTypes.length) {
+          // error?
+        }
+
+        let injectedDirectives: string[] = [];
+        if (referenceTypes.length) {
+          const unionType = referenceTypes.map($ => $.variable.text).join(' | ');
+
+          referenceTypes.forEach($ => {
+            injectedDirectives.push(`
+              ns ${$.variable.text} {
+                fun (as)(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
+              }
+            `);
+          });
+
+          injectedDirectives.push(`
+            ns ${node.variableName.name} {
+              fun (as)(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
+              fun (as)(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
+            }
+          `);
+        }
+
+        const canonical = new CanonicalPhaseResult(
+          phase.parsingContext.getParsingPhaseForContent(
+            phase.moduleName + '#' + node.variableName.name,
+            `
+              // Union type ${variableName.name}
+              ns ${variableName.name} {
+                fun (is)(a: ${node.variableName.name}): boolean = {
+                  ${referenceTypes.map($ => 'a is ' + $.variable.text).join(' || ') || 'false'}
+                }
+              }
+
+              ${injectedDirectives.join('\n')}
+            `
+          )
+        );
+
+        document.directives.splice(document.directives.indexOf(node) + 1, 0, ...canonical.document.directives);
+      }
+    }
+  });
+
+  return document;
+};
+
+const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseResult, _1: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
     let used = [];
     node.parameters.forEach(param => {
       if (used.indexOf(param.parameterName.name) == -1) {
         used.push(param.parameterName.name);
       } else {
-        param.errors.push(new AstNodeError(`Duplicated parameter "${param.parameterName.name}"`, param));
+        ctx.parsingContext.messageCollector.error(`Duplicated parameter "${param.parameterName.name}"`, param);
       }
     });
 
     if (!node.functionReturnType) {
-      node.errors.push(new AstNodeError('Missing return type in function declaration', node));
+      ctx.parsingContext.messageCollector.error('Missing return type in function declaration', node);
     }
   }
 
@@ -71,152 +281,12 @@ const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
       if (!node.arguments[0]) {
         throw new AstNodeError(`Missing name`, node);
       }
-      if (node.arguments[0] instanceof Nodes.VariableReferenceNode == false) {
+      if (node.arguments[0] instanceof Nodes.ReferenceNode == false) {
         throw new AstNodeError(`Here you need a fully qualified name starting with $`, node.arguments[0]);
       }
     }
   }
 });
-
-const createTypes = walkPreOrder(
-  (node: Nodes.Node, phase: SemanticPhaseResult) => {
-    if (node instanceof Nodes.StructDeclarationNode) {
-      phase.parsingContext.registerType(node);
-
-      assert(node.typeNumber > 0, `typenumber is == 0`);
-
-      const size = 8;
-
-      const typeName = node.declaredName.name;
-
-      const allocatorName = typeName + 'Allocator';
-
-      let injectedFunctions: CanonicalPhaseResult;
-
-      if (node.parameters.length) {
-        const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.text).join(', ');
-
-        // const getters = node.parameters
-        //   .map(
-        //     ({ parameterName, parameterType }) => `
-        //       const ${typeName}_${parameterName}_offset: usize = 0
-
-        //       fun get_${parameterName}(
-        //         target: ${typeName}
-        //       ): ${parameterType.toString()} = %wasm {
-        //         (unreachable)
-        //       }
-
-        //       fun set_${parameterName}(
-        //         target: ${typeName},
-        //         value: ${parameterType.toString()}
-        //       ): void = %wasm {
-        //         (unreachable)
-        //       }
-        //     `
-        //   )
-        //   .join('\n');
-
-        // TODO: sizeOf
-        injectedFunctions = CanonicalPhaseResult.fromString(
-          `
-          fun ${allocatorName}(${args}): ${typeName} = %wasm {
-            (local $_newRef i32)
-            (set_local $_newRef (call $system::memory::malloc (i32.const ${size})))
-            (i64.or
-              (i64.const 0x${node.typeNumber.toString(16)}00000000)
-              (i64.extend_u/i32 (get_local $_newRef))
-            )
-          }
-
-          fun is(a: ${typeName}): boolean = %wasm {
-            (i64.eq
-              (i64.and
-                (i64.const 0xffffffff00000000)
-                (get_local $a)
-              )
-              (i64.const 0x${node.typeNumber.toString(16)}00000000)
-            )
-          }
-        `
-        );
-      } else {
-        injectedFunctions = CanonicalPhaseResult.fromString(
-          `
-          fun ${allocatorName}(): ${typeName} = %wasm {
-            (i64.const 0x${node.typeNumber.toString(16)}00000000)
-          }
-
-          fun is(a: ${typeName}): boolean = %wasm {
-            (i64.eq
-              (i64.and
-                (i64.const 0xffffffff00000000)
-                (get_local $a)
-              )
-              (i64.const 0x${node.typeNumber.toString(16)}00000000)
-            )
-          }
-        `
-        );
-      }
-
-      const allocator: Nodes.FunDirectiveNode = injectedFunctions.document.directives.find(
-        $ => $ instanceof Nodes.FunDirectiveNode && $.functionNode.functionName.name === allocatorName
-      ) as any;
-
-      assert(allocator, 'cannot find allocator ' + printAST(injectedFunctions.document));
-
-      allocator.functionNode.internalIdentifier = node.internalIdentifier;
-      injectedFunctions.document.directives.forEach($ => $.annotate(new annotations.Injected()));
-
-      phase.document.directives.push(...injectedFunctions.document.directives);
-    }
-  },
-  (node: Nodes.Node, phase: SemanticPhaseResult) => {
-    if (node instanceof Nodes.TypeDirectiveNode && node.valueType instanceof Nodes.TypeDeclarationNode) {
-      const typeDeclNode = node.valueType as Nodes.TypeDeclarationNode;
-
-      phase.parsingContext.registerTypeDeclaration(node.valueType);
-
-      assert(typeDeclNode.typeNumber > 0, `typenumber is == 0`);
-
-      const injectedFunctions: CanonicalPhaseResult = CanonicalPhaseResult.fromString(
-        `
-          fun is(a: ${node.variableName.name}): boolean = %wasm {
-            (local $mask i64)
-            (set_local $mask
-              (i64.and
-                (i64.const 0xffffffff00000000)
-                (get_local $a)
-              )
-            )
-
-            ${typeDeclNode.declarations.reduceRight((prev, current) => {
-              phase.parsingContext.registerType(current);
-              const newPart = `
-                  (i64.eq
-                    (get_local $mask)
-                    (i64.const 0x${current.typeNumber.toString(16)}00000000)
-                  )
-              `;
-              if (prev) {
-                return `
-                (i32.or ${prev} ${newPart})
-                `;
-              }
-              return newPart;
-            }, '')}
-
-          }
-        `
-      );
-
-      injectedFunctions.document.directives.forEach($ => $.annotate(new annotations.Injected()));
-
-      phase.document.directives.push(...injectedFunctions.document.directives);
-    }
-  }
-);
 
 export class SemanticPhaseResult extends PhaseResult {
   get document() {
@@ -234,18 +304,15 @@ export class SemanticPhaseResult extends PhaseResult {
   }
 
   protected execute() {
-    this.document.closure = new Closure(this.parsingContext, null, this.moduleName);
+    this.document.closure = new Closure(this.parsingContext, null, this.moduleName, 'document');
 
-    createTypes(this.document, this);
+    preprocessStructs(this.document, this);
+    processUnions(this.document, this);
 
     overloadFunctions(this.document, this);
     validateSignatures(this.document, this);
     validateInjectedWasm(this.document, this);
 
     failIfErrors('Semantic phase', this.document, this);
-  }
-
-  static fromString(code: string, moduleName: string) {
-    return new SemanticPhaseResult(CanonicalPhaseResult.fromString(code), moduleName);
   }
 }

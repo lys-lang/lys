@@ -1,0 +1,233 @@
+fun test(a: i32): boolean = 
+  a match {
+    case 1 -> true
+    else -> false
+  }
+
+type Number = (Infinity | NDet | Real | Natural | Complex)
+
+ns Number {
+  fun is(a: Number): boolean = {
+    a is Infinity || a is NDet || a is Real || a is Natural || a is Complex
+  }
+}
+
+ns Infinity {
+  fun as(a: Infinity): Number = 
+    %wasm {
+      (get_local $a)
+    }
+}
+
+ns NDet {
+  fun as(a: NDet): Number = 
+    %wasm {
+      (get_local $a)
+    }
+}
+
+ns Real {
+  fun as(a: Real): Number = 
+    %wasm {
+      (get_local $a)
+    }
+}
+
+ns Natural {
+  fun as(a: Natural): Number = 
+    %wasm {
+      (get_local $a)
+    }
+}
+
+ns Complex {
+  fun as(a: Complex): Number = 
+    %wasm {
+      (get_local $a)
+    }
+}
+
+ns Number {
+  fun as(a: (Infinity | NDet | Real | Natural | Complex)): Number = 
+    %wasm {
+      (get_local $a)
+    }
+  fun as(a: Number): ref = 
+    %wasm {
+      (get_local $a)
+    }
+}
+
+type Infinity = ???
+
+ns Infinity {
+  fun apply(): Infinity = 
+    %wasm {
+      (i64.const 0x200000000)
+    }
+  
+  fun is(a: Infinity): boolean = 
+    %wasm {
+      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x200000000))
+    }
+  
+  fun ==(a: Infinity, b: ref): boolean = 
+    %wasm {
+      (i64.eq (get_local $a)  (get_local $b))
+    }
+  
+  fun !=(a: Infinity, b: ref): boolean = 
+    %wasm {
+      (i64.ne (get_local $a)  (get_local $b))
+    }
+}
+
+type NDet = ???
+
+ns NDet {
+  fun apply(): NDet = 
+    %wasm {
+      (i64.const 0x300000000)
+    }
+  
+  fun is(a: NDet): boolean = 
+    %wasm {
+      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x300000000))
+    }
+  
+  fun ==(a: NDet, b: ref): boolean = 
+    %wasm {
+      (i64.eq (get_local $a)  (get_local $b))
+    }
+  
+  fun !=(a: NDet, b: ref): boolean = 
+    %wasm {
+      (i64.ne (get_local $a)  (get_local $b))
+    }
+}
+
+type Real = ???
+
+ns Real {
+  fun sizeOf(): i32 = 
+    0
+  
+  fun apply(number: f32): Real = 
+    fromPointer(system::memory::malloc(sizeOf()))
+  
+  fun fromPointer(ptr: (i32 | u32)): Real = 
+    %wasm {
+      (i64.or (i64.const 0x400000000)  (i64.extend_u/i32 (get_local $ptr)))
+    }
+  
+  fun get_number(target: Real): f32 = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun set_number(target: Real, value: f32): void = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun is(a: Real): boolean = 
+    %wasm {
+      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x400000000))
+    }
+}
+
+type Natural = ???
+
+ns Natural {
+  fun sizeOf(): i32 = 
+    0
+  
+  fun apply(number: i32): Natural = 
+    fromPointer(system::memory::malloc(sizeOf()))
+  
+  fun fromPointer(ptr: (i32 | u32)): Natural = 
+    %wasm {
+      (i64.or (i64.const 0x500000000)  (i64.extend_u/i32 (get_local $ptr)))
+    }
+  
+  fun get_number(target: Natural): i32 = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun set_number(target: Natural, value: i32): void = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun is(a: Natural): boolean = 
+    %wasm {
+      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x500000000))
+    }
+}
+
+type Complex = ???
+
+ns Complex {
+  fun sizeOf(): i32 = 
+    0
+  
+  fun apply(real: f32, imaginary: f32): Complex = 
+    fromPointer(system::memory::malloc(sizeOf()))
+  
+  fun fromPointer(ptr: (i32 | u32)): Complex = 
+    %wasm {
+      (i64.or (i64.const 0x600000000)  (i64.extend_u/i32 (get_local $ptr)))
+    }
+  
+  fun get_real(target: Complex): f32 = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun set_real(target: Complex, value: f32): void = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun get_imaginary(target: Complex): f32 = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun set_imaginary(target: Complex, value: f32): void = 
+    %wasm {
+      (local $offset  i32)
+      (set_local $offset  (i32.const 0))
+      (unreachable)
+    }
+  
+  fun is(a: Complex): boolean = 
+    %wasm {
+      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x600000000))
+    }
+}
+
+fun isComplex(number: Number): boolean = 
+  number match {
+    case is Real(_) -> false
+    case is Infinity -> false
+    case is Infinity -> false
+    case is Natural(_) -> false
+    case is Complex(_, imaginary) -> imaginary != 0.0
+    else -> false
+  }

@@ -1,36 +1,29 @@
 digraph Document {
   node [shape=box,fixedsize=shape fontsize=10]
-  1 [label="Name: i32\n⟨Type<i32>⟩", fillcolor=grey];
-  2 [label="FunOverload: test\n⟨fun() -> i32⟩", fillcolor=grey];
-  3 [label="FunDirective: test\n⟨fun() -> i32⟩", fillcolor=grey];
-  4 [label="FunNode: test\n⟨fun() -> i32⟩", fillcolor=grey];
-  5 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-  6 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
-  7 [label="Name: test\n⟨fun() -> i32⟩", fillcolor=grey];
+  1 [label="FunOverload: test\n(fun 'test' () (alias i32))", fillcolor=grey];
+  2 [label="FunNode: test\n(fun 'test' () (alias i32))", fillcolor=grey];
+  3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+  4 [label="Name: test\n(fun 'test' () (alias i32))", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    8 [label="BlockNode\n⟨i32⟩", fillcolor=grey];
-    9 [label="ValDecl: test\n⟨void⟩", fillcolor=grey];
-    10 [label="Name: test\n⟨i32⟩", fillcolor=grey];
-    11 [label="Int: 1\n⟨i32⟩", fillcolor=grey];
-    12 [label="BinOp: '+'\n⟨i32⟩", fillcolor=grey];
-    13 [label="VarRef: test\n⟨i32⟩", fillcolor=grey];
-    14 [label="Int: 2\n⟨i32⟩", fillcolor=grey];
-    15 [label="TypeRef: i32\n⟨i32⟩", fillcolor=grey];
-    9 -> 8[taillabel="void" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    10 -> 13[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    11 -> 10[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    12 -> 8[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    13 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    14 -> 12[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test()";
+    5 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
+    6 [label="ValDecl: test\n(void)", fillcolor=grey];
+    7 [label="Name: test\n(alias i32 (native i32))", fillcolor=grey];
+    8 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
+    9 [label="BinOp: '+'\n(alias i32 (native i32))", fillcolor=grey];
+    10 [label="Ref: test\n(alias i32 (native i32))", fillcolor=grey];
+    11 [label="Int: 2\n(alias i32 (native i32))", fillcolor=grey];
+    12 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+    6 -> 5[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    7 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    8 -> 7[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    9 -> 5[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    10 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+    11 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  label = "test::test()";
 }
-  1 -> 5[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 15[taillabel="Type<i32>" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 7[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 2[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  4 -> 6[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  4 -> 3[taillabel="fun() -> i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 4[taillabel="i32" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  3 -> 2[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   label="";
 }

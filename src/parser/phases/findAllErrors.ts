@@ -2,7 +2,8 @@ import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { PhaseResult } from './PhaseResult';
 import { printErrors } from '../../utils/errorPrinter';
-import { IErrorPositionCapable } from '../NodeError';
+import { ParsingContext } from '../closure';
+import { AstNodeError } from '../NodeError';
 
 declare var console;
 
@@ -13,16 +14,8 @@ function indent(str: string, indentation: string = '  ') {
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
     token.astNode.errors.forEach($ => {
-      if ($ && !doc.errors.includes($ as any)) {
-        doc.errors.push($ as any);
-        // TODO: coerce to AstNodeError
-      }
-    });
-  }
-  if (token.errors && token.errors.length) {
-    token.errors.forEach(($: any) => {
-      if ($ && !doc.errors.includes($)) {
-        doc.errors.push($);
+      if ($ && !doc.parsingContext.messageCollector.errors.includes($ as any)) {
+        doc.parsingContext.messageCollector.error($ as any);
       }
     });
   }
@@ -36,25 +29,31 @@ export function findAllErrors(document: Nodes.DocumentNode, phase: PhaseResult) 
 
 export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, phase: PhaseResult) {
   findAllErrors(document, phase);
-  failWithErrors(phaseName, phase.errors, phase);
+  failWithErrors(phaseName, phase.parsingContext);
 }
 
-export function failWithErrors(phaseName: string, errors: IErrorPositionCapable[], phase: PhaseResult) {
-  if (errors.length === 0) return;
+export function failWithErrors(phaseName: string, pc: ParsingContext) {
+  if (pc.messageCollector.errors.length === 0) return;
 
-  if (phase && phase.errors.length && 'document' in (phase as any)) {
-    try {
-      console.log(printErrors((phase as any).document, errors));
-    } catch {}
+  if (pc && pc.messageCollector.errors.length) {
+    console.log(printErrors(pc));
   }
 
   throw Object.assign(
     new Error(
-      `${phaseName} failed. ${errors.length} errors found:\n` +
+      `${phaseName} failed. ${pc.messageCollector.errors.length} errors found:\n` +
         indent(
-          errors.map(($, $$) => indent($.message, '    ').replace(/^\s+(.*)/, ($$ + 1).toString() + ')  $1')).join('\n')
+          pc.messageCollector.errors
+            .map(($: Error, $$) => {
+              let msg = $ instanceof AstNodeError ? $.message : $.toString() + '\n';
+              let stack = '';
+              // if ($.stack) stack = '\n' + indent($.stack || '(no stack)');
+
+              return indent(msg, '    ').replace(/^\s+(.*)/m, ($$ + 1).toString() + ')  $1') + stack;
+            })
+            .join('\n')
         )
     ),
-    { phase }
+    { phase: pc }
   );
 }

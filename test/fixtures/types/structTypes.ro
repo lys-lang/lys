@@ -1,20 +1,17 @@
-type i32
-type f32
-type boolean
+struct Infinity
+struct NDet
+struct Real(number: f32)
+struct Natural(number: i32)
+struct Complex(real: f32, imaginary: f32)
 
-type Number {
-  Infinity
-  NDet
-  Real(number: f32)
-  Natural(number: i32)
-  Complex(real: f32, imaginary: f32)
-}
+type Number = Infinity | NDet | Real | Natural | Complex
 
 fun isComplex(number: Number): boolean =
   number match {
-    case is Real(_) -> false
-    case is Natural(_) -> false
-    case is Complex(_, imaginary) -> imaginary != 0.0
+    case is Real -> false
+    case is Natural -> false
+    // TODO: deconstruct
+    // case is Complex(_, imaginary) -> imaginary != 0.0
     else -> false
   }
 

@@ -4,27 +4,24 @@
     |-VarDeclarationNode
       |-NameIdentifierNode="x"
       |-FunctionCallNode
-        |-VariableReferenceNode
-          |-QNameNode=map
-            |-NameIdentifierNode="map"
-        |-FunctionCallNode
-          |-VariableReferenceNode
-            |-QNameNode=map
-              |-NameIdentifierNode="map"
+        |-MemberNode
           |-FunctionCallNode
-            |-VariableReferenceNode
-              |-QNameNode=map
-                |-NameIdentifierNode="map"
-            |-VariableReferenceNode
-              |-QNameNode=a
-                |-NameIdentifierNode="a"
-            |-VariableReferenceNode
-              |-QNameNode=b
-                |-NameIdentifierNode="b"
-          |-VariableReferenceNode
-            |-QNameNode=c
-              |-NameIdentifierNode="c"
-        |-VariableReferenceNode
+            |-MemberNode
+              |-FunctionCallNode
+                |-MemberNode
+                  |-ReferenceNode
+                    |-QNameNode=a
+                      |-NameIdentifierNode="a"
+                  |-NameIdentifierNode="map"
+                |-ReferenceNode
+                  |-QNameNode=b
+                    |-NameIdentifierNode="b"
+              |-NameIdentifierNode="map"
+            |-ReferenceNode
+              |-QNameNode=c
+                |-NameIdentifierNode="c"
+          |-NameIdentifierNode="map"
+        |-ReferenceNode
           |-QNameNode=d
             |-NameIdentifierNode="d"
   |-VarDirectiveNode

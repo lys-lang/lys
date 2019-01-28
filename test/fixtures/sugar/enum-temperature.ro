@@ -1,0 +1,60 @@
+enum Temp {
+  Celcius(mut temperature: f32)
+  Kelvin(temperature: f32)
+}
+
+/// Desugars to:
+
+type Temp = Celcius | Kelvin
+type Celcius
+type Kelvin
+
+ns Temp {
+  fun (is)(x: ref) = {
+    Celcius.is(x) || Kelvin.is(x)
+  }
+}
+
+ns Celcius {
+  val determinant = 1
+  val memorySize = ref.memorySize + f32.memorySize /* temperature: f32 */
+  fun (is)(x: ref) = x.determinant == determinant
+
+  fun apply(temperature: f32): Celcius = {
+    val ptr: Celcius = determinant << 32 | core::memory::malloc(memorySize)
+    set_temperature(ptr, temperature)
+    ref as Celcius
+  }
+
+  fun get_temperature(ptr: Celcius): f32 = {
+    val base = ref.base(ptr)
+    f32.read(base + 0)
+  }
+
+  fun set_temperature(ptr: Celcius, newValue: f32): void = {
+    val base = ref.base(ptr)
+    f32.store(base + 0, newValue)
+  }
+}
+
+ns Kelvin {
+  val determinant = 2
+  val memorySize = ref.memorySize + f32.memorySize  /* n: f32 */
+  fun (is)(x: ref) = x.determinant == determinant
+
+  fun apply(n: f32): Kelvin = {
+    val ptr: Kelvin = determinant << 32 | core::memory::malloc(memorySize)
+    set_temperature(ptr, n)
+    ref as Kelvin
+  }
+
+  fun get_temperature(ptr: Kelvin): f32 = {
+    val base = ref.base(ptr)
+    f32.read(base + 0)
+  }
+
+  private fun set_temperature(ptr: Kelvin, newValue: f32): void = {
+    val base = ref.base(ptr)
+    f32.store(base + 0, newValue)
+  }
+}
