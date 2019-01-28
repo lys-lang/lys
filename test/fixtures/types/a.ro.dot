@@ -50,13 +50,13 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     47 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     48 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::test()";
+  label = "test/fixtures/types/a.ro::test()";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
     49 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     50 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::test0()";
+  label = "test/fixtures/types/a.ro::test0()";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
@@ -64,7 +64,7 @@ digraph Document {
     52 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
     53 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     51 -> 52[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::testa(i32)";
+  label = "test/fixtures/types/a.ro::testa(i32)";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
@@ -73,7 +73,7 @@ digraph Document {
     56 [label="Ref: a\n(alias f32 (native f32))", fillcolor=grey];
     57 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
     54 -> 56[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::floatingPoints(f32,f64)";
+  label = "test/fixtures/types/a.ro::floatingPoints(f32,f64)";
 }
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
@@ -87,7 +87,7 @@ digraph Document {
     59 -> 62[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     61 -> 60[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     62 -> 60[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::addFloat(f32,f32)";
+  label = "test/fixtures/types/a.ro::addFloat(f32,f32)";
 }
   subgraph cluster5 {
     node [style=filled, fillcolor=grey];
@@ -101,7 +101,7 @@ digraph Document {
     65 -> 68[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     67 -> 66[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     68 -> 66[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::addInts(i32,i32)";
+  label = "test/fixtures/types/a.ro::addInts(i32,i32)";
 }
   subgraph cluster6 {
     node [style=filled, fillcolor=grey];
@@ -119,7 +119,7 @@ digraph Document {
     74 -> 73[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     75 -> 73[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     76 -> 72[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::x(f32,f32)";
+  label = "test/fixtures/types/a.ro::x(f32,f32)";
 }
   1 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

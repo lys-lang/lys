@@ -161,12 +161,11 @@ export namespace Nodes {
 
   export abstract class TypeNode extends Node {}
 
-
   export class TypeReducerNode extends Node {
     toString() {
       return '';
+    }
   }
-}
 
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
@@ -886,5 +885,18 @@ export function findNodesByType<T>(astRoot: { children: any[] }, type: { new (..
     list.push(astRoot);
   }
   astRoot.children.forEach($ => findNodesByType($, type, list));
+  return list;
+}
+
+export function findNodesByTypeInChildren<T>(
+  astRoot: { children: any[] },
+  type: { new (...args): T },
+  list: T[] = []
+): T[] {
+  astRoot.children.forEach($ => {
+    if ($ instanceof type) {
+      list.push($);
+    }
+  });
   return list;
 }

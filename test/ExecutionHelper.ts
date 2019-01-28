@@ -46,6 +46,7 @@ export function test(name: string, src: string, customTest?: (document: any, err
         try {
           await customTest(instance);
         } catch (e) {
+          console.error(compilationPhaseResult.document.toString());
           console.error('NON OPTIMIZED VERSION');
           console.log(print(compilationPhaseResult.programAST));
           await compilationPhaseResult.validate(true);

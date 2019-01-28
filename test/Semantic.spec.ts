@@ -18,20 +18,20 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes
 const parsingContext = new ParsingContext();
 
 describe('Semantic', function() {
-  const phases = function(txt: string): ScopePhaseResult {
+  const phases = function(txt: string, fileName: string): ScopePhaseResult {
     parsingContext.reset();
-    const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
     const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical, 'test');
+    const semantic = new SemanticPhaseResult(canonical, fileName);
     const scope = new ScopePhaseResult(semantic);
     return scope;
   };
 
-  const phases1 = function(txt: string): SemanticPhaseResult {
+  const phases1 = function(txt: string, fileName: string): SemanticPhaseResult {
     parsingContext.reset();
-    const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
     const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical, 'test');
+    const semantic = new SemanticPhaseResult(canonical, fileName);
     return semantic;
   };
 
@@ -62,6 +62,12 @@ describe('Semantic', function() {
     );
   });
 
+  let semanticTestCount = 0;
+
+  function getFileName() {
+    return `semantic_tests_${semanticTestCount++}.ro`;
+  }
+
   function test(literals, ...placeholders) {
     let result = '';
 
@@ -75,6 +81,7 @@ describe('Semantic', function() {
     result += literals[literals.length - 1];
     testParseToken(
       result,
+      getFileName(),
       'Document',
       async (result, e) => {
         if (e) throw e;
@@ -97,6 +104,7 @@ describe('Semantic', function() {
     result += literals[literals.length - 1];
     testParseTokenFailsafe(
       result,
+      'MUST_FAIL_' + getFileName(),
       'Document',
       async (document, err) => {
         const didFail = !!err || !document || !document.isSuccess();
@@ -106,8 +114,7 @@ describe('Semantic', function() {
         expect(didFail).toEqual(true, 'It must have failed');
       },
       phases,
-      false,
-      result + ' must fail'
+      false
     );
   }
   describe('Duplicated parameters', () => {
@@ -178,6 +185,7 @@ describe('Semantic', function() {
           if (x < 3) a()
           b
         }`,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -196,6 +204,7 @@ describe('Semantic', function() {
           if (x < 3) { a() }
           b
         }`,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -296,6 +305,7 @@ describe('Semantic', function() {
         fun a(): i32 = {
           map(1,3)
         }`,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -313,6 +323,7 @@ describe('Semantic', function() {
           a
         }
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -330,6 +341,7 @@ describe('Semantic', function() {
           (1).map(3)
           b
         }`,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -346,6 +358,7 @@ describe('Semantic', function() {
       `
         fun a(): void = {}
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -361,6 +374,7 @@ describe('Semantic', function() {
 
         fun a(): void = {}
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -374,6 +388,7 @@ describe('Semantic', function() {
       `
         fun a(): i32 = system::random::nextInt()
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -386,6 +401,7 @@ describe('Semantic', function() {
       `
         fun hash(): i32 = system::hash::sha3::keccak(1,1,1,1)
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -400,6 +416,7 @@ describe('Semantic', function() {
       `
         fun x(a: i32): i32 = a
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -416,6 +433,7 @@ describe('Semantic', function() {
         var a = 1
         fun x(a: i32): i32 = a
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -431,6 +449,7 @@ describe('Semantic', function() {
         val c = 1
         var a = c
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;
@@ -446,6 +465,7 @@ describe('Semantic', function() {
         var a = 1
         fun x(b: i32): i32 = a
       `,
+      getFileName(),
       'Document',
       async (x, e) => {
         if (e) throw e;

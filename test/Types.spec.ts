@@ -1,7 +1,6 @@
 declare var describe, it, console;
 
 import { folderBasedTest, printAST } from './TestHelpers';
-import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
@@ -12,17 +11,15 @@ import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
 import { ParsingContext } from '../dist/parser/closure';
-import { writeFileSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
 import { UnionType, StructType, RefType, TypeAlias, InjectableTypes, Type } from '../dist/parser/types';
 
 const parsingContext = new ParsingContext();
 
-const phases = function(txt: string): ScopePhaseResult {
+const phases = function(txt: string, fileName: string): ScopePhaseResult {
   parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical, 'test');
+  const semantic = new SemanticPhaseResult(canonical, fileName);
   const scope = new ScopePhaseResult(semantic);
   return scope;
 };
@@ -39,8 +36,9 @@ describe('Types', function() {
   }
   function checkMainType(literals, ...placeholders) {
     function test(program: string, expectedType: string, expectedError: string) {
-      it(`type inference test #${n++}`, async () => {
-        const phaseResult = phases(program);
+      const number = n++;
+      it(`type inference test #${number}`, async () => {
+        const phaseResult = phases(program, `types_${number}.ro`);
 
         const typePhase = new TypePhaseResult(phaseResult);
 

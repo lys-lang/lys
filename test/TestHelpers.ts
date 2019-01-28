@@ -12,14 +12,15 @@ let inspect = require('util').inspect;
 
 export function testParseToken<T extends PhaseResult>(
   txt: string,
+  fileName: string,
   target?: string,
   customTest?: (document: T, error?: Error) => Promise<void>,
-  phases?: (txt: string) => T,
-  debug?: boolean,
-  itName?: string
+  phases?: (txt: string, fileName: string) => T,
+  debug?: boolean
 ) {
   testParseTokenFailsafe(
     txt,
+    fileName,
     target,
     async (doc: T, e) => {
       if (doc && doc.parsingContext.messageCollector.errors && doc.parsingContext.messageCollector.errors.length) {
@@ -33,20 +34,19 @@ export function testParseToken<T extends PhaseResult>(
       }
     },
     phases,
-    debug,
-    itName
+    debug
   );
 }
 
 export function testParseTokenFailsafe<T extends PhaseResult>(
   txt: string,
+  fileName: string,
   target?: string,
   customTest?: (document: T, error?: Error) => Promise<any>,
-  phases?: (txt: string) => T,
-  debug?: boolean,
-  itName?: string
+  phases?: (txt: string, fileName: string) => T,
+  debug?: boolean
 ) {
-  it(itName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async function() {
+  it(fileName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async function() {
     this.timeout(10000);
 
     debug && console.log('      ---------------------------------------------------');
@@ -54,9 +54,9 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
     let result: T;
 
     try {
-      const x: any = (result = phases(txt));
+      const x: any = (result = phases(txt, fileName));
       if (x.document) {
-        x.document.file = itName;
+        x.document.file = fileName;
       }
     } catch (e) {
       if (customTest) {
@@ -102,15 +102,16 @@ export function printAST(token: IToken | Nodes.Node, level = 0) {
 
 export function folderBasedTest<T extends PhaseResult>(
   grep: string,
-  phases: (txt: string) => T,
+  phases: (txt: string, fileName: string) => T,
   fn: (x: T, err?: Error) => Promise<string>,
   extension = '.wast',
   shouldFail = false
 ) {
-  function testFile(file: string) {
-    const content = readFileSync(file).toString();
+  function testFile(fileName: string) {
+    const content = readFileSync(fileName).toString();
     testParseTokenFailsafe(
       content,
+      fileName,
       'Document',
       async (resultNode: T, err) => {
         if (!resultNode && !err) throw new Error('WTF');
@@ -128,7 +129,7 @@ export function folderBasedTest<T extends PhaseResult>(
         let result = await fn(resultNode, err);
 
         if (extension !== null) {
-          const compareToFileName = file + extension;
+          const compareToFileName = fileName + extension;
           const compareFileExists = existsSync(compareToFileName);
           const compareTo = compareFileExists ? readFileSync(compareToFileName).toString() : '';
           if (writeToFile || !compareFileExists) {
@@ -142,8 +143,7 @@ export function folderBasedTest<T extends PhaseResult>(
         }
       },
       phases,
-      false,
-      file
+      false
     );
   }
 

@@ -9,7 +9,7 @@ import * as binaryen from 'binaryen';
 import _wabt = require('wabt');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
-import { findNodesByType, Nodes } from '../nodes';
+import { Nodes, findNodesByType } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { findParentType } from './helpers';
 import { FunctionType, StructType, Type } from '../types';
@@ -378,7 +378,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.validate();
     } catch (e) {
       console.log(text);
-      this.parsingContext.messageCollector.error(e);
+      this.parsingContext.messageCollector.error(e, this.document);
       throw e;
     }
 
@@ -466,11 +466,12 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     functions.forEach($ => {
       const canBeExported = $.functions.length === 1;
+      const candidateToExport = $.parent == compilationPhase.document;
 
       $.functions.forEach(fun => {
         createdFunctions.push(emitFunction(fun, compilationPhase.document));
         // TODO: decorate exported functions
-        if ($.isExported && exports && !fun.hasAnnotation(annotations.Injected)) {
+        if ($.isExported && exports && !fun.hasAnnotation(annotations.Injected) && candidateToExport) {
           if (canBeExported) {
             exportedElements.push(
               t.moduleExport(
@@ -526,7 +527,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       }
     });
 
-    const generatedModules = exportList.map($ => this.generatePhase($, $ == this.compilationPhaseResult));
+    const generatedModules = exportList.map(($, ix) => this.generatePhase($, ix == 0));
 
     const starters = [];
     const moduleParts = [];

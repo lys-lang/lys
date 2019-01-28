@@ -1,3 +1,0 @@
-fun store(lhs: ref, rhs: f64): void = %wasm {
-  (f64.store (call $system::core::addressFromRef (get_local $lhs)) (get_local $rhs))
-}

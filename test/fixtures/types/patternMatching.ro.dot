@@ -126,9 +126,9 @@ digraph Document {
   124 [label="Name: test4\n(fun 'test4' ((alias Maybe)) (alias Some))", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    125 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
+    125 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     126 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::sizeOf()";
+  label = "test/fixtures/types/patternMatching.ro::sizeOf()";
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
@@ -154,7 +154,7 @@ digraph Document {
     134 -> 128[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     135 -> 134[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     136 -> 134[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::test(i32)";
+  label = "test/fixtures/types/patternMatching.ro::test(i32)";
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
@@ -252,13 +252,13 @@ digraph Document {
     177 -> 139[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     178 -> 177[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     179 -> 177[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::test2(i32)";
+  label = "test/fixtures/types/patternMatching.ro::test2(i32)";
 }
   subgraph cluster3 {
     node [style=filled, fillcolor=grey];
     181 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     182 [label="Ref: None\n(type (alias None (struct None)))", fillcolor=grey];
-  label = "test::apply()";
+  label = "test/fixtures/types/patternMatching.ro::apply()";
 }
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
@@ -275,21 +275,21 @@ digraph Document {
     187 -> 186[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     188 -> 186[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     189 -> 188[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::apply_2(i32)";
+  label = "test/fixtures/types/patternMatching.ro::apply_2(i32)";
 }
   subgraph cluster5 {
     node [style=filled, fillcolor=grey];
     191 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
     192 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     193 [label="Ref: Some\n(type (alias Some (struct Some)))", fillcolor=grey];
-  label = "test::fromPointer_1(i32 | u32)";
+  label = "test/fixtures/types/patternMatching.ro::fromPointer_1(i32 | u32)";
 }
   subgraph cluster6 {
     node [style=filled, fillcolor=grey];
     194 [label="Name: a\n(alias None (struct None))", fillcolor=grey];
     195 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     196 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::is_2(None)";
+  label = "test/fixtures/types/patternMatching.ro::is_2(None)";
 }
   subgraph cluster7 {
     node [style=filled, fillcolor=grey];
@@ -297,7 +297,7 @@ digraph Document {
     198 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     199 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     200 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::==(None,ref)";
+  label = "test/fixtures/types/patternMatching.ro::==(None,ref)";
 }
   subgraph cluster8 {
     node [style=filled, fillcolor=grey];
@@ -305,14 +305,14 @@ digraph Document {
     202 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     203 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     204 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::!=(None,ref)";
+  label = "test/fixtures/types/patternMatching.ro::!=(None,ref)";
 }
   subgraph cluster9 {
     node [style=filled, fillcolor=grey];
     205 [label="Name: target\n(alias Some (struct Some))", fillcolor=grey];
     206 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     207 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test::get_value(Some)";
+  label = "test/fixtures/types/patternMatching.ro::get_value(Some)";
 }
   subgraph cluster10 {
     node [style=filled, fillcolor=grey];
@@ -320,35 +320,35 @@ digraph Document {
     209 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
     210 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     211 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
-  label = "test::set_value(Some,i32)";
+  label = "test/fixtures/types/patternMatching.ro::set_value(Some,i32)";
 }
   subgraph cluster11 {
     node [style=filled, fillcolor=grey];
     212 [label="Name: a\n(alias Some (struct Some))", fillcolor=grey];
     213 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     214 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label = "test::is_4(Some)";
+  label = "test/fixtures/types/patternMatching.ro::is_4(Some)";
 }
   subgraph cluster12 {
     node [style=filled, fillcolor=grey];
     215 [label="Name: a\n(union (alias None (struct None)) (alias Some (struct Some)))", fillcolor=grey];
     216 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     217 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
-  label = "test::as_4(None | Some)";
+  label = "test/fixtures/types/patternMatching.ro::as_4(None | Some)";
 }
   subgraph cluster13 {
     node [style=filled, fillcolor=grey];
     218 [label="Name: a\n(alias None (struct None))", fillcolor=grey];
     219 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     220 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
-  label = "test::as(None)";
+  label = "test/fixtures/types/patternMatching.ro::as(None)";
 }
   subgraph cluster14 {
     node [style=filled, fillcolor=grey];
     221 [label="Name: a\n(alias Some (struct Some))", fillcolor=grey];
     222 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     223 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
-  label = "test::as_2(Some)";
+  label = "test/fixtures/types/patternMatching.ro::as_2(Some)";
 }
   subgraph cluster15 {
     node [style=filled, fillcolor=grey];
@@ -371,14 +371,14 @@ digraph Document {
     230 -> 226[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     231 -> 230[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     232 -> 230[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::is(Maybe)";
+  label = "test/fixtures/types/patternMatching.ro::is(Maybe)";
 }
   subgraph cluster16 {
     node [style=filled, fillcolor=grey];
     234 [label="Name: a\n(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))", fillcolor=grey];
     235 [label="WasmExpressionNode\n(void)", fillcolor=grey];
     236 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
-  label = "test::as_5(Maybe)";
+  label = "test/fixtures/types/patternMatching.ro::as_5(Maybe)";
 }
   subgraph cluster17 {
     node [style=filled, fillcolor=grey];
@@ -411,7 +411,7 @@ digraph Document {
     247 -> 244[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     247 -> 248[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     248 -> 238[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::test3(Maybe)";
+  label = "test/fixtures/types/patternMatching.ro::test3(Maybe)";
 }
   subgraph cluster18 {
     node [style=filled, fillcolor=grey];
@@ -453,7 +453,7 @@ digraph Document {
     264 -> 258[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     264 -> 265[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     265 -> 251[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test::test4(Maybe)";
+  label = "test/fixtures/types/patternMatching.ro::test4(Maybe)";
 }
   1 -> 7[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
   1 -> 15[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

@@ -22,6 +22,7 @@ const overloadFunctions = function(
         node.functionNode.parent = x;
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
+        overloaded.isExported = node.isExported;
         overloaded.annotate(new annotations.Injected());
         overloaded.functionName = Nodes.NameIdentifierNode.fromString(functionName);
         overloaded.functionName.astNode = node.functionNode.functionName.astNode;
@@ -82,7 +83,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
             ns ${typeName} {
               // fun determinant(): i64 = 0x${typeDirective.typeDeterminant.toString(16)}00000000
 
-              fun sizeOf(): i32 = 0
+              fun sizeOf(): i32 = 1
 
               fun apply(${args}): ${typeName} =
                 fromPointer(

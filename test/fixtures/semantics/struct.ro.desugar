@@ -104,7 +104,7 @@ type Real = ???
 
 ns Real {
   fun sizeOf(): i32 = 
-    0
+    1
   
   fun apply(number: f32): Real = 
     fromPointer(system::memory::malloc(sizeOf()))
@@ -138,7 +138,7 @@ type Natural = ???
 
 ns Natural {
   fun sizeOf(): i32 = 
-    0
+    1
   
   fun apply(number: i32): Natural = 
     fromPointer(system::memory::malloc(sizeOf()))
@@ -172,7 +172,7 @@ type Complex = ???
 
 ns Complex {
   fun sizeOf(): i32 = 
-    0
+    1
   
   fun apply(real: f32, imaginary: f32): Complex = 
     fromPointer(system::memory::malloc(sizeOf()))
