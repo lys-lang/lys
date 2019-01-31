@@ -263,7 +263,7 @@ function downToRefTypes(type: Type): RefType[] {
     } else if (argType instanceof TypeAlias) {
       argType = argType.of;
     } else if (argType instanceof UnionType) {
-      return flatten(argType.of.map($ => downToRefTypes($)));
+      return flatten((argType as UnionType).of.map($ => downToRefTypes($)));
     } else {
       return [];
     }
