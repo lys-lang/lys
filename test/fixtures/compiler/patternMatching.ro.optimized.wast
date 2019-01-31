@@ -1,9 +1,9 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func (param i64) (result i32)))
- (type $3 (func))
- (type $4 (func (param i64) (result i64)))
+ (type $2 (func (param i64) (result i64)))
+ (type $3 (func (param i64) (result i32)))
+ (type $4 (func))
  (type $5 (func (param i32) (result i32)))
  (memory $0 0 1)
  (global $global$0 (mut i32) (i32.const 0))
@@ -168,7 +168,7 @@
    (i32.const 0)
   )
  )
- (func $9 (; 9 ;) (type $2) (param $0 i64) (result i32)
+ (func $9 (; 9 ;) (type $3) (param $0 i64) (result i32)
   (i64.eq
    (i64.and
     (local.get $0)
@@ -177,7 +177,7 @@
    (i64.const 8589934592)
   )
  )
- (func $10 (; 10 ;) (type $2) (param $0 i64) (result i32)
+ (func $10 (; 10 ;) (type $3) (param $0 i64) (result i32)
   (i64.eq
    (i64.and
     (local.get $0)
@@ -322,7 +322,7 @@
    (i32.const 1)
   )
  )
- (func $13 (; 13 ;) (type $2) (param $0 i64) (result i32)
+ (func $13 (; 13 ;) (type $3) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (if
     (i32.eqz
@@ -346,7 +346,7 @@
    (i32.const 1)
   )
  )
- (func $14 (; 14 ;) (type $4) (param $0 i64) (result i64)
+ (func $14 (; 14 ;) (type $2) (param $0 i64) (result i64)
   (if (result i64)
    (call $10
     (local.get $0)
@@ -371,7 +371,7 @@
    )
   )
  )
- (func $15 (; 15 ;) (type $3)
+ (func $15 (; 15 ;) (type $4)
   (global.set $global$0
    (i32.const 3)
   )

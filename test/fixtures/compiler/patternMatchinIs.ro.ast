@@ -890,6 +890,16 @@
     |-ReferenceNode
       |-QNameNode=Custom
         |-NameIdentifierNode="Custom"
+    |-OverloadedFunctionNode type=(fun "discriminant" () (alias u64)) annotations=Injected
+      |-FunctionNode type=(fun "discriminant" () (alias u64))
+        |-NameIdentifierNode="discriminant"
+        |-ReferenceNode type=(type (alias u64 (native u64)))
+          |-QNameNode=u64
+            |-NameIdentifierNode="u64"
+        |-WasmExpressionNode type=(void) annotations=IsValueNode
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x900000000
+      |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
     |-OverloadedFunctionNode type=(fun "sizeOf" () (alias i32)) annotations=Injected
       |-FunctionNode type=(fun "sizeOf" () (alias i32))
         |-NameIdentifierNode="sizeOf"

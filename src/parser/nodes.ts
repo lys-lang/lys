@@ -553,7 +553,7 @@ export namespace Nodes {
   export class TypeDirectiveNode extends DirectiveNode {
     variableName: NameIdentifierNode;
     valueType: TypeNode;
-    typeDeterminant: number | null = null;
+    typeDiscriminant: number | null = null;
 
     toString() {
       if (this.valueType) {

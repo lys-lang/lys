@@ -81,7 +81,9 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         phase.moduleName + '#' + typeName,
         `
             ns ${typeName} {
-              // fun determinant(): i64 = 0x${typeDirective.typeDeterminant.toString(16)}00000000
+              fun discriminant(): u64 = %wasm {
+                (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
+              }
 
               fun sizeOf(): i32 = 1
 
@@ -94,7 +96,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
               private fun fromPointer(ptr: i32 | u32): ${typeName} = %wasm {
                 (i64.or
-                  (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+                  (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
                   (i64.extend_u/i32 (get_local $ptr))
                 )
               }
@@ -107,7 +109,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                     (i64.const 0xffffffff00000000)
                     (get_local $a)
                   )
-                  (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+                  (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
                 )
               }
             }
@@ -123,7 +125,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         `
           ns ${typeName} {
             fun apply(): ${typeName} = %wasm {
-              (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+              (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
             }
 
             fun is(a: ${typeName}): boolean = %wasm {
@@ -132,7 +134,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                   (i64.const 0xffffffff00000000)
                   (get_local $a)
                 )
-                (i64.const 0x${typeDirective.typeDeterminant.toString(16)}00000000)
+                (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
               )
             }
 

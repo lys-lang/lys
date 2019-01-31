@@ -109,6 +109,11 @@ ns NDet {
 type Real = ???
 
 ns Real {
+  fun discriminant(): u64 = 
+    %wasm {
+      (i64.const 0x400000000)
+    }
+  
   fun sizeOf(): i32 = 
     1
   
@@ -143,6 +148,11 @@ ns Real {
 type Natural = ???
 
 ns Natural {
+  fun discriminant(): u64 = 
+    %wasm {
+      (i64.const 0x500000000)
+    }
+  
   fun sizeOf(): i32 = 
     1
   
@@ -177,6 +187,11 @@ ns Natural {
 type Complex = ???
 
 ns Complex {
+  fun discriminant(): u64 = 
+    %wasm {
+      (i64.const 0x600000000)
+    }
+  
   fun sizeOf(): i32 = 
     1
   

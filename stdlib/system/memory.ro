@@ -51,6 +51,13 @@ fun malloc(size: i32): i32 = {
   }
 }
 
+fun discriminant(v: ref): u64 = %wasm {
+  (i64.and
+    (i64.const 0xffffffff00000000)
+    (get_local $v)
+  )
+}
+
 fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
   (local $end i32)
   (set_local $end (i32.add (get_local $from) (get_local $len)))
