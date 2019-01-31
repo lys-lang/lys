@@ -8,12 +8,12 @@ digraph Document {
   6 [label="Name: addOne\n(fun 'addOne' () (alias i32))", fillcolor=grey];
   7 [label="FunOverload: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
   8 [label="FunNode: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
-  9 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  9 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   10 [label="Name: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
     11 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
-    12 [label="VarDecl: y\n(void)", fillcolor=grey];
+    12 [label="VarDecl: y\n(native void)", fillcolor=grey];
     13 [label="Name: y\n(alias i32 (native i32))", fillcolor=grey];
     14 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
     15 [label="AssignmentNode\n(alias i32 (native i32))", fillcolor=grey];
@@ -42,13 +42,13 @@ digraph Document {
 }
   subgraph cluster1 {
     node [style=filled, fillcolor=grey];
-    24 [label="BlockNode\n(void)", fillcolor=grey];
+    24 [label="BlockNode\n(native void)", fillcolor=grey];
     25 [label="AssignmentNode\n(alias i32 (native i32))", fillcolor=grey];
     26 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
     27 [label="BinOp: '+'\n(alias i32 (native i32))", fillcolor=grey];
     28 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
     29 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-    30 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    30 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
     25 -> 24[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     26 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     27 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];

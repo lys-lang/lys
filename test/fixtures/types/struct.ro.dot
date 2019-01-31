@@ -62,7 +62,7 @@ digraph Document {
   60 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
   61 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   62 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
-  63 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  63 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   64 [label="Name: set_a\n(fun 'set_a' ((alias WithInt) (alias i32)) (alias void))", fillcolor=grey];
   65 [label="FunOverload: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
   66 [label="FunNode: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
@@ -72,7 +72,7 @@ digraph Document {
   70 [label="Name: is\n(fun 'is' ((alias WithInt)) (alias boolean))", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    71 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    71 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     72 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::discriminant()";
 }
@@ -84,7 +84,7 @@ digraph Document {
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    75 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    75 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     76 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::apply()";
 }
@@ -108,14 +108,14 @@ digraph Document {
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
     85 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
-    86 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    86 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     87 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::fromPointer_1(i32 | u32)";
 }
   subgraph cluster5 {
     node [style=filled, fillcolor=grey];
     88 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
-    89 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    89 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     90 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::is(Simple)";
 }
@@ -123,7 +123,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     91 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
     92 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    93 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    93 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     94 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::==(Simple,ref)";
 }
@@ -131,14 +131,14 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     95 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
     96 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    97 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    97 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     98 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::!=(Simple,ref)";
 }
   subgraph cluster8 {
     node [style=filled, fillcolor=grey];
     99 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
-    100 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    100 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     101 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::get_a(WithInt)";
 }
@@ -146,14 +146,14 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     102 [label="Name: target\n(alias WithInt (struct WithInt))", fillcolor=grey];
     103 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
-    104 [label="WasmExpressionNode\n(void)", fillcolor=grey];
-    105 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    104 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    105 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::set_a(WithInt,i32)";
 }
   subgraph cluster10 {
     node [style=filled, fillcolor=grey];
     106 [label="Name: a\n(alias WithInt (struct WithInt))", fillcolor=grey];
-    107 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    107 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     108 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/struct.ro::is_2(WithInt)";
 }

@@ -10,7 +10,7 @@ import {
   VarDeclarationTypeResolver,
   TypeDirectiveResolver
 } from './typeResolvers';
-import { Type, TypeAlias, NeverType } from '../types';
+import { Type, TypeAlias, InjectableTypes } from '../types';
 import { AstNodeError } from '../NodeError';
 
 export class TypeGraphBuilder {
@@ -284,7 +284,7 @@ export class TypeGraphBuilder {
           if (matcherNode instanceof Nodes.MatchDefaultNode) {
             newResult.bearerOfTypes = new TypeNode(
               new Nodes.TypeReducerNode(),
-              new LiteralTypeResolver(NeverType.instance)
+              new LiteralTypeResolver(InjectableTypes.never)
             );
           }
 

@@ -3,7 +3,7 @@ declare var describe;
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
-describe.skip('execution tests', () => {
+describe('execution tests', () => {
   describe('numbers', () => {
     test(
       'casts',

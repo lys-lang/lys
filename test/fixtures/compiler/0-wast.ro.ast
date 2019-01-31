@@ -7,10 +7,10 @@
   |-OverloadedFunctionNode type=(fun "xx" () (alias void)) annotations=Injected
     |-FunctionNode type=(fun "xx" () (alias void))
       |-NameIdentifierNode="xx"
-      |-ReferenceNode type=(type (alias void (void)))
+      |-ReferenceNode type=(type (alias void (native void)))
         |-QNameNode=void
           |-NameIdentifierNode="void"
-      |-BlockNode type=(void)
+      |-BlockNode type=(native void)
     |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
   |-OverloadedFunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
@@ -28,7 +28,7 @@
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-WasmExpressionNode type=(void) annotations=IsValueNode
+      |-WasmExpressionNode type=(unknown) annotations=IsValueNode
         |-WasmAtomNode=local
           |-QNameNode=$t
             |-NameIdentifierNode="$t"
