@@ -15,7 +15,7 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-VarDeclarationNode type=(void)
+        |-VarDeclarationNode type=(native void)
           |-NameIdentifierNode="y" type=(alias i32 (native i32))
           |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
             |-QNameNode=x
@@ -41,10 +41,10 @@
   |-OverloadedFunctionNode type=(fun "addOneNoReturn" () (alias void)) annotations=Injected
     |-FunctionNode type=(fun "addOneNoReturn" () (alias void))
       |-NameIdentifierNode="addOneNoReturn"
-      |-ReferenceNode type=(type (alias void (void)))
+      |-ReferenceNode type=(type (alias void (native void)))
         |-QNameNode=void
           |-NameIdentifierNode="void"
-      |-BlockNode type=(void)
+      |-BlockNode type=(native void)
         |-AssignmentNode type=(alias i32 (native i32))
           |-ReferenceNode type=(alias i32 (native i32))
             |-QNameNode=x

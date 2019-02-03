@@ -89,7 +89,7 @@ digraph Document {
   87 [label="Name: target\n(alias Real (struct Real))", fillcolor=grey];
   88 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
   89 [label="Name: value\n(alias f32 (native f32))", fillcolor=grey];
-  90 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  90 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   91 [label="Name: set_number\n(fun 'set_number' ((alias Real) (alias f32)) (alias void))", fillcolor=grey];
   92 [label="FunOverload: is\n(fun 'is' ((alias Real)) (alias boolean))", fillcolor=grey];
   93 [label="FunNode: is\n(fun 'is' ((alias Real)) (alias boolean))", fillcolor=grey];
@@ -132,7 +132,7 @@ digraph Document {
   130 [label="Name: target\n(alias Natural (struct Natural))", fillcolor=grey];
   131 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   132 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
-  133 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  133 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   134 [label="Name: set_number\n(fun 'set_number' ((alias Natural) (alias i32)) (alias void))", fillcolor=grey];
   135 [label="FunOverload: is\n(fun 'is' ((alias Natural)) (alias boolean))", fillcolor=grey];
   136 [label="FunNode: is\n(fun 'is' ((alias Natural)) (alias boolean))", fillcolor=grey];
@@ -177,7 +177,7 @@ digraph Document {
   175 [label="Name: target\n(alias Complex (struct Complex))", fillcolor=grey];
   176 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
   177 [label="Name: value\n(alias f32 (native f32))", fillcolor=grey];
-  178 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  178 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   179 [label="Name: set_real\n(fun 'set_real' ((alias Complex) (alias f32)) (alias void))", fillcolor=grey];
   180 [label="FunOverload: get_imaginary\n(fun 'get_imaginary' ((alias Complex)) (alias f32))", fillcolor=grey];
   181 [label="FunNode: get_imaginary\n(fun 'get_imaginary' ((alias Complex)) (alias f32))", fillcolor=grey];
@@ -191,7 +191,7 @@ digraph Document {
   189 [label="Name: target\n(alias Complex (struct Complex))", fillcolor=grey];
   190 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
   191 [label="Name: value\n(alias f32 (native f32))", fillcolor=grey];
-  192 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  192 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   193 [label="Name: set_imaginary\n(fun 'set_imaginary' ((alias Complex) (alias f32)) (alias void))", fillcolor=grey];
   194 [label="FunOverload: is\n(fun 'is' ((alias Complex)) (alias boolean))", fillcolor=grey];
   195 [label="FunNode: is\n(fun 'is' ((alias Complex)) (alias boolean))", fillcolor=grey];
@@ -265,11 +265,11 @@ digraph Document {
   263 [label="Name: isComplex\n(fun 'isComplex' ((alias Number)) (alias boolean))", fillcolor=grey];
   264 [label="FunOverload: main\n(fun 'main' () (alias void))", fillcolor=grey];
   265 [label="FunNode: main\n(fun 'main' () (alias void))", fillcolor=grey];
-  266 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+  266 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   267 [label="Name: main\n(fun 'main' () (alias void))", fillcolor=grey];
   subgraph cluster0 {
     node [style=filled, fillcolor=grey];
-    268 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    268 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     269 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::discriminant()";
 }
@@ -281,7 +281,7 @@ digraph Document {
 }
   subgraph cluster2 {
     node [style=filled, fillcolor=grey];
-    272 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    272 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     273 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::discriminant_2()";
 }
@@ -293,7 +293,7 @@ digraph Document {
 }
   subgraph cluster4 {
     node [style=filled, fillcolor=grey];
-    276 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    276 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     277 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::discriminant_4()";
 }
@@ -305,7 +305,7 @@ digraph Document {
 }
   subgraph cluster6 {
     node [style=filled, fillcolor=grey];
-    280 [label="BlockNode\n(void)", fillcolor=grey];
+    280 [label="BlockNode\n(native void)", fillcolor=grey];
     281 [label="FunctionCallNode\n(alias boolean (native boolean))", fillcolor=grey];
     282 [label="Ref: isComplex\n(fun 'isComplex' ((alias Number)) (alias boolean))", fillcolor=grey];
     283 [label="Ref: Infinity\n(alias Infinity (struct Infinity))", fillcolor=grey];
@@ -328,7 +328,7 @@ digraph Document {
     300 [label="Ref: Complex\n(type (alias Complex (struct Complex)))", fillcolor=grey];
     301 [label="Float: 0.00000\n(alias f32 (native f32))", fillcolor=grey];
     302 [label="Float: 99.10000\n(alias f32 (native f32))", fillcolor=grey];
-    303 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    303 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
     281 -> 280[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     282 -> 281[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
     283 -> 281[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
@@ -361,7 +361,7 @@ digraph Document {
 }
   subgraph cluster8 {
     node [style=filled, fillcolor=grey];
-    304 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    304 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     305 [label="Ref: Infinity\n(type (alias Infinity (struct Infinity)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::apply()";
 }
@@ -391,7 +391,7 @@ digraph Document {
   subgraph cluster11 {
     node [style=filled, fillcolor=grey];
     314 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
-    315 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    315 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     316 [label="Ref: Real\n(type (alias Real (struct Real)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::fromPointer_1(i32 | u32)";
 }
@@ -421,7 +421,7 @@ digraph Document {
   subgraph cluster14 {
     node [style=filled, fillcolor=grey];
     325 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
-    326 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    326 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     327 [label="Ref: Natural\n(type (alias Natural (struct Natural)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::fromPointer_4(i32 | u32)";
 }
@@ -452,7 +452,7 @@ digraph Document {
   subgraph cluster17 {
     node [style=filled, fillcolor=grey];
     337 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
-    338 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    338 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     339 [label="Ref: Complex\n(type (alias Complex (struct Complex)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::fromPointer_7(i32 | u32)";
 }
@@ -516,7 +516,7 @@ digraph Document {
   subgraph cluster20 {
     node [style=filled, fillcolor=grey];
     362 [label="Name: a\n(type (alias Infinity (struct Infinity)))", fillcolor=grey];
-    363 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    363 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     364 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::is(Infinity)";
 }
@@ -530,7 +530,7 @@ digraph Document {
   subgraph cluster22 {
     node [style=filled, fillcolor=grey];
     365 [label="Name: a\n(type (alias NDet (struct NDet)))", fillcolor=grey];
-    366 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    366 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     367 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::is_2(NDet)";
 }
@@ -544,7 +544,7 @@ digraph Document {
   subgraph cluster24 {
     node [style=filled, fillcolor=grey];
     368 [label="Name: a\n(type (alias Real (struct Real)))", fillcolor=grey];
-    369 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    369 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     370 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::is_4(Real)";
 }
@@ -558,7 +558,7 @@ digraph Document {
   subgraph cluster26 {
     node [style=filled, fillcolor=grey];
     371 [label="Name: a\n(type (alias Natural (struct Natural)))", fillcolor=grey];
-    372 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    372 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     373 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::is_6(Natural)";
 }
@@ -572,14 +572,14 @@ digraph Document {
   subgraph cluster28 {
     node [style=filled, fillcolor=grey];
     374 [label="Name: a\n(type (alias Complex (struct Complex)))", fillcolor=grey];
-    375 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    375 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     376 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::is_8(Complex)";
 }
   subgraph cluster29 {
     node [style=filled, fillcolor=grey];
     377 [label="Name: a\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
-    378 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    378 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     379 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as_11(Number)";
 }
@@ -622,7 +622,7 @@ digraph Document {
 }
   subgraph cluster31 {
     node [style=filled, fillcolor=grey];
-    395 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    395 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     396 [label="Ref: NDet\n(type (alias NDet (struct NDet)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::apply_2()";
 }
@@ -630,7 +630,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     397 [label="Name: a\n(alias Infinity (struct Infinity))", fillcolor=grey];
     398 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    399 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    399 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     400 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::==(Infinity,ref)";
 }
@@ -638,14 +638,14 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     401 [label="Name: a\n(alias Infinity (struct Infinity))", fillcolor=grey];
     402 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    403 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    403 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     404 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::!=(Infinity,ref)";
 }
   subgraph cluster34 {
     node [style=filled, fillcolor=grey];
     405 [label="Name: a\n(alias Infinity (struct Infinity))", fillcolor=grey];
-    406 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    406 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     407 [label="Ref: Number\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as(Infinity)";
 }
@@ -653,7 +653,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     408 [label="Name: a\n(alias NDet (struct NDet))", fillcolor=grey];
     409 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    410 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    410 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     411 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::==_2(NDet,ref)";
 }
@@ -661,21 +661,21 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     412 [label="Name: a\n(alias NDet (struct NDet))", fillcolor=grey];
     413 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    414 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    414 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     415 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::!=_2(NDet,ref)";
 }
   subgraph cluster37 {
     node [style=filled, fillcolor=grey];
     416 [label="Name: a\n(alias NDet (struct NDet))", fillcolor=grey];
-    417 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    417 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     418 [label="Ref: Number\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as_2(NDet)";
 }
   subgraph cluster38 {
     node [style=filled, fillcolor=grey];
     419 [label="Name: target\n(alias Real (struct Real))", fillcolor=grey];
-    420 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    420 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     421 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::get_number(Real)";
 }
@@ -683,21 +683,21 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     422 [label="Name: target\n(alias Real (struct Real))", fillcolor=grey];
     423 [label="Name: value\n(alias f32 (native f32))", fillcolor=grey];
-    424 [label="WasmExpressionNode\n(void)", fillcolor=grey];
-    425 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    424 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    425 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::set_number(Real,f32)";
 }
   subgraph cluster40 {
     node [style=filled, fillcolor=grey];
     426 [label="Name: a\n(alias Real (struct Real))", fillcolor=grey];
-    427 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    427 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     428 [label="Ref: Number\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as_4(Real)";
 }
   subgraph cluster41 {
     node [style=filled, fillcolor=grey];
     429 [label="Name: target\n(alias Natural (struct Natural))", fillcolor=grey];
-    430 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    430 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     431 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::get_number_2(Natural)";
 }
@@ -705,21 +705,21 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     432 [label="Name: target\n(alias Natural (struct Natural))", fillcolor=grey];
     433 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
-    434 [label="WasmExpressionNode\n(void)", fillcolor=grey];
-    435 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    434 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    435 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::set_number_2(Natural,i32)";
 }
   subgraph cluster43 {
     node [style=filled, fillcolor=grey];
     436 [label="Name: a\n(alias Natural (struct Natural))", fillcolor=grey];
-    437 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    437 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     438 [label="Ref: Number\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as_6(Natural)";
 }
   subgraph cluster44 {
     node [style=filled, fillcolor=grey];
     439 [label="Name: target\n(alias Complex (struct Complex))", fillcolor=grey];
-    440 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    440 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     441 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::get_real(Complex)";
 }
@@ -727,14 +727,14 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     442 [label="Name: target\n(alias Complex (struct Complex))", fillcolor=grey];
     443 [label="Name: value\n(alias f32 (native f32))", fillcolor=grey];
-    444 [label="WasmExpressionNode\n(void)", fillcolor=grey];
-    445 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    444 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    445 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::set_real(Complex,f32)";
 }
   subgraph cluster46 {
     node [style=filled, fillcolor=grey];
     446 [label="Name: target\n(alias Complex (struct Complex))", fillcolor=grey];
-    447 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    447 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     448 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::get_imaginary(Complex)";
 }
@@ -742,21 +742,21 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     449 [label="Name: target\n(alias Complex (struct Complex))", fillcolor=grey];
     450 [label="Name: value\n(alias f32 (native f32))", fillcolor=grey];
-    451 [label="WasmExpressionNode\n(void)", fillcolor=grey];
-    452 [label="Ref: void\n(type (alias void (void)))", fillcolor=grey];
+    451 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    452 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::set_imaginary(Complex,f32)";
 }
   subgraph cluster48 {
     node [style=filled, fillcolor=grey];
     453 [label="Name: a\n(alias Complex (struct Complex))", fillcolor=grey];
-    454 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    454 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     455 [label="Ref: Number\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as_8(Complex)";
 }
   subgraph cluster49 {
     node [style=filled, fillcolor=grey];
     456 [label="Name: a\n(union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))", fillcolor=grey];
-    457 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    457 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     458 [label="Ref: Number\n(type (alias Number (union (alias Infinity (struct Infinity)) (alias NDet (struct NDet)) (alias Real (struct Real)) (alias Natural (struct Natural)) (alias Complex (struct Complex)))))", fillcolor=grey];
   label = "test/fixtures/types/structTypes.ro::as_10(Infinity | NDet | Real | Natural | Complex)";
 }

@@ -11,62 +11,15 @@ export enum NativeTypes {
 
   anyfunc = 'anyfunc',
   func = 'func',
-  void = 'void',
-
-  boolean = 'boolean',
-  char = 'char',
-
-  usize = 'usize',
-  isize = 'isize',
-
-  i8 = 'i8',
-  u8 = 'u8',
-  i16 = 'i16',
-  u16 = 'u16',
-  u32 = 'u32',
-  u64 = 'u64'
-}
-
-// In _bytes_
-const word = 4;
-
-export enum sizeOf {
-  i32 = word,
-  i64 = word * 2,
-  f32 = word,
-  f64 = word * 2,
-  u64 = word * 2,
-  u32 = word,
-  u16 = word >> 1,
-  boolean = word >> 2,
-  char = word,
-  usize = word,
-  isize = word,
-  u8 = word >> 2,
-  i8 = word >> 2,
-  i16 = word >> 1,
-  anyfunc = word,
-  func = word
+  void = 'void'
 }
 
 export abstract class Type {
   nativeType: NativeTypes;
 
-  getSize(): number {
-    return sizeOf[this.nativeType];
-  }
   get binaryenType(): Valtype {
     switch (this.nativeType) {
-      case NativeTypes.boolean:
-      case NativeTypes.u8:
-      case NativeTypes.i8:
-      case NativeTypes.u16:
-      case NativeTypes.i16:
       case NativeTypes.i32:
-      case NativeTypes.u32:
-      case NativeTypes.char:
-      case NativeTypes.usize:
-      case NativeTypes.isize:
         return 'i32';
 
       case NativeTypes.f32:
@@ -77,7 +30,6 @@ export abstract class Type {
 
       case NativeTypes.func:
       case NativeTypes.i64:
-      case NativeTypes.u64:
         return 'i64';
 
       case NativeTypes.void:
@@ -158,7 +110,7 @@ export class FunctionType extends Type {
 }
 
 export class RefType extends Type {
-  nativeType: NativeTypes = NativeTypes.u64;
+  nativeType: NativeTypes = NativeTypes.i64;
 
   static instance: RefType = new RefType();
 
@@ -201,21 +153,6 @@ export class RefType extends Type {
   equals(otherType: Type) {
     if (!otherType) return false;
     return RefType.isRefType(otherType);
-  }
-}
-
-export class StringType extends RefType {
-  toString() {
-    return 'string';
-  }
-
-  inspect() {
-    return '(ref string)';
-  }
-
-  equals(other: Type) {
-    if (!other) return false;
-    return other instanceof StringType;
   }
 }
 
@@ -465,7 +402,7 @@ export class UnionType extends Type {
     }
 
     if (newSet.size == 0) {
-      return NeverType.instance;
+      return InjectableTypes.never;
     }
 
     const newTypes = Array.from(newSet.values());
@@ -506,7 +443,7 @@ export class UnionType extends Type {
     });
 
     if (newTypes.length == 0) {
-      return InvalidType.instance;
+      return InjectableTypes.invalid;
     }
 
     let unions: UnionType[] = [];
@@ -613,7 +550,7 @@ export class TypeAlias extends Type {
 }
 
 export class TypeType extends Type {
-  private constructor(public of: Type) {
+  private constructor(public readonly of: Type) {
     super();
   }
 
@@ -642,35 +579,33 @@ export class TypeType extends Type {
   }
 }
 
-export abstract class NativeType extends Type {
-  protected constructor(public nativeType: NativeTypes) {
+export class NativeType extends Type {
+  constructor(public typeName: string, public nativeType: NativeTypes) {
     super();
   }
 
   equals(other: Type) {
-    if (!other) return false;
-    return other instanceof this.constructor && other.nativeType === this.nativeType;
+    return other === this;
   }
 
   toString() {
-    return NativeTypes[this.nativeType] as string;
+    return this.typeName;
   }
 
   inspect() {
-    return '(native ' + (NativeTypes[this.nativeType] as string) + ')';
+    return '(native ' + this.typeName + ')';
   }
 }
 
-export class VoidType extends NativeType {
-  static instance = new VoidType(NativeTypes.void);
-
-  inspect() {
-    return '(void)';
+// https://en.wikipedia.org/wiki/Bottom_type
+export class NeverType extends Type {
+  toString(): string {
+    return 'never';
   }
-}
 
-export class NeverType extends NativeType {
-  static instance = new NeverType(NativeTypes.void);
+  inspect(): string {
+    return '(never)';
+  }
 
   equals(other: Type) {
     if (other instanceof NeverType) return true;
@@ -684,69 +619,10 @@ export class NeverType extends NativeType {
     }
     return super.equals(other);
   }
-
-  inspect() {
-    return '(never)';
-  }
 }
 
-export class u8 extends NativeType {
-  static instance = new u8(NativeTypes.u8);
-}
-
-export class bool extends NativeType {
-  static instance = new bool(NativeTypes.boolean);
-}
-
-export class i32 extends NativeType {
-  static instance = new i32(NativeTypes.i32);
-}
-
-export class char extends NativeType {
-  static instance = new char(NativeTypes.i32);
-}
-
-export class usize extends NativeType {
-  static instance = new usize(NativeTypes.i32);
-}
-
-export class isize extends NativeType {
-  static instance = new isize(NativeTypes.i32);
-}
-
-export class u32 extends NativeType {
-  static instance = new u32(NativeTypes.u32);
-}
-
-export class i16 extends NativeType {
-  static instance = new i16(NativeTypes.i16);
-}
-
-export class u16 extends NativeType {
-  static instance = new u16(NativeTypes.u16);
-}
-
-export class f32 extends NativeType {
-  static instance = new f32(NativeTypes.f32);
-}
-
-export class f64 extends NativeType {
-  static instance = new f64(NativeTypes.f64);
-}
-
-export class i64 extends NativeType {
-  static instance = new i64(NativeTypes.i64);
-}
-
-export class u64 extends NativeType {
-  static instance = new u64(NativeTypes.u64);
-}
-
-export class UnknownType extends VoidType {
-  toString() {
-    return '(unknown)';
-  }
-
+// https://en.wikipedia.org/wiki/Top_type
+export class UnknownType extends Type {
   equals(_: Type) {
     return false;
   }
@@ -755,11 +631,22 @@ export class UnknownType extends VoidType {
     return true;
   }
 
-  static instance = new UnknownType(NativeTypes.void);
+  inspect(): string {
+    return '(unknown)';
+  }
+
+  toString() {
+    return 'unknown';
+  }
 }
 
-export class InvalidType extends VoidType {
+// https://en.wikipedia.org/wiki/Fail-stop
+export class InvalidType extends Type {
   toString() {
+    return 'invalid';
+  }
+
+  inspect(): string {
     return '(invalid)';
   }
 
@@ -770,26 +657,26 @@ export class InvalidType extends VoidType {
   canBeAssignedTo(_: Type) {
     return false;
   }
-
-  static instance = new InvalidType(NativeTypes.void);
 }
 
-export const InjectableTypes: Record<string, Type> = {
-  u8: u8.instance,
-  boolean: bool.instance,
-  char: char.instance,
-  usize: usize.instance,
-  isize: isize.instance,
-  i32: i32.instance,
-  u32: u32.instance,
-  i64: i64.instance,
-  u64: u64.instance,
-  i16: i16.instance,
-  u16: u16.instance,
-  f32: f32.instance,
-  f64: f64.instance,
-  void: VoidType.instance,
+export const InjectableTypes = {
+  u8: new NativeType('u8', NativeTypes.i32),
+  boolean: new NativeType('boolean', NativeTypes.i32),
+  char: new NativeType('char', NativeTypes.i32),
+  usize: new NativeType('usize', NativeTypes.i32),
+  isize: new NativeType('isize', NativeTypes.i32),
+  i32: new NativeType('i32', NativeTypes.i32),
+  u32: new NativeType('u32', NativeTypes.i32),
+  i64: new NativeType('i64', NativeTypes.i64),
+  u64: new NativeType('u64', NativeTypes.i64),
+  i16: new NativeType('i16', NativeTypes.i32),
+  u16: new NativeType('u16', NativeTypes.i32),
+  f32: new NativeType('f32', NativeTypes.f32),
+  f64: new NativeType('f64', NativeTypes.f64),
+  void: new NativeType('void', NativeTypes.void),
+  string: new NativeType('string', NativeTypes.i64),
   ref: RefType.instance,
-  string: StringType.instance,
-  never: NeverType.instance
+  never: new NeverType(),
+  unknown: new UnknownType(),
+  invalid: new InvalidType()
 };

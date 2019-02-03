@@ -152,14 +152,14 @@ digraph Document {
 }
   subgraph cluster8 {
     node [style=filled, fillcolor=grey];
-    93 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    93 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     94 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   label = "test/fixtures/types/heavyGraph.ro::currentMemory()";
 }
   subgraph cluster9 {
     node [style=filled, fillcolor=grey];
     95 [label="Name: pages\n(alias i32 (native i32))", fillcolor=grey];
-    96 [label="WasmExpressionNode\n(void)", fillcolor=grey];
+    96 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     97 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   label = "test/fixtures/types/heavyGraph.ro::growMemory(i32)";
 }
@@ -172,14 +172,14 @@ Amount: 12", fillcolor=magenta];
 Amount: 12", fillcolor=magenta];
     101 [label="BlockNode\n(alias i32 (native i32))
 Amount: 12", fillcolor=magenta];
-    102 [label="IfNode\n(void)", fillcolor=grey];
-    103 [label="FunctionCallNode\n(alias void (void))", fillcolor=grey];
+    102 [label="IfNode\n(native void)", fillcolor=grey];
+    103 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
     104 [label="Ref: panic\n(fun 'panic' () (alias void))", fillcolor=grey];
     105 [label="BinOp: '>'\n(alias boolean (native boolean))", fillcolor=grey];
     106 [label="Ref: size\n(alias i32 (native i32))", fillcolor=grey];
     107 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
     108 [label="Ref: MAX_SIZE_32\n(fun 'MAX_SIZE_32' () (alias i32))", fillcolor=grey];
-    109 [label="ValDecl: ptr\n(void)", fillcolor=grey];
+    109 [label="ValDecl: ptr\n(native void)", fillcolor=grey];
     110 [label="Name: ptr\n(alias i32 (native i32))", fillcolor=grey];
     111 [label="BinOp: '-'\n(alias i32 (native i32))", fillcolor=grey];
     112 [label="BinOp: '*'\n(alias i32 (native i32))", fillcolor=grey];
@@ -191,7 +191,7 @@ Amount: 12", fillcolor=magenta];
     118 [label="Ref: system::memory::malloc\n(fun 'malloc' ((alias i32)) (alias i32))", fillcolor=grey];
     119 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
     120 [label="Ref: currentMemory\n(fun 'currentMemory' () (alias i32))", fillcolor=grey];
-    121 [label="ValDecl: newPtr1\n(void)", fillcolor=grey];
+    121 [label="ValDecl: newPtr1\n(native void)", fillcolor=grey];
     122 [label="Name: newPtr1\n(alias i32 (native i32))", fillcolor=grey];
     123 [label="BinOp: '&'\n(alias i32 (native i32))", fillcolor=grey];
     124 [label="BinOp: '+'\n(alias i32 (native i32))", fillcolor=grey];
@@ -205,7 +205,7 @@ Amount: 12", fillcolor=magenta];
     132 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
     133 [label="Ref: system::memory::malloc\n(fun 'malloc' ((alias i32)) (alias i32))", fillcolor=grey];
     134 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-    135 [label="ValDecl: newPtr\n(void)", fillcolor=grey];
+    135 [label="ValDecl: newPtr\n(native void)", fillcolor=grey];
     136 [label="Name: newPtr\n(alias i32 (native i32))", fillcolor=grey];
     137 [label="BinOp: '&'\n(alias i32 (native i32))", fillcolor=grey];
     138 [label="BinOp: '+'\n(alias i32 (native i32))", fillcolor=grey];
@@ -217,15 +217,15 @@ Amount: 12", fillcolor=magenta];
     144 [label="Unary: '~'\n(alias i32 (native i32))", fillcolor=grey];
     145 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
     146 [label="Ref: AL_MASK\n(fun 'AL_MASK' () (alias i32))", fillcolor=grey];
-    147 [label="ValDecl: pagesBefore\n(void)", fillcolor=grey];
+    147 [label="ValDecl: pagesBefore\n(native void)", fillcolor=grey];
     148 [label="Name: pagesBefore\n(alias i32 (native i32))", fillcolor=grey];
     149 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
     150 [label="Ref: currentMemory\n(fun 'currentMemory' () (alias i32))", fillcolor=grey];
-    151 [label="IfNode\n(void)
+    151 [label="IfNode\n(native void)
 Amount: 11", fillcolor=magenta];
-    152 [label="BlockNode\n(void)
+    152 [label="BlockNode\n(native void)
 Amount: 10", fillcolor=magenta];
-    153 [label="ValDecl: ptrx\n(void)", fillcolor=grey];
+    153 [label="ValDecl: ptrx\n(native void)", fillcolor=grey];
     154 [label="Name: ptrx\n(alias i32 (native i32))", fillcolor=grey];
     155 [label="BinOp: '&'\n(alias i32 (native i32))", fillcolor=grey];
     156 [label="BinOp: '+'\n(alias i32 (native i32))", fillcolor=grey];
@@ -242,7 +242,7 @@ Amount: 10", fillcolor=magenta];
     167 [label="Unary: '~'\n(alias i32 (native i32))", fillcolor=grey];
     168 [label="Ref: ptr\n(alias i32 (native i32))", fillcolor=grey];
     169 [label="Int: 16\n(alias i32 (native i32))", fillcolor=grey];
-    170 [label="ValDecl: pagesNeeded\n(void)", fillcolor=grey];
+    170 [label="ValDecl: pagesNeeded\n(native void)", fillcolor=grey];
     171 [label="Name: pagesNeeded\n(alias i32 (native i32))
 Amount: 7", fillcolor=magenta];
     172 [label="BinOp: '>>>'\n(alias i32 (native i32))
@@ -263,7 +263,7 @@ Amount: 7", fillcolor=magenta];
     185 [label="Unary: '~'\n(alias i32 (native i32))", fillcolor=grey];
     186 [label="Ref: ptrx\n(alias i32 (native i32))", fillcolor=grey];
     187 [label="Int: 16\n(alias i32 (native i32))", fillcolor=grey];
-    188 [label="ValDecl: pagesWanted\n(void)", fillcolor=grey];
+    188 [label="ValDecl: pagesWanted\n(native void)", fillcolor=grey];
     189 [label="Name: pagesWanted\n(alias i32 (native i32))
 Amount: 9", fillcolor=magenta];
     190 [label="FunctionCallNode\n(alias i32 (native i32))
@@ -272,14 +272,14 @@ Amount: 9", fillcolor=magenta];
     192 [label="Ref: pagesBefore\n(alias i32 (native i32))", fillcolor=grey];
     193 [label="Ref: pagesNeeded\n(alias i32 (native i32))
 Amount: 7", fillcolor=magenta];
-    194 [label="IfNode\n(void)
+    194 [label="IfNode\n(native void)
 Amount: 10", fillcolor=magenta];
-    195 [label="BlockNode\n(void)
+    195 [label="BlockNode\n(native void)
 Amount: 8", fillcolor=magenta];
-    196 [label="IfNode\n(void)
+    196 [label="IfNode\n(native void)
 Amount: 8", fillcolor=magenta];
-    197 [label="BlockNode\n(void)", fillcolor=grey];
-    198 [label="FunctionCallNode\n(alias void (void))", fillcolor=grey];
+    197 [label="BlockNode\n(native void)", fillcolor=grey];
+    198 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
     199 [label="Ref: panic\n(fun 'panic' () (alias void))", fillcolor=grey];
     200 [label="BinOp: '<'\n(alias boolean (native boolean))
 Amount: 8", fillcolor=magenta];
