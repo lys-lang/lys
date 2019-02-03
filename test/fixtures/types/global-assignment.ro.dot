@@ -1,5 +1,5 @@
 digraph Document {
-  node [shape=box,fixedsize=shape fontsize=10]
+  node [shape=box,fontsize=10]; rankdir=LR;
   1 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
   2 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
   3 [label="FunOverload: addOne\n(fun 'addOne' () (alias i32))", fillcolor=grey];
@@ -10,7 +10,7 @@ digraph Document {
   8 [label="FunNode: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
   9 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   10 [label="Name: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
-  subgraph cluster0 {
+  subgraph cluster0 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     11 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
     12 [label="VarDecl: y\n(native void)", fillcolor=grey];
@@ -25,22 +25,22 @@ digraph Document {
     21 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
     22 [label="Ref: y\n(alias i32 (native i32))", fillcolor=grey];
     23 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    12 -> 11[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    13 -> 16[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    13 -> 18[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    13 -> 22[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    14 -> 13[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    15 -> 11[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    16 -> 15[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    17 -> 15[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    18 -> 17[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    19 -> 17[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    20 -> 11[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    21 -> 20[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    22 -> 20[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test/fixtures/types/global-assignment.ro::addOne()";
+    12 -> 11[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    13 -> 16[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    13 -> 18[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    13 -> 22[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    14 -> 13[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+    15 -> 11[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    16 -> 15[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    17 -> 15[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+    18 -> 17[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    19 -> 17[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+    20 -> 11[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    21 -> 20[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    22 -> 20[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+  label="test/fixtures/types/global-assignment.ro::addOne()";
 }
-  subgraph cluster1 {
+  subgraph cluster1 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     24 [label="BlockNode\n(native void)", fillcolor=grey];
     25 [label="AssignmentNode\n(alias i32 (native i32))", fillcolor=grey];
@@ -49,23 +49,23 @@ digraph Document {
     28 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
     29 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     30 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
-    25 -> 24[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    26 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    27 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    28 -> 27[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    29 -> 27[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test/fixtures/types/global-assignment.ro::addOneNoReturn()";
+    25 -> 24[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    26 -> 25[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    27 -> 25[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+    28 -> 27[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    29 -> 27[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+  label="test/fixtures/types/global-assignment.ro::addOneNoReturn()";
 }
-  1 -> 14[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 21[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 26[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  1 -> 28[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 6[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  4 -> 3[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  8 -> 7[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  9 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 14[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+  1 -> 21[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+  1 -> 26[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+  1 -> 28[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+  2 -> 1[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+  3 -> 6[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  4 -> 3[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
+  5 -> 4[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
+  7 -> 10[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  8 -> 7[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
+  9 -> 8[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
   label="";
 }

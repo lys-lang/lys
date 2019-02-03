@@ -54,27 +54,44 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
   if (node.parameters.length) {
     const accessors = node.parameters
-      .map(({ parameterName, parameterType }) => {
-        return `
-            fun get_${parameterName}(
-              target: ${typeName}
-            ): ${parameterType.toString()} = %wasm {
-              (local $offset i32)
-              (set_local $offset (i32.const 0))
-              (unreachable)
+      .map(({ parameterName, parameterType }, i) => {
+        const offset = i * 8;
+
+        if (parameterType instanceof Nodes.UnionTypeNode) {
+          return `
+            fun ${parameterName}_get(target: ${typeName}): ${parameterType} = %wasm {
+              (i64.load
+                (i32.add
+                  (i32.const ${offset})
+                  (call $addressFromRef (get_local $target))
+                )
+              )
             }
 
-            fun set_${parameterName}(
-              target: ${typeName},
-              value: ${parameterType.toString()}
-            ): void = %wasm {
-              (local $offset i32)
-              (set_local $offset (i32.const 0))
-              (unreachable)
+            fun ${parameterName}_set(target: ${typeName}, value: ${parameterType}): void = %wasm {
+              (i64.store
+                (i32.add
+                  (i32.const ${offset})
+                  (call $addressFromRef (get_local $target))
+                )
+                (get_local $value)
+              )
             }
           `;
+        } else {
+          return `
+            fun ${parameterName}_get(target: ${typeName}): ${parameterType} =
+              ${parameterType}.load(target, ${offset})
+
+            fun ${parameterName}_set(target: ${typeName}, value: ${parameterType}): void =
+              ${parameterType}.store(target, value, ${offset})
+          `;
+        }
       })
       .join('\n');
+
+    const sizes = node.parameters.map(_ => `/* ${_.parameterType}.allocationSize() */ 8`).join(' + ');
+    const callRefs = node.parameters.map(_ => `${_.parameterName}_set(ref, ${_.parameterName})`).join('\n');
 
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(
@@ -85,14 +102,20 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                 (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
               }
 
-              fun sizeOf(): i32 = 1
+              fun sizeOf(): i32 = (${sizes})
+              fun allocationSize(): u32 = ref.allocationSize()
 
-              fun apply(${args}): ${typeName} =
-                fromPointer(
+              fun apply(${args}): ${typeName} = {
+                var ref = fromPointer(
                   system::memory::malloc(
                     sizeOf()
                   )
                 )
+
+                ${callRefs}
+
+                ref
+              }
 
               private fun fromPointer(ptr: i32 | u32): ${typeName} = %wasm {
                 (i64.or
@@ -110,6 +133,25 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                     (get_local $a)
                   )
                   (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
+                )
+              }
+
+              fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+                (i64.store
+                  (i32.add
+                    (get_local $offset)
+                    (call $addressFromRef (get_local $lhs))
+                  )
+                  (get_local $rhs)
+                )
+              }
+
+              fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+                (i64.load
+                  (i32.add
+                    (get_local $offset)
+                    (call $addressFromRef (get_local $lhs))
+                  )
                 )
               }
             }
@@ -149,6 +191,25 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               (i64.ne
                 (get_local $a)
                 (get_local $b)
+              )
+            }
+
+            fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+              (i64.store
+                (i32.add
+                  (get_local $offset)
+                  (call $addressFromRef (get_local $lhs))
+                )
+                (get_local $rhs)
+              )
+            }
+
+            fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+              (i64.load
+                (i32.add
+                  (get_local $offset)
+                  (call $addressFromRef (get_local $lhs))
+                )
               )
             }
           }
@@ -236,6 +297,28 @@ const processUnions = function(
               ns ${variableName.name} {
                 fun (is)(a: ${node.variableName.name}): boolean = {
                   ${referenceTypes.map($ => 'a is ' + $.variable.text).join(' || ') || 'false'}
+                }
+
+                fun (==)(lhs: ref, rhs: ref): boolean = lhs == rhs
+                fun (!=)(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+                fun store(lhs: ref, rhs: ${variableName.name}, offset: i32): void = %wasm {
+                  (i64.store
+                    (i32.add
+                      (get_local $offset)
+                      (call $addressFromRef (get_local $lhs))
+                    )
+                    (get_local $rhs)
+                  )
+                }
+
+                fun load(lhs: ref, offset: i32): ${variableName.name} = %wasm {
+                  (i64.load
+                    (i32.add
+                      (get_local $offset)
+                      (call $addressFromRef (get_local $lhs))
+                    )
+                  )
                 }
               }
 

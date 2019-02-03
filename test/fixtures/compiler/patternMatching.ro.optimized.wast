@@ -347,6 +347,7 @@
   )
  )
  (func $14 (; 14 ;) (type $2) (param $0 i64) (result i64)
+  (local $1 i64)
   (if (result i64)
    (call $10
     (local.get $0)
@@ -360,14 +361,22 @@
       )
      )
     )
-    (i64.or
-     (i64.extend_i32_u
-      (call $0
-       (i32.const 1)
+    (i32.store
+     (i32.wrap_i64
+      (local.tee $1
+       (i64.or
+        (i64.extend_i32_u
+         (call $0
+          (i32.const 8)
+         )
+        )
+        (i64.const 12884901888)
+       )
       )
      )
-     (i64.const 12884901888)
+     (i32.const 0)
     )
+    (local.get $1)
    )
   )
  )

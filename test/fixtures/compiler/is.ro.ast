@@ -58,6 +58,124 @@
                 |-QNameNode=C
                   |-NameIdentifierNode="C"
       |-NameIdentifierNode="is" type=(fun "is" ((alias Enum)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "==" ((alias ref) (alias ref)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "==" ((alias ref) (alias ref)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="=="
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BinaryExpressionNode="==" type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-NameIdentifierNode="=="
+          |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode
+            |-QNameNode=lhs
+              |-NameIdentifierNode="lhs"
+          |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode
+            |-QNameNode=rhs
+              |-NameIdentifierNode="rhs"
+      |-NameIdentifierNode="==" type=(fun "==" ((alias ref) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "!=" ((alias ref) (alias ref)) (alias boolean))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="!="
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BinaryExpressionNode="!=" type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-NameIdentifierNode="!="
+          |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode
+            |-QNameNode=lhs
+              |-NameIdentifierNode="lhs"
+          |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode
+            |-QNameNode=rhs
+              |-NameIdentifierNode="rhs"
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias ref) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias Enum) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "store" ((alias ref) (alias Enum) (alias i32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs" type=(type (alias Enum (union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)))))
+          |-ReferenceNode type=(type (alias Enum (union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)))))
+            |-QNameNode=Enum
+              |-NameIdentifierNode="Enum"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(unknown)
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Enum) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias Enum)) annotations=Injected
+      |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias Enum))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode type=(type (alias Enum (union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)))))
+          |-QNameNode=Enum
+            |-NameIdentifierNode="Enum"
+        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias Enum))
   |-NameSpaceDirective
     |-ReferenceNode
       |-QNameNode=A
@@ -248,6 +366,74 @@
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"
       |-NameIdentifierNode="!=" type=(fun "!=" ((alias A) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias A) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "store" ((alias ref) (alias A) (alias i32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs" type=(alias A (struct A))
+          |-ReferenceNode type=(type (alias A (struct A)))
+            |-QNameNode=A
+              |-NameIdentifierNode="A"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(unknown)
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias A) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias A)) annotations=Injected
+      |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias A))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode type=(type (alias A (struct A)))
+          |-QNameNode=A
+            |-NameIdentifierNode="A"
+        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias A))
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="B" type=(type (alias B (struct B)))
     |-UnknownExpressionNode
@@ -337,6 +523,74 @@
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"
       |-NameIdentifierNode="!=" type=(fun "!=" ((alias B) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias B) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "store" ((alias ref) (alias B) (alias i32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs" type=(alias B (struct B))
+          |-ReferenceNode type=(type (alias B (struct B)))
+            |-QNameNode=B
+              |-NameIdentifierNode="B"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(unknown)
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias B) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias B)) annotations=Injected
+      |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias B))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode type=(type (alias B (struct B)))
+          |-QNameNode=B
+            |-NameIdentifierNode="B"
+        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias B))
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="C" type=(type (alias C (struct C)))
     |-UnknownExpressionNode
@@ -426,6 +680,74 @@
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"
       |-NameIdentifierNode="!=" type=(fun "!=" ((alias C) (alias ref)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias C) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "store" ((alias ref) (alias C) (alias i32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs" type=(alias C (struct C))
+          |-ReferenceNode type=(type (alias C (struct C)))
+            |-QNameNode=C
+              |-NameIdentifierNode="C"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(unknown)
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias C) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias C)) annotations=Injected
+      |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias C))
+        |-ParameterNode
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode type=(type (alias C (struct C)))
+          |-QNameNode=C
+            |-NameIdentifierNode="C"
+        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias C))
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="value1" type=(alias Enum (union (alias A (struct A)) (alias B (struct B)) (alias C (struct C))))

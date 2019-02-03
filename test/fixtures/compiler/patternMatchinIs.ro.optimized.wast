@@ -256,14 +256,23 @@
   )
  )
  (func $15 (; 15 ;) (type $6) (result i64)
-  (i64.or
-   (i64.extend_i32_u
-    (call $1
-     (i32.const 1)
+  (local $0 i64)
+  (i32.store
+   (i32.wrap_i64
+    (local.tee $0
+     (i64.or
+      (i64.extend_i32_u
+       (call $1
+        (i32.const 8)
+       )
+      )
+      (i64.const 38654705664)
+     )
     )
    )
-   (i64.const 38654705664)
+   (i32.const 1)
   )
+  (local.get $0)
  )
  (func $16 (; 16 ;) (type $4) (param $0 i64) (result i32)
   (i64.eq

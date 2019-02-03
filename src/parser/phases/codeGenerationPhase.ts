@@ -111,7 +111,7 @@ function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.Document
   } else {
     const ofType = node.resolvedFunctionType;
 
-    assert(ofType.name.internalIdentifier, `${ofType}.internalName is falsy`);
+    assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
 
     return t.callInstruction(
       t.identifier(ofType.name.internalIdentifier),
@@ -133,10 +133,10 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
   }
 
   const blocks = matchers
-    .map(function emitNode(node: Nodes.MatcherNode): { condition; body; type } {
+    .map(function emitNode(node: Nodes.MatcherNode): { condition; body } {
       if (node instanceof Nodes.MatchDefaultNode) {
         const body = emit(node.rhs, document);
-        return { condition: null, body, type: node.rhs.ofType.binaryenType };
+        return { condition: null, body };
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
 
@@ -148,8 +148,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const body = emit(node.rhs, document);
         return {
           condition,
-          body,
-          type: node.rhs.ofType.binaryenType
+          body
         };
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
@@ -161,8 +160,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const body = emit(node.rhs, document);
         return {
           condition,
-          body,
-          type: node.rhs.ofType.binaryenType
+          body
         };
       }
     })
@@ -175,10 +173,9 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
     .map(($, $$) => t.instruction('br_if', [t.identifier(`${exitBlock}_${$$}`), $.condition]));
 
   const ret = blocks.reduceRight((prev, curr, ix) => {
-    //    if (ix == blocks.length - 1) return flatten([prev, curr.body]);
-
     const label = t.identifier(`${exitBlock}_${ix}`);
-    const newBlock = t.blockInstruction(label, flatten(prev), curr.type.binaryenType);
+
+    const newBlock = t.blockInstruction(label, flatten(prev));
 
     const ret = flatten([newBlock, curr.body]);
 

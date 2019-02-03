@@ -37,7 +37,9 @@ describe('Types', function() {
   function checkMainType(literals, ...placeholders) {
     function test(program: string, expectedType: string, expectedError: string) {
       const number = n++;
-      it(`type inference test #${number}`, async () => {
+      it(`type inference test #${number}`, async function() {
+        this.timeout(5000);
+
         const phaseResult = phases(program, `types_${number}.ro`);
 
         const typePhase = new TypePhaseResult(phaseResult);
@@ -756,6 +758,32 @@ describe('Types', function() {
         fun() -> Test
         fun() -> Test
       `;
+
+      describe('forest', () => {
+        checkMainType`
+          type Tree {
+            Empty
+            Node(a: Tree | Forest)
+          }
+
+          type Forest {
+            Nil
+            Cons(tree: Tree | Forest)
+          }
+
+          var a = Nil
+          var b = Cons(Empty)
+          var c = Cons(Nil)
+          var d = Cons(Node(Empty))
+          var e = Cons(Node(Nil))
+          ---
+          a := (alias Nil (struct Nil))
+          b := (alias Cons (struct Cons))
+          c := (alias Cons (struct Cons))
+          d := (alias Cons (struct Cons))
+          e := (alias Cons (struct Cons))
+        `;
+      });
     });
     describe('recursive calls', () => {
       checkMainType`
@@ -1540,6 +1568,16 @@ describe('Types', function() {
     });
 
     describe('match is not exhaustive', () => {
+      checkMainType`
+        fun test(x: i32): void = {
+          x match {
+            case 1 -> assert(true)
+            else -> panic()
+          }
+        }
+        ---
+        fun(x: i32) -> void
+      `;
       checkMainType`
         type Enum {
           A

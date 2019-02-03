@@ -29,7 +29,9 @@ fun addressFromRef(pointer: ref): u32 = %wasm {
 fun panic(): void = %wasm { (unreachable) }
 
 ns u8 {
-  fun sizeOf(lhs: u8): u32 = %wasm { (i32.const 1) }
+  fun sizeOf(): u32 = %wasm { (i32.const 1) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: u8): i16 = %wasm { (get_local $lhs) }
   fun (as)(lhs: u8): u16 = %wasm { (get_local $lhs) }
   fun (as)(lhs: u8): i32 = %wasm { (get_local $lhs) }
@@ -72,7 +74,9 @@ ns u8 {
 }
 
 ns i16 {
-  fun sizeOf(lhs: i16): u32 = %wasm { (i32.const 2) }
+  fun sizeOf(): u32 = %wasm { (i32.const 2) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: i16): i32 = %wasm { (get_local $lhs) }
   fun (as)(lhs: i16): i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
   fun (as)(lhs: i16): f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
@@ -87,7 +91,9 @@ ns i16 {
 }
 
 ns u16 {
-  fun sizeOf(lhs: u16): u32 = %wasm { (i32.const 2) }
+  fun sizeOf(): u32 = %wasm { (i32.const 2) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: u16): i32 = %wasm { (get_local $lhs) }
   fun (as)(lhs: u16): u32 = %wasm { (get_local $lhs) }
   fun (as)(lhs: u16): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
@@ -105,7 +111,9 @@ ns u16 {
 }
 
 ns i32 {
-  fun sizeOf(lhs: i32): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: i32): i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
   fun (as)(lhs: i32): f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
   fun (as)(lhs: i32): f64 = %wasm { (f64.convert_s/i32 (get_local $lhs)) }
@@ -134,7 +142,6 @@ ns i32 {
 
   // @[explicit]
   fun (as)(lhs: i32): /* may fail */ f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
-
 
   fun store(lhs: ref, rhs: i32): void = %wasm {
     (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -166,7 +173,9 @@ ns i32 {
 
 
 ns u32 {
-  fun sizeOf(lhs: u32): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: u32): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
   fun (as)(lhs: u32): u64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
   fun (as)(lhs: u32): f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
@@ -199,10 +208,36 @@ ns u32 {
   fun store(lhs: ref, rhs: u32): void = %wasm {
     (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
+
+  fun store(lhs: ref, rhs: u32, offset: i32): void = %wasm {
+    (i32.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): u32 = %wasm {
+    (i32.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): u32 = %wasm {
+    (i32.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+
 }
 
 ns i64 {
-  fun sizeOf(lhs: i64): u32 = %wasm { (i32.const 8) }
+  fun sizeOf(): u32 = %wasm { (i32.const 8) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: i64): f32 = %wasm { (f32.convert_s/i64 (get_local $lhs)) }
   fun (as)(lhs: i64): f64 = %wasm { (f64.convert_s/i64 (get_local $lhs)) }
 
@@ -230,10 +265,39 @@ ns i64 {
 
   // #[explicit]
   fun (as)(lhs: i64): /* may fail */ i32 = %wasm { (i32.wrap/i64 (get_local $lhs)) }
+
+  fun store(lhs: ref, rhs: i64): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: i64, offset: i32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): i64 = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): i64 = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 ns u64 {
-  fun sizeOf(lhs: u64): u32 = %wasm { (i32.const 8) }
+  fun sizeOf(): u32 = %wasm { (i32.const 8) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: u64): f32 = %wasm { (f32.convert_u/i64 (get_local $lhs)) }
   fun (as)(lhs: u64): f64 = %wasm { (f64.convert_u/i64 (get_local $lhs)) }
 
@@ -261,10 +325,39 @@ ns u64 {
 
   // #[explicit]
   fun (as)(lhs: u64): /* may fail */ u32 = %wasm { (i32.wrap/i64 (get_local $lhs)) }
+
+  fun store(lhs: ref, rhs: u64): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: u64, offset: i32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): u64 = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): u64 = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 ns f32 {
-  fun sizeOf(lhs: f32): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: f32): f64 = %wasm { (f64.promote/f32 (get_local $lhs)) }
 
   fun (+)(lhs: f32, rhs: f32): f32 = %wasm { (f32.add (get_local $lhs) (get_local $rhs)) }
@@ -293,10 +386,34 @@ ns f32 {
   fun store(lhs: ref, rhs: f32): void = %wasm {
     (f32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
+
+  fun store(lhs: ref, rhs: f32, offset: i32): void = %wasm {
+    (f32.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): f32 = %wasm {
+    (f32.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): f32 = %wasm {
+    (f32.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 ns f64 {
-  fun sizeOf(lhs: f64): u32 = %wasm { (i32.const 8) }
+  fun sizeOf(): u32 = %wasm { (i32.const 8) }
+  fun allocationSize(): u32 = sizeOf()
 
   fun (+)(lhs: f64, rhs: f64): f64 = %wasm { (f64.add (get_local $lhs) (get_local $rhs)) }
   fun (-)(lhs: f64, rhs: f64): f64 = %wasm { (f64.sub (get_local $lhs) (get_local $rhs)) }
@@ -327,10 +444,34 @@ ns f64 {
   fun store(lhs: ref, rhs: f64): void = %wasm {
     (f64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
+
+  fun store(lhs: ref, rhs: f64, offset: i32): void = %wasm {
+    (f64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): f64 = %wasm {
+    (f64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): f64 = %wasm {
+    (f64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 ns boolean {
-  fun sizeOf(lhs: boolean): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
 
   fun (&&)(lhs: boolean, rhs: boolean): boolean = %wasm {
     (i32.and
@@ -354,11 +495,43 @@ ns boolean {
   }
 
   fun (!)(rhs: boolean): boolean =
-    if (rhs) false else true
+    if (rhs)
+      false
+    else
+      true
+
+  fun store(lhs: ref, rhs: boolean): void = %wasm {
+    (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: boolean, offset: i32): void = %wasm {
+    (i32.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): boolean = %wasm {
+    (i32.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): boolean = %wasm {
+    (i32.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 ns char {
-  fun sizeOf(lhs: char): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (as)(lhs: char): u16 = %wasm { (get_local $lhs) }
   fun (as)(lhs: char): i32 = %wasm { (get_local $lhs) }
   fun (as)(lhs: char): u32 = %wasm { (get_local $lhs) }
@@ -369,19 +542,50 @@ ns char {
 }
 
 ns usize {
-  fun sizeOf(lhs: usize): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
 }
 
 ns isize {
-  fun sizeOf(lhs: isize): u32 = %wasm { (i32.const 4) }
+  fun sizeOf(): u32 = %wasm { (i32.const 4) }
+  fun allocationSize(): u32 = sizeOf()
 }
 
 ns ref {
+  fun sizeOf(): u32 = %wasm { (i32.const 8) }
+  fun allocationSize(): u32 = sizeOf()
+
   fun (is)(lhs: ref): boolean = true
   fun (==)(lhs: ref, rhs: ref): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
-  fun sizeOf(lhs: ref): u32 = %wasm { (i32.const 8) }
-}
+  fun (!=)(lhs: ref, rhs: ref): boolean = !(lhs == rhs)
 
+  fun store(lhs: ref, rhs: ref): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: ref, offset: i32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): ref = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): ref = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+}
 
 ns string {
 

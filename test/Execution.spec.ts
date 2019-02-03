@@ -3,7 +3,7 @@ declare var describe;
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
-describe('execution tests', () => {
+describe.only('execution tests', () => {
   describe('numbers', () => {
     test(
       'casts',
@@ -35,6 +35,160 @@ describe('execution tests', () => {
   });
 
   describe('struct', () => {
+    test(
+      'recursive types forest',
+      `
+        type Tree {
+          Empty
+          Node(a: Tree | Forest)
+        }
+
+        type Forest {
+          Nil
+          Cons(tree: Tree | Forest)
+        }
+
+        fun testPassing(): void = {
+          var a = Nil
+          var b = Cons(Empty)
+          var c = Cons(Nil)
+          var d = Cons(Node(Empty))
+          var e = Node(Nil)
+
+          support::test::assert( a is Nil            == true )
+          support::test::assert( a is Forest         == true )
+          support::test::assert( b is Forest         == true )
+          support::test::assert( c is Cons           == true )
+          support::test::assert( e is Node           == true )
+          support::test::assert( e is Tree           == true )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'get struct values',
+      `
+        struct Vector3(x: i32, y: i32, z: i32)
+
+        fun testPassing(): void = {
+          var a = Vector3(1, 2, 3)
+
+          support::test::assert( a is Vector3 )
+          support::test::assert( Vector3.x_get(a)    == 1 )
+          support::test::assert( Vector3.y_get(a)    == 2 )
+          support::test::assert( Vector3.z_get(a)    == 3 )
+        }
+
+        fun testFailing(): void = {
+          var a = Vector3(1, 2, 3)
+          support::test::assert( Vector3.x_get(a)    == 999 )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+
+        expect(() => x.exports.testFailing()).to.throw();
+      }
+    );
+
+    test(
+      'set struct values',
+      `
+        type Color {
+          None
+          Red
+          Green
+          Blue
+          Custom(hex: i32)
+        }
+
+        struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
+
+        fun testPassing(): void = {
+          var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
+
+          support::test::assert( a is CatBag )
+          support::test::assert( CatBag.a_get(a)    == 1 )
+          support::test::assert( CatBag.b_get(a)    == true )
+          support::test::assert( CatBag.c_get(a)    == 3.0 )
+          support::test::assert( CatBag.d_get(a)    == 0x8 )
+          support::test::assert( CatBag.e_get(a)    == 0.4 as f64 )
+          support::test::assert( CatBag.f_get(a)    is Red )
+          support::test::assert( CatBag.g_get(a)    is Red )
+          support::test::assert( CatBag.f_get(a)    is Color )
+          support::test::assert( CatBag.g_get(a)    is Color )
+
+          CatBag.a_set(a, 5)
+          CatBag.b_set(a, false)
+          CatBag.c_set(a, -999.0)
+          CatBag.d_set(a, 0xdeadbeef as i64)
+          CatBag.e_set(a, 6.08e23 as f64)
+          CatBag.f_set(a, Custom(333))
+          CatBag.g_set(a, None)
+
+          support::test::assert( CatBag.a_get(a)    == 5 )
+          support::test::assert( CatBag.b_get(a)    == false )
+          support::test::assert( CatBag.c_get(a)    == -999.0 )
+          support::test::assert( CatBag.d_get(a)    == 0xdeadbeef as i64 )
+          support::test::assert( CatBag.e_get(a)    == 6.08e23 as f64 )
+          support::test::assert( CatBag.f_get(a)    is Custom )
+          support::test::assert( CatBag.g_get(a)    is None )
+          support::test::assert( CatBag.f_get(a)    is Color )
+          support::test::assert( CatBag.g_get(a)    is Color )
+
+          var custom = CatBag.f_get(a)
+
+          support::test::assert( custom is Custom )
+
+          custom match {
+            case x is Custom -> support::test::assert( Custom.hex_get(x) == 333 )
+            else -> panic()
+          }
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'varidic n-ary and pattern matching',
+      `
+        type Enum {
+          None
+          Custom(hex: i32)
+        }
+
+        fun testPassing(): void = {
+          var custom: Enum = Custom(333)
+
+          custom match {
+            case x is Custom -> support::test::assert( Custom.hex_get(x) == 333 )
+            else -> panic()
+          }
+        }
+
+        fun testFailing(): void = {
+          var custom: Enum = None
+
+          custom match {
+            case x is Custom -> support::test::assert( Custom.hex_get(x) == 333 )
+            else -> panic()
+          }
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(() => x.exports.testFailing()).to.throw();
+      }
+    );
+
     test(
       'is with pattern matchin',
       `
@@ -340,8 +494,8 @@ describe('execution tests', () => {
         const a = x.exports.retRef();
         const b = x.exports.retRef();
         const c = x.exports.retRef();
-        expect(b).to.eq(a + 8, 'a + 8 = b');
-        expect(c).to.eq(b + 8, 'b + 8 = c');
+        expect(b).to.eq(a + 16, 'a + 16 = b');
+        expect(c).to.eq(b + 16, 'b + 16 = c');
       }
     );
   });
@@ -699,6 +853,21 @@ describe('execution tests', () => {
         expect(x.exports.test()).to.eq(1836311903);
       }
     );
+
+    test(
+      'factorial',
+      `
+        fun factorial(n: i32): i32 =
+          if (n >= 1)
+            n * factorial(n - 1)
+          else
+            1
+      `,
+      async x => {
+        expect(x.exports.factorial(10)).to.eq(3628800);
+      }
+    );
+
     test(
       'fibo pattern matchin',
       `

@@ -34,6 +34,7 @@ export abstract class Type {
 
       case NativeTypes.void:
         return undefined;
+
       default:
         throw new Error(`Type ${this} (${this.constructor.name}) returned a undefined binaryenType`);
     }
@@ -549,6 +550,40 @@ export class TypeAlias extends Type {
   }
 }
 
+export class PropertyType extends Type {
+  constructor(
+    public name: Nodes.NameIdentifierNode,
+    public readonly getter: Nodes.NameIdentifierNode,
+    public readonly setter: Nodes.NameIdentifierNode
+  ) {
+    super();
+  }
+
+  get binaryenType(): Valtype {
+    return 'i64';
+  }
+
+  get nativeType(): NativeTypes {
+    return NativeTypes.anyfunc;
+  }
+
+  canBeAssignedTo() {
+    return false;
+  }
+
+  equals(other: Type) {
+    return other === this;
+  }
+
+  toString() {
+    return this.name.toString();
+  }
+
+  inspect() {
+    return '(property ' + this.name.toString() + ')';
+  }
+}
+
 export class TypeType extends Type {
   private constructor(public readonly of: Type) {
     super();
@@ -665,12 +700,12 @@ export const InjectableTypes = {
   char: new NativeType('char', NativeTypes.i32),
   usize: new NativeType('usize', NativeTypes.i32),
   isize: new NativeType('isize', NativeTypes.i32),
+  i16: new NativeType('i16', NativeTypes.i32),
+  u16: new NativeType('u16', NativeTypes.i32),
   i32: new NativeType('i32', NativeTypes.i32),
   u32: new NativeType('u32', NativeTypes.i32),
   i64: new NativeType('i64', NativeTypes.i64),
   u64: new NativeType('u64', NativeTypes.i64),
-  i16: new NativeType('i16', NativeTypes.i32),
-  u16: new NativeType('u16', NativeTypes.i32),
   f32: new NativeType('f32', NativeTypes.f32),
   f64: new NativeType('f64', NativeTypes.f64),
   void: new NativeType('void', NativeTypes.void),

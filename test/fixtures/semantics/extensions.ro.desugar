@@ -4,6 +4,22 @@ ns AA {
   fun is(a: AA): boolean = {
     a is BB
   }
+  
+  fun ==(lhs: ref, rhs: ref): boolean = 
+    lhs == rhs
+  
+  fun !=(lhs: ref, rhs: ref): boolean = 
+    lhs != rhs
+  
+  fun store(lhs: ref, rhs: AA, offset: i32): void = 
+    %wasm {
+      (i64.store (i32.add (get_local $offset)  (call addressFromRef  (get_local $lhs)))  (get_local $rhs))
+    }
+  
+  fun load(lhs: ref, offset: i32): AA = 
+    %wasm {
+      (i64.load (i32.add (get_local $offset)  (call addressFromRef  (get_local $lhs))))
+    }
 }
 
 ns BB {
@@ -46,6 +62,16 @@ ns BB {
     %wasm {
       (i64.ne (get_local $a)  (get_local $b))
     }
+  
+  fun store(lhs: ref, rhs: BB, offset: i32): void = 
+    %wasm {
+      (i64.store (i32.add (get_local $offset)  (call addressFromRef  (get_local $lhs)))  (get_local $rhs))
+    }
+  
+  fun load(lhs: ref, offset: i32): BB = 
+    %wasm {
+      (i64.load (i32.add (get_local $offset)  (call addressFromRef  (get_local $lhs))))
+    }
 }
 
 type TT = ???
@@ -69,6 +95,16 @@ ns TT {
   fun !=(a: TT, b: ref): boolean = 
     %wasm {
       (i64.ne (get_local $a)  (get_local $b))
+    }
+  
+  fun store(lhs: ref, rhs: TT, offset: i32): void = 
+    %wasm {
+      (i64.store (i32.add (get_local $offset)  (call addressFromRef  (get_local $lhs)))  (get_local $rhs))
+    }
+  
+  fun load(lhs: ref, offset: i32): TT = 
+    %wasm {
+      (i64.load (i32.add (get_local $offset)  (call addressFromRef  (get_local $lhs))))
     }
 }
 
