@@ -385,9 +385,9 @@
                     |-QNameNode=sizeOf
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(fun "number_set" ((alias Real) (alias f32)) (alias void))
-              |-QNameNode=number_set
-                |-NameIdentifierNode="number_set"
+            |-ReferenceNode type=(intersection (fun "property_number" ((alias Real)) (alias f32)) (fun "property_number" ((alias Real) (alias f32)) (alias void)))
+              |-QNameNode=property_number
+                |-NameIdentifierNode="property_number"
             |-ReferenceNode type=(alias Real (struct Real)) annotations=IsValueNode
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
@@ -422,14 +422,14 @@
                 |-QNameNode=$ptr
                   |-NameIdentifierNode="$ptr"
       |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Real))
-    |-OverloadedFunctionNode type=(fun "number_get" ((alias Real)) (alias f32)) annotations=Injected
-      |-FunctionNode type=(fun "number_get" ((alias Real)) (alias f32))
+    |-OverloadedFunctionNode type=(intersection (fun "property_number" ((alias Real)) (alias f32)) (fun "property_number" ((alias Real) (alias f32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_number" ((alias Real)) (alias f32))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(alias Real (struct Real))
+          |-NameIdentifierNode="target" type=(type (alias Real (struct Real)))
           |-ReferenceNode type=(type (alias Real (struct Real)))
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
-        |-NameIdentifierNode="number_get"
+        |-NameIdentifierNode="property_number"
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
@@ -443,9 +443,7 @@
             |-QNameNode=target
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="number_get" type=(fun "number_get" ((alias Real)) (alias f32))
-    |-OverloadedFunctionNode type=(fun "number_set" ((alias Real) (alias f32)) (alias void)) annotations=Injected
-      |-FunctionNode type=(fun "number_set" ((alias Real) (alias f32)) (alias void))
+      |-FunctionNode type=(fun "property_number" ((alias Real) (alias f32)) (alias void))
         |-ParameterNode
           |-NameIdentifierNode="target" type=(type (alias Real (struct Real)))
           |-ReferenceNode type=(type (alias Real (struct Real)))
@@ -456,7 +454,7 @@
           |-ReferenceNode type=(type (alias f32 (native f32)))
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="number_set"
+        |-NameIdentifierNode="property_number"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -473,7 +471,7 @@
             |-QNameNode=value
               |-NameIdentifierNode="value"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="number_set" type=(fun "number_set" ((alias Real) (alias f32)) (alias void))
+      |-NameIdentifierNode="property_number" type=(intersection (fun "property_number" ((alias Real)) (alias f32)) (fun "property_number" ((alias Real) (alias f32)) (alias void)))
     |-OverloadedFunctionNode type=(fun "is" ((alias Real)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Real)) (alias boolean))
         |-ParameterNode
@@ -631,9 +629,9 @@
                     |-QNameNode=sizeOf
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(fun "number_set" ((alias Natural) (alias i32)) (alias void))
-              |-QNameNode=number_set
-                |-NameIdentifierNode="number_set"
+            |-ReferenceNode type=(intersection (fun "property_number" ((alias Natural)) (alias i32)) (fun "property_number" ((alias Natural) (alias i32)) (alias void)))
+              |-QNameNode=property_number
+                |-NameIdentifierNode="property_number"
             |-ReferenceNode type=(alias Natural (struct Natural)) annotations=IsValueNode
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
@@ -668,14 +666,14 @@
                 |-QNameNode=$ptr
                   |-NameIdentifierNode="$ptr"
       |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Natural))
-    |-OverloadedFunctionNode type=(fun "number_get" ((alias Natural)) (alias i32)) annotations=Injected
-      |-FunctionNode type=(fun "number_get" ((alias Natural)) (alias i32))
+    |-OverloadedFunctionNode type=(intersection (fun "property_number" ((alias Natural)) (alias i32)) (fun "property_number" ((alias Natural) (alias i32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_number" ((alias Natural)) (alias i32))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(alias Natural (struct Natural))
+          |-NameIdentifierNode="target" type=(type (alias Natural (struct Natural)))
           |-ReferenceNode type=(type (alias Natural (struct Natural)))
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
-        |-NameIdentifierNode="number_get"
+        |-NameIdentifierNode="property_number"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -689,9 +687,7 @@
             |-QNameNode=target
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="number_get" type=(fun "number_get" ((alias Natural)) (alias i32))
-    |-OverloadedFunctionNode type=(fun "number_set" ((alias Natural) (alias i32)) (alias void)) annotations=Injected
-      |-FunctionNode type=(fun "number_set" ((alias Natural) (alias i32)) (alias void))
+      |-FunctionNode type=(fun "property_number" ((alias Natural) (alias i32)) (alias void))
         |-ParameterNode
           |-NameIdentifierNode="target" type=(type (alias Natural (struct Natural)))
           |-ReferenceNode type=(type (alias Natural (struct Natural)))
@@ -702,7 +698,7 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="number_set"
+        |-NameIdentifierNode="property_number"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -719,7 +715,7 @@
             |-QNameNode=value
               |-NameIdentifierNode="value"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="number_set" type=(fun "number_set" ((alias Natural) (alias i32)) (alias void))
+      |-NameIdentifierNode="property_number" type=(intersection (fun "property_number" ((alias Natural)) (alias i32)) (fun "property_number" ((alias Natural) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(fun "is" ((alias Natural)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Natural)) (alias boolean))
         |-ParameterNode
@@ -885,9 +881,9 @@
                     |-QNameNode=sizeOf
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(fun "real_set" ((alias Complex) (alias f32)) (alias void))
-              |-QNameNode=real_set
-                |-NameIdentifierNode="real_set"
+            |-ReferenceNode type=(intersection (fun "property_real" ((alias Complex)) (alias f32)) (fun "property_real" ((alias Complex) (alias f32)) (alias void)))
+              |-QNameNode=property_real
+                |-NameIdentifierNode="property_real"
             |-ReferenceNode type=(alias Complex (struct Complex)) annotations=IsValueNode
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
@@ -895,9 +891,9 @@
               |-QNameNode=real
                 |-NameIdentifierNode="real"
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(fun "imaginary_set" ((alias Complex) (alias f32)) (alias void))
-              |-QNameNode=imaginary_set
-                |-NameIdentifierNode="imaginary_set"
+            |-ReferenceNode type=(intersection (fun "property_imaginary" ((alias Complex)) (alias f32)) (fun "property_imaginary" ((alias Complex) (alias f32)) (alias void)))
+              |-QNameNode=property_imaginary
+                |-NameIdentifierNode="property_imaginary"
             |-ReferenceNode type=(alias Complex (struct Complex)) annotations=IsValueNode
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
@@ -932,14 +928,14 @@
                 |-QNameNode=$ptr
                   |-NameIdentifierNode="$ptr"
       |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Complex))
-    |-OverloadedFunctionNode type=(fun "real_get" ((alias Complex)) (alias f32)) annotations=Injected
-      |-FunctionNode type=(fun "real_get" ((alias Complex)) (alias f32))
+    |-OverloadedFunctionNode type=(intersection (fun "property_real" ((alias Complex)) (alias f32)) (fun "property_real" ((alias Complex) (alias f32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_real" ((alias Complex)) (alias f32))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(alias Complex (struct Complex))
+          |-NameIdentifierNode="target" type=(type (alias Complex (struct Complex)))
           |-ReferenceNode type=(type (alias Complex (struct Complex)))
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="real_get"
+        |-NameIdentifierNode="property_real"
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
@@ -953,9 +949,7 @@
             |-QNameNode=target
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="real_get" type=(fun "real_get" ((alias Complex)) (alias f32))
-    |-OverloadedFunctionNode type=(fun "real_set" ((alias Complex) (alias f32)) (alias void)) annotations=Injected
-      |-FunctionNode type=(fun "real_set" ((alias Complex) (alias f32)) (alias void))
+      |-FunctionNode type=(fun "property_real" ((alias Complex) (alias f32)) (alias void))
         |-ParameterNode
           |-NameIdentifierNode="target" type=(type (alias Complex (struct Complex)))
           |-ReferenceNode type=(type (alias Complex (struct Complex)))
@@ -966,7 +960,7 @@
           |-ReferenceNode type=(type (alias f32 (native f32)))
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="real_set"
+        |-NameIdentifierNode="property_real"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -983,15 +977,15 @@
             |-QNameNode=value
               |-NameIdentifierNode="value"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="real_set" type=(fun "real_set" ((alias Complex) (alias f32)) (alias void))
-    |-OverloadedFunctionNode type=(fun "imaginary_get" ((alias Complex)) (alias f32)) annotations=Injected
-      |-FunctionNode type=(fun "imaginary_get" ((alias Complex)) (alias f32))
+      |-NameIdentifierNode="property_real" type=(intersection (fun "property_real" ((alias Complex)) (alias f32)) (fun "property_real" ((alias Complex) (alias f32)) (alias void)))
+    |-OverloadedFunctionNode type=(intersection (fun "property_imaginary" ((alias Complex)) (alias f32)) (fun "property_imaginary" ((alias Complex) (alias f32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_imaginary" ((alias Complex)) (alias f32))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(alias Complex (struct Complex))
+          |-NameIdentifierNode="target" type=(type (alias Complex (struct Complex)))
           |-ReferenceNode type=(type (alias Complex (struct Complex)))
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-NameIdentifierNode="imaginary_get"
+        |-NameIdentifierNode="property_imaginary"
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
@@ -1005,9 +999,7 @@
             |-QNameNode=target
               |-NameIdentifierNode="target"
           |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="imaginary_get" type=(fun "imaginary_get" ((alias Complex)) (alias f32))
-    |-OverloadedFunctionNode type=(fun "imaginary_set" ((alias Complex) (alias f32)) (alias void)) annotations=Injected
-      |-FunctionNode type=(fun "imaginary_set" ((alias Complex) (alias f32)) (alias void))
+      |-FunctionNode type=(fun "property_imaginary" ((alias Complex) (alias f32)) (alias void))
         |-ParameterNode
           |-NameIdentifierNode="target" type=(type (alias Complex (struct Complex)))
           |-ReferenceNode type=(type (alias Complex (struct Complex)))
@@ -1018,7 +1010,7 @@
           |-ReferenceNode type=(type (alias f32 (native f32)))
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="imaginary_set"
+        |-NameIdentifierNode="property_imaginary"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -1035,7 +1027,7 @@
             |-QNameNode=value
               |-NameIdentifierNode="value"
           |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="imaginary_set" type=(fun "imaginary_set" ((alias Complex) (alias f32)) (alias void))
+      |-NameIdentifierNode="property_imaginary" type=(intersection (fun "property_imaginary" ((alias Complex)) (alias f32)) (fun "property_imaginary" ((alias Complex) (alias f32)) (alias void)))
     |-OverloadedFunctionNode type=(fun "is" ((alias Complex)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Complex)) (alias boolean))
         |-ParameterNode

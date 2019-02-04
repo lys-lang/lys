@@ -109,13 +109,13 @@ MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
 
 BinMemberOperator ::= '.' | '#'
 
-BinaryExpression  ::= BinMemberOperator NameIdentifier CallArguments? {pin=1,fragment=true}
+BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? {pin=1,fragment=true}
 
-OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
-AndExpression     ::= BitOrExpression (WS+ AndKeyword WS+ BitOrExpression)* {simplifyWhenOneChildren=true}
-BitOrExpression   ::= BitXorExpression (WS+ BitOrOperator WS+ BitXorExpression)* {simplifyWhenOneChildren=true}
-BitXorExpression  ::= BitAndExpression (WS+ BitXorOperator WS+ BitAndExpression)* {simplifyWhenOneChildren=true}
-BitAndExpression  ::= EqExpression (WS+ BitAndOperator WS+ EqExpression)* {simplifyWhenOneChildren=true}
+OrExpression      ::= AndExpression (WS* OrKeyword WS* AndExpression)* {simplifyWhenOneChildren=true}
+AndExpression     ::= BitOrExpression (WS* AndKeyword WS* BitOrExpression)* {simplifyWhenOneChildren=true}
+BitOrExpression   ::= BitXorExpression (WS* BitOrOperator WS* BitXorExpression)* {simplifyWhenOneChildren=true}
+BitXorExpression  ::= BitAndExpression (WS* BitXorOperator WS* BitAndExpression)* {simplifyWhenOneChildren=true}
+BitAndExpression  ::= EqExpression (WS* BitAndOperator WS* EqExpression)* {simplifyWhenOneChildren=true}
 EqExpression      ::= RelExpression (WS* EqOperator WS* RelExpression)* {simplifyWhenOneChildren=true}
 RelExpression     ::= ShiftExpression (WS* RelOperator WS* ShiftExpression)* {simplifyWhenOneChildren=true}
 ShiftExpression   ::= AddExpression (WS* ShiftOperator WS* AddExpression)* {simplifyWhenOneChildren=true}

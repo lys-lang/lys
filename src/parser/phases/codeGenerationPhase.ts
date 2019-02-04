@@ -225,6 +225,17 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
   return t.instruction(node.symbol, (node.arguments || []).map($ => emitWast($ as any, document)));
 }
 
+function emitImplicitCall(implicitCallData: annotations.ImplicitCall, document: Nodes.DocumentNode) {
+  const ofType = implicitCallData.functionType;
+
+  assert(ofType instanceof FunctionType, 'implicit call is not a function');
+
+  return t.callInstruction(
+    t.identifier(ofType.name.internalIdentifier),
+    implicitCallData.args.map($ => emit($, document))
+  );
+}
+
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
     // try {
@@ -309,15 +320,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
       if (node.hasAnnotation(annotations.ImplicitCall)) {
-        const ofType = node.getAnnotation(annotations.ImplicitCall).functionType;
-
-        assert(ofType instanceof FunctionType, 'implicit call is not a function or struct');
-        assert(ofType.parameterNames.length == 0, 'implicit call only works without parameters');
-
-        return t.callInstruction(t.identifier(ofType.name.internalIdentifier), []);
+        return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
       } else {
         const instr = node.isLocal ? 'get_local' : 'get_global';
         return t.instruction(instr, [t.identifier(node.local.name)]);
+      }
+    } else if (node instanceof Nodes.MemberNode) {
+      if (node.hasAnnotation(annotations.ImplicitCall)) {
+        return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
       }
     }
 

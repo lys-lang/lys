@@ -59,7 +59,8 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
         if (parameterType instanceof Nodes.UnionTypeNode) {
           return `
-            fun ${parameterName}_get(target: ${typeName}): ${parameterType} = %wasm {
+            // #[getter]
+            fun property_${parameterName}(target: ${typeName}): ${parameterType} = %wasm {
               (i64.load
                 (i32.add
                   (i32.const ${offset})
@@ -68,7 +69,8 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               )
             }
 
-            fun ${parameterName}_set(target: ${typeName}, value: ${parameterType}): void = %wasm {
+            // #[setter]
+            fun property_${parameterName}(target: ${typeName}, value: ${parameterType}): void = %wasm {
               (i64.store
                 (i32.add
                   (i32.const ${offset})
@@ -80,10 +82,12 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
           `;
         } else {
           return `
-            fun ${parameterName}_get(target: ${typeName}): ${parameterType} =
+            // #[getter]
+            fun property_${parameterName}(target: ${typeName}): ${parameterType} =
               ${parameterType}.load(target, ${offset})
 
-            fun ${parameterName}_set(target: ${typeName}, value: ${parameterType}): void =
+            // #[setter]
+            fun property_${parameterName}(target: ${typeName}, value: ${parameterType}): void =
               ${parameterType}.store(target, value, ${offset})
           `;
         }
@@ -91,7 +95,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
       .join('\n');
 
     const sizes = node.parameters.map(_ => `/* ${_.parameterType}.allocationSize() */ 8`).join(' + ');
-    const callRefs = node.parameters.map(_ => `${_.parameterName}_set(ref, ${_.parameterName})`).join('\n');
+    const callRefs = node.parameters.map(_ => `property_${_.parameterName}(ref, ${_.parameterName})`).join('\n');
 
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(

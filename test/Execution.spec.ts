@@ -3,7 +3,7 @@ declare var describe;
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
 
-describe.only('execution tests', () => {
+describe('execution tests', () => {
   describe('numbers', () => {
     test(
       'casts',
@@ -78,14 +78,14 @@ describe.only('execution tests', () => {
           var a = Vector3(1, 2, 3)
 
           support::test::assert( a is Vector3 )
-          support::test::assert( Vector3.x_get(a)    == 1 )
-          support::test::assert( Vector3.y_get(a)    == 2 )
-          support::test::assert( Vector3.z_get(a)    == 3 )
+          support::test::assert( Vector3.property_x(a)    == 1 )
+          support::test::assert( Vector3.property_y(a)    == 2 )
+          support::test::assert( Vector3.property_z(a)    == 3 )
         }
 
         fun testFailing(): void = {
           var a = Vector3(1, 2, 3)
-          support::test::assert( Vector3.x_get(a)    == 999 )
+          support::test::assert( Vector3.property_x(a)    == 999 )
         }
       `,
       async (x, err) => {
@@ -113,40 +113,99 @@ describe.only('execution tests', () => {
           var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
 
           support::test::assert( a is CatBag )
-          support::test::assert( CatBag.a_get(a)    == 1 )
-          support::test::assert( CatBag.b_get(a)    == true )
-          support::test::assert( CatBag.c_get(a)    == 3.0 )
-          support::test::assert( CatBag.d_get(a)    == 0x8 )
-          support::test::assert( CatBag.e_get(a)    == 0.4 as f64 )
-          support::test::assert( CatBag.f_get(a)    is Red )
-          support::test::assert( CatBag.g_get(a)    is Red )
-          support::test::assert( CatBag.f_get(a)    is Color )
-          support::test::assert( CatBag.g_get(a)    is Color )
+          support::test::assert( CatBag.property_a(a)    == 1 )
+          support::test::assert( CatBag.property_b(a)    == true )
+          support::test::assert( CatBag.property_c(a)    == 3.0 )
+          support::test::assert( CatBag.property_d(a)    == 0x8 )
+          support::test::assert( CatBag.property_e(a)    == 0.4 as f64 )
+          support::test::assert( CatBag.property_f(a)    is Red )
+          support::test::assert( CatBag.property_g(a)    is Red )
+          support::test::assert( CatBag.property_f(a)    is Color )
+          support::test::assert( CatBag.property_g(a)    is Color )
 
-          CatBag.a_set(a, 5)
-          CatBag.b_set(a, false)
-          CatBag.c_set(a, -999.0)
-          CatBag.d_set(a, 0xdeadbeef as i64)
-          CatBag.e_set(a, 6.08e23 as f64)
-          CatBag.f_set(a, Custom(333))
-          CatBag.g_set(a, None)
+          CatBag.property_a(a, 5)
+          CatBag.property_b(a, false)
+          CatBag.property_c(a, -999.0)
+          CatBag.property_d(a, 0xdeadbeef as i64)
+          CatBag.property_e(a, 6.08e23 as f64)
+          CatBag.property_f(a, Custom(333))
+          CatBag.property_g(a, None)
 
-          support::test::assert( CatBag.a_get(a)    == 5 )
-          support::test::assert( CatBag.b_get(a)    == false )
-          support::test::assert( CatBag.c_get(a)    == -999.0 )
-          support::test::assert( CatBag.d_get(a)    == 0xdeadbeef as i64 )
-          support::test::assert( CatBag.e_get(a)    == 6.08e23 as f64 )
-          support::test::assert( CatBag.f_get(a)    is Custom )
-          support::test::assert( CatBag.g_get(a)    is None )
-          support::test::assert( CatBag.f_get(a)    is Color )
-          support::test::assert( CatBag.g_get(a)    is Color )
+          support::test::assert( CatBag.property_a(a)    == 5 )
+          support::test::assert( CatBag.property_b(a)    == false )
+          support::test::assert( CatBag.property_c(a)    == -999.0 )
+          support::test::assert( CatBag.property_d(a)    == 0xdeadbeef as i64 )
+          support::test::assert( CatBag.property_e(a)    == 6.08e23 as f64 )
+          support::test::assert( CatBag.property_f(a)    is Custom )
+          support::test::assert( CatBag.property_g(a)    is None )
+          support::test::assert( CatBag.property_f(a)    is Color )
+          support::test::assert( CatBag.property_g(a)    is Color )
 
-          var custom = CatBag.f_get(a)
+          var custom = CatBag.property_f(a)
 
           support::test::assert( custom is Custom )
 
           custom match {
-            case x is Custom -> support::test::assert( Custom.hex_get(x) == 333 )
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            else -> panic()
+          }
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'set struct values with getters',
+      `
+        type Color {
+          None
+          Red
+          Green
+          Blue
+          Custom(hex: i32)
+        }
+
+        struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
+
+        fun testPassing(): void = {
+          var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
+
+          support::test::assert( a   is CatBag )
+          support::test::assert( a.a == 1 )
+          support::test::assert( a.b == true )
+          support::test::assert( a.c == 3.0 )
+          support::test::assert( a.d == 0x8 )
+          support::test::assert( a.e == 0.4 as f64 )
+          support::test::assert( a.f is Red )
+          support::test::assert( a.g is Red )
+          support::test::assert( a.f is Color )
+          support::test::assert( a.g is Color )
+
+          CatBag.property_a(a, 5)
+          CatBag.property_b(a, false)
+          CatBag.property_c(a, -999.0)
+          CatBag.property_d(a, 0xdeadbeef as i64)
+          CatBag.property_e(a, 6.08e23 as f64)
+          CatBag.property_f(a, Custom(333))
+          CatBag.property_g(a, None)
+
+          support::test::assert( a.a == 5 )
+          support::test::assert( a.b == false )
+          support::test::assert( a.c == -999.0 )
+          support::test::assert( a.d == 0xdeadbeef as i64 )
+          support::test::assert( a.e == 6.08e23 as f64 )
+          support::test::assert( a.f is Custom )
+          support::test::assert( a.g is None )
+          support::test::assert( a.f is Color )
+          support::test::assert( a.g is Color )
+
+          support::test::assert( a.f is Custom )
+
+          a.f match {
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
         }
@@ -169,7 +228,7 @@ describe.only('execution tests', () => {
           var custom: Enum = Custom(333)
 
           custom match {
-            case x is Custom -> support::test::assert( Custom.hex_get(x) == 333 )
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
         }
@@ -178,7 +237,7 @@ describe.only('execution tests', () => {
           var custom: Enum = None
 
           custom match {
-            case x is Custom -> support::test::assert( Custom.hex_get(x) == 333 )
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
         }

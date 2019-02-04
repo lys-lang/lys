@@ -632,6 +632,25 @@ export class NativeType extends Type {
   }
 }
 
+// https://en.wikipedia.org/wiki/Fail-stop
+export class InvalidType extends Type {
+  toString() {
+    return 'invalid';
+  }
+
+  inspect(): string {
+    return '(invalid)';
+  }
+
+  equals(otherType: Type) {
+    return otherType instanceof InvalidType;
+  }
+
+  canBeAssignedTo(_: Type) {
+    return false;
+  }
+}
+
 // https://en.wikipedia.org/wiki/Bottom_type
 export class NeverType extends Type {
   toString(): string {
@@ -672,25 +691,6 @@ export class UnknownType extends Type {
 
   toString() {
     return 'unknown';
-  }
-}
-
-// https://en.wikipedia.org/wiki/Fail-stop
-export class InvalidType extends Type {
-  toString() {
-    return 'invalid';
-  }
-
-  inspect(): string {
-    return '(invalid)';
-  }
-
-  equals(otherType: Type) {
-    return otherType instanceof InvalidType;
-  }
-
-  canBeAssignedTo(_: Type) {
-    return false;
   }
 }
 

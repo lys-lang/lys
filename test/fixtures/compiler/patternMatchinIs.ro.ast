@@ -1594,9 +1594,9 @@
                     |-QNameNode=sizeOf
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(fun "a_set" ((alias Custom) (alias i32)) (alias void))
-              |-QNameNode=a_set
-                |-NameIdentifierNode="a_set"
+            |-ReferenceNode type=(intersection (fun "property_a" ((alias Custom)) (alias i32)) (fun "property_a" ((alias Custom) (alias i32)) (alias void)))
+              |-QNameNode=property_a
+                |-NameIdentifierNode="property_a"
             |-ReferenceNode type=(alias Custom (struct Custom)) annotations=IsValueNode
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
@@ -1631,14 +1631,14 @@
                 |-QNameNode=$ptr
                   |-NameIdentifierNode="$ptr"
       |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Custom))
-    |-OverloadedFunctionNode type=(fun "a_get" ((alias Custom)) (alias i32)) annotations=Injected
-      |-FunctionNode type=(fun "a_get" ((alias Custom)) (alias i32))
+    |-OverloadedFunctionNode type=(intersection (fun "property_a" ((alias Custom)) (alias i32)) (fun "property_a" ((alias Custom) (alias i32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_a" ((alias Custom)) (alias i32))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(alias Custom (struct Custom))
+          |-NameIdentifierNode="target" type=(type (alias Custom (struct Custom)))
           |-ReferenceNode type=(type (alias Custom (struct Custom)))
             |-QNameNode=Custom
               |-NameIdentifierNode="Custom"
-        |-NameIdentifierNode="a_get"
+        |-NameIdentifierNode="property_a"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -1652,9 +1652,7 @@
             |-QNameNode=target
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="a_get" type=(fun "a_get" ((alias Custom)) (alias i32))
-    |-OverloadedFunctionNode type=(fun "a_set" ((alias Custom) (alias i32)) (alias void)) annotations=Injected
-      |-FunctionNode type=(fun "a_set" ((alias Custom) (alias i32)) (alias void))
+      |-FunctionNode type=(fun "property_a" ((alias Custom) (alias i32)) (alias void))
         |-ParameterNode
           |-NameIdentifierNode="target" type=(type (alias Custom (struct Custom)))
           |-ReferenceNode type=(type (alias Custom (struct Custom)))
@@ -1665,7 +1663,7 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="a_set"
+        |-NameIdentifierNode="property_a"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -1682,7 +1680,7 @@
             |-QNameNode=value
               |-NameIdentifierNode="value"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="a_set" type=(fun "a_set" ((alias Custom) (alias i32)) (alias void))
+      |-NameIdentifierNode="property_a" type=(intersection (fun "property_a" ((alias Custom)) (alias i32)) (fun "property_a" ((alias Custom) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(fun "is" ((alias Custom)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Custom)) (alias boolean))
         |-ParameterNode

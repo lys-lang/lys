@@ -464,10 +464,36 @@ export class MemberTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const opNode = node.astNode as Nodes.MemberNode;
 
-    const LHSType = getTypeTypeType(opNode.lhs, node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType(), ctx);
+    const LHSType = node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType();
 
     try {
-      return resolveTypeMember(LHSType, opNode.memberName.name, ctx);
+      if (LHSType instanceof TypeType) {
+        return resolveTypeMember(LHSType.of, opNode.memberName.name, ctx);
+      } else if (LHSType instanceof TypeAlias) {
+        const resolvedProperty = resolveTypeMember(LHSType, 'property_' + opNode.memberName.name, ctx);
+        if (resolvedProperty) {
+          const fun = findFunctionOverload(resolvedProperty, [LHSType], opNode, ctx.parsingContext.messageCollector);
+
+          if (fun && fun instanceof FunctionType) {
+            if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
+              node.astNode.annotate(new annotations.ImplicitCall(fun, [opNode.lhs]));
+            }
+
+            return fun.returnType;
+          } else {
+            throw new AstNodeError(
+              `${LHSType}.property_${opNode.memberName.name} is not a valid property getter`,
+              opNode.memberName
+            );
+          }
+        } else {
+          throw new AstNodeError(
+            `Property ${opNode.memberName.name} doesn't exist in type ${LHSType}`,
+            opNode.memberName
+          );
+        }
+      }
+      throw new AstNodeError(`???`, opNode.memberName);
     } catch (e) {
       if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
         if (e instanceof AstNodeError) {
@@ -476,8 +502,8 @@ export class MemberTypeResolver extends TypeResolver {
           ctx.parsingContext.messageCollector.error(e.toString(), opNode);
         }
       }
-      return INVALID_TYPE;
     }
+    return INVALID_TYPE;
   }
 }
 
@@ -919,7 +945,7 @@ export class ReferenceResolver extends TypeResolver {
 
           if (fun instanceof FunctionType) {
             if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
-              node.astNode.annotate(new annotations.ImplicitCall(fun));
+              node.astNode.annotate(new annotations.ImplicitCall(fun, []));
             }
 
             return fun.returnType;

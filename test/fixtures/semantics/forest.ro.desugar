@@ -97,7 +97,7 @@ ns Node {
   
   fun apply(a: (Tree | Forest)): Node = {
     var ref = fromPointer(system::memory::malloc(sizeOf()))
-    a_set(ref, a)
+    property_a(ref, a)
     ref
   }
   
@@ -106,12 +106,11 @@ ns Node {
       (i64.or (i64.const 0x300000000)  (i64.extend_u/i32 (get_local $ptr)))
     }
   
-  fun a_get(target: Node): (Tree | Forest) = 
+  fun property_a(target: Node): (Tree | Forest) = 
     %wasm {
       (i64.load (i32.add (i32.const 0)  (call addressFromRef  (get_local $target))))
     }
-  
-  fun a_set(target: Node, value: (Tree | Forest)): void = 
+  fun property_a(target: Node, value: (Tree | Forest)): void = 
     %wasm {
       (i64.store (i32.add (i32.const 0)  (call addressFromRef  (get_local $target)))  (get_local $value))
     }
@@ -231,7 +230,7 @@ ns Cons {
   
   fun apply(tree: (Tree | Forest)): Cons = {
     var ref = fromPointer(system::memory::malloc(sizeOf()))
-    tree_set(ref, tree)
+    property_tree(ref, tree)
     ref
   }
   
@@ -240,12 +239,11 @@ ns Cons {
       (i64.or (i64.const 0x600000000)  (i64.extend_u/i32 (get_local $ptr)))
     }
   
-  fun tree_get(target: Cons): (Tree | Forest) = 
+  fun property_tree(target: Cons): (Tree | Forest) = 
     %wasm {
       (i64.load (i32.add (i32.const 0)  (call addressFromRef  (get_local $target))))
     }
-  
-  fun tree_set(target: Cons, value: (Tree | Forest)): void = 
+  fun property_tree(target: Cons, value: (Tree | Forest)): void = 
     %wasm {
       (i64.store (i32.add (i32.const 0)  (call addressFromRef  (get_local $target)))  (get_local $value))
     }

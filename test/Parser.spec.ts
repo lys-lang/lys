@@ -104,6 +104,22 @@ describe('Parser', () => {
       testEquivalence(`var x = ~test.a() - 3`, `var x = (~(test.a())) - 3`);
       testEquivalence(`var x = ~test - 3`, `var x = (~test) - 3`);
       testEquivalence(`var x = 1 - -test - 3`, `var x = (1 - (-test)) - 3`);
+      testEquivalence(`var x = a.b.c.d.e + 1 * 3`, `var x = (a.b.c.d.e + (1 * 3))`);
+      testEquivalence(
+        `var x =    color.r  * (2^16)  |   color.g  * (2^8)  |  color.b`,
+        `var x = (((color.r) * (2^16)) | ((color.g) * (2^8)) | (color.b))`
+      );
+      testEquivalence(
+        `var x =   r * (2^16)  |  g * (2^8)  | b                               `,
+        `var x = ((r * (2^16)) | (g * (2^8)) | b)                              `
+      );
+      testEquivalence(
+        `fun main(color: Color): i32 =
+            color.r * 0x10000 |
+            color.g * 0x100 |
+            color.b`,
+        `fun main(color: Color): i32 = (color.r * 0x10000) | (color.g * 0x100) | (color.b)`
+      );
     });
 
     describe('imports', () => {
@@ -425,6 +441,18 @@ describe('Parser', () => {
         var d = false
         var f = "a string 'single' quote"
         var g = 'a string "double" quote'
+      `;
+    });
+
+    describe('bin op', () => {
+      test`
+        var a = 1 + 2
+        var b = a.b.c + 2
+        var c = a + 3
+        var d = a == 4
+        var f = sarasa::sarasanga( a.b.c == b.c.d )
+        var g = sarasa::sarasanga( a.b.c == 1 )
+        var g = sarasa::sarasanga( a.b.c() == 1 )
       `;
     });
 

@@ -158,7 +158,7 @@ ns Real {
   
   fun apply(number: f32): Real = {
     var ref = fromPointer(system::memory::malloc(sizeOf()))
-    number_set(ref, number)
+    property_number(ref, number)
     ref
   }
   
@@ -167,10 +167,9 @@ ns Real {
       (i64.or (i64.const 0x400000000)  (i64.extend_u/i32 (get_local $ptr)))
     }
   
-  fun number_get(target: Real): f32 = 
+  fun property_number(target: Real): f32 = 
     f32.load(target, 0)
-  
-  fun number_set(target: Real, value: f32): void = 
+  fun property_number(target: Real, value: f32): void = 
     f32.store(target, value, 0)
   
   fun is(a: Real): boolean = 
@@ -205,7 +204,7 @@ ns Natural {
   
   fun apply(number: i32): Natural = {
     var ref = fromPointer(system::memory::malloc(sizeOf()))
-    number_set(ref, number)
+    property_number(ref, number)
     ref
   }
   
@@ -214,10 +213,9 @@ ns Natural {
       (i64.or (i64.const 0x500000000)  (i64.extend_u/i32 (get_local $ptr)))
     }
   
-  fun number_get(target: Natural): i32 = 
+  fun property_number(target: Natural): i32 = 
     i32.load(target, 0)
-  
-  fun number_set(target: Natural, value: i32): void = 
+  fun property_number(target: Natural, value: i32): void = 
     i32.store(target, value, 0)
   
   fun is(a: Natural): boolean = 
@@ -252,8 +250,8 @@ ns Complex {
   
   fun apply(real: f32, imaginary: f32): Complex = {
     var ref = fromPointer(system::memory::malloc(sizeOf()))
-    real_set(ref, real)
-    imaginary_set(ref, imaginary)
+    property_real(ref, real)
+    property_imaginary(ref, imaginary)
     ref
   }
   
@@ -262,16 +260,14 @@ ns Complex {
       (i64.or (i64.const 0x600000000)  (i64.extend_u/i32 (get_local $ptr)))
     }
   
-  fun real_get(target: Complex): f32 = 
+  fun property_real(target: Complex): f32 = 
     f32.load(target, 0)
-  
-  fun real_set(target: Complex, value: f32): void = 
+  fun property_real(target: Complex, value: f32): void = 
     f32.store(target, value, 0)
   
-  fun imaginary_get(target: Complex): f32 = 
+  fun property_imaginary(target: Complex): f32 = 
     f32.load(target, 8)
-  
-  fun imaginary_set(target: Complex, value: f32): void = 
+  fun property_imaginary(target: Complex, value: f32): void = 
     f32.store(target, value, 8)
   
   fun is(a: Complex): boolean = 

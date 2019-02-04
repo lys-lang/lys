@@ -1567,6 +1567,16 @@ describe('Types', function() {
       `;
     });
 
+    describe('getters and setters', () => {
+      checkMainType`
+        struct X(value: i32)
+
+        fun main(a: X): i32 = a.value
+        ---
+        fun(a: X) -> i32
+      `;
+    });
+
     describe('match is not exhaustive', () => {
       checkMainType`
         fun test(x: i32): void = {

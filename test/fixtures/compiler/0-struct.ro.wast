@@ -53,13 +53,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_36 (result i32)
+    (block $unknown_block_43 (result i32)
       (if $a_wild_if (result i32) (call $system::core::> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_37 (result i32)
+            (block $unknown_block_44 (result i32)
                 (if $a_wild_if (call $system::core::> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_38
+                      (block $unknown_block_45
                           (call $system::core::panic_1)
                         )
                     )
@@ -70,15 +70,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::> (get_local $newPtr) (call $system::core::<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_39
+                      (block $unknown_block_46
                           (set_local $pagesNeeded (call $system::core::>>> (call $system::core::& (call $system::core::+ (call $system::core::- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_40
+                                (block $unknown_block_47
                                     (if $a_wild_if (call $system::core::< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_41
+                                          (block $unknown_block_48
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -97,7 +97,7 @@
               )
           )
           (else
-            (block $unknown_block_42 (result i32)
+            (block $unknown_block_49 (result i32)
                 (i32.const 0)
               )
           )
@@ -923,31 +923,31 @@
     (local $ref i64)
     (block $unknown_block_2 (result i64)
       (set_local $ref (call $test/fixtures/compiler/0-struct.ro::fromPointer_1 (call $system::memory::malloc (call $test/fixtures/compiler/0-struct.ro::sizeOf))))
-      (call $test/fixtures/compiler/0-struct.ro::r_set_1 (get_local $ref) (get_local $r))
-      (call $test/fixtures/compiler/0-struct.ro::g_set_1 (get_local $ref) (get_local $g))
-      (call $test/fixtures/compiler/0-struct.ro::b_set_1 (get_local $ref) (get_local $b))
+      (call $test/fixtures/compiler/0-struct.ro::property_r_2 (get_local $ref) (get_local $r))
+      (call $test/fixtures/compiler/0-struct.ro::property_g_2 (get_local $ref) (get_local $g))
+      (call $test/fixtures/compiler/0-struct.ro::property_b_2 (get_local $ref) (get_local $b))
       (get_local $ref)
     )
   )
   (func $test/fixtures/compiler/0-struct.ro::fromPointer_1 (param $ptr i32) (result i64)
     (i64.or (i64.const 0x500000000) (i64.extend_u/i32 (get_local $ptr)))
   )
-  (func $test/fixtures/compiler/0-struct.ro::r_get (param $target i64) (result i32)
+  (func $test/fixtures/compiler/0-struct.ro::property_r_1 (param $target i64) (result i32)
     (call $system::core::load_4 (get_local $target) (i32.const 0))
   )
-  (func $test/fixtures/compiler/0-struct.ro::r_set_1 (param $target i64) (param $value i32)
+  (func $test/fixtures/compiler/0-struct.ro::property_r_2 (param $target i64) (param $value i32)
     (call $system::core::store_8 (get_local $target) (get_local $value) (i32.const 0))
   )
-  (func $test/fixtures/compiler/0-struct.ro::g_get (param $target i64) (result i32)
+  (func $test/fixtures/compiler/0-struct.ro::property_g_1 (param $target i64) (result i32)
     (call $system::core::load_4 (get_local $target) (i32.const 8))
   )
-  (func $test/fixtures/compiler/0-struct.ro::g_set_1 (param $target i64) (param $value i32)
+  (func $test/fixtures/compiler/0-struct.ro::property_g_2 (param $target i64) (param $value i32)
     (call $system::core::store_8 (get_local $target) (get_local $value) (i32.const 8))
   )
-  (func $test/fixtures/compiler/0-struct.ro::b_get (param $target i64) (result i32)
+  (func $test/fixtures/compiler/0-struct.ro::property_b_1 (param $target i64) (result i32)
     (call $system::core::load_4 (get_local $target) (i32.const 16))
   )
-  (func $test/fixtures/compiler/0-struct.ro::b_set_1 (param $target i64) (param $value i32)
+  (func $test/fixtures/compiler/0-struct.ro::property_b_2 (param $target i64) (param $value i32)
     (call $system::core::store_8 (get_local $target) (get_local $value) (i32.const 16))
   )
   (func $test/fixtures/compiler/0-struct.ro::is_8 (param $a i64) (result i32)
