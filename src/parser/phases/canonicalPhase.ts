@@ -3,7 +3,7 @@ import { Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ParsingPhaseResult } from './parsingPhase';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 
 function binaryOpVisitor(astNode: Nodes.ASTNode) {
   let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode | Nodes.AsExpressionNode | Nodes.IsExpressionNode;

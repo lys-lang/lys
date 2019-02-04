@@ -16,7 +16,7 @@ import { FunctionType, StructType, Type } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 import { assert } from 'console';
 
 type CompilationModuleResult = {

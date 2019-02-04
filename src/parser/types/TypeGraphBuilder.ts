@@ -1,5 +1,4 @@
 import { TypeNode, TypeGraph, TypeResolver, Edge, LiteralTypeResolver } from './TypeGraph';
-import { Reference, ParsingContext, MessageCollector } from '../closure';
 import { Nodes } from '../nodes';
 import {
   getTypeResolver,
@@ -12,6 +11,9 @@ import {
 } from './typeResolvers';
 import { Type, TypeAlias, InjectableTypes } from '../types';
 import { AstNodeError } from '../NodeError';
+import { Reference } from '../Reference';
+import { ParsingContext } from '../ParsingContext';
+import { MessageCollector } from '../MessageCollector';
 
 export class TypeGraphBuilder {
   _nodeMap = new Map<Nodes.Node, TypeNode>();

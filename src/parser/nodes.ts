@@ -1,8 +1,9 @@
 import { IToken, TokenError } from 'ebnf';
-import { Closure, Reference } from './closure';
+import { Closure } from './Closure';
 import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor } from './annotations';
 import { indent } from '../utils/astPrinter';
+import { Reference } from './Reference';
 
 export namespace Nodes {
   export interface ASTNode extends IToken {

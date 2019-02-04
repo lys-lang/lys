@@ -6,7 +6,7 @@ import { TypeGraph } from '../types/TypeGraph';
 import { TypeGraphBuilder } from '../types/TypeGraphBuilder';
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 import { print } from '../../utils/typeGraphPrinter';
 import { InjectableTypes, StructType, UnionType, TypeType, TypeAlias, IntersectionType } from '../types';
 

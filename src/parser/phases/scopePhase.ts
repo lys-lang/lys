@@ -5,7 +5,7 @@ import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
 import { AstNodeError } from '../NodeError';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
 
@@ -114,7 +114,7 @@ const createClosures = walkPreOrder(
         node.value.closure = node.closure.newChildClosure('VarDeclaration');
         node.closure.set(node.variableName, 'VALUE');
       } else if (node instanceof Nodes.NameSpaceDirective) {
-        node.closure = node.closure.newChildClosure('NSDirective');
+        node.closure = node.closure.newChildClosure(node.reference.toString() + '.');
       } else if (node instanceof Nodes.TypeDirectiveNode) {
         node.closure.set(node.variableName, 'TYPE');
       } else if (node instanceof Nodes.FunctionNode) {

@@ -182,7 +182,7 @@ digraph Document {
     172 -> 175[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
     174 -> 173[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
     175 -> 173[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/poli1.ro::==_4(ref,ref)";
+  label="test/fixtures/types/poli1.ro::Boolean.==(ref,ref)";
 }
   subgraph cluster1 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -196,13 +196,13 @@ digraph Document {
     178 -> 181[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
     180 -> 179[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
     181 -> 179[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/poli1.ro::!=_4(ref,ref)";
+  label="test/fixtures/types/poli1.ro::Boolean.!=(ref,ref)";
 }
   subgraph cluster2 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     183 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     184 [label="Ref: True\n(type (alias True (struct True)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::apply()";
+  label="test/fixtures/types/poli1.ro::True.apply()";
 }
   subgraph cluster3 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -211,13 +211,13 @@ digraph Document {
     187 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     188 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     189 [label="Ref: True\n(type (alias True (struct True)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::load(ref,i32)";
+  label="test/fixtures/types/poli1.ro::True.load(ref,i32)";
 }
   subgraph cluster4 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     190 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     191 [label="Ref: False\n(type (alias False (struct False)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::apply_2()";
+  label="test/fixtures/types/poli1.ro::False.apply()";
 }
   subgraph cluster5 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -226,14 +226,14 @@ digraph Document {
     194 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     195 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     196 [label="Ref: False\n(type (alias False (struct False)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::load_2(ref,i32)";
+  label="test/fixtures/types/poli1.ro::False.load(ref,i32)";
 }
   subgraph cluster6 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     197 [label="Name: a\n(alias True (struct True))", fillcolor=grey];
     198 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     199 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::is(True)";
+  label="test/fixtures/types/poli1.ro::True.is(True)";
 }
   subgraph cluster7 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -241,7 +241,7 @@ digraph Document {
     201 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     202 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     203 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::==(True,ref)";
+  label="test/fixtures/types/poli1.ro::True.==(True,ref)";
 }
   subgraph cluster8 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -249,7 +249,7 @@ digraph Document {
     205 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     206 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     207 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::!=(True,ref)";
+  label="test/fixtures/types/poli1.ro::True.!=(True,ref)";
 }
   subgraph cluster9 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -259,14 +259,14 @@ digraph Document {
     211 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     212 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     213 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::store(ref,True,i32)";
+  label="test/fixtures/types/poli1.ro::True.store(ref,True,i32)";
 }
   subgraph cluster10 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     214 [label="Name: a\n(alias False (struct False))", fillcolor=grey];
     215 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     216 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::is_2(False)";
+  label="test/fixtures/types/poli1.ro::False.is(False)";
 }
   subgraph cluster11 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -274,7 +274,7 @@ digraph Document {
     218 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     219 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     220 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::==_2(False,ref)";
+  label="test/fixtures/types/poli1.ro::False.==(False,ref)";
 }
   subgraph cluster12 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -282,7 +282,7 @@ digraph Document {
     222 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     223 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     224 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::!=_2(False,ref)";
+  label="test/fixtures/types/poli1.ro::False.!=(False,ref)";
 }
   subgraph cluster13 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -292,14 +292,14 @@ digraph Document {
     228 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     229 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     230 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::store_2(ref,False,i32)";
+  label="test/fixtures/types/poli1.ro::False.store(ref,False,i32)";
 }
   subgraph cluster14 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     231 [label="Name: a\n(union (alias True (struct True)) (alias False (struct False)))", fillcolor=grey];
     232 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     233 [label="Ref: Boolean\n(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::as_4(True | False)";
+  label="test/fixtures/types/poli1.ro::Boolean.as(True | False)";
 }
   subgraph cluster15 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -308,21 +308,21 @@ digraph Document {
     236 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     237 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     238 [label="Ref: Boolean\n(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::load_4(ref,i32)";
+  label="test/fixtures/types/poli1.ro::Boolean.load(ref,i32)";
 }
   subgraph cluster16 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     239 [label="Name: a\n(alias True (struct True))", fillcolor=grey];
     240 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     241 [label="Ref: Boolean\n(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::as(True)";
+  label="test/fixtures/types/poli1.ro::True.as(True)";
 }
   subgraph cluster17 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     242 [label="Name: a\n(alias False (struct False))", fillcolor=grey];
     243 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     244 [label="Ref: Boolean\n(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::as_2(False)";
+  label="test/fixtures/types/poli1.ro::False.as(False)";
 }
   subgraph cluster18 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -371,7 +371,7 @@ digraph Document {
     263 -> 259[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
     264 -> 263[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
     265 -> 263[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/poli1.ro::is_4(Boolean)";
+  label="test/fixtures/types/poli1.ro::Boolean.is(Boolean)";
 }
   subgraph cluster20 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -381,14 +381,14 @@ digraph Document {
     270 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     271 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     272 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::store_4(ref,Boolean,i32)";
+  label="test/fixtures/types/poli1.ro::Boolean.store(ref,Boolean,i32)";
 }
   subgraph cluster21 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     273 [label="Name: a\n(alias Boolean (union (alias True (struct True)) (alias False (struct False))))", fillcolor=grey];
     274 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
     275 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
-  label="test/fixtures/types/poli1.ro::as_5(Boolean)";
+  label="test/fixtures/types/poli1.ro::Boolean.as_1(Boolean)";
 }
   subgraph cluster22 { rankdir=TB;
     node [style=filled, fillcolor=grey];

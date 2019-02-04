@@ -1,11 +1,12 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { Closure, ParsingContext } from '../closure';
+import { Closure } from '../Closure';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
 import { AstNodeError } from '../NodeError';
 import { annotations } from '../annotations';
+import { ParsingContext } from '../ParsingContext';
 
 const overloadFunctions = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },

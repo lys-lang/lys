@@ -8,7 +8,7 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
   node.parent = parent;

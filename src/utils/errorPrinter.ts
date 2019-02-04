@@ -2,7 +2,7 @@ declare var require;
 const colors = require('colors/safe');
 import { LineMapper, ITextPosition } from './LineMapper';
 import { IErrorPositionCapable } from '../parser/NodeError';
-import { ParsingContext } from '../parser/closure';
+import { ParsingContext } from '../parser/ParsingContext';
 import { ParsingPhaseResult } from '../parser/phases/parsingPhase';
 import { indent } from './astPrinter';
 

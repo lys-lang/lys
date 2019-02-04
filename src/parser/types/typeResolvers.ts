@@ -26,7 +26,7 @@ import {
   UnexpectedType,
   CannotInferReturnType
 } from '../NodeError';
-import { MessageCollector } from '../closure';
+import { MessageCollector } from '../MessageCollector';
 
 declare var console;
 

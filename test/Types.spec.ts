@@ -10,7 +10,7 @@ import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 import { UnionType, StructType, RefType, TypeAlias, InjectableTypes, Type } from '../dist/parser/types';
 
 const parsingContext = new ParsingContext();

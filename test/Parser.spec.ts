@@ -3,7 +3,7 @@ declare var describe, it, require, console;
 import { folderBasedTest, testParseToken, printAST } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { expect } from 'chai';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 
 describe('Parser', () => {
   const phases = function(txt: string, fileName: string): CanonicalPhaseResult {

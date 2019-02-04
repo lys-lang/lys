@@ -7,7 +7,7 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 
 declare var it;
 
