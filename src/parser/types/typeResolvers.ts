@@ -62,6 +62,8 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new PassThroughTypeTypeResolver();
   } else if (astNode instanceof Nodes.BooleanLiteral) {
     return new PassThroughTypeTypeResolver();
+  } else if (astNode instanceof Nodes.StringLiteral) {
+    return new PassThroughTypeTypeResolver();
   } else if (astNode instanceof Nodes.IfNode) {
     return new IfElseTypeResolver();
   } else if (astNode instanceof Nodes.NameIdentifierNode) {

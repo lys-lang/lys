@@ -13,7 +13,7 @@ Directive         ::= ( FunctionDirective
                       | TypeDirective
                       | ImportDirective
                       | EffectDirective
-                      | NSDirective
+                      | ImplDirective
                       ) {fragment=true}
 
 ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
@@ -23,7 +23,7 @@ VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') ValueType)? {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
-NSDirective       ::= PrivateModifier? NAMESPACE_KEYWORD NamespaceDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+ImplDirective     ::= PrivateModifier? IMPL_KEYWORD ImplDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
 InlineModifier    ::= INLINE_KEYWORD
@@ -76,7 +76,7 @@ FunOperator       ::= ( BitNotPreOperator
                       | NotPreOperator
                       )
 
-NamespaceDeclaration ::= Reference WS* NamespaceElementList {pin=1}
+ImplDeclaration ::= Reference WS* NamespaceElementList {pin=1}
 NamespaceElementList ::= '{' (WS* Directive)* WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
@@ -190,7 +190,7 @@ SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
 
 /* Tokens */
 
@@ -198,7 +198,7 @@ FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
-NAMESPACE_KEYWORD ::= 'ns'        WS+
+IMPL_KEYWORD      ::= 'impl'      WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
 
 TYPE_KEYWORD      ::= ( 'type'
@@ -268,7 +268,7 @@ AndKeyword        ::= '&&'      ![A-Za-z0-9_]
 OrKeyword         ::= '||'      ![A-Za-z0-9_]
 
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

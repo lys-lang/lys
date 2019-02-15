@@ -13,7 +13,7 @@ type char
 type usize
 type isize
 type ref
-type string
+type bytes
 type never
 type invalid
 type unknown
@@ -28,7 +28,7 @@ fun addressFromRef(pointer: ref): u32 = %wasm {
 
 fun panic(): void = %wasm { (unreachable) }
 
-ns u8 {
+impl u8 {
   fun sizeOf(): u32 = %wasm { (i32.const 1) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -73,7 +73,7 @@ ns u8 {
   }
 }
 
-ns i16 {
+impl i16 {
   fun sizeOf(): u32 = %wasm { (i32.const 2) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -90,7 +90,7 @@ ns i16 {
   }
 }
 
-ns u16 {
+impl u16 {
   fun sizeOf(): u32 = %wasm { (i32.const 2) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -110,7 +110,7 @@ ns u16 {
   }
 }
 
-ns i32 {
+impl i32 {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -172,7 +172,7 @@ ns i32 {
 }
 
 
-ns u32 {
+impl u32 {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -234,7 +234,7 @@ ns u32 {
 
 }
 
-ns i64 {
+impl i64 {
   fun sizeOf(): u32 = %wasm { (i32.const 8) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -294,7 +294,7 @@ ns i64 {
   }
 }
 
-ns u64 {
+impl u64 {
   fun sizeOf(): u32 = %wasm { (i32.const 8) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -354,7 +354,7 @@ ns u64 {
   }
 }
 
-ns f32 {
+impl f32 {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -411,7 +411,7 @@ ns f32 {
   }
 }
 
-ns f64 {
+impl f64 {
   fun sizeOf(): u32 = %wasm { (i32.const 8) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -469,7 +469,7 @@ ns f64 {
   }
 }
 
-ns boolean {
+impl boolean {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -528,7 +528,7 @@ ns boolean {
   }
 }
 
-ns char {
+impl char {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -541,17 +541,17 @@ ns char {
   fun (as)(lhs: char): f64 = %wasm { (f64.convert_u/i32 (get_local $lhs)) }
 }
 
-ns usize {
+impl usize {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 }
 
-ns isize {
+impl isize {
   fun sizeOf(): u32 = %wasm { (i32.const 4) }
   fun allocationSize(): u32 = sizeOf()
 }
 
-ns ref {
+impl ref {
   fun sizeOf(): u32 = %wasm { (i32.const 8) }
   fun allocationSize(): u32 = sizeOf()
 
@@ -587,8 +587,18 @@ ns ref {
   }
 }
 
-ns string {
+impl bytes {
+  // bytes is a structure
 
+  fun toAddr(str: bytes): i64 = %wasm {
+    (get_local $str)
+  }
+
+  // #[getter]
+  fun property_length(str: bytes): i32 = (toAddr(str) >> 32 as i64) as i32
+
+  // #[getter]
+  fun property_ptr(str: bytes): i32 = toAddr(str) as i32
 }
 
 /**

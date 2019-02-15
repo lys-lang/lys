@@ -6,7 +6,7 @@ fun test(a: i32): boolean =
 
 type Number = (Infinity | NDet | Real | Natural | Complex)
 
-ns Number {
+impl Number {
   fun is(a: Number): boolean = {
     a is Infinity || a is NDet || a is Real || a is Natural || a is Complex
   }
@@ -28,42 +28,42 @@ ns Number {
     }
 }
 
-ns Infinity {
+impl Infinity {
   fun as(a: Infinity): Number = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns NDet {
+impl NDet {
   fun as(a: NDet): Number = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Real {
+impl Real {
   fun as(a: Real): Number = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Natural {
+impl Natural {
   fun as(a: Natural): Number = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Complex {
+impl Complex {
   fun as(a: Complex): Number = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Number {
+impl Number {
   fun as(a: (Infinity | NDet | Real | Natural | Complex)): Number = 
     %wasm {
       (get_local $a)
@@ -76,7 +76,7 @@ ns Number {
 
 type Infinity = ???
 
-ns Infinity {
+impl Infinity {
   fun apply(): Infinity = 
     %wasm {
       (i64.const 0x200000000)
@@ -110,7 +110,7 @@ ns Infinity {
 
 type NDet = ???
 
-ns NDet {
+impl NDet {
   fun apply(): NDet = 
     %wasm {
       (i64.const 0x300000000)
@@ -144,7 +144,7 @@ ns NDet {
 
 type Real = ???
 
-ns Real {
+impl Real {
   fun discriminant(): u64 = 
     %wasm {
       (i64.const 0x400000000)
@@ -190,7 +190,7 @@ ns Real {
 
 type Natural = ???
 
-ns Natural {
+impl Natural {
   fun discriminant(): u64 = 
     %wasm {
       (i64.const 0x500000000)
@@ -236,7 +236,7 @@ ns Natural {
 
 type Complex = ???
 
-ns Complex {
+impl Complex {
   fun discriminant(): u64 = 
     %wasm {
       (i64.const 0x600000000)

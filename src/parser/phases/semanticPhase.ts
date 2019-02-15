@@ -32,7 +32,7 @@ const overloadFunctions = function(
         overloadedFunctions.set(functionName, overloaded);
         document.directives[ix] = overloaded;
       }
-    } else if (node instanceof Nodes.NameSpaceDirective) {
+    } else if (node instanceof Nodes.ImplDirective) {
       overloadFunctions(node, phase);
     }
   });
@@ -102,7 +102,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
       phase.parsingContext.getParsingPhaseForContent(
         phase.moduleName + '#' + typeName,
         `
-            ns ${typeName} {
+            impl ${typeName} {
               fun discriminant(): u64 = %wasm {
                 (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
               }
@@ -170,7 +170,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
       phase.parsingContext.getParsingPhaseForContent(
         phase.moduleName + '#' + typeName,
         `
-          ns ${typeName} {
+          impl ${typeName} {
             fun apply(): ${typeName} = %wasm {
               (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
             }
@@ -280,14 +280,14 @@ const processUnions = function(
 
           referenceTypes.forEach($ => {
             injectedDirectives.push(`
-              ns ${$.variable.text} {
+              impl ${$.variable.text} {
                 fun (as)(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
               }
             `);
           });
 
           injectedDirectives.push(`
-            ns ${node.variableName.name} {
+            impl ${node.variableName.name} {
               fun (as)(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
               fun (as)(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
             }
@@ -299,7 +299,7 @@ const processUnions = function(
             phase.moduleName + '#' + node.variableName.name,
             `
               // Union type ${variableName.name}
-              ns ${variableName.name} {
+              impl ${variableName.name} {
                 fun (is)(a: ${node.variableName.name}): boolean = {
                   ${referenceTypes.map($ => 'a is ' + $.variable.text).join(' || ') || 'false'}
                 }

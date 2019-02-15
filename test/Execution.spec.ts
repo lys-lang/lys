@@ -17,6 +17,61 @@ describe('execution tests', () => {
     );
   });
 
+  describe('strings', () => {
+    test(
+      'str len',
+      `
+          fun len(): i32 = "asd".length
+
+          fun b(x: i32): i32 = x match {
+            case 0 -> "".length
+            case 1 -> "1".length
+            case 2 -> "11".length
+            else -> {
+              panic()
+              0
+            }
+          }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.len()).to.eq(3);
+        expect(x.exports.b(0)).to.eq(0);
+        expect(x.exports.b(1)).to.eq(1);
+        expect(x.exports.b(2)).to.eq(2);
+        expect(() => x.exports.b(92)).to.throw();
+      }
+    );
+    test(
+      'str concat',
+      `
+          fun alloc(size: i32): bytes = %wasm {
+            (i64.or
+              (i64.extend_s/i32 (call $system::memory::malloc (get_local $size)))
+              (i64.shl
+                (i64.extend_s/i32 (get_local $size))
+                (i64.const 32)
+              )
+            )
+          }
+
+          fun concat(lhs: bytes, rhs: bytes): bytes = {
+            var ret = alloc(lhs.length + rhs.length)
+            system::memory::memcpy(ret.ptr, lhs.ptr, lhs.length)
+            system::memory::memcpy(ret.ptr + lhs.length, rhs.ptr, rhs.length)
+            ret
+          }
+
+          fun main(): i32 =
+            concat("asd", "dsa").length
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.main()).to.eq(6);
+      }
+    );
+  });
+
   describe.skip('named types', () => {
     test(
       'type alias of native',
@@ -565,11 +620,11 @@ describe('execution tests', () => {
         type i32
         type f32
 
-        ns f32 {
+        impl f32 {
           fun (+)(a: f32, b: i32): i32 = 0
         }
 
-        ns i32 {
+        impl i32 {
           fun (+)(a: i32, b: i32): i32 = 1
           fun (+)(a: i32, b: f32): i32 = 4
         }

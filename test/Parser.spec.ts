@@ -151,24 +151,24 @@ describe('Parser', () => {
         type Enum=???
         type Enum = ???
         type Enum =                    ???
-        ns Enum {
+        impl Enum {
 
         } // a
-        type Enum =??? ns Enum {}
-        type Enum ns Enum {}
-        type Enum ns Enum {
+        type Enum =??? impl Enum {}
+        type Enum impl Enum {}
+        type Enum impl Enum {
           //
         } // b
-        type Enum ns Enum{
+        type Enum impl Enum{
           //
         } // c
-        type Enum ns Enum
+        type Enum impl Enum
         {
 
         } // d
       `;
       test`
-        ns Enum {
+        impl Enum {
           val test = 1
         }
       `;
@@ -178,7 +178,7 @@ describe('Parser', () => {
         type CC
       `;
       test`
-        ns Enum {
+        impl Enum {
           val test = 1
         }
 
@@ -187,7 +187,7 @@ describe('Parser', () => {
         }
       `;
       test`
-        ns Enum {
+        impl Enum {
           val test = 1
 
           private fun x(): int = test

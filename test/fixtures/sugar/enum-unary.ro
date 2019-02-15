@@ -9,13 +9,13 @@ type None
 type Some
 type Option = Some | None
 
-ns Option<T> {
+impl Option<T> {
   fun (is)(x: ref) = {
     Some.is(x) || None.is(x)
   }
 }
 
-ns Some {
+impl Some {
   val determinant: usize = 1
   val memorySize = ref.memorySize + ref.memorySize /* value: ref */
   fun (is)(x: ref) = x.determinant == determinant
@@ -45,7 +45,7 @@ ns Some {
   }
 }
 
-ns None {
+impl None {
   val determinant: usize = 2
   val staticInstance: ref = determinant
   fun (is)(x: ref) = x == staticInstance

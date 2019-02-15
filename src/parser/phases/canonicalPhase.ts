@@ -61,11 +61,11 @@ const visitor = {
 
     return ret;
   },
-  NSDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.NameSpaceDirective(astNode);
+  ImplDirective(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.ImplDirective(astNode);
 
     ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
-    const declNode = findChildrenType(astNode, 'NamespaceDeclaration');
+    const declNode = findChildrenType(astNode, 'ImplDeclaration');
     ret.reference = visit(findChildrenType(declNode, 'Reference'));
     const directivesNode = findChildrenType(declNode, 'NamespaceElementList');
     ret.directives = directivesNode.children.map(visit) as Nodes.DirectiveNode[];
@@ -372,7 +372,7 @@ const visitor = {
   },
   StringLiteral(x: Nodes.ASTNode) {
     const ret = new Nodes.StringLiteral(x);
-    ret.value = x.text; // TODO: Parse string correctly
+    ret.value = JSON.parse(x.text);
     return ret;
   },
   BinNegExpression(x: Nodes.ASTNode) {

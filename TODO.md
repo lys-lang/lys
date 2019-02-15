@@ -79,7 +79,7 @@ type Option<T> = Some<T> | None
 type Some<T>
 type None
 
-ns Option<T> {
+impl Option<T> {
   fun (is)(x: ref) = {
     Some.is(x) || None.is(x)
   }
@@ -88,7 +88,7 @@ ns Option<T> {
   fun (as)(x: None): Option<Nothing> = x
 }
 
-ns None {
+impl None {
   val determinant: usize = 2
   val staticInstance: ref = determinant
   fun (is)(x: ref) = x == staticInstance
@@ -111,7 +111,7 @@ type Temp = Celcius | Kelvin
 type Celcius
 type Kelvin
 
-ns Temp {
+impl Temp {
   fun (is)(x: ref) = {
     Celcius.is(x) || Kelvin.is(x)
   }
@@ -120,7 +120,7 @@ ns Temp {
   fun (as)(x: Celcius): Temp = x
 }
 
-ns Celcius {
+impl Celcius {
   val determinant = 1
   val memorySize = ref.memorySize + f32.memorySize /* temperature: f32 */
   fun (is)(x: ref) = x.determinant == determinant
@@ -143,7 +143,7 @@ ns Celcius {
   }
 }
 
-ns Kelvin {
+impl Kelvin {
   val determinant = 2
   val memorySize = ref.memorySize + f32.memorySize  /* n: f32 */
   fun (is)(x: ref) = x.determinant == determinant

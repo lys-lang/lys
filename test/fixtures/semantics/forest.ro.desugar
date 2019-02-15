@@ -1,6 +1,6 @@
 type Tree = (Empty | Node)
 
-ns Tree {
+impl Tree {
   fun is(a: Tree): boolean = {
     a is Empty || a is Node
   }
@@ -22,21 +22,21 @@ ns Tree {
     }
 }
 
-ns Empty {
+impl Empty {
   fun as(a: Empty): Tree = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Node {
+impl Node {
   fun as(a: Node): Tree = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Tree {
+impl Tree {
   fun as(a: (Empty | Node)): Tree = 
     %wasm {
       (get_local $a)
@@ -49,7 +49,7 @@ ns Tree {
 
 type Empty = ???
 
-ns Empty {
+impl Empty {
   fun apply(): Empty = 
     %wasm {
       (i64.const 0x200000000)
@@ -83,7 +83,7 @@ ns Empty {
 
 type Node = ???
 
-ns Node {
+impl Node {
   fun discriminant(): u64 = 
     %wasm {
       (i64.const 0x300000000)
@@ -133,7 +133,7 @@ ns Node {
 
 type Forest = (Nil | Cons)
 
-ns Forest {
+impl Forest {
   fun is(a: Forest): boolean = {
     a is Nil || a is Cons
   }
@@ -155,21 +155,21 @@ ns Forest {
     }
 }
 
-ns Nil {
+impl Nil {
   fun as(a: Nil): Forest = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Cons {
+impl Cons {
   fun as(a: Cons): Forest = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns Forest {
+impl Forest {
   fun as(a: (Nil | Cons)): Forest = 
     %wasm {
       (get_local $a)
@@ -182,7 +182,7 @@ ns Forest {
 
 type Nil = ???
 
-ns Nil {
+impl Nil {
   fun apply(): Nil = 
     %wasm {
       (i64.const 0x500000000)
@@ -216,7 +216,7 @@ ns Nil {
 
 type Cons = ???
 
-ns Cons {
+impl Cons {
   fun discriminant(): u64 = 
     %wasm {
       (i64.const 0x600000000)

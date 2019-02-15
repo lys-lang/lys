@@ -1,6 +1,8 @@
 (module
  (type $0 (func (result i32)))
  (type $1 (func (param i32) (result i32)))
+ (memory $0 1)
+ (export "memory" (memory $0))
  (export "main" (func $0))
  (export "main2" (func $1))
  (func $0 (; 0 ;) (type $0) (result i32)

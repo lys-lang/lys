@@ -709,7 +709,7 @@ export const InjectableTypes = {
   f32: new NativeType('f32', NativeTypes.f32),
   f64: new NativeType('f64', NativeTypes.f64),
   void: new NativeType('void', NativeTypes.void),
-  string: new NativeType('string', NativeTypes.i64),
+  bytes: new NativeType('bytes', NativeTypes.i64),
   ref: RefType.instance,
   never: new NeverType(),
   unknown: new UnknownType(),

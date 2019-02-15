@@ -286,8 +286,6 @@ export namespace Nodes {
     /** Contextual type arguments. */
     contextualTypeArguments: Map<string, Type> | null;
 
-    nextInlineId: number = 0;
-
     private nextBreakId: number = 0;
     private breakStack: number[] | null = null;
 
@@ -464,12 +462,12 @@ export namespace Nodes {
     }
   }
 
-  export class NameSpaceDirective extends DirectiveNode {
+  export class ImplDirective extends DirectiveNode {
     reference: ReferenceNode;
     directives: DirectiveNode[];
 
     toString() {
-      return `ns ${this.reference} {\n${indent(this.directives.join('\n\n'))}\n}`;
+      return `impl ${this.reference} {\n${indent(this.directives.join('\n\n'))}\n}`;
     }
   }
 
@@ -626,6 +624,8 @@ export namespace Nodes {
 
   export class StringLiteral extends LiteralNode<string> {
     value: string;
+    offset: number;
+    length: number;
   }
 
   export class FunctionCallNode extends ExpressionNode {

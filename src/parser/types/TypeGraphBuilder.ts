@@ -58,7 +58,7 @@ export class TypeGraphBuilder {
       return this.traverse(node);
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       return this.processTypeDirective(node);
-    } else if (node instanceof Nodes.NameSpaceDirective) {
+    } else if (node instanceof Nodes.ImplDirective) {
       node.directives.forEach($ => this.processDirective($));
       return;
     } else if (node instanceof Nodes.ImportDirectiveNode) {
@@ -331,6 +331,8 @@ export class TypeGraphBuilder {
       this.resolveVariableByName(node, 'f32', target);
     } else if (node instanceof Nodes.BooleanLiteral) {
       this.resolveVariableByName(node, 'boolean', target);
+    } else if (node instanceof Nodes.StringLiteral) {
+      this.resolveVariableByName(node, 'bytes', target);
     } else if (node instanceof Nodes.MatchLiteralNode) {
       new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);

@@ -1,0 +1,23 @@
+(module
+ (type $0 (func))
+ (type $1 (func (result i64)))
+ (memory $0 1)
+ (data (i32.const 16) "asdasd")
+ (data (i32.const 22) "utf \c2\ab\e3\80\90\e3\80\91\c2\bb")
+ (global $global$0 (mut i64) (i64.const 0))
+ (global $global$1 (mut i64) (i64.const 0))
+ (export "memory" (memory $0))
+ (export "main" (func $0))
+ (start $1)
+ (func $0 (; 0 ;) (type $1) (result i64)
+  (global.get $global$0)
+ )
+ (func $1 (; 1 ;) (type $0)
+  (global.set $global$0
+   (i64.const 25769803792)
+  )
+  (global.set $global$1
+   (i64.const 60129542166)
+  )
+ )
+)

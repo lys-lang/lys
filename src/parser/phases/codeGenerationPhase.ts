@@ -7,6 +7,7 @@ global['Binaryen'] = {
 
 import * as binaryen from 'binaryen';
 import _wabt = require('wabt');
+import utf8bytes = require('utf8-bytes');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType } from '../nodes';
@@ -23,6 +24,7 @@ type CompilationModuleResult = {
   compilationPhase: CompilationPhaseResult;
   moduleParts: any[];
   starters: any[];
+  endMemory: number;
 };
 
 const wabt: typeof _wabt = (_wabt as any)();
@@ -247,6 +249,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
+    } else if (node instanceof Nodes.StringLiteral) {
+      const size = node.length.toString(16);
+      const offset = ('00000000' + node.offset.toString(16)).substr(-8);
+      return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + size + offset, 'i64')]);
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {
@@ -443,13 +449,33 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return new WebAssembly.Instance(compiled, imports);
   }
 
-  generatePhase(compilationPhase: CompilationPhaseResult, exports: boolean): CompilationModuleResult {
+  generatePhase(
+    compilationPhase: CompilationPhaseResult,
+    exports: boolean,
+    startMemory: number
+  ): CompilationModuleResult {
     const globals = findNodesByType(compilationPhase.document, Nodes.VarDirectiveNode);
     const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
+    const bytesLiterals = findNodesByType(compilationPhase.document, Nodes.StringLiteral);
 
     const starters = [];
     const exportedElements = [];
     const createdFunctions = [];
+    const dataSection = [];
+
+    const endMemory = bytesLiterals.reduce<number>((offset, literal) => {
+      const bytes = utf8bytes(literal.value);
+      const size = bytes.length;
+      literal.offset = offset;
+      literal.length = size;
+
+      const numberLiteral = t.numberLiteralFromRaw(offset, 'i32');
+      const offsetToken = t.objectInstruction('const', 'i32', [numberLiteral]);
+
+      dataSection.push(t.data(t.memIndexLiteral(0), offsetToken, t.byteArray(bytes)));
+
+      return offset + size;
+    }, startMemory);
 
     const createdGlobals = globals.map($ => {
       // TODO: If the value is a literal, do not defer initialization to starters
@@ -498,14 +524,13 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     return {
       compilationPhase,
-      moduleParts: [...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
-      starters
+      moduleParts: [...dataSection, ...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
+      starters,
+      endMemory
     };
   }
 
   protected execute() {
-    const memory = t.memory(t.limit(1), t.indexLiteral(0));
-
     const exportList = [this.compilationPhaseResult];
 
     const moduleList = new Set<string>(this.compilationPhaseResult.typePhaseResult.scopePhaseResult.importedModules);
@@ -534,10 +559,21 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       }
     });
 
-    const generatedModules = exportList.map(($, ix) => this.generatePhase($, ix == 0));
+    let currentMemory = 16;
+
+    const generatedModules = exportList.map(($, ix) => {
+      const ret = this.generatePhase($, ix == 0, currentMemory);
+      currentMemory = ret.endMemory;
+      return ret;
+    });
 
     const starters = [];
     const moduleParts = [];
+
+    const memory = t.memory(t.limit(1), t.identifier('mem'));
+
+    moduleParts.push(memory);
+    moduleParts.push(t.moduleExport('memory', t.moduleExportDescr('Memory', t.identifier('mem'))));
 
     generatedModules.reverse().forEach(ret => {
       moduleParts.push(...ret.moduleParts);
@@ -550,7 +586,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       moduleParts.push(t.start(starterName));
     }
 
-    moduleParts.unshift(memory);
+    // moduleParts.unshift(memory);
 
     const module = t.module(null, moduleParts);
 

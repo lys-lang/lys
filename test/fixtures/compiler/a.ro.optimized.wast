@@ -4,6 +4,8 @@
  (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func (param f32 f32) (result f32)))
  (type $4 (func (param f32 f64) (result f32)))
+ (memory $0 1)
+ (export "memory" (memory $0))
  (export "test" (func $0))
  (export "test0" (func $0))
  (export "testa" (func $1))

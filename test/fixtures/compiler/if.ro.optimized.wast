@@ -2,6 +2,8 @@
  (type $0 (func (result i32)))
  (type $1 (func (param i32) (result i32)))
  (type $2 (func (param i32 i32) (result i32)))
+ (memory $0 1)
+ (export "memory" (memory $0))
  (export "gcd" (func $1))
  (export "test" (func $2))
  (export "ifWithoutElse" (func $3))

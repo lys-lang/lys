@@ -221,7 +221,7 @@ describe('Semantic', function() {
 
       type BB
       type AA = BB
-      ns BB {
+      impl BB {
         fun gta(): i32 = 1
       }
 
@@ -233,7 +233,7 @@ describe('Semantic', function() {
       type AA = BB | CC
       type BB
       type CC
-      ns CC {
+      impl CC {
         fun gta(): i32 = 1
       }
 
@@ -245,7 +245,7 @@ describe('Semantic', function() {
       type BB
       type AA = BB
 
-      ns BB {
+      impl BB {
         fun gtax(): i32 = 1
       }
 
@@ -256,7 +256,7 @@ describe('Semantic', function() {
 
       type BB
 
-      ns BB {
+      impl BB {
         var x = 1
         fun gtax(): i32 = x
       }
@@ -266,7 +266,7 @@ describe('Semantic', function() {
 
     test`
       struct ExistentType()
-      ns ExistentType {
+      impl ExistentType {
         // stub
       }
     `;
@@ -274,7 +274,7 @@ describe('Semantic', function() {
     test`
       struct ExistentType()
 
-      ns ExistentType {
+      impl ExistentType {
         fun gtax(): i32 = 1
       }
 

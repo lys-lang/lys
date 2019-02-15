@@ -1,6 +1,6 @@
 type AA = BB
 
-ns AA {
+impl AA {
   fun is(a: AA): boolean = {
     a is BB
   }
@@ -22,14 +22,14 @@ ns AA {
     }
 }
 
-ns BB {
+impl BB {
   fun as(a: BB): AA = 
     %wasm {
       (get_local $a)
     }
 }
 
-ns AA {
+impl AA {
   fun as(a: BB): AA = 
     %wasm {
       (get_local $a)
@@ -42,7 +42,7 @@ ns AA {
 
 type BB = ???
 
-ns BB {
+impl BB {
   fun apply(): BB = 
     %wasm {
       (i64.const 0x200000000)
@@ -76,7 +76,7 @@ ns BB {
 
 type TT = ???
 
-ns TT {
+impl TT {
   fun apply(): TT = 
     %wasm {
       (i64.const 0x300000000)
@@ -108,7 +108,7 @@ ns TT {
     }
 }
 
-ns BB {
+impl BB {
   fun a(): i32 = 
     1
 }

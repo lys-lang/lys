@@ -1,5 +1,6 @@
 (module
-  (memory 0 1)
+  (memory $mem 1)
+  (export "memory" (memory $mem))
   (func $system::core::assert (param $x i32)
     (if $a_wild_if (call $system::core::boolean.== (get_local $x) (i32.const 0))
       (then
@@ -701,6 +702,15 @@
   )
   (func $system::core::ref.load_1 (param $lhs i64) (param $offset i32) (result i64)
     (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
+  )
+  (func $system::core::bytes.toAddr (param $str i64) (result i64)
+    (get_local $str)
+  )
+  (func $system::core::bytes.property_length (param $str i64) (result i32)
+    (call $system::core::i64.as_3 (call $system::core::i64.>> (call $system::core::bytes.toAddr (get_local $str)) (call $system::core::i32.as (i32.const 32))))
+  )
+  (func $system::core::bytes.property_ptr (param $str i64) (result i32)
+    (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str)))
   )
   (export "outerFunction" (func $test/fixtures/compiler/b.ro::outerFunction))
   (func $test/fixtures/compiler/b.ro::innerFunctionArgs (param $a i32) (result i32)

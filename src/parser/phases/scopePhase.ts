@@ -113,7 +113,7 @@ const createClosures = walkPreOrder(
       } else if (node instanceof Nodes.VarDeclarationNode) {
         node.value.closure = node.closure.newChildClosure('VarDeclaration');
         node.closure.set(node.variableName, 'VALUE');
-      } else if (node instanceof Nodes.NameSpaceDirective) {
+      } else if (node instanceof Nodes.ImplDirective) {
         node.closure = node.closure.newChildClosure(node.reference.toString() + '.');
       } else if (node instanceof Nodes.TypeDirectiveNode) {
         node.closure.set(node.variableName, 'TYPE');
@@ -198,7 +198,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult:
     node.isLocal = !isGlobal;
     node.resolvedReference = resolved;
     node.closure.incrementUsageQName(node.variable);
-  } else if (node instanceof Nodes.NameSpaceDirective) {
+  } else if (node instanceof Nodes.ImplDirective) {
     collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, phaseResult.parsingContext);
   }
   // else if (node instanceof Nodes.MemberNode) {
