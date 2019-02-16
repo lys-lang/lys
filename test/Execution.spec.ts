@@ -621,12 +621,12 @@ describe('execution tests', () => {
         type f32
 
         impl f32 {
-          fun \`+\`(a: f32, b: i32): i32 = 0
+          fun +(a: f32, b: i32): i32 = 0
         }
 
         impl i32 {
-          fun \`+\`(a: i32, b: i32): i32 = 1
-          fun \`+\`(a: i32, b: f32): i32 = 4
+          fun +(a: i32, b: i32): i32 = 1
+          fun +(a: i32, b: f32): i32 = 4
         }
 
         fun main1(a: i32, b: f32): i32 = {

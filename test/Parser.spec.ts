@@ -182,7 +182,7 @@ describe('Parser', () => {
           val test = 1
         }
 
-        fun \`as\`(self: Test): X = {
+        fun as(self: Test): X = {
           x() as X
         }
       `;
@@ -192,7 +192,7 @@ describe('Parser', () => {
 
           private fun x(): int = test
 
-          fun \`as\`(self: Test): X = {
+          fun as(self: Test): X = {
             x() as X
           }
         }
@@ -201,24 +201,24 @@ describe('Parser', () => {
 
     describe('operator definition', () => {
       test`
-        fun \`as\`(x: i32, y: boolean): void = {}
-        fun \`is\`(x: i32, y: boolean): void = {}
-        fun \`+\`(x: i32, y: boolean): void = {}
-        fun \`-\`(x: i32, y: boolean): void = {}
-        fun \`>>\`(x: i32, y: boolean): void = {}
-        fun \`<<\`(x: i32, y: boolean): void = {}
-        fun \`==\`(x: i32, y: boolean): void = {}
-        fun \`!=\`(x: i32, y: boolean): void = {}
-        fun \`+\`(x: i32, y: boolean): void = {}
-        fun \`*\`(x: i32, y: boolean): void = {}
-        fun \`**\`(x: i32, y: boolean): void = {}
-        fun \`/\`(x: i32, y: boolean): void = {}
-        fun \`%\`(x: i32, y: boolean): void = {}
-        fun \`>\`(x: i32, y: boolean): void = {}
-        fun \`<\`(x: i32, y: boolean): void = {}
-        fun \`>=\`(x: i32, y: boolean): void = {}
-        fun \`<=\`(x: i32, y: boolean): void = {}
-        fun \`~=\`(x: i32, y: boolean): void = {}
+        fun as(x: i32, y: boolean): void = {}
+        fun is(x: i32, y: boolean): void = {}
+        fun +(x: i32, y: boolean): void = {}
+        fun -(x: i32, y: boolean): void = {}
+        fun >>(x: i32, y: boolean): void = {}
+        fun <<(x: i32, y: boolean): void = {}
+        fun ==(x: i32, y: boolean): void = {}
+        fun !=(x: i32, y: boolean): void = {}
+        fun +(x: i32, y: boolean): void = {}
+        fun *(x: i32, y: boolean): void = {}
+        fun **(x: i32, y: boolean): void = {}
+        fun /(x: i32, y: boolean): void = {}
+        fun %(x: i32, y: boolean): void = {}
+        fun >(x: i32, y: boolean): void = {}
+        fun <(x: i32, y: boolean): void = {}
+        fun >=(x: i32, y: boolean): void = {}
+        fun <=(x: i32, y: boolean): void = {}
+        fun ~=(x: i32, y: boolean): void = {}
       `;
     });
     describe('code blocks', () => {

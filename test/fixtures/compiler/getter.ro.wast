@@ -26,18 +26,26 @@
     )
   )
   (func $system::memory::malloc (param $size i32) (result i32)
+    (local $$ret i32)
+    (block $unknown_block_82 (result i32)
+      (set_local $$ret (call $system::memory::malloc_unsafe_1 (get_local $size)))
+      (call $system::memory::memset_1 (get_local $$ret) (get_local $size) (i32.const 0))
+      (get_local $$ret)
+    )
+  )
+  (func $system::memory::malloc_unsafe_1 (param $size i32) (result i32)
     (local $ptr i32)
     (local $newPtr i32)
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_64 (result i32)
+    (block $unknown_block_83 (result i32)
       (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_65 (result i32)
+            (block $unknown_block_84 (result i32)
                 (if $a_wild_if (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_66
+                      (block $unknown_block_85
                           (call $system::core::panic_1)
                         )
                     )
@@ -48,15 +56,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_67
+                      (block $unknown_block_86
                           (set_local $pagesNeeded (call $system::core::i32.>>> (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::i32.~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_68
+                                (block $unknown_block_87
                                     (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_69
+                                          (block $unknown_block_88
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -75,11 +83,16 @@
               )
           )
           (else
-            (block $unknown_block_70 (result i32)
+            (block $unknown_block_89 (result i32)
                 (i32.const 0)
               )
           )
         )
+    )
+  )
+  (func $system::memory::free (param $ptr i32)
+    (block $unknown_block_90
+      (nop)
     )
   )
   (func $system::memory::discriminant (param $v i64) (result i64)
@@ -90,7 +103,7 @@
     (set_local $end (i32.add (get_local $from) (get_local $len)))
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $from) (get_local $end))) (i32.store8 (get_local $to) (i32.load8_u (get_local $from))) (set_local $from (i32.add (get_local $from) (i32.const 1))) (set_local $to (i32.add (get_local $to) (i32.const 1))) (br $cont)))
   )
-  (func $system::memory::memset (param $ptr i32) (param $content i32) (param $len i32)
+  (func $system::memory::memset_1 (param $ptr i32) (param $content i32) (param $len i32)
     (local $end i32)
     (set_local $end (i32.add (get_local $ptr) (get_local $len)))
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
@@ -772,13 +785,13 @@
     (call $system::core::ref.allocationSize)
   )
   (func $test/fixtures/compiler/getter.ro::Color.apply (param $r i32) (param $g i32) (param $b i32) (result i64)
-    (local $ref i64)
+    (local $$ref i64)
     (block $unknown_block_1 (result i64)
-      (set_local $ref (call $test/fixtures/compiler/getter.ro::Color.fromPointer (call $system::memory::malloc (call $test/fixtures/compiler/getter.ro::Color.sizeOf))))
-      (call $test/fixtures/compiler/getter.ro::Color.property_r_1 (get_local $ref) (get_local $r))
-      (call $test/fixtures/compiler/getter.ro::Color.property_g_1 (get_local $ref) (get_local $g))
-      (call $test/fixtures/compiler/getter.ro::Color.property_b_1 (get_local $ref) (get_local $b))
-      (get_local $ref)
+      (set_local $$ref (call $test/fixtures/compiler/getter.ro::Color.fromPointer (call $system::memory::malloc (call $test/fixtures/compiler/getter.ro::Color.sizeOf))))
+      (call $test/fixtures/compiler/getter.ro::Color.property_r_1 (get_local $$ref) (get_local $r))
+      (call $test/fixtures/compiler/getter.ro::Color.property_g_1 (get_local $$ref) (get_local $g))
+      (call $test/fixtures/compiler/getter.ro::Color.property_b_1 (get_local $$ref) (get_local $b))
+      (get_local $$ref)
     )
   )
   (func $test/fixtures/compiler/getter.ro::Color.fromPointer (param $ptr i32) (result i64)

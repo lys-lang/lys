@@ -78,18 +78,18 @@ type Some<T>
 type None
 
 impl Option<T> {
-  fun `is`(x: ref) = {
+  fun is(x: ref) = {
     Some.is(x) || None.is(x)
   }
 
-  fun `as`(x: Some<T>): Option<T> = x
-  fun `as`(x: None): Option<Nothing> = x
+  fun as(x: Some<T>): Option<T> = x
+  fun as(x: None): Option<Nothing> = x
 }
 
 impl None {
   val determinant: u32 = 2
   val staticInstance: ref = determinant
-  fun `is`(x: ref) = x == staticInstance
+  fun is(x: ref) = x == staticInstance
 
   fun apply(): None = staticInstance
 }
@@ -110,18 +110,18 @@ type Celcius
 type Kelvin
 
 impl Temp {
-  fun `is`(x: ref) = {
+  fun is(x: ref) = {
     Celcius.is(x) || Kelvin.is(x)
   }
 
-  fun `as`(x: Kelvin): Temp = x
-  fun `as`(x: Celcius): Temp = x
+  fun as(x: Kelvin): Temp = x
+  fun as(x: Celcius): Temp = x
 }
 
 impl Celcius {
   val determinant = 1
   val memorySize = ref.memorySize + f32.memorySize /* temperature: f32 */
-  fun `is`(x: ref) = x.determinant == determinant
+  fun is(x: ref) = x.determinant == determinant
 
   fun apply(temperature: f32): Celcius = {
     val ptr = core::memory::malloc(memorySize)
@@ -144,7 +144,7 @@ impl Celcius {
 impl Kelvin {
   val determinant = 2
   val memorySize = ref.memorySize + f32.memorySize  /* n: f32 */
-  fun `is`(x: ref) = x.determinant == determinant
+  fun is(x: ref) = x.determinant == determinant
 
   fun apply(n: f32): Kelvin = {
     val ptr = core::memory::malloc(memorySize)

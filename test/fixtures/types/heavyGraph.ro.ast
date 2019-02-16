@@ -133,7 +133,7 @@
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+      |-WasmExpressionNode type=(never) annotations=IsValueNode
         |-WasmAtomNode=current_memory
     |-NameIdentifierNode="currentMemory" type=(fun "currentMemory" () (alias i32))
   |-OverloadedFunctionNode type=(fun "growMemory" ((alias i32)) (alias i32)) annotations=Injected
@@ -147,7 +147,7 @@
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+      |-WasmExpressionNode type=(never) annotations=IsValueNode
         |-WasmAtomNode=grow_memory
           |-WasmAtomNode=get_local
             |-QNameNode=$pages
@@ -183,8 +183,8 @@
                   |-ReferenceNode type=(fun "MAX_SIZE_32" () (alias i32))
                     |-QNameNode=MAX_SIZE_32
                       |-NameIdentifierNode="MAX_SIZE_32"
-              |-FunctionCallNode type=(alias void (native void))
-                |-ReferenceNode type=(fun "panic" () (alias void))
+              |-FunctionCallNode type=(alias never (never))
+                |-ReferenceNode type=(fun "panic" () (alias never))
                   |-QNameNode=panic
                     |-NameIdentifierNode="panic"
             |-ValDeclarationNode type=(native void)
@@ -382,8 +382,8 @@
                               |-NameIdentifierNode="pagesNeeded"
                         |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
                       |-BlockNode type=(native void)
-                        |-FunctionCallNode type=(alias void (native void))
-                          |-ReferenceNode type=(fun "panic" () (alias void))
+                        |-FunctionCallNode type=(alias never (never))
+                          |-ReferenceNode type=(fun "panic" () (alias never))
                             |-QNameNode=panic
                               |-NameIdentifierNode="panic"
             |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode

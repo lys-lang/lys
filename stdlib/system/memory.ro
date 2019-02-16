@@ -28,6 +28,12 @@ private fun currentMemory(): i32 = %wasm {
 private fun max(a: i32, b: i32): i32 = if (a > b) a else b
 
 fun malloc(size: i32): i32 = {
+  val $ret = malloc_unsafe(size)
+  memset($ret, size, 0)
+  $ret
+}
+
+fun malloc_unsafe(size: i32): i32 = {
   if (size > 0) {
     if (size > MAX_SIZE_32) {
       panic()
@@ -49,6 +55,10 @@ fun malloc(size: i32): i32 = {
   } else {
     0
   }
+}
+
+fun free(ptr: i32): void = {
+  // stub
 }
 
 fun discriminant(v: ref): u64 = %wasm {

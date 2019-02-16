@@ -31,7 +31,7 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
           node.variableName.ofType = TypeType.of(new TypeAlias(node.variableName, InjectableTypes.never));
         }
       } else if (node.variableName.name in InjectableTypes) {
-        node.variableName.ofType = TypeType.of(InjectableTypes.invalid);
+        node.variableName.ofType = TypeType.of(InjectableTypes.never);
         phase.parsingContext.messageCollector.error(
           `Cannot find built-in type "${node.variableName.name}"`,
           node.variableName

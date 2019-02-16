@@ -152,14 +152,14 @@ digraph Document {
 }
   subgraph cluster8 { rankdir=TB;
     node [style=filled, fillcolor=grey];
-    93 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    93 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     94 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   label="test/fixtures/types/heavyGraph.ro::currentMemory()";
 }
   subgraph cluster9 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     95 [label="Name: pages\n(alias i32 (native i32))", fillcolor=grey];
-    96 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    96 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     97 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   label="test/fixtures/types/heavyGraph.ro::growMemory(i32)";
 }
@@ -173,8 +173,8 @@ Amount: 12", fillcolor=magenta];
     101 [label="BlockNode\n(alias i32 (native i32))
 Amount: 12", fillcolor=magenta];
     102 [label="IfNode\n(native void)", fillcolor=grey];
-    103 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
-    104 [label="Ref: panic\n(fun 'panic' () (alias void))", fillcolor=grey];
+    103 [label="FunctionCallNode\n(alias never (never))", fillcolor=grey];
+    104 [label="Ref: panic\n(fun 'panic' () (alias never))", fillcolor=grey];
     105 [label="BinOp: '>'\n(alias boolean (native boolean))", fillcolor=grey];
     106 [label="Ref: size\n(alias i32 (native i32))", fillcolor=grey];
     107 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
@@ -279,8 +279,8 @@ Amount: 8", fillcolor=magenta];
     196 [label="IfNode\n(native void)
 Amount: 8", fillcolor=magenta];
     197 [label="BlockNode\n(native void)", fillcolor=grey];
-    198 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
-    199 [label="Ref: panic\n(fun 'panic' () (alias void))", fillcolor=grey];
+    198 [label="FunctionCallNode\n(alias never (never))", fillcolor=grey];
+    199 [label="Ref: panic\n(fun 'panic' () (alias never))", fillcolor=grey];
     200 [label="BinOp: '<'\n(alias boolean (native boolean))
 Amount: 8", fillcolor=magenta];
     201 [label="FunctionCallNode\n(alias i32 (native i32))

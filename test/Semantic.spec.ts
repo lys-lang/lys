@@ -518,7 +518,11 @@ describe('Semantic', function() {
     testToFail`var a: i32a = 1`;
 
     testToFail`var b = 1 var a: b = 1`;
-    test`var i32 = 1`;
+    testToFail`var i32 = 1`;
+    testToFail`
+      var a = "hello"
+      var bytes = a.length
+    `;
     testToFail`type i32  var i32 = 1`;
 
     test`var a = 1 var b = a`;

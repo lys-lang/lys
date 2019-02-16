@@ -64,7 +64,9 @@ describe('Types', function() {
                 ) {
                   return $.ofType + '';
                 } else if ($ instanceof Nodes.VarDirectiveNode) {
-                  return `${$.decl.variableName.name} := ${$.decl.variableName.ofType.inspect(1)}`;
+                  return `${$.decl.variableName.name} := ${
+                    $.decl.variableName.ofType ? $.decl.variableName.ofType.inspect(1) : '<ofType is NULL>'
+                  }`;
                 }
               })
               .filter($ => !!$)
@@ -303,13 +305,6 @@ describe('Types', function() {
     describe('bytes', () => {
       checkMainType`
         var a = "hello"
-        var bytes = a.length
-        ---
-        a := (alias bytes (native bytes))
-        bytes := (alias i32 (native i32))
-      `;
-      checkMainType`
-        var a = "hello"
         var len = a.length
         ---
         a := (alias bytes (native bytes))
@@ -530,15 +525,15 @@ describe('Types', function() {
             type ABC = A | B | C
 
             impl A {
-              fun \`is\`(x: A): boolean = ???
+              fun is(x: A): boolean = ???
             }
 
             impl B {
-              fun \`is\`(x: B): boolean = ???
+              fun is(x: B): boolean = ???
             }
 
             impl C {
-              fun \`is\`(x: C): boolean = ???
+              fun is(x: C): boolean = ???
             }
 
             var a: A = ???
@@ -1466,8 +1461,8 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun \`as\`(x: f32): boolean = ???
-        fun \`as\`(x: f32): boolean = ???
+        fun as(x: f32): boolean = ???
+        fun as(x: f32): boolean = ???
         ---
         fun(x: f32) -> boolean
         ---
@@ -1916,6 +1911,25 @@ describe('Types', function() {
         fun(x: A | B | C | D) -> i32
         ---
         Match is not exhaustive
+      `;
+    });
+
+    describe('never type', () => {
+      checkMainType`
+        fun a(x: i32): i32 =
+          if(x ==0)
+            x
+          else
+            panic()
+
+        fun b(x: i32): i32 =
+          x match {
+            case 0 -> x
+            else -> panic()
+          }
+        ---
+        fun(x: i32) -> i32
+        fun(x: i32) -> i32
       `;
     });
 
@@ -2769,7 +2783,7 @@ describe('Types', function() {
         type boolean
 
         impl boolean {
-          fun \`+\`(x: boolean, y: i32): f32 = 1.0
+          fun +(x: boolean, y: i32): f32 = 1.0
         }
 
         fun main(): f32 = true + 3
@@ -2783,10 +2797,10 @@ describe('Types', function() {
         type boolean
 
         impl boolean {
-          fun \`+\`(x: boolean, y: i32): i32 = 1
+          fun +(x: boolean, y: i32): i32 = 1
         }
         impl i32 {
-          fun \`+\`(x: i32, y: f32): f32 = 1.0
+          fun +(x: i32, y: f32): f32 = 1.0
         }
 
         fun main(): f32 = true + 3 + 1.0
@@ -2800,7 +2814,7 @@ describe('Types', function() {
         type boolean
 
         impl boolean {
-          fun \`+\`(x: boolean, y: i32): i32 = 1
+          fun +(x: boolean, y: i32): i32 = 1
         }
 
         fun main(): f32 = true + 3

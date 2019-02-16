@@ -1,6 +1,7 @@
 import { Nodes } from './nodes';
 import { Reference } from './Reference';
 import { ParsingContext } from './ParsingContext';
+import { AstNodeError } from './NodeError';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
@@ -70,7 +71,7 @@ export class Closure {
     if (localName === '_') return;
 
     if (this.localScopeDeclares.has(localName)) {
-      throw new Error(`"${localName}" is already declared`);
+      throw new AstNodeError(`"${localName}" is already declared`, nameNode);
     }
 
     this.nameMappings[localName] = new Reference(nameNode, this, type, null);

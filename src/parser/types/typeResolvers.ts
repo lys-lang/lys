@@ -5,12 +5,12 @@ import {
   FunctionType,
   Type,
   IntersectionType,
-  InvalidType,
   StructType,
   TypeType,
   RefType,
   TypeAlias,
-  InjectableTypes
+  InjectableTypes,
+  NeverType
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -30,7 +30,7 @@ import { MessageCollector } from '../MessageCollector';
 
 declare var console;
 
-const INVALID_TYPE = InjectableTypes.invalid;
+const INVALID_TYPE = InjectableTypes.never;
 
 export const EdgeLabels = {
   CONDITION: 'CONDITION',
@@ -127,7 +127,10 @@ function getTypeTypeType(node: Nodes.Node, type: Type, ctx: TypeResolutionContex
 }
 
 export class UnhandledTypeResolver extends TypeResolver {
-  execute(_node: TypeNode, _ctx: TypeResolutionContext) {
+  execute(_node: TypeNode, ctx: TypeResolutionContext) {
+    ctx.parsingContext.messageCollector.error(
+      new AstNodeError(`No type resolver for node ${_node.astNode.nodeName}`, _node.astNode)
+    );
     return INVALID_TYPE;
   }
 }
@@ -148,13 +151,19 @@ export class TypeFromTypeResolver extends TypeResolver {
       }
     }
 
-    return getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx) || INVALID_TYPE;
+    const type = getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx);
+
+    if (type) return type;
+
+    ctx.parsingContext.messageCollector.error(new AstNodeError(`Cannot resolve Type<?>`, node.astNode));
+
+    return INVALID_TYPE;
   }
 }
 
 export class UnknownTypeResolver extends TypeResolver {
   execute(_node: TypeNode, _ctx: TypeResolutionContext) {
-    return InjectableTypes.unknown;
+    return InjectableTypes.never;
   }
 }
 
@@ -194,7 +203,9 @@ export class PassThroughTypeTypeResolver extends TypeResolver {
       }
     }
 
-    return getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx);
+    const ret = getTypeTypeType(x[0].source.astNode, x[0].incomingType(), ctx);
+
+    return ret;
   }
 }
 
@@ -345,8 +356,7 @@ export class IfElseTypeResolver extends TypeResolver {
 
         if (!elseEdge) {
           ctx.parsingContext.messageCollector.error('A ternary operation requires an else branch', node.astNode);
-
-          return new UnionType([ifExpr, INVALID_TYPE]).simplify();
+          return ifExpr;
         }
 
         const elseExpr = elseEdge.incomingTypeDefined() ? elseEdge.incomingType() : InjectableTypes.void;
@@ -356,6 +366,9 @@ export class IfElseTypeResolver extends TypeResolver {
         return InjectableTypes.void;
       }
     }
+    ctx.parsingContext.messageCollector.error(
+      new AstNodeError(`Neither truePart or falsePart were resolved`, node.astNode)
+    );
     return INVALID_TYPE;
   }
 }
@@ -399,7 +412,7 @@ export class PatternMatcherTypeResolver extends TypeResolver {
       const restEdge = node.incomingEdgesByName(EdgeLabels.REST_TYPE);
       if (restEdge.length) {
         const restType = restEdge[0].incomingType();
-        if (!InjectableTypes.never.equals(restType)) {
+        if (!NeverType.isNeverType(restType)) {
           ctx.parsingContext.messageCollector.error(
             `Match is not exhaustive, not covered types: ${restType}`,
             patternMatcherNode
@@ -455,7 +468,7 @@ function resolveTypeMember(type: Type, memberName: string, ctx: TypeResolutionCo
     } else {
       throw new Error(`Cannot find member "${memberName}" in ${type.inspect(0)}`);
     }
-  } else if (type instanceof InvalidType) {
+  } else if (NeverType.isNeverType(type)) {
     return type;
   } else {
     throw new Error(`Type "${type}" has no members`);
@@ -582,6 +595,7 @@ export class AsOpTypeResolver extends TypeResolver {
 
       return rhsType;
     } else {
+      ctx.parsingContext.messageCollector.error(new AstNodeError(`cannot resolve type`, opNode.rhs));
       return INVALID_TYPE;
     }
   }
@@ -686,10 +700,10 @@ export class MatchLiteralTypeResolver extends TypeResolver {
 
         const valueType = resolveTypeMember(matchingValueType, '==', ctx);
 
-        if (InjectableTypes.never.equals(matchingValueType)) {
+        if (NeverType.isNeverType(matchingValueType)) {
           const opNode = node.astNode as Nodes.MatchLiteralNode;
           ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
-          return InjectableTypes.unknown;
+          return INVALID_TYPE;
         }
 
         const collector = new MessageCollector();
@@ -776,9 +790,9 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
 
       const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
 
-      if (InjectableTypes.never.equals(matchingValueType)) {
+      if (NeverType.isNeverType(matchingValueType)) {
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
-        return InjectableTypes.unknown;
+        return INVALID_TYPE;
       } else if (!matchingValueType.canBeAssignedTo(RefType.instance)) {
         ctx.parsingContext.messageCollector.error(
           `"is" expression can only be used with reference types, used with: ${matchingValueType}`,
@@ -862,10 +876,10 @@ export class MatchDefaultTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     let matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
 
-    if (InjectableTypes.never.equals(matchingValueType)) {
+    if (NeverType.isNeverType(matchingValueType)) {
       const opNode = node.astNode as Nodes.MatchDefaultNode;
       ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
-      return InjectableTypes.unknown;
+      return INVALID_TYPE;
     }
 
     const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
@@ -960,7 +974,10 @@ export class ReferenceResolver extends TypeResolver {
       ctx.parsingContext.messageCollector.error(new UnexpectedType(type, node.astNode));
     }
 
-    return type || INVALID_TYPE;
+    if (type) return type;
+
+    ctx.parsingContext.messageCollector.error(new AstNodeError(`Unable to resolve reference`, node.astNode));
+    return INVALID_TYPE;
   }
 }
 

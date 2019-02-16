@@ -117,7 +117,7 @@
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
-        |-WasmExpressionNode type=(unknown)
+        |-WasmExpressionNode type=(never)
           |-WasmAtomNode=i64.store
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -150,7 +150,7 @@
         |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-QNameNode=Maybe
             |-NameIdentifierNode="Maybe"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -179,7 +179,7 @@
         |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-QNameNode=Maybe
             |-NameIdentifierNode="Maybe"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -199,7 +199,7 @@
         |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-QNameNode=Maybe
             |-NameIdentifierNode="Maybe"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -223,7 +223,7 @@
         |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-QNameNode=Maybe
             |-NameIdentifierNode="Maybe"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -237,7 +237,7 @@
         |-ReferenceNode type=(type (alias ref (ref ?)))
           |-QNameNode=ref
             |-NameIdentifierNode="ref"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -255,7 +255,7 @@
         |-ReferenceNode type=(type (alias None (struct None)))
           |-QNameNode=None
             |-NameIdentifierNode="None"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x200000000
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias None))
@@ -270,7 +270,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -297,7 +297,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -322,7 +322,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.ne
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -352,7 +352,7 @@
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
-        |-WasmExpressionNode type=(unknown)
+        |-WasmExpressionNode type=(never)
           |-WasmAtomNode=i64.store
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -385,7 +385,7 @@
         |-ReferenceNode type=(type (alias None (struct None)))
           |-QNameNode=None
             |-NameIdentifierNode="None"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -412,7 +412,7 @@
         |-ReferenceNode type=(type (alias u64 (native u64)))
           |-QNameNode=u64
             |-NameIdentifierNode="u64"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x300000000
       |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
@@ -450,7 +450,7 @@
             |-NameIdentifierNode="Some"
         |-BlockNode type=(alias Some (struct Some)) annotations=IsValueNode
           |-VarDeclarationNode type=(native void)
-            |-NameIdentifierNode="ref" type=(alias Some (struct Some))
+            |-NameIdentifierNode="$ref" type=(alias Some (struct Some))
             |-FunctionCallNode type=(alias Some (struct Some)) annotations=IsValueNode
               |-ReferenceNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Some))
                 |-QNameNode=fromPointer
@@ -470,14 +470,14 @@
               |-QNameNode=property_value
                 |-NameIdentifierNode="property_value"
             |-ReferenceNode type=(alias Some (struct Some)) annotations=IsValueNode
-              |-QNameNode=ref
-                |-NameIdentifierNode="ref"
+              |-QNameNode=$ref
+                |-NameIdentifierNode="$ref"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
           |-ReferenceNode type=(alias Some (struct Some)) annotations=IsValueNode
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
+            |-QNameNode=$ref
+              |-NameIdentifierNode="$ref"
       |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32)) (alias Some))
     |-OverloadedFunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Some)) annotations=Injected
       |-FunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Some))
@@ -494,7 +494,7 @@
         |-ReferenceNode type=(type (alias Some (struct Some)))
           |-QNameNode=Some
             |-NameIdentifierNode="Some"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x300000000
@@ -564,7 +564,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -596,7 +596,7 @@
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
-        |-WasmExpressionNode type=(unknown)
+        |-WasmExpressionNode type=(never)
           |-WasmAtomNode=i64.store
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -629,7 +629,7 @@
         |-ReferenceNode type=(type (alias Some (struct Some)))
           |-QNameNode=Some
             |-NameIdentifierNode="Some"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local

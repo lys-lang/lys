@@ -26,18 +26,26 @@
     )
   )
   (func $system::memory::malloc (param $size i32) (result i32)
+    (local $$ret i32)
+    (block $unknown_block_73 (result i32)
+      (set_local $$ret (call $system::memory::malloc_unsafe_1 (get_local $size)))
+      (call $system::memory::memset_1 (get_local $$ret) (get_local $size) (i32.const 0))
+      (get_local $$ret)
+    )
+  )
+  (func $system::memory::malloc_unsafe_1 (param $size i32) (result i32)
     (local $ptr i32)
     (local $newPtr i32)
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_57 (result i32)
+    (block $unknown_block_74 (result i32)
       (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_58 (result i32)
+            (block $unknown_block_75 (result i32)
                 (if $a_wild_if (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_59
+                      (block $unknown_block_76
                           (call $system::core::panic_1)
                         )
                     )
@@ -48,15 +56,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_60
+                      (block $unknown_block_77
                           (set_local $pagesNeeded (call $system::core::i32.>>> (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::i32.~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_61
+                                (block $unknown_block_78
                                     (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_62
+                                          (block $unknown_block_79
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -75,11 +83,16 @@
               )
           )
           (else
-            (block $unknown_block_63 (result i32)
+            (block $unknown_block_80 (result i32)
                 (i32.const 0)
               )
           )
         )
+    )
+  )
+  (func $system::memory::free (param $ptr i32)
+    (block $unknown_block_81
+      (nop)
     )
   )
   (func $system::memory::discriminant (param $v i64) (result i64)
@@ -90,7 +103,7 @@
     (set_local $end (i32.add (get_local $from) (get_local $len)))
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $from) (get_local $end))) (i32.store8 (get_local $to) (i32.load8_u (get_local $from))) (set_local $from (i32.add (get_local $from) (i32.const 1))) (set_local $to (i32.add (get_local $to) (i32.const 1))) (br $cont)))
   )
-  (func $system::memory::memset (param $ptr i32) (param $content i32) (param $len i32)
+  (func $system::memory::memset_1 (param $ptr i32) (param $content i32) (param $len i32)
     (local $end i32)
     (set_local $end (i32.add (get_local $ptr) (get_local $len)))
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
@@ -269,7 +282,7 @@
   )
   (func $system::hash::sha3::keccak_reset_1 (param $context_offset i32)
     (block $unknown_block_3
-      (call $system::memory::memset (get_local $context_offset) (i32.const 0) (i32.const 400))
+      (call $system::memory::memset_1 (get_local $context_offset) (i32.const 0) (i32.const 400))
     )
   )
   (func $system::hash::sha3::keccak_update (param $context_offset i32) (param $input_offset i32) (param $input_length i32)
@@ -293,7 +306,7 @@
     (set_local $residue_buffer (i32.add (get_local $context_offset) (i32.const 208)))
     (set_local $residue_index (i32.load (get_local $residue_offset)))
     (set_local $tmp (get_local $residue_index))
-    (call $system::memory::memset (i32.add (get_local $residue_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
+    (call $system::memory::memset_1 (i32.add (get_local $residue_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
     (set_local $tmp (i32.add (get_local $residue_buffer) (get_local $residue_index)))
     (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x01)))
     (set_local $tmp (i32.add (get_local $residue_buffer) (i32.const 135)))

@@ -17,7 +17,7 @@
         |-ReferenceNode type=(type (alias u64 (native u64)))
           |-QNameNode=u64
             |-NameIdentifierNode="u64"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x100000000
       |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
@@ -71,7 +71,7 @@
             |-NameIdentifierNode="Color"
         |-BlockNode type=(alias Color (struct Color)) annotations=IsValueNode
           |-VarDeclarationNode type=(native void)
-            |-NameIdentifierNode="ref" type=(alias Color (struct Color))
+            |-NameIdentifierNode="$ref" type=(alias Color (struct Color))
             |-FunctionCallNode type=(alias Color (struct Color)) annotations=IsValueNode
               |-ReferenceNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Color))
                 |-QNameNode=fromPointer
@@ -91,8 +91,8 @@
               |-QNameNode=property_r
                 |-NameIdentifierNode="property_r"
             |-ReferenceNode type=(alias Color (struct Color)) annotations=IsValueNode
-              |-QNameNode=ref
-                |-NameIdentifierNode="ref"
+              |-QNameNode=$ref
+                |-NameIdentifierNode="$ref"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=r
                 |-NameIdentifierNode="r"
@@ -101,8 +101,8 @@
               |-QNameNode=property_g
                 |-NameIdentifierNode="property_g"
             |-ReferenceNode type=(alias Color (struct Color)) annotations=IsValueNode
-              |-QNameNode=ref
-                |-NameIdentifierNode="ref"
+              |-QNameNode=$ref
+                |-NameIdentifierNode="$ref"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=g
                 |-NameIdentifierNode="g"
@@ -111,14 +111,14 @@
               |-QNameNode=property_b
                 |-NameIdentifierNode="property_b"
             |-ReferenceNode type=(alias Color (struct Color)) annotations=IsValueNode
-              |-QNameNode=ref
-                |-NameIdentifierNode="ref"
+              |-QNameNode=$ref
+                |-NameIdentifierNode="$ref"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=b
                 |-NameIdentifierNode="b"
           |-ReferenceNode type=(alias Color (struct Color)) annotations=IsValueNode
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
+            |-QNameNode=$ref
+              |-NameIdentifierNode="$ref"
       |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32) (alias i32) (alias i32)) (alias Color))
     |-OverloadedFunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Color)) annotations=Injected
       |-FunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Color))
@@ -135,7 +135,7 @@
         |-ReferenceNode type=(type (alias Color (struct Color)))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x100000000
@@ -305,7 +305,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -337,7 +337,7 @@
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
-        |-WasmExpressionNode type=(unknown)
+        |-WasmExpressionNode type=(never)
           |-WasmAtomNode=i64.store
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -370,7 +370,7 @@
         |-ReferenceNode type=(type (alias Color (struct Color)))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(unknown) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local

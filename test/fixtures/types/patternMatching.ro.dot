@@ -230,7 +230,7 @@ digraph Document {
 }
   subgraph cluster2 { rankdir=TB;
     node [style=filled, fillcolor=grey];
-    213 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    213 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     214 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Some.discriminant()";
 }
@@ -376,7 +376,7 @@ digraph Document {
 }
   subgraph cluster7 { rankdir=TB;
     node [style=filled, fillcolor=grey];
-    275 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    275 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     276 [label="Ref: None\n(type (alias None (struct None)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.apply()";
 }
@@ -384,7 +384,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     277 [label="Name: lhs\n(alias ref (ref ?))", fillcolor=grey];
     278 [label="Name: offset\n(alias i32 (native i32))", fillcolor=grey];
-    279 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    279 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     280 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     281 [label="Ref: None\n(type (alias None (struct None)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.load(ref,i32)";
@@ -393,8 +393,8 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     282 [label="Name: value\n(alias i32 (native i32))", fillcolor=grey];
     283 [label="BlockNode\n(alias Some (struct Some))", fillcolor=grey];
-    284 [label="VarDecl: ref\n(native void)", fillcolor=grey];
-    285 [label="Name: ref\n(alias Some (struct Some))", fillcolor=grey];
+    284 [label="VarDecl: $ref\n(native void)", fillcolor=grey];
+    285 [label="Name: $ref\n(alias Some (struct Some))", fillcolor=grey];
     286 [label="FunctionCallNode\n(alias Some (struct Some))", fillcolor=grey];
     287 [label="Ref: fromPointer\n(fun 'fromPointer' ((union (alias i32) (alias u32))) (alias Some))", fillcolor=grey];
     288 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
@@ -403,9 +403,9 @@ digraph Document {
     291 [label="Ref: sizeOf\n(fun 'sizeOf' () (alias i32))", fillcolor=grey];
     292 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
     293 [label="Ref: property_value\n(intersection (fun 'property_value' ((alias Some)) (alias i32)) (fun 'property_value' ((alias Some) (alias i32)) (alias void)))", fillcolor=grey];
-    294 [label="Ref: ref\n(alias Some (struct Some))", fillcolor=grey];
+    294 [label="Ref: $ref\n(alias Some (struct Some))", fillcolor=grey];
     295 [label="Ref: value\n(alias i32 (native i32))", fillcolor=grey];
-    296 [label="Ref: ref\n(alias Some (struct Some))", fillcolor=grey];
+    296 [label="Ref: $ref\n(alias Some (struct Some))", fillcolor=grey];
     297 [label="Ref: Some\n(type (alias Some (struct Some)))", fillcolor=grey];
     282 -> 295[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
     284 -> 283[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
@@ -427,7 +427,7 @@ digraph Document {
   subgraph cluster10 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     298 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
-    299 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    299 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     300 [label="Ref: Some\n(type (alias Some (struct Some)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Some.fromPointer(i32 | u32)";
 }
@@ -471,7 +471,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     317 [label="Name: lhs\n(alias ref (ref ?))", fillcolor=grey];
     318 [label="Name: offset\n(alias i32 (native i32))", fillcolor=grey];
-    319 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    319 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     320 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     321 [label="Ref: Some\n(type (alias Some (struct Some)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Some.load(ref,i32)";
@@ -479,7 +479,7 @@ digraph Document {
   subgraph cluster14 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     322 [label="Name: a\n(alias None (struct None))", fillcolor=grey];
-    323 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    323 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     324 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.is(None)";
 }
@@ -487,7 +487,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     325 [label="Name: a\n(alias None (struct None))", fillcolor=grey];
     326 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    327 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    327 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     328 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.==(None,ref)";
 }
@@ -495,7 +495,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     329 [label="Name: a\n(alias None (struct None))", fillcolor=grey];
     330 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
-    331 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    331 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     332 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.!=(None,ref)";
 }
@@ -504,7 +504,7 @@ digraph Document {
     333 [label="Name: lhs\n(alias ref (ref ?))", fillcolor=grey];
     334 [label="Name: rhs\n(alias None (struct None))", fillcolor=grey];
     335 [label="Name: offset\n(alias i32 (native i32))", fillcolor=grey];
-    336 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    336 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     337 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     338 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.store(ref,None,i32)";
@@ -512,7 +512,7 @@ digraph Document {
   subgraph cluster18 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     339 [label="Name: a\n(alias Some (struct Some))", fillcolor=grey];
-    340 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    340 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     341 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Some.is(Some)";
 }
@@ -521,7 +521,7 @@ digraph Document {
     342 [label="Name: lhs\n(alias ref (ref ?))", fillcolor=grey];
     343 [label="Name: rhs\n(alias Some (struct Some))", fillcolor=grey];
     344 [label="Name: offset\n(alias i32 (native i32))", fillcolor=grey];
-    345 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    345 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     346 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     347 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Some.store(ref,Some,i32)";
@@ -529,7 +529,7 @@ digraph Document {
   subgraph cluster20 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     348 [label="Name: a\n(union (alias None (struct None)) (alias Some (struct Some)))", fillcolor=grey];
-    349 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    349 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     350 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Maybe.as(None | Some)";
 }
@@ -537,7 +537,7 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     351 [label="Name: lhs\n(alias ref (ref ?))", fillcolor=grey];
     352 [label="Name: offset\n(alias i32 (native i32))", fillcolor=grey];
-    353 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    353 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     354 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     355 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Maybe.load(ref,i32)";
@@ -545,14 +545,14 @@ digraph Document {
   subgraph cluster22 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     356 [label="Name: a\n(alias None (struct None))", fillcolor=grey];
-    357 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    357 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     358 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::None.as(None)";
 }
   subgraph cluster23 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     359 [label="Name: a\n(alias Some (struct Some))", fillcolor=grey];
-    360 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    360 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     361 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Some.as(Some)";
 }
@@ -584,7 +584,7 @@ digraph Document {
     372 [label="Name: lhs\n(alias ref (ref ?))", fillcolor=grey];
     373 [label="Name: rhs\n(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))", fillcolor=grey];
     374 [label="Name: offset\n(alias i32 (native i32))", fillcolor=grey];
-    375 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    375 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     376 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     377 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Maybe.store(ref,Maybe,i32)";
@@ -592,7 +592,7 @@ digraph Document {
   subgraph cluster26 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     378 [label="Name: a\n(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))", fillcolor=grey];
-    379 [label="WasmExpressionNode\n(unknown)", fillcolor=grey];
+    379 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     380 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
   label="test/fixtures/types/patternMatching.ro::Maybe.as_1(Maybe)";
 }

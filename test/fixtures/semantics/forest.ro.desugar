@@ -1,13 +1,13 @@
 type Tree = (Empty | Node)
 
 impl Tree {
-  fun `is`(a: Tree): boolean = {
+  fun is(a: Tree): boolean = {
     a is Empty || a is Node
   }
   
-  fun `==`(lhs: ref, rhs: ref): boolean = lhs == rhs
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
   
-  fun `!=`(lhs: ref, rhs: ref): boolean = lhs != rhs
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
   
   fun store(lhs: ref, rhs: Tree, offset: i32): void = %wasm {
     (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
@@ -19,22 +19,22 @@ impl Tree {
 }
 
 impl Empty {
-  fun `as`(a: Empty): Tree = %wasm {
+  fun as(a: Empty): Tree = %wasm {
     (get_local $a)
   }
 }
 
 impl Node {
-  fun `as`(a: Node): Tree = %wasm {
+  fun as(a: Node): Tree = %wasm {
     (get_local $a)
   }
 }
 
 impl Tree {
-  fun `as`(a: (Empty | Node)): Tree = %wasm {
+  fun as(a: (Empty | Node)): Tree = %wasm {
     (get_local $a)
   }
-  fun `as`(a: Tree): ref = %wasm {
+  fun as(a: Tree): ref = %wasm {
     (get_local $a)
   }
 }
@@ -46,15 +46,15 @@ impl Empty {
     (i64.const 0x200000000)
   }
   
-  fun `is`(a: Empty): boolean = %wasm {
+  fun is(a: Empty): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x200000000))
   }
   
-  fun `==`(a: Empty, b: ref): boolean = %wasm {
+  fun ==(a: Empty, b: ref): boolean = %wasm {
     (i64.eq (get_local $a) (get_local $b))
   }
   
-  fun `!=`(a: Empty, b: ref): boolean = %wasm {
+  fun !=(a: Empty, b: ref): boolean = %wasm {
     (i64.ne (get_local $a) (get_local $b))
   }
   
@@ -79,9 +79,9 @@ impl Node {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(a: (Tree | Forest)): Node = {
-    var ref = fromPointer(system::memory::malloc(sizeOf()))
-    property_a(ref, a)
-    ref
+    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    property_a($ref, a)
+    $ref
   }
   
   fun fromPointer(ptr: (i32 | u32)): Node = %wasm {
@@ -95,7 +95,7 @@ impl Node {
     (i64.store (i32.add (i32.const 0) (call addressFromRef (get_local $target))) (get_local $value))
   }
   
-  fun `is`(a: Node): boolean = %wasm {
+  fun is(a: Node): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x300000000))
   }
   
@@ -111,13 +111,13 @@ impl Node {
 type Forest = (Nil | Cons)
 
 impl Forest {
-  fun `is`(a: Forest): boolean = {
+  fun is(a: Forest): boolean = {
     a is Nil || a is Cons
   }
   
-  fun `==`(lhs: ref, rhs: ref): boolean = lhs == rhs
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
   
-  fun `!=`(lhs: ref, rhs: ref): boolean = lhs != rhs
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
   
   fun store(lhs: ref, rhs: Forest, offset: i32): void = %wasm {
     (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
@@ -129,22 +129,22 @@ impl Forest {
 }
 
 impl Nil {
-  fun `as`(a: Nil): Forest = %wasm {
+  fun as(a: Nil): Forest = %wasm {
     (get_local $a)
   }
 }
 
 impl Cons {
-  fun `as`(a: Cons): Forest = %wasm {
+  fun as(a: Cons): Forest = %wasm {
     (get_local $a)
   }
 }
 
 impl Forest {
-  fun `as`(a: (Nil | Cons)): Forest = %wasm {
+  fun as(a: (Nil | Cons)): Forest = %wasm {
     (get_local $a)
   }
-  fun `as`(a: Forest): ref = %wasm {
+  fun as(a: Forest): ref = %wasm {
     (get_local $a)
   }
 }
@@ -156,15 +156,15 @@ impl Nil {
     (i64.const 0x500000000)
   }
   
-  fun `is`(a: Nil): boolean = %wasm {
+  fun is(a: Nil): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x500000000))
   }
   
-  fun `==`(a: Nil, b: ref): boolean = %wasm {
+  fun ==(a: Nil, b: ref): boolean = %wasm {
     (i64.eq (get_local $a) (get_local $b))
   }
   
-  fun `!=`(a: Nil, b: ref): boolean = %wasm {
+  fun !=(a: Nil, b: ref): boolean = %wasm {
     (i64.ne (get_local $a) (get_local $b))
   }
   
@@ -189,9 +189,9 @@ impl Cons {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(tree: (Tree | Forest)): Cons = {
-    var ref = fromPointer(system::memory::malloc(sizeOf()))
-    property_tree(ref, tree)
-    ref
+    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    property_tree($ref, tree)
+    $ref
   }
   
   fun fromPointer(ptr: (i32 | u32)): Cons = %wasm {
@@ -205,7 +205,7 @@ impl Cons {
     (i64.store (i32.add (i32.const 0) (call addressFromRef (get_local $target))) (get_local $value))
   }
   
-  fun `is`(a: Cons): boolean = %wasm {
+  fun is(a: Cons): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x600000000))
   }
   

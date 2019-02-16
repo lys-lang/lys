@@ -10,22 +10,15 @@ test/fixtures/type-error/instanceSuperType.ro
     9│ 
    10│ fun a(): void = x(Custom(1))
      │                 ^ Error: Cannot find member "apply" in (alias x)
-     │          ^^^^ Type mismatch: Type "invalid" is not assignable to "void"
    11│ fun b(t: Custom): void = x(t)
      │                          ^ Error: Cannot find member "apply" in (alias x)
-     │                   ^^^^ Type mismatch: Type "invalid" is not assignable to "void"
    12│ fun c(t: x): void = x(t)
      │                     ^ Error: Cannot find member "apply" in (alias x)
-     │              ^^^^ Type mismatch: Type "invalid" is not assignable to "void"
    13│ fun d(i: i32): void = x(Custom(i))
      │                       ^ Error: Cannot find member "apply" in (alias x)
-     │                ^^^^ Type mismatch: Type "invalid" is not assignable to "void"
    14│ fun d(t: Nila): void = x(t)
      │                        ^ Error: Cannot find member "apply" in (alias x)
-     │                 ^^^^ Type mismatch: Type "invalid" is not assignable to "void"
    15│ fun d(): void = x(Nila)
      │                 ^ Error: Cannot find member "apply" in (alias x)
-     │          ^^^^ Type mismatch: Type "invalid" is not assignable to "void"
    16│ fun e(): void = x()
      │                 ^ Error: Cannot find member "apply" in (alias x)
-     │          ^^^^ Type mismatch: Type "invalid" is not assignable to "void"

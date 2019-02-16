@@ -1,19 +1,11 @@
 import { Nodes } from '../parser/nodes';
 import { indent } from './astPrinter';
 
-const specialCharRE = /^(!?[A-Z0-9_]+)$/i;
-
-function isPrintableName(name: string) {
-  if (name === 'as' || name === 'is' || name === 'match') return false;
-  if (!specialCharRE.test(name)) return false;
-
-  return true;
-}
-
 export function printNode(node: Nodes.Node): string {
   if (!node) {
     throw new Error('Trying to print a null node');
   }
+
   if (node instanceof Nodes.NameIdentifierNode) {
     return node.name;
   } else if (node instanceof Nodes.QNameNode) {
@@ -49,9 +41,7 @@ export function printNode(node: Nodes.Node): string {
 
     const functionName = printNode(node.functionName);
 
-    const printedName = isPrintableName(functionName) ? functionName : '`' + functionName + '`';
-
-    return `fun ${printedName}(${params})${retType} =${body}`;
+    return `fun ${functionName}(${params})${retType} =${body}`;
   } else if (node instanceof Nodes.ImplDirective) {
     return `impl ${printNode(node.reference)} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
   } else if (node instanceof Nodes.ImportDirectiveNode) {
