@@ -10,7 +10,7 @@ type Some
 type Option = Some | None
 
 impl Option<T> {
-  fun (is)(x: ref) = {
+  fun `is`(x: ref) = {
     Some.is(x) || None.is(x)
   }
 }
@@ -18,7 +18,7 @@ impl Option<T> {
 impl Some {
   val determinant: usize = 1
   val memorySize = ref.memorySize + ref.memorySize /* value: ref */
-  fun (is)(x: ref) = x.determinant == determinant
+  fun `is`(x: ref) = x.determinant == determinant
 
   fun apply(value: ref): Some = {
     val ptr: Some = (determinant << 32 | core::memory::malloc(memorySize)) as Some
@@ -36,11 +36,11 @@ impl Some {
     ref.store(base + 0, newValue)
   }
 
-  fun (==)(lhs: Some, rhs: Some): boolean = {
+  fun `==`(lhs: Some, rhs: Some): boolean = {
     get_value(lhs) == get_value(rhs)
   }
 
-  fun (!=)(lhs: Some, rhs: Some): boolean = {
+  fun `!=`(lhs: Some, rhs: Some): boolean = {
     !(lhs == rhs)
   }
 }
@@ -48,10 +48,10 @@ impl Some {
 impl None {
   val determinant: usize = 2
   val staticInstance: ref = determinant
-  fun (is)(x: ref) = x == staticInstance
+  fun `is`(x: ref) = x == staticInstance
 
   fun apply(): None = staticInstance
 
-  fun (==)(lhs: None, rhs: None): boolean = true
-  fun (!=)(lhs: None, rhs: None): boolean = false
+  fun `==`(lhs: None, rhs: None): boolean = true
+  fun `!=`(lhs: None, rhs: None): boolean = false
 }

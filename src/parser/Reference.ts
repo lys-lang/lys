@@ -23,9 +23,9 @@ export class Reference {
 
   toString() {
     if (this.isLocalReference) {
-      return this.referencedNode.toString();
+      return this.referencedNode.name;
     } else {
-      return this.moduleName + '::' + this.referencedNode.toString();
+      return this.moduleName + '::' + this.referencedNode.name;
     }
   }
 }

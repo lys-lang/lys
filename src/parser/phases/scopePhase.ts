@@ -114,7 +114,7 @@ const createClosures = walkPreOrder(
         node.value.closure = node.closure.newChildClosure('VarDeclaration');
         node.closure.set(node.variableName, 'VALUE');
       } else if (node instanceof Nodes.ImplDirective) {
-        node.closure = node.closure.newChildClosure(node.reference.toString() + '.');
+        node.closure = node.closure.newChildClosure(node.reference.variable.text + '.');
       } else if (node instanceof Nodes.TypeDirectiveNode) {
         node.closure.set(node.variableName, 'TYPE');
       } else if (node instanceof Nodes.FunctionNode) {

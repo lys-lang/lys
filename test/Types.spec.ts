@@ -12,6 +12,7 @@ import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
 import { ParsingContext } from '../dist/parser/ParsingContext';
 import { UnionType, StructType, RefType, TypeAlias, InjectableTypes, Type } from '../dist/parser/types';
+import { printNode } from '../dist/utils/nodePrinter';
 
 const parsingContext = new ParsingContext();
 
@@ -93,7 +94,7 @@ describe('Types', function() {
           }
         } catch (e) {
           console.log(printErrors(typePhase.parsingContext));
-          console.log(typePhase.document.toString());
+          console.log(printNode(typePhase.document));
           console.log(printAST(typePhase.document));
           console.log(print(typePhase.typeGraph));
           throw e;
@@ -529,15 +530,15 @@ describe('Types', function() {
             type ABC = A | B | C
 
             impl A {
-              fun (is)(x: A): boolean = ???
+              fun \`is\`(x: A): boolean = ???
             }
 
             impl B {
-              fun (is)(x: B): boolean = ???
+              fun \`is\`(x: B): boolean = ???
             }
 
             impl C {
-              fun (is)(x: C): boolean = ???
+              fun \`is\`(x: C): boolean = ???
             }
 
             var a: A = ???
@@ -794,10 +795,10 @@ describe('Types', function() {
           var e = Cons(Node(Nil))
           ---
           a := (alias Nil (struct Nil))
-          b := (alias Coimpl (struct Cons))
-          c := (alias Coimpl (struct Cons))
-          d := (alias Coimpl (struct Cons))
-          e := (alias Coimpl (struct Cons))
+          b := (alias Cons (struct Cons))
+          c := (alias Cons (struct Cons))
+          d := (alias Cons (struct Cons))
+          e := (alias Cons (struct Cons))
         `;
       });
     });
@@ -1465,8 +1466,8 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun (as)(x: f32): boolean = ???
-        fun (as)(x: f32): boolean = ???
+        fun \`as\`(x: f32): boolean = ???
+        fun \`as\`(x: f32): boolean = ???
         ---
         fun(x: f32) -> boolean
         ---
@@ -2768,7 +2769,7 @@ describe('Types', function() {
         type boolean
 
         impl boolean {
-          fun (+)(x: boolean, y: i32): f32 = 1.0
+          fun \`+\`(x: boolean, y: i32): f32 = 1.0
         }
 
         fun main(): f32 = true + 3
@@ -2782,10 +2783,10 @@ describe('Types', function() {
         type boolean
 
         impl boolean {
-          fun (+)(x: boolean, y: i32): i32 = 1
+          fun \`+\`(x: boolean, y: i32): i32 = 1
         }
         impl i32 {
-          fun (+)(x: i32, y: f32): f32 = 1.0
+          fun \`+\`(x: i32, y: f32): f32 = 1.0
         }
 
         fun main(): f32 = true + 3 + 1.0
@@ -2799,7 +2800,7 @@ describe('Types', function() {
         type boolean
 
         impl boolean {
-          fun (+)(x: boolean, y: i32): i32 = 1
+          fun \`+\`(x: boolean, y: i32): i32 = 1
         }
 
         fun main(): f32 = true + 3

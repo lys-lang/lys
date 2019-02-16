@@ -8,6 +8,7 @@ import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
 import { ParsingContext } from '../dist/parser/ParsingContext';
+import { printNode } from '../dist/utils/nodePrinter';
 
 declare var it;
 
@@ -46,7 +47,7 @@ export function test(name: string, src: string, customTest?: (document: any, err
         try {
           await customTest(instance);
         } catch (e) {
-          console.error(compilationPhaseResult.document.toString());
+          console.error(printNode(compilationPhaseResult.document));
           console.error('NON OPTIMIZED VERSION');
           console.log(print(compilationPhaseResult.programAST));
           await compilationPhaseResult.validate(true);

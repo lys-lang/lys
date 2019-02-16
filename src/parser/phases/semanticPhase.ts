@@ -7,6 +7,7 @@ import { CanonicalPhaseResult } from './canonicalPhase';
 import { AstNodeError } from '../NodeError';
 import { annotations } from '../annotations';
 import { ParsingContext } from '../ParsingContext';
+import { printNode } from '../../utils/nodePrinter';
 
 const overloadFunctions = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
@@ -43,7 +44,7 @@ const overloadFunctions = function(
 };
 
 function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseResult): Nodes.DirectiveNode[] {
-  const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.toString()).join(', ');
+  const args = node.parameters.map($ => printNode($)).join(', ');
   const typeName = node.declaredName.name;
 
   const typeDirective = new Nodes.TypeDirectiveNode();
@@ -61,7 +62,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         if (parameterType instanceof Nodes.UnionTypeNode) {
           return `
             // #[getter]
-            fun property_${parameterName}(target: ${typeName}): ${parameterType} = %wasm {
+            fun property_${parameterName.name}(target: ${typeName}): ${printNode(parameterType)} = %wasm {
               (i64.load
                 (i32.add
                   (i32.const ${offset})
@@ -71,7 +72,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
             }
 
             // #[setter]
-            fun property_${parameterName}(target: ${typeName}, value: ${parameterType}): void = %wasm {
+            fun property_${parameterName.name}(target: ${typeName}, value: ${printNode(parameterType)}): void = %wasm {
               (i64.store
                 (i32.add
                   (i32.const ${offset})
@@ -84,19 +85,21 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         } else {
           return `
             // #[getter]
-            fun property_${parameterName}(target: ${typeName}): ${parameterType} =
-              ${parameterType}.load(target, ${offset})
+            fun property_${parameterName.name}(target: ${typeName}): ${printNode(parameterType)} =
+              ${printNode(parameterType)}.load(target, ${offset})
 
             // #[setter]
-            fun property_${parameterName}(target: ${typeName}, value: ${parameterType}): void =
-              ${parameterType}.store(target, value, ${offset})
+            fun property_${parameterName.name}(target: ${typeName}, value: ${printNode(parameterType)}): void =
+              ${printNode(parameterType)}.store(target, value, ${offset})
           `;
         }
       })
       .join('\n');
 
-    const sizes = node.parameters.map(_ => `/* ${_.parameterType}.allocationSize() */ 8`).join(' + ');
-    const callRefs = node.parameters.map(_ => `property_${_.parameterName}(ref, ${_.parameterName})`).join('\n');
+    const sizes = node.parameters.map(_ => `/* ${printNode(_.parameterType)}.allocationSize() */ 8`).join(' + ');
+    const callRefs = node.parameters
+      .map(_ => `property_${printNode(_.parameterName)}(ref, ${printNode(_.parameterName)})`)
+      .join('\n');
 
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(
@@ -131,7 +134,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
               ${accessors}
 
-              fun is(a: ${typeName}): boolean = %wasm {
+              fun \`is\`(a: ${typeName}): boolean = %wasm {
                 (i64.eq
                   (i64.and
                     (i64.const 0xffffffff00000000)
@@ -175,7 +178,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
             }
 
-            fun is(a: ${typeName}): boolean = %wasm {
+            fun \`is\`(a: ${typeName}): boolean = %wasm {
               (i64.eq
                 (i64.and
                   (i64.const 0xffffffff00000000)
@@ -185,14 +188,14 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               )
             }
 
-            fun (==)(a: ${typeName}, b: ref): boolean = %wasm {
+            fun \`==\`(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.eq
                 (get_local $a)
                 (get_local $b)
               )
             }
 
-            fun (!=)(a: ${typeName}, b: ref): boolean = %wasm {
+            fun \`!=\`(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.ne
                 (get_local $a)
                 (get_local $b)
@@ -281,15 +284,15 @@ const processUnions = function(
           referenceTypes.forEach($ => {
             injectedDirectives.push(`
               impl ${$.variable.text} {
-                fun (as)(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
+                fun \`as\`(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
               }
             `);
           });
 
           injectedDirectives.push(`
             impl ${node.variableName.name} {
-              fun (as)(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
-              fun (as)(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
+              fun \`as\`(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
+              fun \`as\`(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
             }
           `);
         }
@@ -300,12 +303,12 @@ const processUnions = function(
             `
               // Union type ${variableName.name}
               impl ${variableName.name} {
-                fun (is)(a: ${node.variableName.name}): boolean = {
-                  ${referenceTypes.map($ => 'a is ' + $.variable.text).join(' || ') || 'false'}
+                fun \`is\`(a: ${node.variableName.name}): boolean = {
+                  ${referenceTypes.map($ => 'a is ' + printNode($.variable)).join(' || ') || 'false'}
                 }
 
-                fun (==)(lhs: ref, rhs: ref): boolean = lhs == rhs
-                fun (!=)(lhs: ref, rhs: ref): boolean = lhs != rhs
+                fun \`==\`(lhs: ref, rhs: ref): boolean = lhs == rhs
+                fun \`!=\`(lhs: ref, rhs: ref): boolean = lhs != rhs
 
                 fun store(lhs: ref, rhs: ${variableName.name}, offset: i32): void = %wasm {
                   (i64.store

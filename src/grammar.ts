@@ -57,7 +57,7 @@ EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunctionName      ::= (NameIdentifier | '(' FunOperator ')')
+FunctionName      ::= (NameIdentifier | '\`' FunOperator '\`')
 
 FunOperator       ::= ( BitNotPreOperator
                       | MinusPreOperator

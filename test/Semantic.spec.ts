@@ -9,6 +9,7 @@ import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } fro
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
 import { ParsingContext } from '../dist/parser/ParsingContext';
+import { printNode } from '../dist/utils/nodePrinter';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -56,7 +57,7 @@ describe('Semantic', function() {
           // console.log(printErrors(result.document, result.errors));
           throw err;
         }
-        return result.document.toString();
+        return printNode(result.document);
       },
       '.desugar'
     );

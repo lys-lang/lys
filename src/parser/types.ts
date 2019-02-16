@@ -243,11 +243,11 @@ export class StructType extends RefType {
   }
 
   toString() {
-    return this.structName.toString();
+    return this.structName;
   }
 
   inspect() {
-    return '(struct ' + this.structName.toString() + ')';
+    return `(struct ${this.structName})`;
   }
 }
 
@@ -259,7 +259,7 @@ export class IntersectionType extends Type {
   }
 
   toString() {
-    return this.of.map($ => $.toString()).join(' & ');
+    return this.of.join(' & ');
   }
 
   inspect(levels: number = 0) {
@@ -542,11 +542,11 @@ export class TypeAlias extends Type {
   }
 
   toString() {
-    return this.name.toString();
+    return this.name.name;
   }
 
   inspect(levels: number = 0) {
-    return '(alias ' + this.name.toString() + (levels > 0 ? ' ' + this.of.inspect(levels - 1) : '') + ')';
+    return '(alias ' + this.name.name + (levels > 0 ? ' ' + this.of.inspect(levels - 1) : '') + ')';
   }
 }
 
@@ -576,11 +576,11 @@ export class PropertyType extends Type {
   }
 
   toString() {
-    return this.name.toString();
+    return this.name.name;
   }
 
   inspect() {
-    return '(property ' + this.name.toString() + ')';
+    return `(property ${this.name.name})`;
   }
 }
 

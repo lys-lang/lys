@@ -69,7 +69,7 @@ export class ParsingContext {
 
   registerType(struct: Nodes.TypeDirectiveNode) {
     if (this.typeNumbers.has(struct)) return;
-    assert(!struct.typeDiscriminant, `type ${struct} already had a number`);
+    assert(!struct.typeDiscriminant, `type ${struct.variableName.name} already had a number`);
     struct.typeDiscriminant = this.typeNumbers.size + 1;
     if (!struct.variableName.internalIdentifier) {
       struct.variableName.internalIdentifier = this.getUnusedName(struct.variableName.name + 'Type');
