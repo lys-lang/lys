@@ -697,9 +697,6 @@ export class UnknownType extends Type {
 export const InjectableTypes = {
   u8: new NativeType('u8', NativeTypes.i32),
   boolean: new NativeType('boolean', NativeTypes.i32),
-  char: new NativeType('char', NativeTypes.i32),
-  usize: new NativeType('usize', NativeTypes.i32),
-  isize: new NativeType('isize', NativeTypes.i32),
   i16: new NativeType('i16', NativeTypes.i32),
   u16: new NativeType('u16', NativeTypes.i32),
   i32: new NativeType('i32', NativeTypes.i32),

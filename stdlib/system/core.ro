@@ -9,9 +9,6 @@ type u64
 type f32
 type f64
 type boolean
-type char
-type usize
-type isize
 type ref
 type bytes
 type never
@@ -198,12 +195,6 @@ impl u32 {
   fun `<=`(lhs: u32, rhs: u32): boolean = %wasm { (i32.le_u (get_local $lhs) (get_local $rhs)) }
   fun `>`(lhs: u32, rhs: u32): boolean = %wasm { (i32.gt_u (get_local $lhs) (get_local $rhs)) }
   fun `<`(lhs: u32, rhs: u32): boolean = %wasm { (i32.lt_u (get_local $lhs) (get_local $rhs)) }
-
-  // #[explicit]
-  fun `as`(lhs: u32): /* may fail */ i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
-
-  // #[explicit]
-  fun `as`(lhs: u32): /* may fail */ f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
 
   fun store(lhs: ref, rhs: u32): void = %wasm {
     (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -526,29 +517,6 @@ impl boolean {
       )
     )
   }
-}
-
-impl char {
-  fun sizeOf(): u32 = %wasm { (i32.const 4) }
-  fun allocationSize(): u32 = sizeOf()
-
-  fun `as`(lhs: char): u16 = %wasm { (get_local $lhs) }
-  fun `as`(lhs: char): i32 = %wasm { (get_local $lhs) }
-  fun `as`(lhs: char): u32 = %wasm { (get_local $lhs) }
-  fun `as`(lhs: char): i64 = %wasm { (i64.extend_u/i32 (get_local $lhs)) }
-  fun `as`(lhs: char): u64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
-  fun `as`(lhs: char): f32 = %wasm { (f32.convert_u/i32 (get_local $lhs)) }
-  fun `as`(lhs: char): f64 = %wasm { (f64.convert_u/i32 (get_local $lhs)) }
-}
-
-impl usize {
-  fun sizeOf(): u32 = %wasm { (i32.const 4) }
-  fun allocationSize(): u32 = sizeOf()
-}
-
-impl isize {
-  fun sizeOf(): u32 = %wasm { (i32.const 4) }
-  fun allocationSize(): u32 = sizeOf()
 }
 
 impl ref {

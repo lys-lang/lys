@@ -7,8 +7,6 @@ arrays
 strings
 closure functions
 
-change memory things from i32 to usize
-
 fun sizeOf(x: Type<A> | A): usize
 
 test parsing `type test {}`
@@ -89,7 +87,7 @@ impl Option<T> {
 }
 
 impl None {
-  val determinant: usize = 2
+  val determinant: u32 = 2
   val staticInstance: ref = determinant
   fun `is`(x: ref) = x == staticInstance
 

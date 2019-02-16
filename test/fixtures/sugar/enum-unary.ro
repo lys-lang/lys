@@ -16,7 +16,7 @@ impl Option<T> {
 }
 
 impl Some {
-  val determinant: usize = 1
+  val determinant: u32 = 1
   val memorySize = ref.memorySize + ref.memorySize /* value: ref */
   fun `is`(x: ref) = x.determinant == determinant
 
@@ -46,7 +46,7 @@ impl Some {
 }
 
 impl None {
-  val determinant: usize = 2
+  val determinant: u32 = 2
   val staticInstance: ref = determinant
   fun `is`(x: ref) = x == staticInstance
 
