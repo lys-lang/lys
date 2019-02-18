@@ -856,11 +856,12 @@
                 |-QNameNode=fromPointer
                   |-NameIdentifierNode="fromPointer"
               |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
-                |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
-                  |-QNameNode=system::memory::malloc
+                |-ReferenceNode type=(fun "calloc" ((alias i32) (alias i32)) (alias i32))
+                  |-QNameNode=system::memory::calloc
                     |-NameIdentifierNode="system"
                     |-NameIdentifierNode="memory"
-                    |-NameIdentifierNode="malloc"
+                    |-NameIdentifierNode="calloc"
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
                   |-ReferenceNode type=(fun "sizeOf" () (alias i32))
                     |-QNameNode=sizeOf

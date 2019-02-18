@@ -79,7 +79,7 @@ impl Node {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(a: (Tree | Forest)): Node = {
-    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
     property_a($ref, a)
     $ref
   }
@@ -189,7 +189,7 @@ impl Cons {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(tree: (Tree | Forest)): Cons = {
-    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
     property_tree($ref, tree)
     $ref
   }

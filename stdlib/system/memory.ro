@@ -27,13 +27,27 @@ private fun currentMemory(): i32 = %wasm {
 
 private fun max(a: i32, b: i32): i32 = if (a > b) a else b
 
-fun malloc(size: i32): i32 = {
-  val $ret = malloc_unsafe(size)
+fun allocBytes(size: i32): bytes = %wasm {
+  (local $allocation i32)
+  (set_local $allocation (call $malloc (get_local $size)))
+  (i32.store (get_local $allocation) (get_local $size))
+  (i64.or
+    (i64.extend_s/i32 (get_local $allocation))
+    (i64.shl
+      (i64.extend_s/i32 (i32.const 0))
+      (i64.const 32)
+    )
+  )
+}
+
+fun calloc(itemCount: i32, itemSize: i32): i32 = {
+  val size = itemCount * itemSize
+  val $ret = malloc(size)
   memset($ret, size, 0)
   $ret
 }
 
-fun malloc_unsafe(size: i32): i32 = {
+fun malloc(size: i32): i32 = {
   if (size > 0) {
     if (size > MAX_SIZE_32) {
       panic()

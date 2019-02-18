@@ -27,6 +27,7 @@ describe('execution tests', () => {
             case 0 -> "".length
             case 1 -> "1".length
             case 2 -> "11".length
+            case 3 -> "⨔⨔⨔".length
             else -> {
               panic()
               0
@@ -35,39 +36,66 @@ describe('execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.len()).to.eq(3);
+        expect(x.exports.len()).to.eq(6);
         expect(x.exports.b(0)).to.eq(0);
-        expect(x.exports.b(1)).to.eq(1);
-        expect(x.exports.b(2)).to.eq(2);
+        expect(x.exports.b(1)).to.eq(2);
+        expect(x.exports.b(2)).to.eq(4);
+        expect(x.exports.b(3)).to.eq(6);
         expect(() => x.exports.b(92)).to.throw();
       }
     );
     test(
       'str concat',
       `
-          fun alloc(size: i32): bytes = %wasm {
-            (i64.or
-              (i64.extend_s/i32 (call $system::memory::malloc (get_local $size)))
-              (i64.shl
-                (i64.extend_s/i32 (get_local $size))
-                (i64.const 32)
-              )
-            )
-          }
-
           fun concat(lhs: bytes, rhs: bytes): bytes = {
-            var ret = alloc(lhs.length + rhs.length)
-            system::memory::memcpy(ret.ptr, lhs.ptr, lhs.length)
-            system::memory::memcpy(ret.ptr + lhs.length, rhs.ptr, rhs.length)
-            ret
+            var $ret = system::memory::allocBytes(lhs.length + rhs.length)
+            system::memory::memcpy($ret.ptr, lhs.ptr, lhs.length)
+            system::memory::memcpy($ret.ptr + lhs.length, rhs.ptr, rhs.length)
+            $ret
           }
 
-          fun main(): i32 =
-            concat("asd", "dsa").length
+          fun main(): i32 = concat("asd", "dsa").length
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.main()).to.eq(6);
+        expect(x.exports.main()).to.eq(12);
+      }
+    );
+    test(
+      'String concat',
+      `
+          import system::string
+
+          fun strLen(): i32 = String("asd").length
+          fun byteLen(): i32 = String("dsa").data.length
+          fun concatStrLen(): i32 = (String("ds") + String("sa")).length
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.strLen()).to.eq(3);
+        expect(x.exports.byteLen()).to.eq(6);
+        expect(x.exports.concatStrLen()).to.eq(4);
+      }
+    );
+    test(
+      'charAt',
+      `
+          import system::string
+
+          val str = String("asd❮𝐑")
+
+          fun charAt(at: i32): u16 = String.charAt(str, at)
+          fun len(): i32 = str.length
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.len()).to.eq(6);
+
+        let str = String.fromCodePoint(...[0, 1, 2, 3, 4, 5].map($ => x.exports.charAt($)));
+
+        expect(str).to.eq('asd❮𝐑');
+
+        expect(() => x.exports.charAt(100)).to.throw();
       }
     );
   });

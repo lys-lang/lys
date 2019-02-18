@@ -115,9 +115,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
               fun apply(${args}): ${typeName} = {
                 var $ref = fromPointer(
-                  system::memory::malloc(
-                    sizeOf()
-                  )
+                  system::memory::calloc(1, sizeOf())
                 )
 
                 ${callRefs}

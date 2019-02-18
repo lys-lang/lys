@@ -83,6 +83,29 @@ impl i16 {
   fun store(lhs: ref, rhs: i16): void = %wasm {
     (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
+
+  fun store(lhs: ref, rhs: i16, offset: i32): void = %wasm {
+    (i32.store16
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): i16 = %wasm {
+    (i32.load16_s (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): i16 = %wasm {
+    (i32.load16_s
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 impl u16 {
@@ -103,6 +126,29 @@ impl u16 {
   fun store(lhs: ref, rhs: u16): void = %wasm {
     (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
+
+  fun store(lhs: ref, rhs: u16, offset: i32): void = %wasm {
+    (i32.store16
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): u16 = %wasm {
+    (i32.load16_u (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): u16 = %wasm {
+    (i32.load16_u
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 impl i32 {
@@ -110,6 +156,7 @@ impl i32 {
   fun allocationSize(): u32 = sizeOf()
 
   fun as(lhs: i32): i64 = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
+  
   fun as(lhs: i32): f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
   fun as(lhs: i32): f64 = %wasm { (f64.convert_s/i32 (get_local $lhs)) }
 
@@ -137,6 +184,9 @@ impl i32 {
 
   // @[explicit]
   fun as(lhs: i32): /* may fail */ f32 = %wasm { (f32.convert_s/i32 (get_local $lhs)) }
+
+  // @[explicit]
+  fun as(lhs: i32): ref = %wasm { (i64.extend_s/i32 (get_local $lhs)) }
 
   fun store(lhs: ref, rhs: i32): void = %wasm {
     (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -560,11 +610,43 @@ impl bytes {
     (get_local $str)
   }
 
-  // #[getter]
-  fun property_length(str: bytes): i32 = (toAddr(str) >> 32 as i64) as i32
+  // #[explicit]
+  fun as(lhs: bytes): ref = %wasm { (get_local $lhs) }
 
   // #[getter]
-  fun property_ptr(str: bytes): i32 = toAddr(str) as i32
+  fun property_length(str: bytes): i32 = i32.load(str as ref)
+
+  // #[getter]
+  fun property_ptr(str: bytes): i32 = {
+    toAddr(str) as i32 + 4
+  }
+
+  fun store(lhs: ref, rhs: bytes): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: bytes, offset: i32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): bytes = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: i32): bytes = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 /**

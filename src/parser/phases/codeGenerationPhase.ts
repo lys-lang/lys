@@ -7,7 +7,6 @@ global['Binaryen'] = {
 
 import * as binaryen from 'binaryen';
 import _wabt = require('wabt');
-import utf8bytes = require('utf8-bytes');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType } from '../nodes';
@@ -250,7 +249,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
-      const size = node.length.toString(16);
+      const size = '00000000'; // node.length.toString(16);
       const offset = ('00000000' + node.offset.toString(16)).substr(-8);
       return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + size + offset, 'i64')]);
     } else if (node instanceof Nodes.FloatLiteral) {
@@ -464,7 +463,23 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     const dataSection = [];
 
     const endMemory = bytesLiterals.reduce<number>((offset, literal) => {
-      const bytes = utf8bytes(literal.value);
+      const str = literal.value;
+      const bytes: number[] = [];
+      const byteSize = str.length * 2;
+
+      bytes.push(byteSize & 0xff);
+      bytes.push((byteSize >> 8) & 0xff);
+      bytes.push((byteSize >> 16) & 0xff);
+      bytes.push((byteSize >> 24) & 0xff);
+
+      for (let index = 0; index < str.length; index++) {
+        const char = str.charCodeAt(index);
+        bytes.push(char & 0xff);
+        bytes.push(char >> 8);
+      }
+
+      bytes.push(0);
+
       const size = bytes.length;
       literal.offset = offset;
       literal.length = size;

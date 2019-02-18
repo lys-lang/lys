@@ -125,7 +125,7 @@ impl Real {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(number: f32): Real = {
-    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
     property_number($ref, number)
     $ref
   }
@@ -162,7 +162,7 @@ impl Natural {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(number: i32): Natural = {
-    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
     property_number($ref, number)
     $ref
   }
@@ -199,7 +199,7 @@ impl Complex {
   fun allocationSize(): u32 = ref.allocationSize()
   
   fun apply(real: f32, imaginary: f32): Complex = {
-    var $ref = fromPointer(system::memory::malloc(sizeOf()))
+    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
     property_real($ref, real)
     property_imaginary($ref, imaginary)
     $ref

@@ -3037,8 +3037,6 @@ describe('Types', function() {
       `;
 
       checkMainType`
-
-
         fun malloc(size: i32): i32 = %wasm {
           (get_local $size)
         }

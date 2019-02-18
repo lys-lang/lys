@@ -212,35 +212,13 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult:
     node.closure.incrementUsageQName(node.variable);
   } else if (node instanceof Nodes.ImplDirective) {
     collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, phaseResult.parsingContext);
+  } else if (node instanceof Nodes.ImportDirectiveNode) {
+    try {
+      phaseResult.parsingContext.getScopePhase(node.module.text);
+    } catch {
+      phaseResult.parsingContext.messageCollector.error(`Unable to load module ${node.module.text}`, node);
+    }
   }
-  // else if (node instanceof Nodes.MemberNode) {
-  //   if (node.lhs instanceof Nodes.ReferenceNode && node.lhs.resolvedReference) {
-  //     if (node.lhs.resolvedReference.type === 'TYPE') {
-  //       const { namespaceNames } = node.lhs.resolvedReference.referencedNode;
-
-  //       if (!namespaceNames || !namespaceNames.has(node.memberName.name)) {
-  //         throw new AstNodeError(
-  //           `The type "${node.lhs.resolvedReference.referencedNode.toString()}" has no public member "${
-  //             node.memberName.name
-  //           }"`,
-  //           node
-  //         );
-  //       }
-  //     } else if (node.lhs.resolvedReference.type === 'VALUE') {
-  //       // const { namespaceNames } = node.lhs.resolvedReference.referencedNode;
-  //       // if (!namespaceNames || !namespaceNames.has(node.memberName.name)) {
-  //       //   throw new AstNodeError(
-  //       //     `The type "${node.lhs.resolvedReference.referencedNode.toString()}" has no public member "${
-  //       //       node.memberName.name
-  //       //     }"`,
-  //       //     node
-  //       //   );
-  //       // }
-  //     } else {
-  //       throw new AstNodeError(`Don't know how to resolve this ref: ${node.lhs.resolvedReference.type}`, node.lhs);
-  //     }
-  //   }
-  // }
 });
 
 const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: ScopePhaseResult) => {

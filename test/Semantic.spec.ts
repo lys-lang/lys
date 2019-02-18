@@ -513,6 +513,14 @@ describe('Semantic', function() {
         }
     `;
 
+    test`
+      import system::string
+    `;
+
+    testToFail`
+      import system::stringThatDoesNotExist
+    `;
+
     test`type i32  var a: i32 = 1`;
 
     testToFail`var a: i32a = 1`;

@@ -1,24 +1,31 @@
 (module
  (type $0 (func (result i32)))
  (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32 i32 i32) (result i32)))
+ (type $2 (func (param i32 i32) (result i32)))
+ (type $3 (func (param i32 i32 i32) (result i32)))
  (memory $0 1)
  (export "memory" (memory $0))
- (export "fib" (func $1))
- (export "test" (func $2))
- (func $0 (; 0 ;) (type $2) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+ (export "fib" (func $2))
+ (export "test" (func $3))
+ (func $0 (; 0 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
+  (i32.add
+   (local.get $0)
+   (local.get $1)
+  )
+ )
+ (func $1 (; 1 ;) (type $3) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (if (result i32)
    (i32.gt_s
     (local.get $0)
     (i32.const 0)
    )
-   (call $0
+   (call $1
     (i32.sub
      (local.get $0)
      (i32.const 1)
     )
     (local.get $2)
-    (i32.add
+    (call $0
      (local.get $1)
      (local.get $2)
     )
@@ -26,15 +33,15 @@
    (local.get $1)
   )
  )
- (func $1 (; 1 ;) (type $1) (param $0 i32) (result i32)
-  (call $0
+ (func $2 (; 2 ;) (type $1) (param $0 i32) (result i32)
+  (call $1
    (local.get $0)
    (i32.const 0)
    (i32.const 1)
   )
  )
- (func $2 (; 2 ;) (type $0) (result i32)
-  (call $1
+ (func $3 (; 3 ;) (type $0) (result i32)
+  (call $2
    (i32.const 46)
   )
  )
