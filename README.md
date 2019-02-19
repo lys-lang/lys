@@ -4,7 +4,7 @@
 
 > WIP
 
-```
+```dwl
 /**
  * Injected system types, they have no explicit type, it is only a delcaration
  */
@@ -61,7 +61,7 @@ val cyan: Custom = Custom(0, 255, 255)
 
 > WIP
 
-```
+```dwl
 /**
  * Polymorphic types:
  * maybe monad
@@ -76,7 +76,7 @@ type maybe<T> {
 
 > WIP
 
-```
+```dwl
 /**
  * This function "adds the method" isRed to the type `color``
  */
@@ -117,7 +117,7 @@ fun otherScenarios(x: i32) =
 We can add methods to a type by setting the first argument of a function with the
 desired type
 
-```
+```dwl
 // Function application
 isRed(Red)                // true
 Red.isRed() == isRed(Red) // true
@@ -133,7 +133,7 @@ Red != Custom(255, 0, 0)  // true
 
 > WIP
 
-```
+```dwl
 /**
  * This defines a new effect type exc with a single primitive operation, raise
  * with type string → exc a for any a. The raise operation can be used just like
@@ -190,7 +190,7 @@ val res = with X handle get()
 
 ##
 
-```
+```dwl
 type i32
 type f32
 type boolean
@@ -227,7 +227,7 @@ fun main() = {
 
 Tuples are just a sugar syntax on top of structs.
 
-```
+```dwl
 fun main(): (i32, f32) = (1, 1.0)
 
 // equals to
@@ -244,7 +244,7 @@ Closures work with implicit structs for the "free" variables of the scope.
 
 Here is a brief example of what we want to achieve. This is pseudocode, and doesn't contain any GC code.
 
-```koka
+```dwl
 fun adder(a: i32): fun(i32) -> i32 =
   fun(b: i32): i32 -> a + b
 
