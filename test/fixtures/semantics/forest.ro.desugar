@@ -80,7 +80,7 @@ impl Node {
   
   fun apply(a: (Tree | Forest)): Node = {
     var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    property_a($ref, a)
+    set$a($ref, a)
     $ref
   }
   
@@ -91,7 +91,9 @@ impl Node {
   fun property_a(target: Node): (Tree | Forest) = %wasm {
     (i64.load (i32.add (i32.const 0) (call addressFromRef (get_local $target))))
   }
-  fun property_a(target: Node, value: (Tree | Forest)): void = %wasm {
+  fun property_a(target: Node, value: (Tree | Forest)): void = set$a(target, value)
+  
+  fun set$a(target: Node, value: (Tree | Forest)): void = %wasm {
     (i64.store (i32.add (i32.const 0) (call addressFromRef (get_local $target))) (get_local $value))
   }
   
@@ -190,7 +192,7 @@ impl Cons {
   
   fun apply(tree: (Tree | Forest)): Cons = {
     var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    property_tree($ref, tree)
+    set$tree($ref, tree)
     $ref
   }
   
@@ -201,7 +203,9 @@ impl Cons {
   fun property_tree(target: Cons): (Tree | Forest) = %wasm {
     (i64.load (i32.add (i32.const 0) (call addressFromRef (get_local $target))))
   }
-  fun property_tree(target: Cons, value: (Tree | Forest)): void = %wasm {
+  fun property_tree(target: Cons, value: (Tree | Forest)): void = set$tree(target, value)
+  
+  fun set$tree(target: Cons, value: (Tree | Forest)): void = %wasm {
     (i64.store (i32.add (i32.const 0) (call addressFromRef (get_local $target))) (get_local $value))
   }
   

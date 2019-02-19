@@ -2,6 +2,7 @@ declare var describe;
 
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
+import { assert } from 'expect';
 
 describe('execution tests', () => {
   describe('numbers', () => {
@@ -96,6 +97,70 @@ describe('execution tests', () => {
         expect(str).to.eq('asd❮𝐑');
 
         expect(() => x.exports.charAt(100)).to.throw();
+      }
+    );
+
+    function readString(memory: ArrayBuffer, offset: number) {
+      const dv = new DataView(memory);
+      let len = dv.getUint32(offset);
+      if (len == 0) return '';
+
+      let currentOffset = offset + 4;
+
+      const sb: string[] = [];
+
+      while (len > 1) {
+        sb.push(String.fromCharCode(dv.getUint16(currentOffset)));
+        currentOffset += 2;
+        len -= 2;
+      }
+
+      if (len == 1) assert(dv.getInt8(currentOffset) == 0, 'string must end in 0');
+
+      return sb.join('');
+    }
+
+    function readBytes(memory: ArrayBuffer, offset: number) {
+      const dv = new DataView(memory, offset);
+      let len = dv.getUint32(0, true);
+
+      if (len == 0) return [];
+
+      let currentOffset = 4;
+      len += 4;
+
+      const sb: number[] = [];
+      while (currentOffset < len) {
+        const r = dv.getUint8(currentOffset);
+
+        sb.push(r);
+        currentOffset += 1;
+      }
+
+      return sb;
+    }
+
+    test(
+      'keccak',
+      `
+        import system::string
+        import system::hash::keccak
+
+        fun someTests(ix: i32): i32 = keccak("").ptr - 4
+      `,
+      async (x, err) => {
+        if (err) throw err;
+
+        const ret = x.exports.someTests(0);
+
+        expect(ret).to.not.eq(-1);
+
+        const bytes = readBytes(x.exports.memory.buffer, ret);
+        expect(bytes.length).to.eq(32);
+
+        expect(bytes.map($ => ('00' + $.toString(16)).substr(-2)).join('')).to.eq(
+          'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470'
+        );
       }
     );
   });
@@ -241,7 +306,7 @@ describe('execution tests', () => {
     );
 
     test(
-      'set struct values with getters',
+      'set struct values with getters and setters',
       `
         type Color {
           None
@@ -267,13 +332,13 @@ describe('execution tests', () => {
           support::test::assert( a.f is Color )
           support::test::assert( a.g is Color )
 
-          CatBag.property_a(a, 5)
-          CatBag.property_b(a, false)
-          CatBag.property_c(a, -999.0)
-          CatBag.property_d(a, 0xdeadbeef as i64)
-          CatBag.property_e(a, 6.08e23 as f64)
-          CatBag.property_f(a, Custom(333))
-          CatBag.property_g(a, None)
+          a.a = 5
+          a.b = false
+          a.c = -999.0
+          a.d = 0xdeadbeef as i64
+          a.e = 6.08e23 as f64
+          a.f = Custom(333)
+          a.g = None
 
           support::test::assert( a.a == 5 )
           support::test::assert( a.b == false )

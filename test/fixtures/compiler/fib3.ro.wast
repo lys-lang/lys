@@ -689,7 +689,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_37 (result i32)
+    (block $unknown_block_35 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )

@@ -4,8 +4,9 @@
  (type $2 (func (param i64) (result i64)))
  (type $3 (func (param i64) (result i32)))
  (type $4 (func))
- (type $5 (func (param i32 i32)))
- (type $6 (func (param i32) (result i32)))
+ (type $5 (func (param i64 i32)))
+ (type $6 (func (param i32 i32)))
+ (type $7 (func (param i32) (result i32)))
  (memory $0 1)
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
@@ -16,11 +17,11 @@
  (global $global$6 (mut i32) (i32.const 0))
  (global $global$7 (mut i32) (i32.const 0))
  (export "memory" (memory $0))
- (export "test" (func $12))
- (export "test2" (func $13))
- (export "test3" (func $14))
- (export "test4" (func $15))
- (start $16)
+ (export "test" (func $13))
+ (export "test2" (func $14))
+ (export "test3" (func $15))
+ (export "test4" (func $16))
+ (start $17)
  (func $0 (; 0 ;) (type $0) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
@@ -122,7 +123,7 @@
   )
   (local.get $3)
  )
- (func $1 (; 1 ;) (type $5) (param $0 i32) (param $1 i32)
+ (func $1 (; 1 ;) (type $6) (param $0 i32) (param $1 i32)
   (local $2 i32)
   (local.set $2
    (local.get $0)
@@ -193,19 +194,18 @@
    (local.get $1)
   )
  )
- (func $9 (; 9 ;) (type $6) (param $0 i32) (result i32)
+ (func $9 (; 9 ;) (type $7) (param $0 i32) (result i32)
   (i32.lt_s
    (local.get $0)
    (i32.const 0)
   )
  )
- (func $10 (; 10 ;) (type $3) (param $0 i64) (result i32)
-  (i64.eq
-   (i64.and
+ (func $10 (; 10 ;) (type $5) (param $0 i64) (param $1 i32)
+  (i32.store
+   (i32.wrap_i64
     (local.get $0)
-    (i64.const -4294967296)
    )
-   (i64.const 8589934592)
+   (local.get $1)
   )
  )
  (func $11 (; 11 ;) (type $3) (param $0 i64) (result i32)
@@ -214,10 +214,19 @@
     (local.get $0)
     (i64.const -4294967296)
    )
+   (i64.const 8589934592)
+  )
+ )
+ (func $12 (; 12 ;) (type $3) (param $0 i64) (result i32)
+  (i64.eq
+   (i64.and
+    (local.get $0)
+    (i64.const -4294967296)
+   )
    (i64.const 12884901888)
   )
  )
- (func $12 (; 12 ;) (type $0) (param $0 i32) (result i32)
+ (func $13 (; 13 ;) (type $0) (param $0 i32) (result i32)
   (block $label$1 (result i32)
    (drop
     (br_if $label$1
@@ -233,7 +242,7 @@
    (i32.const 1)
   )
  )
- (func $13 (; 13 ;) (type $0) (param $0 i32) (result i32)
+ (func $14 (; 14 ;) (type $0) (param $0 i32) (result i32)
   (block $label$1 (result i32)
    (if
     (i32.eqz
@@ -353,18 +362,18 @@
    (i32.const 1)
   )
  )
- (func $14 (; 14 ;) (type $3) (param $0 i64) (result i32)
+ (func $15 (; 15 ;) (type $3) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (if
     (i32.eqz
-     (call $11
+     (call $12
       (local.get $0)
      )
     )
     (block
      (block $label$3
       (br_if $label$3
-       (call $10
+       (call $11
         (local.get $0)
        )
       )
@@ -377,18 +386,18 @@
    (i32.const 1)
   )
  )
- (func $15 (; 15 ;) (type $2) (param $0 i64) (result i64)
+ (func $16 (; 16 ;) (type $2) (param $0 i64) (result i64)
   (local $1 i32)
   (if
    (i32.eqz
-    (call $11
+    (call $12
      (local.get $0)
     )
    )
    (block
     (block $label$2
      (br_if $label$2
-      (call $10
+      (call $11
        (local.get $0)
       )
      )
@@ -401,15 +410,13 @@
      )
      (i32.const 8)
     )
-    (i32.store
-     (i32.wrap_i64
-      (local.tee $0
-       (i64.or
-        (i64.extend_i32_u
-         (local.get $1)
-        )
-        (i64.const 12884901888)
+    (call $10
+     (local.tee $0
+      (i64.or
+       (i64.extend_i32_u
+        (local.get $1)
        )
+       (i64.const 12884901888)
       )
      )
      (i32.const 0)
@@ -418,7 +425,7 @@
   )
   (local.get $0)
  )
- (func $16 (; 16 ;) (type $4)
+ (func $17 (; 17 ;) (type $4)
   (global.set $global$0
    (i32.const 3)
   )

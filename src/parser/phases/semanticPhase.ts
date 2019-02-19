@@ -59,10 +59,12 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
       .map(({ parameterName, parameterType }, i) => {
         const offset = i * 8;
 
+        const parameter = printNode(parameterType);
+
         if (parameterType instanceof Nodes.UnionTypeNode) {
           return `
             // #[getter]
-            fun property_${parameterName.name}(target: ${typeName}): ${printNode(parameterType)} = %wasm {
+            fun property_${parameterName.name}(target: ${typeName}): ${parameter} = %wasm {
               (i64.load
                 (i32.add
                   (i32.const ${offset})
@@ -72,7 +74,10 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
             }
 
             // #[setter]
-            fun property_${parameterName.name}(target: ${typeName}, value: ${printNode(parameterType)}): void = %wasm {
+            fun property_${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
+              set$${parameterName.name}(target, value)
+
+            private fun set$${parameterName.name}(target: ${typeName}, value: ${parameter}): void = %wasm {
               (i64.store
                 (i32.add
                   (i32.const ${offset})
@@ -85,12 +90,15 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         } else {
           return `
             // #[getter]
-            fun property_${parameterName.name}(target: ${typeName}): ${printNode(parameterType)} =
-              ${printNode(parameterType)}.load(target, ${offset})
+            fun property_${parameterName.name}(target: ${typeName}): ${parameter} =
+              ${parameter}.load(target, ${offset})
 
             // #[setter]
-            fun property_${parameterName.name}(target: ${typeName}, value: ${printNode(parameterType)}): void =
-              ${printNode(parameterType)}.store(target, value, ${offset})
+            fun property_${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
+              set$${parameterName.name}(target, value)
+
+            private fun set$${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
+              ${parameter}.store(target, value, ${offset})
           `;
         }
       })
@@ -98,7 +106,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
     const sizes = node.parameters.map(_ => `/* ${printNode(_.parameterType)}.allocationSize() */ 8`).join(' + ');
     const callRefs = node.parameters
-      .map(_ => `property_${printNode(_.parameterName)}($ref, ${printNode(_.parameterName)})`)
+      .map(_ => `set$${printNode(_.parameterName)}($ref, ${printNode(_.parameterName)})`)
       .join('\n');
 
     const canonical = new CanonicalPhaseResult(

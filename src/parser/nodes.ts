@@ -450,8 +450,8 @@ export namespace Nodes {
   }
 
   export class AssignmentNode extends Node {
-    variable: ReferenceNode;
-    value: ExpressionNode;
+    lhs: ExpressionNode;
+    rhs: ExpressionNode;
   }
 
   export class TypeDirectiveNode extends DirectiveNode {

@@ -17,6 +17,17 @@ struct and poly types should not receive a instance of Reference, they should re
 
 ---
 
+parser fails with
+
+```
+x match {
+  case None -> 123
+  case is Some -> 123
+}
+```
+
+---
+
 There are [enum types](https://en.wikipedia.org/wiki/Enumerated_type). The enum type has a name, and it consists of a set of named types which are assignable to the enum type.
 
 This is possible because internaly the enum type is a sugar syntax for a [union type](https://en.wikipedia.org/wiki/Tagged_union).

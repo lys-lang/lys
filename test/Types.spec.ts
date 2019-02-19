@@ -1587,6 +1587,32 @@ describe('Types', function() {
         ---
         fun(a: X) -> i32
       `;
+
+      checkMainType`
+        struct X(value: i32)
+
+        fun main(): i32 = {
+          val x = X(10)
+          x.value = 99
+          x.value
+        }
+        ---
+        fun() -> i32
+      `;
+
+      checkMainType`
+        struct X(value: i32)
+
+        fun main(): i32 = {
+          val x = X(10)
+          x.value = false
+          x.value
+        }
+        ---
+        fun() -> i32
+        ---
+        Could not find a valid overload
+      `;
     });
 
     describe('match is not exhaustive', () => {

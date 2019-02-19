@@ -191,8 +191,8 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.ReferenceNode) {
       this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.AssignmentNode) {
-      new Edge(this.traverse(node.variable), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.value), target, EdgeLabels.RHS);
+      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.IfNode) {
       new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
       new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION);

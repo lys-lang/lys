@@ -317,21 +317,46 @@ export class AssignmentNodeTypeResolver extends TypeResolver {
 
     const lhs = node.incomingEdgesByName(EdgeLabels.LHS)[0];
     const rhs = node.incomingEdgesByName(EdgeLabels.RHS)[0];
+    const lhsType = lhs.incomingType();
+    const rhsType = rhs.incomingType();
 
-    if (!rhs.incomingType().canBeAssignedTo(lhs.incomingType())) {
-      ctx.parsingContext.messageCollector.error(
-        new TypeMismatch(rhs.incomingType(), lhs.incomingType(), assignmentNode.value)
+    // TODO: unhack my heart
+    if (assignmentNode.lhs instanceof Nodes.MemberNode) {
+      if (assignmentNode.lhs.hasAnnotation(annotations.ImplicitCall)) {
+        ctx.parsingContext.messageCollector.error('!!! This node already has a ImplicitCall', assignmentNode.lhs);
+        return INVALID_TYPE;
+      }
+
+      const fun = findFunctionOverload(
+        lhsType,
+        [assignmentNode.lhs.lhs.ofType, rhsType],
+        assignmentNode.lhs,
+        ctx.parsingContext.messageCollector
       );
+
+      if (fun && fun instanceof FunctionType) {
+        if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
+          node.astNode.annotate(new annotations.ImplicitCall(fun, [assignmentNode.lhs.lhs, assignmentNode.rhs]));
+        }
+
+        return fun.returnType;
+      } else {
+        return INVALID_TYPE;
+      }
+    }
+
+    if (!rhs.incomingType().canBeAssignedTo(lhsType)) {
+      ctx.parsingContext.messageCollector.error(new TypeMismatch(rhs.incomingType(), lhsType, assignmentNode.rhs));
     }
 
     if (InjectableTypes.void.equals(rhs.incomingType())) {
       ctx.parsingContext.messageCollector.error(
-        'The expression returns a void value, which cannot be assigned to any variable',
-        assignmentNode.value
+        'The expression returns a void value, which cannot be assigned to any value',
+        assignmentNode.rhs
       );
     }
 
-    return lhs.incomingType();
+    return rhs.incomingType();
   }
 }
 
@@ -486,20 +511,27 @@ export class MemberTypeResolver extends TypeResolver {
         return resolveTypeMember(LHSType.of, opNode.memberName.name, ctx);
       } else if (LHSType instanceof TypeAlias) {
         const resolvedProperty = resolveTypeMember(LHSType, 'property_' + opNode.memberName.name, ctx);
+
         if (resolvedProperty) {
-          const fun = findFunctionOverload(resolvedProperty, [LHSType], opNode, ctx.parsingContext.messageCollector);
+          const isGetter = opNode.hasAnnotation(annotations.IsValueNode);
 
-          if (fun && fun instanceof FunctionType) {
-            if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
-              node.astNode.annotate(new annotations.ImplicitCall(fun, [opNode.lhs]));
+          if (isGetter) {
+            const fun = findFunctionOverload(resolvedProperty, [LHSType], opNode, ctx.parsingContext.messageCollector);
+
+            if (fun && fun instanceof FunctionType) {
+              if (!node.astNode.hasAnnotation(annotations.ImplicitCall)) {
+                node.astNode.annotate(new annotations.ImplicitCall(fun, [opNode.lhs]));
+              }
+
+              return fun.returnType;
+            } else {
+              throw new AstNodeError(
+                `${LHSType}.property_${opNode.memberName.name} is not a valid property getter`,
+                opNode.memberName
+              );
             }
-
-            return fun.returnType;
           } else {
-            throw new AstNodeError(
-              `${LHSType}.property_${opNode.memberName.name} is not a valid property getter`,
-              opNode.memberName
-            );
+            return resolvedProperty;
           }
         } else {
           throw new AstNodeError(
@@ -968,6 +1000,7 @@ export class ReferenceResolver extends TypeResolver {
           }
         } catch (e) {
           ctx.parsingContext.messageCollector.error(e, node.astNode);
+          return INVALID_TYPE;
         }
         return type;
       }

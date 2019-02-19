@@ -36,11 +36,10 @@ ValueType         ::= '=' WS* (Type | UnknownExpression) {fragment=true}
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
 TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
-TypeParameters     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
+TypeParameters    ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
-AssignExpression  ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
+Assign            ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
 FunAssignExpression ::= '=' WS* (Expression | UnknownExpression | WasmExpression) {pin=1,fragment=true}
-AssignStatement   ::= Reference WS* '=' !('=') WS* Expression {pin=3}
 OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
@@ -54,8 +53,8 @@ TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
 
-ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
+VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
 FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 FunctionName      ::= NameIdentifier | FunOperator
 
@@ -97,12 +96,11 @@ FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 IsPointer         ::= '*'
 IsArray           ::= '[]'
 
-Expression        ::= IfExpression | OrExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
+Expression        ::= IfExpression | AssignExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
 
 Statement         ::= ValDeclaration
                     | VarDeclaration
                     | FunDeclaration
-                    | AssignStatement
                     | Expression {fragment=true}
 
 MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
@@ -111,6 +109,7 @@ BinMemberOperator ::= '.' | '#'
 
 BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? {pin=1,fragment=true}
 
+AssignExpression  ::= OrExpression (WS* AssignmentKeyword WS* OrExpression)* {simplifyWhenOneChildren=true}
 OrExpression      ::= AndExpression (WS* OrKeyword WS* AndExpression)* {simplifyWhenOneChildren=true}
 AndExpression     ::= BitOrExpression (WS* AndKeyword WS* BitOrExpression)* {simplifyWhenOneChildren=true}
 BitOrExpression   ::= BitXorExpression (WS* BitOrOperator WS* BitXorExpression)* {simplifyWhenOneChildren=true}
@@ -179,11 +178,11 @@ Literal           ::= ( StringLiteral
                       | BooleanLiteral
                       ) {fragment=true}
 
-NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])*
+NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])*
 QName             ::= NameIdentifier ('::' NameIdentifier)*
 
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
-WASM_KEYWORD      ::= '%wasm' {pin=1}
+
 SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
 SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
 SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
@@ -194,6 +193,7 @@ KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD |
 
 /* Tokens */
 
+WASM_KEYWORD      ::= '%wasm' {pin=1}
 FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
@@ -251,6 +251,7 @@ MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
 
 /* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
 
+AssignmentKeyword ::= '='       !'='
 NotPreOperator    ::= '!'       !'='
 BitNotPreOperator ::= '~'       !'='
 MinusPreOperator  ::= '-'       !'-'

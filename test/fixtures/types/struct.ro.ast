@@ -229,9 +229,9 @@
                     |-QNameNode=sizeOf
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "property_a" ((alias WithInt)) (alias i32)) (fun "property_a" ((alias WithInt) (alias i32)) (alias void)))
-              |-QNameNode=property_a
-                |-NameIdentifierNode="property_a"
+            |-ReferenceNode type=(fun "set$a" ((alias WithInt) (alias i32)) (alias void))
+              |-QNameNode=set$a
+                |-NameIdentifierNode="set$a"
             |-ReferenceNode type=(alias WithInt (struct WithInt)) annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
@@ -269,7 +269,7 @@
     |-OverloadedFunctionNode type=(intersection (fun "property_a" ((alias WithInt)) (alias i32)) (fun "property_a" ((alias WithInt) (alias i32)) (alias void))) annotations=Injected
       |-FunctionNode type=(fun "property_a" ((alias WithInt)) (alias i32))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(type (alias WithInt (struct WithInt)))
+          |-NameIdentifierNode="target" type=(alias WithInt (struct WithInt))
           |-ReferenceNode type=(type (alias WithInt (struct WithInt)))
             |-QNameNode=WithInt
               |-NameIdentifierNode="WithInt"
@@ -289,7 +289,7 @@
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
       |-FunctionNode type=(fun "property_a" ((alias WithInt) (alias i32)) (alias void))
         |-ParameterNode
-          |-NameIdentifierNode="target" type=(type (alias WithInt (struct WithInt)))
+          |-NameIdentifierNode="target" type=(alias WithInt (struct WithInt))
           |-ReferenceNode type=(type (alias WithInt (struct WithInt)))
             |-QNameNode=WithInt
               |-NameIdentifierNode="WithInt"
@@ -299,6 +299,33 @@
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
         |-NameIdentifierNode="property_a"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-FunctionCallNode type=(alias void (native void))
+          |-ReferenceNode type=(fun "set$a" ((alias WithInt) (alias i32)) (alias void))
+            |-QNameNode=set$a
+              |-NameIdentifierNode="set$a"
+          |-ReferenceNode type=(alias WithInt (struct WithInt)) annotations=IsValueNode
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+      |-NameIdentifierNode="property_a" type=(intersection (fun "property_a" ((alias WithInt)) (alias i32)) (fun "property_a" ((alias WithInt) (alias i32)) (alias void)))
+    |-OverloadedFunctionNode type=(fun "set$a" ((alias WithInt) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set$a" ((alias WithInt) (alias i32)) (alias void))
+        |-ParameterNode
+          |-NameIdentifierNode="target" type=(type (alias WithInt (struct WithInt)))
+          |-ReferenceNode type=(type (alias WithInt (struct WithInt)))
+            |-QNameNode=WithInt
+              |-NameIdentifierNode="WithInt"
+        |-ParameterNode
+          |-NameIdentifierNode="value" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="set$a"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -315,7 +342,7 @@
             |-QNameNode=value
               |-NameIdentifierNode="value"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="property_a" type=(intersection (fun "property_a" ((alias WithInt)) (alias i32)) (fun "property_a" ((alias WithInt) (alias i32)) (alias void)))
+      |-NameIdentifierNode="set$a" type=(fun "set$a" ((alias WithInt) (alias i32)) (alias void))
     |-OverloadedFunctionNode type=(fun "is" ((alias WithInt)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias WithInt)) (alias boolean))
         |-ParameterNode

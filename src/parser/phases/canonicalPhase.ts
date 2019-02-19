@@ -6,7 +6,11 @@ import { ParsingPhaseResult } from './parsingPhase';
 import { ParsingContext } from '../ParsingContext';
 
 function binaryOpVisitor(astNode: Nodes.ASTNode) {
-  let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode | Nodes.AsExpressionNode | Nodes.IsExpressionNode;
+  let ret = visit(astNode.children[0]) as
+    | Nodes.BinaryExpressionNode
+    | Nodes.AsExpressionNode
+    | Nodes.IsExpressionNode
+    | Nodes.AssignmentNode;
 
   for (let i = 1; i < astNode.children.length; i += 2) {
     const oldRet = ret;
@@ -16,6 +20,8 @@ function binaryOpVisitor(astNode: Nodes.ASTNode) {
       ret = new Nodes.AsExpressionNode(astNode);
     } else if (opertator === 'is') {
       ret = new Nodes.IsExpressionNode(astNode);
+    } else if (opertator === '=') {
+      ret = new Nodes.AssignmentNode(astNode);
     } else {
       const op = (ret = new Nodes.BinaryExpressionNode(astNode));
       op.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
@@ -116,12 +122,6 @@ const visitor = {
 
     return ret;
   },
-  AssignStatement(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.AssignmentNode(astNode);
-    ret.variable = visit(astNode.children[0]);
-    ret.value = visit(astNode.children[1]);
-    return ret;
-  },
   TypeDirective(astNode: Nodes.ASTNode) {
     const ret = new Nodes.TypeDirectiveNode(astNode);
     const children = astNode.children.slice();
@@ -193,6 +193,7 @@ const visitor = {
     ret.parameterType = visit(findChildrenType(astNode, 'Type'));
     return ret;
   },
+  AssignExpression: binaryOpVisitor,
   AddExpression: binaryOpVisitor,
   OrExpression: binaryOpVisitor,
   AndExpression: binaryOpVisitor,

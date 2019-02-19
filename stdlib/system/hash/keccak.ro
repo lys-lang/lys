@@ -875,10 +875,16 @@ private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm
 //
 // Calculate the hash. Helper method incorporating the above three.
 //
-fun keccak(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32): i32 = {
-  keccak_init(context_offset)
-  keccak_update(context_offset, input_offset, input_length)
-  keccak_finish(context_offset, output_offset)
+fun keccak(input: bytes): bytes = {
+  val context = system::memory::calloc(616, 1)
 
-  output_offset
+  val ret = system::memory::allocBytes(32)
+
+  keccak_init(context)
+  keccak_update(context, input.ptr, input.length)
+  keccak_finish(context, ret.ptr)
+
+  system::memory::free(context)
+
+  ret
 }

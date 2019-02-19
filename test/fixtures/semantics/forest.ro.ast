@@ -472,8 +472,8 @@
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode
             |-ReferenceNode
-              |-QNameNode=property_a
-                |-NameIdentifierNode="property_a"
+              |-QNameNode=set$a
+                |-NameIdentifierNode="set$a"
             |-ReferenceNode annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
@@ -554,6 +554,37 @@
         |-ReferenceNode
           |-QNameNode=void
             |-NameIdentifierNode="void"
+        |-FunctionCallNode
+          |-ReferenceNode
+            |-QNameNode=set$a
+              |-NameIdentifierNode="set$a"
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+      |-NameIdentifierNode="property_a"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="target"
+          |-ReferenceNode
+            |-QNameNode=Node
+              |-NameIdentifierNode="Node"
+        |-ParameterNode
+          |-NameIdentifierNode="value"
+          |-UnionTypeNode
+            |-ReferenceNode
+              |-QNameNode=Tree
+                |-NameIdentifierNode="Tree"
+            |-ReferenceNode
+              |-QNameNode=Forest
+                |-NameIdentifierNode="Forest"
+        |-NameIdentifierNode="set$a"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
         |-WasmExpressionNode
           |-WasmAtomNode=i64.store
             |-WasmAtomNode=i32.add
@@ -569,7 +600,7 @@
             |-WasmAtomNode=get_local
               |-QNameNode=$value
                 |-NameIdentifierNode="$value"
-      |-NameIdentifierNode="property_a"
+      |-NameIdentifierNode="set$a"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
         |-ParameterNode
@@ -1128,8 +1159,8 @@
                       |-NameIdentifierNode="sizeOf"
           |-FunctionCallNode
             |-ReferenceNode
-              |-QNameNode=property_tree
-                |-NameIdentifierNode="property_tree"
+              |-QNameNode=set$tree
+                |-NameIdentifierNode="set$tree"
             |-ReferenceNode annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
@@ -1210,6 +1241,37 @@
         |-ReferenceNode
           |-QNameNode=void
             |-NameIdentifierNode="void"
+        |-FunctionCallNode
+          |-ReferenceNode
+            |-QNameNode=set$tree
+              |-NameIdentifierNode="set$tree"
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+      |-NameIdentifierNode="property_tree"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="target"
+          |-ReferenceNode
+            |-QNameNode=Cons
+              |-NameIdentifierNode="Cons"
+        |-ParameterNode
+          |-NameIdentifierNode="value"
+          |-UnionTypeNode
+            |-ReferenceNode
+              |-QNameNode=Tree
+                |-NameIdentifierNode="Tree"
+            |-ReferenceNode
+              |-QNameNode=Forest
+                |-NameIdentifierNode="Forest"
+        |-NameIdentifierNode="set$tree"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
         |-WasmExpressionNode
           |-WasmAtomNode=i64.store
             |-WasmAtomNode=i32.add
@@ -1225,7 +1287,7 @@
             |-WasmAtomNode=get_local
               |-QNameNode=$value
                 |-NameIdentifierNode="$value"
-      |-NameIdentifierNode="property_tree"
+      |-NameIdentifierNode="set$tree"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
         |-ParameterNode

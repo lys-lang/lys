@@ -240,7 +240,9 @@ function emitImplicitCall(implicitCallData: annotations.ImplicitCall, document: 
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
     // try {
-    if (node instanceof Nodes.FunctionCallNode) {
+    if (node.hasAnnotation(annotations.ImplicitCall)) {
+      return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
+    } else if (node instanceof Nodes.FunctionCallNode) {
       return emitFunctionCall(node, document);
     } else if (node instanceof Nodes.WasmExpressionNode) {
       return flatten(node.atoms.map($ => emitWast($, document)));
@@ -261,25 +263,29 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
-      const isLocal = node.variable.isLocal;
-      const isValueNode = node.hasAnnotation(annotations.IsValueNode);
+      if (node.lhs instanceof Nodes.ReferenceNode) {
+        const isLocal = node.lhs.isLocal;
+        const isValueNode = node.hasAnnotation(annotations.IsValueNode);
 
-      if (isLocal) {
-        const instr = isValueNode ? 'tee_local' : 'set_local';
-        return t.instruction(instr, [t.identifier(node.variable.local.name), emit(node.value, document)]);
-      } else {
-        if (isValueNode) {
-          return t.blockInstruction(
-            t.identifier('tee_global_' + getModuleSecuentialId(document)),
-            [
-              t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]),
-              t.instruction('get_global', [t.identifier(node.variable.local.name)])
-            ],
-            node.value.ofType.binaryenType
-          );
+        if (isLocal) {
+          const instr = isValueNode ? 'tee_local' : 'set_local';
+          return t.instruction(instr, [t.identifier(node.lhs.local.name), emit(node.rhs, document)]);
         } else {
-          return t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]);
+          if (isValueNode) {
+            return t.blockInstruction(
+              t.identifier('tee_global_' + getModuleSecuentialId(document)),
+              [
+                t.instruction('set_global', [t.identifier(node.lhs.local.name), emit(node.rhs, document)]),
+                t.instruction('get_global', [t.identifier(node.lhs.local.name)])
+              ],
+              node.rhs.ofType.binaryenType
+            );
+          } else {
+            return t.instruction('set_global', [t.identifier(node.lhs.local.name), emit(node.rhs, document)]);
+          }
         }
+      } else {
+        throw new Error('Error emiting AssignmentNode');
       }
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
@@ -324,16 +330,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
-      if (node.hasAnnotation(annotations.ImplicitCall)) {
-        return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
-      } else {
-        const instr = node.isLocal ? 'get_local' : 'get_global';
-        return t.instruction(instr, [t.identifier(node.local.name)]);
-      }
-    } else if (node instanceof Nodes.MemberNode) {
-      if (node.hasAnnotation(annotations.ImplicitCall)) {
-        return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
-      }
+      const instr = node.isLocal ? 'get_local' : 'get_global';
+      return t.instruction(instr, [t.identifier(node.local.name)]);
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);

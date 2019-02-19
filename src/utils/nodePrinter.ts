@@ -53,7 +53,7 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.OverloadedFunctionNode) {
     return node.functions.map(printNode).join('\n');
   } else if (node instanceof Nodes.AssignmentNode) {
-    return `${printNode(node.variable)} = ${printNode(node.value)}`;
+    return `${printNode(node.lhs)} = ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.LiteralNode) {
     return `${node.astNode.text}`;
   } else if (node instanceof Nodes.FunctionCallNode) {

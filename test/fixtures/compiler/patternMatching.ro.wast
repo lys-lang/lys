@@ -34,7 +34,7 @@
   (func $system::memory::calloc (param $itemCount i32) (param $itemSize i32) (result i32)
     (local $size i32)
     (local $$ret i32)
-    (block $unknown_block_91 (result i32)
+    (block $unknown_block_73 (result i32)
       (set_local $size (call $system::core::i32.* (get_local $itemCount) (get_local $itemSize)))
       (set_local $$ret (call $system::memory::malloc_2 (get_local $size)))
       (call $system::memory::memset_1 (get_local $$ret) (get_local $size) (i32.const 0))
@@ -47,13 +47,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_92 (result i32)
+    (block $unknown_block_74 (result i32)
       (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_93 (result i32)
+            (block $unknown_block_75 (result i32)
                 (if $a_wild_if (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_94
+                      (block $unknown_block_76
                           (call $system::core::panic_1)
                         )
                     )
@@ -64,15 +64,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_95
+                      (block $unknown_block_77
                           (set_local $pagesNeeded (call $system::core::i32.>>> (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::i32.~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_96
+                                (block $unknown_block_78
                                     (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_97
+                                          (block $unknown_block_79
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -91,7 +91,7 @@
               )
           )
           (else
-            (block $unknown_block_98 (result i32)
+            (block $unknown_block_80 (result i32)
                 (i32.const 0)
               )
           )
@@ -99,7 +99,7 @@
     )
   )
   (func $system::memory::free (param $ptr i32)
-    (block $unknown_block_99
+    (block $unknown_block_81
       (nop)
     )
   )
@@ -804,7 +804,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_47 (result i32)
+    (block $unknown_block_45 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )
@@ -884,7 +884,7 @@
     (local $$ref i64)
     (block $unknown_block_2 (result i64)
       (set_local $$ref (call $test/fixtures/compiler/patternMatching.ro::Some.fromPointer (call $system::memory::calloc (i32.const 1) (call $test/fixtures/compiler/patternMatching.ro::Some.sizeOf))))
-      (call $test/fixtures/compiler/patternMatching.ro::Some.property_value_1 (get_local $$ref) (get_local $value))
+      (call $test/fixtures/compiler/patternMatching.ro::Some.set$value (get_local $$ref) (get_local $value))
       (get_local $$ref)
     )
   )
@@ -895,6 +895,9 @@
     (call $system::core::i32.load_1 (get_local $target) (i32.const 0))
   )
   (func $test/fixtures/compiler/patternMatching.ro::Some.property_value_1 (param $target i64) (param $value i32)
+    (call $test/fixtures/compiler/patternMatching.ro::Some.set$value (get_local $target) (get_local $value))
+  )
+  (func $test/fixtures/compiler/patternMatching.ro::Some.set$value (param $target i64) (param $value i32)
     (call $system::core::i32.store_1 (get_local $target) (get_local $value) (i32.const 0))
   )
   (func $test/fixtures/compiler/patternMatching.ro::Some.is (param $a i64) (result i32)
