@@ -2,7 +2,7 @@ import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { PhaseResult } from './PhaseResult';
 import { printErrors } from '../../utils/errorPrinter';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
 
 declare var console;

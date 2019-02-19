@@ -3,7 +3,7 @@ declare var describe, it, require, console;
 import { folderBasedTest, testParseToken, printAST } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { expect } from 'chai';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 
 describe('Parser', () => {
   const phases = function(txt: string, fileName: string): CanonicalPhaseResult {
@@ -104,6 +104,22 @@ describe('Parser', () => {
       testEquivalence(`var x = ~test.a() - 3`, `var x = (~(test.a())) - 3`);
       testEquivalence(`var x = ~test - 3`, `var x = (~test) - 3`);
       testEquivalence(`var x = 1 - -test - 3`, `var x = (1 - (-test)) - 3`);
+      testEquivalence(`var x = a.b.c.d.e + 1 * 3`, `var x = (a.b.c.d.e + (1 * 3))`);
+      testEquivalence(
+        `var x =    color.r  * (2^16)  |   color.g  * (2^8)  |  color.b`,
+        `var x = (((color.r) * (2^16)) | ((color.g) * (2^8)) | (color.b))`
+      );
+      testEquivalence(
+        `var x =   r * (2^16)  |  g * (2^8)  | b                               `,
+        `var x = ((r * (2^16)) | (g * (2^8)) | b)                              `
+      );
+      testEquivalence(
+        `fun main(color: Color): i32 =
+            color.r * 0x10000 |
+            color.g * 0x100 |
+            color.b`,
+        `fun main(color: Color): i32 = (color.r * 0x10000) | (color.g * 0x100) | (color.b)`
+      );
     });
 
     describe('imports', () => {
@@ -135,24 +151,24 @@ describe('Parser', () => {
         type Enum=???
         type Enum = ???
         type Enum =                    ???
-        ns Enum {
+        impl Enum {
 
         } // a
-        type Enum =??? ns Enum {}
-        type Enum ns Enum {}
-        type Enum ns Enum {
+        type Enum =??? impl Enum {}
+        type Enum impl Enum {}
+        type Enum impl Enum {
           //
         } // b
-        type Enum ns Enum{
+        type Enum impl Enum{
           //
         } // c
-        type Enum ns Enum
+        type Enum impl Enum
         {
 
         } // d
       `;
       test`
-        ns Enum {
+        impl Enum {
           val test = 1
         }
       `;
@@ -162,21 +178,21 @@ describe('Parser', () => {
         type CC
       `;
       test`
-        ns Enum {
+        impl Enum {
           val test = 1
         }
 
-        fun (as)(self: Test): X = {
+        fun as(self: Test): X = {
           x() as X
         }
       `;
       test`
-        ns Enum {
+        impl Enum {
           val test = 1
 
           private fun x(): int = test
 
-          fun (as)(self: Test): X = {
+          fun as(self: Test): X = {
             x() as X
           }
         }
@@ -185,24 +201,24 @@ describe('Parser', () => {
 
     describe('operator definition', () => {
       test`
-        fun (as)(x: i32, y: boolean): void = {}
-        fun (is)(x: i32, y: boolean): void = {}
-        fun (+)(x: i32, y: boolean): void = {}
-        fun (-)(x: i32, y: boolean): void = {}
-        fun (>>)(x: i32, y: boolean): void = {}
-        fun (<<)(x: i32, y: boolean): void = {}
-        fun (==)(x: i32, y: boolean): void = {}
-        fun (!=)(x: i32, y: boolean): void = {}
-        fun (+)(x: i32, y: boolean): void = {}
-        fun (*)(x: i32, y: boolean): void = {}
-        fun (**)(x: i32, y: boolean): void = {}
-        fun (/)(x: i32, y: boolean): void = {}
-        fun (%)(x: i32, y: boolean): void = {}
-        fun (>)(x: i32, y: boolean): void = {}
-        fun (<)(x: i32, y: boolean): void = {}
-        fun (>=)(x: i32, y: boolean): void = {}
-        fun (<=)(x: i32, y: boolean): void = {}
-        fun (~=)(x: i32, y: boolean): void = {}
+        fun as(x: i32, y: boolean): void = {}
+        fun is(x: i32, y: boolean): void = {}
+        fun +(x: i32, y: boolean): void = {}
+        fun -(x: i32, y: boolean): void = {}
+        fun >>(x: i32, y: boolean): void = {}
+        fun <<(x: i32, y: boolean): void = {}
+        fun ==(x: i32, y: boolean): void = {}
+        fun !=(x: i32, y: boolean): void = {}
+        fun +(x: i32, y: boolean): void = {}
+        fun *(x: i32, y: boolean): void = {}
+        fun **(x: i32, y: boolean): void = {}
+        fun /(x: i32, y: boolean): void = {}
+        fun %(x: i32, y: boolean): void = {}
+        fun >(x: i32, y: boolean): void = {}
+        fun <(x: i32, y: boolean): void = {}
+        fun >=(x: i32, y: boolean): void = {}
+        fun <=(x: i32, y: boolean): void = {}
+        fun ~=(x: i32, y: boolean): void = {}
       `;
     });
     describe('code blocks', () => {
@@ -425,6 +441,18 @@ describe('Parser', () => {
         var d = false
         var f = "a string 'single' quote"
         var g = 'a string "double" quote'
+      `;
+    });
+
+    describe('bin op', () => {
+      test`
+        var a = 1 + 2
+        var b = a.b.c + 2
+        var c = a + 3
+        var d = a == 4
+        var f = sarasa::sarasanga( a.b.c == b.c.d )
+        var g = sarasa::sarasanga( a.b.c == 1 )
+        var g = sarasa::sarasanga( a.b.c() == 1 )
       `;
     });
 

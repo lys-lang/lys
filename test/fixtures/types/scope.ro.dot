@@ -1,5 +1,5 @@
 digraph Document {
-  node [shape=box,fixedsize=shape fontsize=10]
+  node [shape=box,fontsize=10]; rankdir=LR;
   1 [label="FunOverload: x1\n(fun 'x1' () (alias f32))", fillcolor=grey];
   2 [label="FunNode: x1\n(fun 'x1' () (alias f32))", fillcolor=grey];
   3 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
@@ -8,7 +8,7 @@ digraph Document {
   6 [label="FunNode: x2\n(fun 'x2' () (alias i32))", fillcolor=grey];
   7 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   8 [label="Name: x2\n(fun 'x2' () (alias i32))", fillcolor=grey];
-  subgraph cluster0 {
+  subgraph cluster0 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     9 [label="BlockNode\n(alias f32 (native f32))", fillcolor=grey];
     10 [label="FunNode: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
@@ -17,21 +17,21 @@ digraph Document {
     13 [label="FunctionCallNode\n(alias f32 (native f32))", fillcolor=grey];
     14 [label="Ref: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
     15 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
-    10 -> 12[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    10 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    11 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    12 -> 14[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    13 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    14 -> 13[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test/fixtures/types/scope.ro::x1()";
+    10 -> 12[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+    10 -> 9[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    11 -> 10[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
+    12 -> 14[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    13 -> 9[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    14 -> 13[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  label="test/fixtures/types/scope.ro::x1()";
 }
-  subgraph cluster1 {
+  subgraph cluster1 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     16 [label="Float: 1.00000\n(alias f32 (native f32))", fillcolor=grey];
     17 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
-  label = "test/fixtures/types/scope.ro::Y()";
+  label="test/fixtures/types/scope.ro::Y()";
 }
-  subgraph cluster2 {
+  subgraph cluster2 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     18 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
     19 [label="VarDecl: n\n(native void)", fillcolor=grey];
@@ -43,28 +43,28 @@ digraph Document {
     25 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
     26 [label="Ref: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
     27 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    19 -> 18[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    20 -> 28[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    21 -> 20[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    22 -> 24[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    22 -> 18[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    23 -> 22[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    24 -> 26[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    25 -> 18[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    26 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test/fixtures/types/scope.ro::x2()";
+    19 -> 18[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    20 -> 28[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    21 -> 20[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+    22 -> 24[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+    22 -> 18[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    23 -> 22[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
+    24 -> 26[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    25 -> 18[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    26 -> 25[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  label="test/fixtures/types/scope.ro::x2()";
 }
-  subgraph cluster3 {
+  subgraph cluster3 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     28 [label="Ref: n\n(alias i32 (native i32))", fillcolor=grey];
     29 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label = "test/fixtures/types/scope.ro::Y_2()";
+  label="test/fixtures/types/scope.ro::Y_2()";
 }
-  1 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 2[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  6 -> 5[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 6[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 4[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  2 -> 1[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
+  3 -> 2[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
+  5 -> 8[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  6 -> 5[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
+  7 -> 6[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
   label="";
 }

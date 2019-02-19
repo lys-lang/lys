@@ -1,4 +1,4 @@
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 
 export abstract class PhaseResult {
   abstract get parsingContext(): ParsingContext;

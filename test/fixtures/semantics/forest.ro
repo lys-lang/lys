@@ -1,0 +1,24 @@
+type Tree {
+  Empty
+  Node(a: Tree | Forest)
+}
+
+type Forest {
+  Nil
+  Cons(tree: Tree | Forest)
+}
+
+fun testPassing(): void = {
+  var a = Nil
+  var b = Cons(Empty)
+  var c = Cons(Nil)
+  var d = Cons(Node(Empty))
+  var e = Node(Nil)
+
+  support::test::assert( a is Nil            == true )
+  support::test::assert( a is Forest         == true )
+  support::test::assert( b is Forest         == true )
+  support::test::assert( c is Cons           == true )
+  support::test::assert( e is Node           == true )
+  support::test::assert( e is Tree           == true )
+}

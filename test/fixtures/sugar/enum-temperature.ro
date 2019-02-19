@@ -9,16 +9,16 @@ type Temp = Celcius | Kelvin
 type Celcius
 type Kelvin
 
-ns Temp {
-  fun (is)(x: ref) = {
+impl Temp {
+  fun is(x: ref) = {
     Celcius.is(x) || Kelvin.is(x)
   }
 }
 
-ns Celcius {
+impl Celcius {
   val determinant = 1
   val memorySize = ref.memorySize + f32.memorySize /* temperature: f32 */
-  fun (is)(x: ref) = x.determinant == determinant
+  fun is(x: ref) = x.determinant == determinant
 
   fun apply(temperature: f32): Celcius = {
     val ptr: Celcius = determinant << 32 | core::memory::malloc(memorySize)
@@ -37,10 +37,10 @@ ns Celcius {
   }
 }
 
-ns Kelvin {
+impl Kelvin {
   val determinant = 2
   val memorySize = ref.memorySize + f32.memorySize  /* n: f32 */
-  fun (is)(x: ref) = x.determinant == determinant
+  fun is(x: ref) = x.determinant == determinant
 
   fun apply(n: f32): Kelvin = {
     val ptr: Kelvin = determinant << 32 | core::memory::malloc(memorySize)

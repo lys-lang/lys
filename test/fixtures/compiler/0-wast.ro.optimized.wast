@@ -3,9 +3,8 @@
  (type $1 (func (result i32)))
  (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func))
- (type $4 (func (result i32)))
- (type $5 (func (param i32) (result i32)))
- (memory $0 0 1)
+ (type $4 (func (param i32) (result i32)))
+ (memory $0 1)
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -14,37 +13,37 @@
  (global $global$5 (mut i32) (i32.const 0))
  (global $global$6 (mut i32) (i32.const 0))
  (global $global$7 (mut i32) (i32.const 0))
+ (export "memory" (memory $0))
  (export "main" (func $8))
  (start $9)
- (func $0 (; 0 ;) (type $4) (result i32)
-  (local $0 i32)
+ (func $0 (; 0 ;) (type $0) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
   (if
    (call $6
-    (i32.const 1)
+    (local.get $0)
     (i32.const 0)
    )
    (block
     (if
      (call $6
-      (i32.const 1)
+      (local.get $0)
       (global.get $global$3)
      )
      (unreachable)
     )
     (if
      (call $6
-      (local.tee $3
+      (local.tee $0
        (call $1
         (call $2
          (call $2
-          (local.tee $2
+          (local.tee $3
            (global.get $global$6)
           )
-          (i32.const 1)
+          (local.get $0)
          )
          (global.get $global$2)
         )
@@ -54,24 +53,24 @@
        )
       )
       (call $5
-       (local.tee $0
+       (local.tee $1
         (current_memory)
        )
        (i32.const 16)
       )
      )
      (block
-      (local.set $1
-       (local.get $0)
+      (local.set $2
+       (local.get $1)
       )
       (local.set $4
-       (local.tee $0
+       (local.tee $1
         (i32.shr_u
          (call $1
           (call $2
            (call $3
+            (local.get $0)
             (local.get $3)
-            (local.get $2)
            )
            (i32.const 65535)
           )
@@ -86,24 +85,24 @@
       (if
        (i32.eqz
         (call $6
+         (local.get $2)
          (local.get $1)
-         (local.get $0)
         )
        )
-       (local.set $1
+       (local.set $2
         (local.get $4)
        )
       )
       (if
        (call $7
         (grow_memory
-         (local.get $1)
+         (local.get $2)
         )
        )
        (if
         (call $7
          (grow_memory
-          (local.get $0)
+          (local.get $1)
          )
         )
         (unreachable)
@@ -112,11 +111,11 @@
      )
     )
     (global.set $global$6
-     (local.get $3)
+     (local.get $0)
     )
    )
   )
-  (local.get $2)
+  (local.get $3)
  )
  (func $1 (; 1 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
   (i32.and
@@ -154,7 +153,7 @@
    (local.get $1)
   )
  )
- (func $7 (; 7 ;) (type $5) (param $0 i32) (result i32)
+ (func $7 (; 7 ;) (type $4) (param $0 i32) (result i32)
   (i32.lt_s
    (local.get $0)
    (i32.const 0)
@@ -162,7 +161,9 @@
  )
  (func $8 (; 8 ;) (type $1) (result i32)
   (drop
-   (call $0)
+   (call $0
+    (i32.const 1)
+   )
   )
   (i32.const 9)
  )

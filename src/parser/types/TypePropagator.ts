@@ -1,8 +1,10 @@
 import { TypeGraph, TypeNode, Edge } from './TypeGraph';
-import { ParsingContext, Closure, MessageCollector } from '../closure';
+import { Closure } from '../Closure';
 import { Nodes } from '../nodes';
 import { Type } from '../types';
 import { TypeGraphBuilder } from './TypeGraphBuilder';
+import { ParsingContext } from '../ParsingContext';
+import { MessageCollector } from '../MessageCollector';
 
 function top<T>(stack: Array<T>): T | null {
   if (stack.length) {

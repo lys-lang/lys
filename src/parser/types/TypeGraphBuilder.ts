@@ -1,5 +1,4 @@
 import { TypeNode, TypeGraph, TypeResolver, Edge, LiteralTypeResolver } from './TypeGraph';
-import { Reference, ParsingContext, MessageCollector } from '../closure';
 import { Nodes } from '../nodes';
 import {
   getTypeResolver,
@@ -12,6 +11,9 @@ import {
 } from './typeResolvers';
 import { Type, TypeAlias, InjectableTypes } from '../types';
 import { AstNodeError } from '../NodeError';
+import { Reference } from '../Reference';
+import { ParsingContext } from '../ParsingContext';
+import { MessageCollector } from '../MessageCollector';
 
 export class TypeGraphBuilder {
   _nodeMap = new Map<Nodes.Node, TypeNode>();
@@ -56,7 +58,7 @@ export class TypeGraphBuilder {
       return this.traverse(node);
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       return this.processTypeDirective(node);
-    } else if (node instanceof Nodes.NameSpaceDirective) {
+    } else if (node instanceof Nodes.ImplDirective) {
       node.directives.forEach($ => this.processDirective($));
       return;
     } else if (node instanceof Nodes.ImportDirectiveNode) {
@@ -189,8 +191,8 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.ReferenceNode) {
       this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.AssignmentNode) {
-      new Edge(this.traverse(node.variable), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.value), target, EdgeLabels.RHS);
+      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
+      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.IfNode) {
       new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
       new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION);
@@ -329,6 +331,8 @@ export class TypeGraphBuilder {
       this.resolveVariableByName(node, 'f32', target);
     } else if (node instanceof Nodes.BooleanLiteral) {
       this.resolveVariableByName(node, 'boolean', target);
+    } else if (node instanceof Nodes.StringLiteral) {
+      this.resolveVariableByName(node, 'bytes', target);
     } else if (node instanceof Nodes.MatchLiteralNode) {
       new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);

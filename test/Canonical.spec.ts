@@ -2,8 +2,7 @@ declare var describe;
 
 import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
-import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 
 const phases = function(txt: string): CanonicalPhaseResult {
   const parsingContext = new ParsingContext();

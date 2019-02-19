@@ -10,8 +10,9 @@ import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 import { UnionType, StructType, RefType, TypeAlias, InjectableTypes, Type } from '../dist/parser/types';
+import { printNode } from '../dist/utils/nodePrinter';
 
 const parsingContext = new ParsingContext();
 
@@ -37,7 +38,9 @@ describe('Types', function() {
   function checkMainType(literals, ...placeholders) {
     function test(program: string, expectedType: string, expectedError: string) {
       const number = n++;
-      it(`type inference test #${number}`, async () => {
+      it(`type inference test #${number}`, async function() {
+        this.timeout(5000);
+
         const phaseResult = phases(program, `types_${number}.ro`);
 
         const typePhase = new TypePhaseResult(phaseResult);
@@ -51,24 +54,25 @@ describe('Types', function() {
         }
 
         const expectedResult = normalizeResult(expectedType);
-
-        const givenResult = normalizeResult(
-          typePhase.document.directives
-            .map($ => {
-              if (
-                $ instanceof Nodes.OverloadedFunctionNode &&
-                !$.functions.some($ => $.hasAnnotation(annotations.Injected))
-              ) {
-                return $.ofType + '';
-              } else if ($ instanceof Nodes.VarDirectiveNode) {
-                return `${$.decl.variableName.name} := ${$.decl.variableName.ofType.inspect(1)}`;
-              }
-            })
-            .filter($ => !!$)
-            .join('\n')
-        );
-
         try {
+          const givenResult = normalizeResult(
+            typePhase.document.directives
+              .map($ => {
+                if (
+                  $ instanceof Nodes.OverloadedFunctionNode &&
+                  !$.functions.some($ => $.hasAnnotation(annotations.Injected))
+                ) {
+                  return $.ofType + '';
+                } else if ($ instanceof Nodes.VarDirectiveNode) {
+                  return `${$.decl.variableName.name} := ${
+                    $.decl.variableName.ofType ? $.decl.variableName.ofType.inspect(1) : '<ofType is NULL>'
+                  }`;
+                }
+              })
+              .filter($ => !!$)
+              .join('\n')
+          );
+
           expect(givenResult).to.eq(expectedResult);
 
           if (expectedError) {
@@ -92,7 +96,7 @@ describe('Types', function() {
           }
         } catch (e) {
           console.log(printErrors(typePhase.parsingContext));
-          console.log(typePhase.document.toString());
+          console.log(printNode(typePhase.document));
           console.log(printAST(typePhase.document));
           console.log(print(typePhase.typeGraph));
           throw e;
@@ -298,12 +302,22 @@ describe('Types', function() {
       `;
     });
 
+    describe('bytes', () => {
+      checkMainType`
+        var a = "hello"
+        var len = a.length
+        ---
+        a := (alias bytes (native bytes))
+        len := (alias i32 (native i32))
+      `;
+    });
+
     describe('namespace types', () => {
       describe('apply', () => {
         checkMainType`
           type Test = ???
 
-          ns Test {
+          impl Test {
             fun apply(): Test = ???
           }
 
@@ -315,7 +329,7 @@ describe('Types', function() {
         checkMainType`
           type Test = ???
 
-          ns Test {
+          impl Test {
             fun apply(): Test = ???
           }
 
@@ -327,7 +341,7 @@ describe('Types', function() {
         checkMainType`
           type Test = ???
 
-          ns Test {
+          impl Test {
             fun apply(a: i32): Test = ???
             fun apply(): Test = ???
           }
@@ -342,7 +356,7 @@ describe('Types', function() {
         checkMainType`
           type Test = ???
 
-          ns Test {
+          impl Test {
             fun apply(a: i32): Test = ???
           }
 
@@ -355,7 +369,7 @@ describe('Types', function() {
       describe('resolve static functions', () => {
         checkMainType`
           type Test
-          ns Test {
+          impl Test {
             fun WWW(): boolean = ???
           }
 
@@ -368,7 +382,7 @@ describe('Types', function() {
       describe('sugar', () => {
         checkMainType`
           struct Test()
-          ns Test {
+          impl Test {
             fun ZZZ(): boolean = ???
           }
 
@@ -379,7 +393,7 @@ describe('Types', function() {
 
         checkMainType`
           type Test { Case1 }
-          ns Test {
+          impl Test {
             fun WWW(x: ref): boolean = x is Test
           }
 
@@ -391,7 +405,7 @@ describe('Types', function() {
         checkMainType`
           type Test { Case1 }
 
-          ns Test {
+          impl Test {
             fun WWW(x: ref): boolean = x is Test
           }
 
@@ -405,7 +419,7 @@ describe('Types', function() {
             Kelvin(x: f32)
           }
 
-          ns Kelvin {
+          impl Kelvin {
             fun xxx(): f32 = ???
           }
 
@@ -419,13 +433,13 @@ describe('Types', function() {
             Celcius(x: f32)
             Kelvin(x: f32)
           }
-          ns Temperature {
+          impl Temperature {
             fun xxx(): boolean = ???
           }
-          ns Celcius {
+          impl Celcius {
             fun xxx(): i32 = ???
           }
-          ns Kelvin {
+          impl Kelvin {
             fun xxx(): f32 = ???
           }
 
@@ -510,16 +524,16 @@ describe('Types', function() {
             type C = ???
             type ABC = A | B | C
 
-            ns A {
-              fun (is)(x: A): boolean = ???
+            impl A {
+              fun is(x: A): boolean = ???
             }
 
-            ns B {
-              fun (is)(x: B): boolean = ???
+            impl B {
+              fun is(x: B): boolean = ???
             }
 
-            ns C {
-              fun (is)(x: C): boolean = ???
+            impl C {
+              fun is(x: C): boolean = ???
             }
 
             var a: A = ???
@@ -756,6 +770,32 @@ describe('Types', function() {
         fun() -> Test
         fun() -> Test
       `;
+
+      describe('forest', () => {
+        checkMainType`
+          type Tree {
+            Empty
+            Node(a: Tree | Forest)
+          }
+
+          type Forest {
+            Nil
+            Cons(tree: Tree | Forest)
+          }
+
+          var a = Nil
+          var b = Cons(Empty)
+          var c = Cons(Nil)
+          var d = Cons(Node(Empty))
+          var e = Cons(Node(Nil))
+          ---
+          a := (alias Nil (struct Nil))
+          b := (alias Cons (struct Cons))
+          c := (alias Cons (struct Cons))
+          d := (alias Cons (struct Cons))
+          e := (alias Cons (struct Cons))
+        `;
+      });
     });
     describe('recursive calls', () => {
       checkMainType`
@@ -1421,8 +1461,8 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun (as)(x: f32): boolean = ???
-        fun (as)(x: f32): boolean = ???
+        fun as(x: f32): boolean = ???
+        fun as(x: f32): boolean = ???
         ---
         fun(x: f32) -> boolean
         ---
@@ -1539,7 +1579,53 @@ describe('Types', function() {
       `;
     });
 
+    describe('getters and setters', () => {
+      checkMainType`
+        struct X(value: i32)
+
+        fun main(a: X): i32 = a.value
+        ---
+        fun(a: X) -> i32
+      `;
+
+      checkMainType`
+        struct X(value: i32)
+
+        fun main(): i32 = {
+          val x = X(10)
+          x.value = 99
+          x.value
+        }
+        ---
+        fun() -> i32
+      `;
+
+      checkMainType`
+        struct X(value: i32)
+
+        fun main(): i32 = {
+          val x = X(10)
+          x.value = false
+          x.value
+        }
+        ---
+        fun() -> i32
+        ---
+        Could not find a valid overload
+      `;
+    });
+
     describe('match is not exhaustive', () => {
+      checkMainType`
+        fun test(x: i32): void = {
+          x match {
+            case 1 -> assert(true)
+            else -> panic()
+          }
+        }
+        ---
+        fun(x: i32) -> void
+      `;
       checkMainType`
         type Enum {
           A
@@ -1854,6 +1940,25 @@ describe('Types', function() {
       `;
     });
 
+    describe('never type', () => {
+      checkMainType`
+        fun a(x: i32): i32 =
+          if(x ==0)
+            x
+          else
+            panic()
+
+        fun b(x: i32): i32 =
+          x match {
+            case 0 -> x
+            else -> panic()
+          }
+        ---
+        fun(x: i32) -> i32
+        fun(x: i32) -> i32
+      `;
+    });
+
     describe('UnionType', () => {
       const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
       const struct = (name: string) => new StructType(name);
@@ -1958,7 +2063,7 @@ describe('Types', function() {
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
 
-        it('should subtract entire unions from non-expanded union', () => {
+        it('should subtract entire unioimpl from non-expanded union', () => {
           const A = structAlias('A');
           const B = structAlias('B');
           const C = structAlias('C');
@@ -1978,7 +2083,7 @@ describe('Types', function() {
           );
         });
 
-        it('should subtract entire unions from non-expanded union', () => {
+        it('should subtract entire unioimpl from non-expanded union', () => {
           const A = structAlias('A');
           const B = structAlias('B');
           const C = structAlias('C');
@@ -2083,7 +2188,7 @@ describe('Types', function() {
           );
         });
 
-        it('should simplify deeply nested unions avoiding conflicts', () => {
+        it('should simplify deeply nested unioimpl avoiding conflicts', () => {
           const A = struct('A');
           const B = struct('B');
           const C = struct('C');
@@ -2100,7 +2205,7 @@ describe('Types', function() {
           );
         });
 
-        it('should simplify deeply nested unions avoiding conflicts with aliases', () => {
+        it('should simplify deeply nested unioimpl avoiding conflicts with aliases', () => {
           const A = structAlias('A');
           const B = structAlias('B');
           const C = structAlias('C');
@@ -2117,7 +2222,7 @@ describe('Types', function() {
           );
         });
 
-        it('should simplify deeply nested unions avoiding conflicts with aliases and extra type in unions', () => {
+        it('should simplify deeply nested unioimpl avoiding conflicts with aliases and extra type in unions', () => {
           const A = structAlias('A');
           const B = structAlias('B');
           const C = structAlias('C');
@@ -2249,7 +2354,7 @@ describe('Types', function() {
           );
         });
 
-        it('should remove types present inside the unions with aliases', () => {
+        it('should remove types present inside the unioimpl with aliases', () => {
           const A = struct('A');
           const B = struct('B');
           const C = struct('C');
@@ -2703,8 +2808,8 @@ describe('Types', function() {
         type f32
         type boolean
 
-        ns boolean {
-          fun (+)(x: boolean, y: i32): f32 = 1.0
+        impl boolean {
+          fun +(x: boolean, y: i32): f32 = 1.0
         }
 
         fun main(): f32 = true + 3
@@ -2717,11 +2822,11 @@ describe('Types', function() {
         type f32
         type boolean
 
-        ns boolean {
-          fun (+)(x: boolean, y: i32): i32 = 1
+        impl boolean {
+          fun +(x: boolean, y: i32): i32 = 1
         }
-        ns i32 {
-          fun (+)(x: i32, y: f32): f32 = 1.0
+        impl i32 {
+          fun +(x: i32, y: f32): f32 = 1.0
         }
 
         fun main(): f32 = true + 3 + 1.0
@@ -2734,8 +2839,8 @@ describe('Types', function() {
         type f32
         type boolean
 
-        ns boolean {
-          fun (+)(x: boolean, y: i32): i32 = 1
+        impl boolean {
+          fun +(x: boolean, y: i32): i32 = 1
         }
 
         fun main(): f32 = true + 3
@@ -2958,8 +3063,6 @@ describe('Types', function() {
       `;
 
       checkMainType`
-
-
         fun malloc(size: i32): i32 = %wasm {
           (get_local $size)
         }

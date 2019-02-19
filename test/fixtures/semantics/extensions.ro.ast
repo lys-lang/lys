@@ -10,7 +10,7 @@
       |-ReferenceNode
         |-QNameNode=BB
           |-NameIdentifierNode="BB"
-  |-NameSpaceDirective
+  |-ImplDirective
     |-ReferenceNode
       |-QNameNode=AA
         |-NameIdentifierNode="AA"
@@ -34,7 +34,125 @@
               |-QNameNode=BB
                 |-NameIdentifierNode="BB"
       |-NameIdentifierNode="is"
-  |-NameSpaceDirective
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="=="
+        |-ReferenceNode
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BinaryExpressionNode="==" annotations=IsValueNode
+          |-NameIdentifierNode="=="
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=lhs
+              |-NameIdentifierNode="lhs"
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=rhs
+              |-NameIdentifierNode="rhs"
+      |-NameIdentifierNode="=="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-NameIdentifierNode="!="
+        |-ReferenceNode
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BinaryExpressionNode="!=" annotations=IsValueNode
+          |-NameIdentifierNode="!="
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=lhs
+              |-NameIdentifierNode="lhs"
+          |-ReferenceNode annotations=IsValueNode
+            |-QNameNode=rhs
+              |-NameIdentifierNode="rhs"
+      |-NameIdentifierNode="!="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs"
+          |-ReferenceNode
+            |-QNameNode=AA
+              |-NameIdentifierNode="AA"
+        |-ParameterNode
+          |-NameIdentifierNode="offset"
+          |-ReferenceNode
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset"
+          |-ReferenceNode
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode
+          |-QNameNode=AA
+            |-NameIdentifierNode="AA"
+        |-WasmExpressionNode annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load"
+  |-ImplDirective
     |-ReferenceNode
       |-QNameNode=BB
         |-NameIdentifierNode="BB"
@@ -54,7 +172,7 @@
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
       |-NameIdentifierNode="as"
-  |-NameSpaceDirective
+  |-ImplDirective
     |-ReferenceNode
       |-QNameNode=AA
         |-NameIdentifierNode="AA"
@@ -91,7 +209,7 @@
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="BB"
     |-UnknownExpressionNode
-  |-NameSpaceDirective
+  |-ImplDirective
     |-ReferenceNode
       |-QNameNode=BB
         |-NameIdentifierNode="BB"
@@ -177,10 +295,78 @@
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"
       |-NameIdentifierNode="!="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs"
+          |-ReferenceNode
+            |-QNameNode=BB
+              |-NameIdentifierNode="BB"
+        |-ParameterNode
+          |-NameIdentifierNode="offset"
+          |-ReferenceNode
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset"
+          |-ReferenceNode
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode
+          |-QNameNode=BB
+            |-NameIdentifierNode="BB"
+        |-WasmExpressionNode annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="TT"
     |-UnknownExpressionNode
-  |-NameSpaceDirective
+  |-ImplDirective
     |-ReferenceNode
       |-QNameNode=TT
         |-NameIdentifierNode="TT"
@@ -266,7 +452,75 @@
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"
       |-NameIdentifierNode="!="
-  |-NameSpaceDirective
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="rhs"
+          |-ReferenceNode
+            |-QNameNode=TT
+              |-NameIdentifierNode="TT"
+        |-ParameterNode
+          |-NameIdentifierNode="offset"
+          |-ReferenceNode
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunctionNode
+        |-ParameterNode
+          |-NameIdentifierNode="lhs"
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode
+          |-NameIdentifierNode="offset"
+          |-ReferenceNode
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode
+          |-QNameNode=TT
+            |-NameIdentifierNode="TT"
+        |-WasmExpressionNode annotations=IsValueNode
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load"
+  |-ImplDirective
     |-ReferenceNode
       |-QNameNode=BB
         |-NameIdentifierNode="BB"

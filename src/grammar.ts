@@ -13,7 +13,7 @@ Directive         ::= ( FunctionDirective
                       | TypeDirective
                       | ImportDirective
                       | EffectDirective
-                      | NSDirective
+                      | ImplDirective
                       ) {fragment=true}
 
 ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
@@ -23,7 +23,7 @@ VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') ValueType)? {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
-NSDirective       ::= PrivateModifier? NAMESPACE_KEYWORD NamespaceDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+ImplDirective     ::= PrivateModifier? IMPL_KEYWORD ImplDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
 InlineModifier    ::= INLINE_KEYWORD
@@ -36,11 +36,10 @@ ValueType         ::= '=' WS* (Type | UnknownExpression) {fragment=true}
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
 TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
-TypeParameters     ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
+TypeParameters    ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
-AssignExpression  ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
+Assign            ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
 FunAssignExpression ::= '=' WS* (Expression | UnknownExpression | WasmExpression) {pin=1,fragment=true}
-AssignStatement   ::= Reference WS* '=' !('=') WS* Expression {pin=3}
 OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
@@ -54,10 +53,10 @@ TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
 
-ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* AssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
+VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
 FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunctionName      ::= (NameIdentifier | '(' FunOperator ')')
+FunctionName      ::= NameIdentifier | FunOperator
 
 FunOperator       ::= ( BitNotPreOperator
                       | MinusPreOperator
@@ -76,7 +75,7 @@ FunOperator       ::= ( BitNotPreOperator
                       | NotPreOperator
                       )
 
-NamespaceDeclaration ::= Reference WS* NamespaceElementList {pin=1}
+ImplDeclaration ::= Reference WS* NamespaceElementList {pin=1}
 NamespaceElementList ::= '{' (WS* Directive)* WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
@@ -97,25 +96,25 @@ FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 IsPointer         ::= '*'
 IsArray           ::= '[]'
 
-Expression        ::= IfExpression | OrExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
+Expression        ::= IfExpression | AssignExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
 
 Statement         ::= ValDeclaration
                     | VarDeclaration
                     | FunDeclaration
-                    | AssignStatement
                     | Expression {fragment=true}
 
 MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
 
 BinMemberOperator ::= '.' | '#'
 
-BinaryExpression  ::= BinMemberOperator NameIdentifier CallArguments? {pin=1,fragment=true}
+BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? {pin=1,fragment=true}
 
-OrExpression      ::= AndExpression (WS+ OrKeyword WS+ AndExpression)* {simplifyWhenOneChildren=true}
-AndExpression     ::= BitOrExpression (WS+ AndKeyword WS+ BitOrExpression)* {simplifyWhenOneChildren=true}
-BitOrExpression   ::= BitXorExpression (WS+ BitOrOperator WS+ BitXorExpression)* {simplifyWhenOneChildren=true}
-BitXorExpression  ::= BitAndExpression (WS+ BitXorOperator WS+ BitAndExpression)* {simplifyWhenOneChildren=true}
-BitAndExpression  ::= EqExpression (WS+ BitAndOperator WS+ EqExpression)* {simplifyWhenOneChildren=true}
+AssignExpression  ::= OrExpression (WS* AssignmentKeyword WS* OrExpression)* {simplifyWhenOneChildren=true}
+OrExpression      ::= AndExpression (WS* OrKeyword WS* AndExpression)* {simplifyWhenOneChildren=true}
+AndExpression     ::= BitOrExpression (WS* AndKeyword WS* BitOrExpression)* {simplifyWhenOneChildren=true}
+BitOrExpression   ::= BitXorExpression (WS* BitOrOperator WS* BitXorExpression)* {simplifyWhenOneChildren=true}
+BitXorExpression  ::= BitAndExpression (WS* BitXorOperator WS* BitAndExpression)* {simplifyWhenOneChildren=true}
+BitAndExpression  ::= EqExpression (WS* BitAndOperator WS* EqExpression)* {simplifyWhenOneChildren=true}
 EqExpression      ::= RelExpression (WS* EqOperator WS* RelExpression)* {simplifyWhenOneChildren=true}
 RelExpression     ::= ShiftExpression (WS* RelOperator WS* ShiftExpression)* {simplifyWhenOneChildren=true}
 ShiftExpression   ::= AddExpression (WS* ShiftOperator WS* AddExpression)* {simplifyWhenOneChildren=true}
@@ -179,26 +178,27 @@ Literal           ::= ( StringLiteral
                       | BooleanLiteral
                       ) {fragment=true}
 
-NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_])*
+NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])*
 QName             ::= NameIdentifier ('::' NameIdentifier)*
 
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
-WASM_KEYWORD      ::= '%wasm' {pin=1}
+
 SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
 SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
 SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
 
 /* Tokens */
 
+WASM_KEYWORD      ::= '%wasm' {pin=1}
 FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
-NAMESPACE_KEYWORD ::= 'ns'        WS+
+IMPL_KEYWORD      ::= 'impl'      WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
 
 TYPE_KEYWORD      ::= ( 'type'
@@ -251,6 +251,7 @@ MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
 
 /* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
 
+AssignmentKeyword ::= '='       !'='
 NotPreOperator    ::= '!'       !'='
 BitNotPreOperator ::= '~'       !'='
 MinusPreOperator  ::= '-'       !'-'
@@ -268,7 +269,7 @@ AndKeyword        ::= '&&'      ![A-Za-z0-9_]
 OrKeyword         ::= '||'      ![A-Za-z0-9_]
 
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | NAMESPACE_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

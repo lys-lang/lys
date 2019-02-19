@@ -1,10 +1,10 @@
 digraph Document {
-  node [shape=box,fixedsize=shape fontsize=10]
+  node [shape=box,fontsize=10]; rankdir=LR;
   1 [label="FunOverload: test\n(fun 'test' () (alias i32))", fillcolor=grey];
   2 [label="FunNode: test\n(fun 'test' () (alias i32))", fillcolor=grey];
   3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   4 [label="Name: test\n(fun 'test' () (alias i32))", fillcolor=grey];
-  subgraph cluster0 {
+  subgraph cluster0 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     5 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
     6 [label="ValDecl: test\n(native void)", fillcolor=grey];
@@ -14,16 +14,16 @@ digraph Document {
     10 [label="Ref: test\n(alias i32 (native i32))", fillcolor=grey];
     11 [label="Int: 2\n(alias i32 (native i32))", fillcolor=grey];
     12 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    6 -> 5[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    7 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    8 -> 7[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    9 -> 5[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    10 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    11 -> 9[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test/fixtures/types/val-decl.ro::test()";
+    6 -> 5[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    7 -> 10[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    8 -> 7[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+    9 -> 5[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    10 -> 9[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    11 -> 9[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+  label="test/fixtures/types/val-decl.ro::test()";
 }
-  1 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 2[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 4[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  2 -> 1[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
+  3 -> 2[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
   label="";
 }

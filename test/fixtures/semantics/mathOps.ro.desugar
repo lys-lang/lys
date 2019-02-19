@@ -1,27 +1,19 @@
 type test = ???
 
-ns test {
-  fun x(): i32 = 
-    1
+impl test {
+  fun x(): i32 = 1
 }
 
-fun x(a: null): i32 = 
-  1
+fun x(a): i32 = 1
 
-fun x1(): i32 = 
-  1 + 2 / 3 * 4 - -5
+fun x1(): i32 = 1 + 2 / 3 * 4 - -5
 
-fun x2(x: null): i32 = 
-  ~x
+fun x2(x): i32 = ~x
 
-fun x3(x: null): i32 = 
-  -x
+fun x3(x): i32 = -x
 
-fun x4(): i32 = 
-  ~99
+fun x4(): i32 = ~99
 
-fun x5(): i32 = 
-  ~test.x()
+fun x5(): i32 = ~test.x()
 
-fun x6(): boolean = 
-  !true
+fun x6(): boolean = !true

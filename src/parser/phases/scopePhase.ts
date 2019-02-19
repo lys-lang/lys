@@ -5,7 +5,8 @@ import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
 import { AstNodeError } from '../NodeError';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
+import { InjectableTypes } from '../types';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
 
@@ -25,7 +26,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   }
 
   if (node instanceof Nodes.AssignmentNode) {
-    node.value.annotate(valueNodeAnnotation);
+    node.rhs.annotate(valueNodeAnnotation);
   }
 
   if (node instanceof Nodes.FunctionNode) {
@@ -83,7 +84,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
 });
 
 const createClosures = walkPreOrder(
-  (node: Nodes.Node, _: ScopePhaseResult, parent: Nodes.Node) => {
+  (node: Nodes.Node, phase: ScopePhaseResult, parent: Nodes.Node) => {
     if (parent) {
       if (!node.closure) {
         node.closure = parent.closure;
@@ -98,10 +99,16 @@ const createClosures = walkPreOrder(
 
         if (node instanceof Nodes.MatchCaseIsNode) {
           if (node.deconstructorNames) {
-            // TODO: check duplicated names
+            const takenNames = new Map<string, Nodes.Node>();
+
             node.deconstructorNames.forEach($ => {
               if ($.name !== '_') {
-                node.rhs.closure.set($, 'VALUE');
+                if (takenNames.has($.name)) {
+                  phase.parsingContext.messageCollector.error(new AstNodeError('Duplicated name', $));
+                } else {
+                  takenNames.set($.name, $);
+                  node.rhs.closure.set($, 'VALUE');
+                }
               }
             });
           }
@@ -111,17 +118,18 @@ const createClosures = walkPreOrder(
       } else if (node instanceof Nodes.ReferenceNode) {
         node.closure = node.closure.newChildClosure('Reference');
       } else if (node instanceof Nodes.VarDeclarationNode) {
+        if (node.variableName.name in InjectableTypes) {
+          phase.parsingContext.messageCollector.error(
+            new AstNodeError('Cannot declare a variable with the name of an system type', node.variableName)
+          );
+        }
         node.value.closure = node.closure.newChildClosure('VarDeclaration');
         node.closure.set(node.variableName, 'VALUE');
-      } else if (node instanceof Nodes.NameSpaceDirective) {
-        node.closure = node.closure.newChildClosure('NSDirective');
+      } else if (node instanceof Nodes.ImplDirective) {
+        node.closure = node.closure.newChildClosure(node.reference.variable.text + '.');
       } else if (node instanceof Nodes.TypeDirectiveNode) {
         node.closure.set(node.variableName, 'TYPE');
       } else if (node instanceof Nodes.FunctionNode) {
-        if (!node.body) {
-          throw new AstNodeError('Function has no value', node);
-        }
-
         if (!(parent instanceof Nodes.DirectiveNode)) {
           node.closure.set(node.functionName, 'VALUE');
         }
@@ -130,11 +138,15 @@ const createClosures = walkPreOrder(
           node.functionName.internalIdentifier = node.closure.getInternalIdentifier(node);
         }
 
-        node.body.closure = node.closure.newChildClosure('FunctionBody');
+        if (!node.body) {
+          phase.parsingContext.messageCollector.error(new AstNodeError('Function has no body', node));
+        } else {
+          node.body.closure = node.closure.newChildClosure('FunctionBody');
 
-        node.parameters.forEach($ => {
-          node.body.closure.set($.parameterName, 'VALUE');
-        });
+          node.parameters.forEach($ => {
+            node.body.closure.set($.parameterName, 'VALUE');
+          });
+        }
 
         node.processParameters();
       }
@@ -198,24 +210,13 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult:
     node.isLocal = !isGlobal;
     node.resolvedReference = resolved;
     node.closure.incrementUsageQName(node.variable);
-  } else if (node instanceof Nodes.NameSpaceDirective) {
+  } else if (node instanceof Nodes.ImplDirective) {
     collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, phaseResult.parsingContext);
-  } else if (node instanceof Nodes.MemberNode) {
-    if (node.lhs instanceof Nodes.ReferenceNode && node.lhs.resolvedReference) {
-      if (node.lhs.resolvedReference.type === 'TYPE') {
-        const { namespaceNames } = node.lhs.resolvedReference.referencedNode;
-
-        if (!namespaceNames || !namespaceNames.has(node.memberName.name)) {
-          throw new AstNodeError(
-            `The type "${node.lhs.resolvedReference.referencedNode.toString()}" has no public member "${
-              node.memberName.name
-            }"`,
-            node
-          );
-        }
-      } else {
-        throw new AstNodeError(`Don't know how to resolve this ref: ${node.lhs.resolvedReference.type}`, node);
-      }
+  } else if (node instanceof Nodes.ImportDirectiveNode) {
+    try {
+      phaseResult.parsingContext.getScopePhase(node.module.text);
+    } catch {
+      phaseResult.parsingContext.messageCollector.error(`Unable to load module ${node.module.text}`, node);
     }
   }
 });

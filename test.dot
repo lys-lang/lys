@@ -1,0 +1,14 @@
+digraph Document {
+  node [shape=box,fontsize=10]; rankdir=LR;
+  1 [label="Name: a", fillcolor=grey, color=red];
+  2 [label="StringLiteral'hello'", fillcolor=grey, color=red];
+  3 [label="Name: bytes", fillcolor=grey, color=red];
+  4 [label="MemberNode", fillcolor=grey, color=red];
+  5 [label="Ref: a", fillcolor=grey, color=red];
+  1 -> 5[taillabel="[NAME]" fontname="times" fontsize = 7 color="blue" ];
+  2 -> 1[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="blue" ];
+  3 -> 2[taillabel="[NAME]" fontname="times" fontsize = 7 color="blue" ];
+  4 -> 3[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="blue" ];
+  5 -> 4[taillabel="[LHS]" fontname="times" fontsize = 7 color="blue" ];
+  label="";
+}

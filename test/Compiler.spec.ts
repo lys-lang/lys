@@ -4,14 +4,13 @@ import { folderBasedTest, printAST } from './TestHelpers';
 
 import { print } from '@webassemblyjs/wast-printer';
 
-import { ParsingPhaseResult } from '../dist/parser/phases/parsingPhase';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
 import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
 
 const compilerTestParsingContext = new ParsingContext();
 

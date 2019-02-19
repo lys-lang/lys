@@ -8,7 +8,8 @@ import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
-import { ParsingContext } from '../dist/parser/closure';
+import { ParsingContext } from '../dist/parser/ParsingContext';
+import { printNode } from '../dist/utils/nodePrinter';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -56,7 +57,7 @@ describe('Semantic', function() {
           // console.log(printErrors(result.document, result.errors));
           throw err;
         }
-        return result.document.toString();
+        return printNode(result.document);
       },
       '.desugar'
     );
@@ -221,7 +222,7 @@ describe('Semantic', function() {
 
       type BB
       type AA = BB
-      ns BB {
+      impl BB {
         fun gta(): i32 = 1
       }
 
@@ -233,7 +234,7 @@ describe('Semantic', function() {
       type AA = BB | CC
       type BB
       type CC
-      ns CC {
+      impl CC {
         fun gta(): i32 = 1
       }
 
@@ -245,7 +246,7 @@ describe('Semantic', function() {
       type BB
       type AA = BB
 
-      ns BB {
+      impl BB {
         fun gtax(): i32 = 1
       }
 
@@ -256,7 +257,7 @@ describe('Semantic', function() {
 
       type BB
 
-      ns BB {
+      impl BB {
         var x = 1
         fun gtax(): i32 = x
       }
@@ -266,7 +267,7 @@ describe('Semantic', function() {
 
     test`
       struct ExistentType()
-      ns ExistentType {
+      impl ExistentType {
         // stub
       }
     `;
@@ -274,7 +275,7 @@ describe('Semantic', function() {
     test`
       struct ExistentType()
 
-      ns ExistentType {
+      impl ExistentType {
         fun gtax(): i32 = 1
       }
 
@@ -512,12 +513,24 @@ describe('Semantic', function() {
         }
     `;
 
+    test`
+      import system::string
+    `;
+
+    testToFail`
+      import system::stringThatDoesNotExist
+    `;
+
     test`type i32  var a: i32 = 1`;
 
     testToFail`var a: i32a = 1`;
 
     testToFail`var b = 1 var a: b = 1`;
-    test`var i32 = 1`;
+    testToFail`var i32 = 1`;
+    testToFail`
+      var a = "hello"
+      var bytes = a.length
+    `;
     testToFail`type i32  var i32 = 1`;
 
     test`var a = 1 var b = a`;

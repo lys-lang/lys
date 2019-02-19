@@ -1,4 +1,4 @@
-import { Local } from './nodes';
+import { Local, Nodes } from './nodes';
 import { FunctionType } from './types';
 
 export abstract class Annotation {
@@ -24,7 +24,7 @@ export namespace annotations {
 
   export class IsTailRecCall extends Annotation {}
   export class ImplicitCall extends Annotation {
-    constructor(public functionType: FunctionType) {
+    constructor(public functionType: FunctionType, public args: Nodes.ExpressionNode[]) {
       super();
     }
   }

@@ -6,13 +6,13 @@ export function print(graph: TypeGraph, code: string = '', name: string = 'Docum
   const writer: StringCodeWriter = new StringCodeWriter();
   writer.println(`digraph ${name.replace(/"/g, "'")} {`);
   writer.indent();
-  writer.println('  node [shape=box,fixedsize=shape fontsize=10]');
+  writer.println('  node [shape=box,fontsize=10]; rankdir=LR;');
   printNodes(writer, graph);
 
   let i = 0;
   graph.subGraphs.forEach((str, graph) => {
     writer.printIndent();
-    writer.println(`subgraph cluster${i.toString().replace(/"/g, "'")} {`);
+    writer.println(`subgraph cluster${i.toString().replace(/"/g, "'")} { rankdir=TB;`);
     i++;
     writer.indent();
     writer.printIndent();
@@ -21,7 +21,7 @@ export function print(graph: TypeGraph, code: string = '', name: string = 'Docum
     printEdges(writer, graph);
     writer.dedent();
     writer.printIndent();
-    writer.println('label = "' + str.replace(/"/g, "'") + '";');
+    writer.println('label="' + str.replace(/"/g, "'") + '";');
     writer.println('}');
   });
 
@@ -48,7 +48,7 @@ export function printEdges(writer: StringCodeWriter, graph: TypeGraph): void {
           '"' +
           edgeLabel(edge).replace(/"/g, "'") +
           '"' +
-          ' labeldistance="1" fontname="times  italic" fontsize = 10 color="' +
+          ' fontname="times" fontsize = 7 color="' +
           color +
           '" ];'
       );
@@ -82,7 +82,7 @@ export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
 
 export function edgeLabel(edge: Edge): string {
   if (edge.incomingTypeDefined()) {
-    return '';
+    return `[${edge.label}]`;
   } else {
     if (!edge.label) {
       return 'Not Defined';

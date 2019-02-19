@@ -4,7 +4,7 @@ import { findParentType } from './helpers';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { TypePhaseResult } from './typePhase';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {

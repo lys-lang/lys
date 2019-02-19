@@ -3,10 +3,14 @@ import { Nodes } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ParsingPhaseResult } from './parsingPhase';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 
 function binaryOpVisitor(astNode: Nodes.ASTNode) {
-  let ret = visit(astNode.children[0]) as Nodes.BinaryExpressionNode | Nodes.AsExpressionNode | Nodes.IsExpressionNode;
+  let ret = visit(astNode.children[0]) as
+    | Nodes.BinaryExpressionNode
+    | Nodes.AsExpressionNode
+    | Nodes.IsExpressionNode
+    | Nodes.AssignmentNode;
 
   for (let i = 1; i < astNode.children.length; i += 2) {
     const oldRet = ret;
@@ -16,6 +20,8 @@ function binaryOpVisitor(astNode: Nodes.ASTNode) {
       ret = new Nodes.AsExpressionNode(astNode);
     } else if (opertator === 'is') {
       ret = new Nodes.IsExpressionNode(astNode);
+    } else if (opertator === '=') {
+      ret = new Nodes.AssignmentNode(astNode);
     } else {
       const op = (ret = new Nodes.BinaryExpressionNode(astNode));
       op.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
@@ -61,11 +67,11 @@ const visitor = {
 
     return ret;
   },
-  NSDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.NameSpaceDirective(astNode);
+  ImplDirective(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.ImplDirective(astNode);
 
     ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
-    const declNode = findChildrenType(astNode, 'NamespaceDeclaration');
+    const declNode = findChildrenType(astNode, 'ImplDeclaration');
     ret.reference = visit(findChildrenType(declNode, 'Reference'));
     const directivesNode = findChildrenType(declNode, 'NamespaceElementList');
     ret.directives = directivesNode.children.map(visit) as Nodes.DirectiveNode[];
@@ -114,12 +120,6 @@ const visitor = {
     ret.variableType = visit(findChildrenType(astNode, 'Type'));
     ret.value = visitLastChild(astNode);
 
-    return ret;
-  },
-  AssignStatement(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.AssignmentNode(astNode);
-    ret.variable = visit(astNode.children[0]);
-    ret.value = visit(astNode.children[1]);
     return ret;
   },
   TypeDirective(astNode: Nodes.ASTNode) {
@@ -193,6 +193,7 @@ const visitor = {
     ret.parameterType = visit(findChildrenType(astNode, 'Type'));
     return ret;
   },
+  AssignExpression: binaryOpVisitor,
   AddExpression: binaryOpVisitor,
   OrExpression: binaryOpVisitor,
   AndExpression: binaryOpVisitor,
@@ -372,7 +373,7 @@ const visitor = {
   },
   StringLiteral(x: Nodes.ASTNode) {
     const ret = new Nodes.StringLiteral(x);
-    ret.value = x.text; // TODO: Parse string correctly
+    ret.value = JSON.parse(x.text);
     return ret;
   },
   BinNegExpression(x: Nodes.ASTNode) {

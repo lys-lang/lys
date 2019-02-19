@@ -1,5 +1,5 @@
 digraph Document {
-  node [shape=box,fixedsize=shape fontsize=10]
+  node [shape=box,fontsize=10]; rankdir=LR;
   1 [label="Name: z\n(alias i32 (native i32))", fillcolor=grey];
   2 [label="Int: 3\n(alias i32 (native i32))", fillcolor=grey];
   3 [label="FunOverload: flashero\n(fun 'flashero' ((alias i32)) (alias i32))", fillcolor=grey];
@@ -8,7 +8,7 @@ digraph Document {
   6 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
   7 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
   8 [label="Name: flashero\n(fun 'flashero' ((alias i32)) (alias i32))", fillcolor=grey];
-  subgraph cluster0 {
+  subgraph cluster0 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     9 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
     10 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
@@ -30,32 +30,32 @@ digraph Document {
     26 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
     27 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     28 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    9 -> 26[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    11 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    12 -> 18[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    13 -> 12[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    14 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    15 -> 21[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    16 -> 15[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    17 -> 10[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    18 -> 17[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    19 -> 17[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    20 -> 19[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    21 -> 20[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    22 -> 20[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    23 -> 22[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    24 -> 23[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    25 -> 23[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    26 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-    27 -> 25[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  label = "test/fixtures/types/multiple-assignment.ro::flashero(i32)";
+    9 -> 26[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    11 -> 10[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    12 -> 18[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    13 -> 12[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+    14 -> 10[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    15 -> 21[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+    16 -> 15[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+    17 -> 10[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    18 -> 17[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    19 -> 17[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+    20 -> 19[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    21 -> 20[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    22 -> 20[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+    23 -> 22[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
+    24 -> 23[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    25 -> 23[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+    26 -> 25[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
+    27 -> 25[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
+  label="test/fixtures/types/multiple-assignment.ro::flashero(i32)";
 }
-  1 -> 24[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  2 -> 1[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  3 -> 8[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  4 -> 3[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  5 -> 6[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  6 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
-  7 -> 4[taillabel="" labeldistance="1" fontname="times  italic" fontsize = 10 color="black" ];
+  1 -> 24[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
+  2 -> 1[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
+  3 -> 8[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
+  4 -> 3[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
+  5 -> 6[taillabel="[EXPECTED_TYPE]" fontname="times" fontsize = 7 color="black" ];
+  6 -> 4[taillabel="[a]" fontname="times" fontsize = 7 color="black" ];
+  7 -> 4[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
   label="";
 }

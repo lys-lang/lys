@@ -17,6 +17,7 @@ export function walkPreOrder<T extends { children: any[] } = IToken, D extends P
             phaseResult.parsingContext.messageCollector.error(e);
           } else if (phaseResult.parsingContext.messageCollector && node instanceof Nodes.Node) {
             phaseResult.parsingContext.messageCollector.error(e.message, node);
+            console.error(e);
           } else throw e;
         }
       }
@@ -37,6 +38,7 @@ export function walkPreOrder<T extends { children: any[] } = IToken, D extends P
             phaseResult.parsingContext.messageCollector.error(e);
           } else if (phaseResult.parsingContext.messageCollector && node instanceof Nodes.Node) {
             phaseResult.parsingContext.messageCollector.error(e.message, node);
+            console.error(e);
           } else throw e;
         }
       }

@@ -34,6 +34,7 @@ export abstract class Type {
 
       case NativeTypes.void:
         return undefined;
+
       default:
         throw new Error(`Type ${this} (${this.constructor.name}) returned a undefined binaryenType`);
     }
@@ -118,8 +119,13 @@ export class RefType extends Type {
     super();
   }
 
-  static isRefType(otherType: Type) {
+  // returns true when otherType is explicityly RefType.instance
+  static isRefTypeStrict(otherType: Type) {
     return getUnderlyingTypeFromAlias(otherType) === RefType.instance;
+  }
+
+  static isRefType(otherType: Type) {
+    return getUnderlyingTypeFromAlias(otherType) instanceof RefType;
   }
 
   toString() {
@@ -135,7 +141,7 @@ export class RefType extends Type {
       return true;
     }
 
-    if (RefType.isRefType(otherType)) {
+    if (RefType.isRefTypeStrict(otherType)) {
       return true;
     }
 
@@ -152,7 +158,7 @@ export class RefType extends Type {
 
   equals(otherType: Type) {
     if (!otherType) return false;
-    return RefType.isRefType(otherType);
+    return RefType.isRefTypeStrict(otherType);
   }
 }
 
@@ -242,11 +248,11 @@ export class StructType extends RefType {
   }
 
   toString() {
-    return this.structName.toString();
+    return this.structName;
   }
 
   inspect() {
-    return '(struct ' + this.structName.toString() + ')';
+    return `(struct ${this.structName})`;
   }
 }
 
@@ -258,7 +264,7 @@ export class IntersectionType extends Type {
   }
 
   toString() {
-    return this.of.map($ => $.toString()).join(' & ');
+    return this.of.join(' & ');
   }
 
   inspect(levels: number = 0) {
@@ -300,8 +306,13 @@ export class UnionType extends Type {
     const nativeTypes = new Set<Valtype>();
 
     this.of.forEach($ => {
+      if (NeverType.isNeverType($)) return;
       nativeTypes.add($.binaryenType);
     });
+
+    if (nativeTypes.size == 0) {
+      throw new Error('Cannot find a suitable low level type for ' + this.toString() + ' (0)');
+    }
 
     if (nativeTypes.size == 1) {
       return nativeTypes.values().next().value;
@@ -387,7 +398,7 @@ export class UnionType extends Type {
    * @param type type to subtract
    */
   subtract(type: Type): Type {
-    const removingRefType = RefType.isRefType(type);
+    const removingRefType = RefType.isRefTypeStrict(type);
 
     if (!this.simplified) {
       return UnionType.of(this.expand()).subtract(type);
@@ -396,7 +407,7 @@ export class UnionType extends Type {
     const newSet = new Set<Type>();
 
     for (let $ of this.of) {
-      if ((!removingRefType && RefType.isRefType($)) || !$.canBeAssignedTo(type)) {
+      if ((!removingRefType && RefType.isRefTypeStrict($)) || !$.canBeAssignedTo(type)) {
         newSet.add($);
       }
     }
@@ -435,7 +446,7 @@ export class UnionType extends Type {
     let newTypes: Type[] = [];
 
     this.of.forEach($ => {
-      if ($ instanceof UnknownType) return;
+      if (NeverType.isNeverType($)) return;
 
       if (!newTypes.some($1 => $1.equals($))) {
         newTypes.push($);
@@ -443,7 +454,7 @@ export class UnionType extends Type {
     });
 
     if (newTypes.length == 0) {
-      return InjectableTypes.invalid;
+      return InjectableTypes.never;
     }
 
     let unions: UnionType[] = [];
@@ -499,7 +510,7 @@ export class UnionType extends Type {
         return;
       }
 
-      if (RefType.isRefType(candidate) || blackListedUnionAtoms.some(x => candidate.canBeAssignedTo(x))) {
+      if (RefType.isRefTypeStrict(candidate) || blackListedUnionAtoms.some(x => candidate.canBeAssignedTo(x))) {
         return;
       }
 
@@ -541,11 +552,45 @@ export class TypeAlias extends Type {
   }
 
   toString() {
-    return this.name.toString();
+    return this.name.name;
   }
 
   inspect(levels: number = 0) {
-    return '(alias ' + this.name.toString() + (levels > 0 ? ' ' + this.of.inspect(levels - 1) : '') + ')';
+    return '(alias ' + this.name.name + (levels > 0 ? ' ' + this.of.inspect(levels - 1) : '') + ')';
+  }
+}
+
+export class PropertyType extends Type {
+  constructor(
+    public name: Nodes.NameIdentifierNode,
+    public readonly getter: Nodes.NameIdentifierNode,
+    public readonly setter: Nodes.NameIdentifierNode
+  ) {
+    super();
+  }
+
+  get binaryenType(): Valtype {
+    return 'i64';
+  }
+
+  get nativeType(): NativeTypes {
+    return NativeTypes.anyfunc;
+  }
+
+  canBeAssignedTo() {
+    return false;
+  }
+
+  equals(other: Type) {
+    return other === this;
+  }
+
+  toString() {
+    return this.name.name;
+  }
+
+  inspect() {
+    return `(property ${this.name.name})`;
   }
 }
 
@@ -598,7 +643,16 @@ export class NativeType extends Type {
 }
 
 // https://en.wikipedia.org/wiki/Bottom_type
+// https://en.wikipedia.org/wiki/Fail-stop
 export class NeverType extends Type {
+  static isNeverType(otherType: Type) {
+    return getUnderlyingTypeFromAlias(otherType) instanceof NeverType;
+  }
+
+  get nativeType() {
+    return NativeTypes.void;
+  }
+
   toString(): string {
     return 'never';
   }
@@ -608,7 +662,7 @@ export class NeverType extends Type {
   }
 
   equals(other: Type) {
-    if (other instanceof NeverType) return true;
+    if (NeverType.isNeverType(other)) return true;
     if (other instanceof UnionType) {
       if (other.of.length == 0) {
         return true;
@@ -619,64 +673,25 @@ export class NeverType extends Type {
     }
     return super.equals(other);
   }
-}
-
-// https://en.wikipedia.org/wiki/Top_type
-export class UnknownType extends Type {
-  equals(_: Type) {
-    return false;
-  }
 
   canBeAssignedTo(_: Type) {
     return true;
   }
-
-  inspect(): string {
-    return '(unknown)';
-  }
-
-  toString() {
-    return 'unknown';
-  }
 }
 
-// https://en.wikipedia.org/wiki/Fail-stop
-export class InvalidType extends Type {
-  toString() {
-    return 'invalid';
-  }
-
-  inspect(): string {
-    return '(invalid)';
-  }
-
-  equals(otherType: Type) {
-    return otherType instanceof InvalidType;
-  }
-
-  canBeAssignedTo(_: Type) {
-    return false;
-  }
-}
-
-export const InjectableTypes = {
+export const InjectableTypes = Object.assign(Object.create(null) as unknown, {
   u8: new NativeType('u8', NativeTypes.i32),
   boolean: new NativeType('boolean', NativeTypes.i32),
-  char: new NativeType('char', NativeTypes.i32),
-  usize: new NativeType('usize', NativeTypes.i32),
-  isize: new NativeType('isize', NativeTypes.i32),
+  i16: new NativeType('i16', NativeTypes.i32),
+  u16: new NativeType('u16', NativeTypes.i32),
   i32: new NativeType('i32', NativeTypes.i32),
   u32: new NativeType('u32', NativeTypes.i32),
   i64: new NativeType('i64', NativeTypes.i64),
   u64: new NativeType('u64', NativeTypes.i64),
-  i16: new NativeType('i16', NativeTypes.i32),
-  u16: new NativeType('u16', NativeTypes.i32),
   f32: new NativeType('f32', NativeTypes.f32),
   f64: new NativeType('f64', NativeTypes.f64),
   void: new NativeType('void', NativeTypes.void),
-  string: new NativeType('string', NativeTypes.i64),
+  bytes: new NativeType('bytes', NativeTypes.i64),
   ref: RefType.instance,
-  never: new NeverType(),
-  unknown: new UnknownType(),
-  invalid: new InvalidType()
-};
+  never: new NeverType()
+});

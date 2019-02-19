@@ -1,81 +1,96 @@
 type AA = BB
 
-ns AA {
+impl AA {
   fun is(a: AA): boolean = {
     a is BB
   }
+  
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+  
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+  
+  fun store(lhs: ref, rhs: AA, offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
+  }
+  
+  fun load(lhs: ref, offset: i32): AA = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))))
+  }
 }
 
-ns BB {
-  fun as(a: BB): AA = 
-    %wasm {
-      (get_local $a)
-    }
+impl BB {
+  fun as(a: BB): AA = %wasm {
+    (get_local $a)
+  }
 }
 
-ns AA {
-  fun as(a: BB): AA = 
-    %wasm {
-      (get_local $a)
-    }
-  fun as(a: AA): ref = 
-    %wasm {
-      (get_local $a)
-    }
+impl AA {
+  fun as(a: BB): AA = %wasm {
+    (get_local $a)
+  }
+  fun as(a: AA): ref = %wasm {
+    (get_local $a)
+  }
 }
 
 type BB = ???
 
-ns BB {
-  fun apply(): BB = 
-    %wasm {
-      (i64.const 0x200000000)
-    }
+impl BB {
+  fun apply(): BB = %wasm {
+    (i64.const 0x200000000)
+  }
   
-  fun is(a: BB): boolean = 
-    %wasm {
-      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x200000000))
-    }
+  fun is(a: BB): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x200000000))
+  }
   
-  fun ==(a: BB, b: ref): boolean = 
-    %wasm {
-      (i64.eq (get_local $a)  (get_local $b))
-    }
+  fun ==(a: BB, b: ref): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
   
-  fun !=(a: BB, b: ref): boolean = 
-    %wasm {
-      (i64.ne (get_local $a)  (get_local $b))
-    }
+  fun !=(a: BB, b: ref): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun store(lhs: ref, rhs: BB, offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
+  }
+  
+  fun load(lhs: ref, offset: i32): BB = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))))
+  }
 }
 
 type TT = ???
 
-ns TT {
-  fun apply(): TT = 
-    %wasm {
-      (i64.const 0x300000000)
-    }
+impl TT {
+  fun apply(): TT = %wasm {
+    (i64.const 0x300000000)
+  }
   
-  fun is(a: TT): boolean = 
-    %wasm {
-      (i64.eq (i64.and (i64.const 0xffffffff00000000)  (get_local $a))  (i64.const 0x300000000))
-    }
+  fun is(a: TT): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x300000000))
+  }
   
-  fun ==(a: TT, b: ref): boolean = 
-    %wasm {
-      (i64.eq (get_local $a)  (get_local $b))
-    }
+  fun ==(a: TT, b: ref): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
   
-  fun !=(a: TT, b: ref): boolean = 
-    %wasm {
-      (i64.ne (get_local $a)  (get_local $b))
-    }
+  fun !=(a: TT, b: ref): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun store(lhs: ref, rhs: TT, offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
+  }
+  
+  fun load(lhs: ref, offset: i32): TT = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))))
+  }
 }
 
-ns BB {
-  fun a(): i32 = 
-    1
+impl BB {
+  fun a(): i32 = 1
 }
 
-fun main(): i32 = 
-  BB.a()
+fun main(): i32 = BB.a()

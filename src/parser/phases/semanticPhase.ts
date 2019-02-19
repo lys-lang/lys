@@ -1,11 +1,13 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { Closure, ParsingContext } from '../closure';
+import { Closure } from '../Closure';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
 import { AstNodeError } from '../NodeError';
 import { annotations } from '../annotations';
+import { ParsingContext } from '../ParsingContext';
+import { printNode } from '../../utils/nodePrinter';
 
 const overloadFunctions = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
@@ -31,7 +33,7 @@ const overloadFunctions = function(
         overloadedFunctions.set(functionName, overloaded);
         document.directives[ix] = overloaded;
       }
-    } else if (node instanceof Nodes.NameSpaceDirective) {
+    } else if (node instanceof Nodes.ImplDirective) {
       overloadFunctions(node, phase);
     }
   });
@@ -42,7 +44,7 @@ const overloadFunctions = function(
 };
 
 function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseResult): Nodes.DirectiveNode[] {
-  const args = node.parameters.map($ => $.parameterName.name + ': ' + $.parameterType.toString()).join(', ');
+  const args = node.parameters.map($ => printNode($)).join(', ');
   const typeName = node.declaredName.name;
 
   const typeDirective = new Nodes.TypeDirectiveNode();
@@ -54,45 +56,80 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
   if (node.parameters.length) {
     const accessors = node.parameters
-      .map(({ parameterName, parameterType }) => {
-        return `
-            fun get_${parameterName}(
-              target: ${typeName}
-            ): ${parameterType.toString()} = %wasm {
-              (local $offset i32)
-              (set_local $offset (i32.const 0))
-              (unreachable)
+      .map(({ parameterName, parameterType }, i) => {
+        const offset = i * 8;
+
+        const parameter = printNode(parameterType);
+
+        if (parameterType instanceof Nodes.UnionTypeNode) {
+          return `
+            // #[getter]
+            fun property_${parameterName.name}(target: ${typeName}): ${parameter} = %wasm {
+              (i64.load
+                (i32.add
+                  (i32.const ${offset})
+                  (call $addressFromRef (get_local $target))
+                )
+              )
             }
 
-            fun set_${parameterName}(
-              target: ${typeName},
-              value: ${parameterType.toString()}
-            ): void = %wasm {
-              (local $offset i32)
-              (set_local $offset (i32.const 0))
-              (unreachable)
+            // #[setter]
+            fun property_${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
+              set$${parameterName.name}(target, value)
+
+            private fun set$${parameterName.name}(target: ${typeName}, value: ${parameter}): void = %wasm {
+              (i64.store
+                (i32.add
+                  (i32.const ${offset})
+                  (call $addressFromRef (get_local $target))
+                )
+                (get_local $value)
+              )
             }
           `;
+        } else {
+          return `
+            // #[getter]
+            fun property_${parameterName.name}(target: ${typeName}): ${parameter} =
+              ${parameter}.load(target, ${offset})
+
+            // #[setter]
+            fun property_${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
+              set$${parameterName.name}(target, value)
+
+            private fun set$${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
+              ${parameter}.store(target, value, ${offset})
+          `;
+        }
       })
+      .join('\n');
+
+    const sizes = node.parameters.map(_ => `/* ${printNode(_.parameterType)}.allocationSize() */ 8`).join(' + ');
+    const callRefs = node.parameters
+      .map(_ => `set$${printNode(_.parameterName)}($ref, ${printNode(_.parameterName)})`)
       .join('\n');
 
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(
         phase.moduleName + '#' + typeName,
         `
-            ns ${typeName} {
+            impl ${typeName} {
               fun discriminant(): u64 = %wasm {
                 (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
               }
 
-              fun sizeOf(): i32 = 1
+              fun sizeOf(): i32 = (${sizes})
+              fun allocationSize(): u32 = ref.allocationSize()
 
-              fun apply(${args}): ${typeName} =
-                fromPointer(
-                  system::memory::malloc(
-                    sizeOf()
-                  )
+              fun apply(${args}): ${typeName} = {
+                var $ref = fromPointer(
+                  system::memory::calloc(1, sizeOf())
                 )
+
+                ${callRefs}
+
+                $ref
+              }
 
               private fun fromPointer(ptr: i32 | u32): ${typeName} = %wasm {
                 (i64.or
@@ -112,6 +149,25 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                   (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
                 )
               }
+
+              fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+                (i64.store
+                  (i32.add
+                    (get_local $offset)
+                    (call $addressFromRef (get_local $lhs))
+                  )
+                  (get_local $rhs)
+                )
+              }
+
+              fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+                (i64.load
+                  (i32.add
+                    (get_local $offset)
+                    (call $addressFromRef (get_local $lhs))
+                  )
+                )
+              }
             }
           `
       )
@@ -123,7 +179,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
       phase.parsingContext.getParsingPhaseForContent(
         phase.moduleName + '#' + typeName,
         `
-          ns ${typeName} {
+          impl ${typeName} {
             fun apply(): ${typeName} = %wasm {
               (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
             }
@@ -138,17 +194,36 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               )
             }
 
-            fun (==)(a: ${typeName}, b: ref): boolean = %wasm {
+            fun ==(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.eq
                 (get_local $a)
                 (get_local $b)
               )
             }
 
-            fun (!=)(a: ${typeName}, b: ref): boolean = %wasm {
+            fun !=(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.ne
                 (get_local $a)
                 (get_local $b)
+              )
+            }
+
+            fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+              (i64.store
+                (i32.add
+                  (get_local $offset)
+                  (call $addressFromRef (get_local $lhs))
+                )
+                (get_local $rhs)
+              )
+            }
+
+            fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+              (i64.load
+                (i32.add
+                  (get_local $offset)
+                  (call $addressFromRef (get_local $lhs))
+                )
               )
             }
           }
@@ -214,16 +289,16 @@ const processUnions = function(
 
           referenceTypes.forEach($ => {
             injectedDirectives.push(`
-              ns ${$.variable.text} {
-                fun (as)(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
+              impl ${$.variable.text} {
+                fun as(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
               }
             `);
           });
 
           injectedDirectives.push(`
-            ns ${node.variableName.name} {
-              fun (as)(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
-              fun (as)(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
+            impl ${node.variableName.name} {
+              fun as(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
+              fun as(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
             }
           `);
         }
@@ -233,9 +308,31 @@ const processUnions = function(
             phase.moduleName + '#' + node.variableName.name,
             `
               // Union type ${variableName.name}
-              ns ${variableName.name} {
-                fun (is)(a: ${node.variableName.name}): boolean = {
-                  ${referenceTypes.map($ => 'a is ' + $.variable.text).join(' || ') || 'false'}
+              impl ${variableName.name} {
+                fun is(a: ${node.variableName.name}): boolean = {
+                  ${referenceTypes.map($ => 'a is ' + printNode($.variable)).join(' || ') || 'false'}
+                }
+
+                fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+                fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+                fun store(lhs: ref, rhs: ${variableName.name}, offset: i32): void = %wasm {
+                  (i64.store
+                    (i32.add
+                      (get_local $offset)
+                      (call $addressFromRef (get_local $lhs))
+                    )
+                    (get_local $rhs)
+                  )
+                }
+
+                fun load(lhs: ref, offset: i32): ${variableName.name} = %wasm {
+                  (i64.load
+                    (i32.add
+                      (get_local $offset)
+                      (call $addressFromRef (get_local $lhs))
+                    )
+                  )
                 }
               }
 

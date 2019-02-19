@@ -16,13 +16,14 @@ import { FunctionType, StructType, Type } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
-import { ParsingContext } from '../closure';
+import { ParsingContext } from '../ParsingContext';
 import { assert } from 'console';
 
 type CompilationModuleResult = {
   compilationPhase: CompilationPhaseResult;
   moduleParts: any[];
   starters: any[];
+  endMemory: number;
 };
 
 const wabt: typeof _wabt = (_wabt as any)();
@@ -111,7 +112,7 @@ function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.Document
   } else {
     const ofType = node.resolvedFunctionType;
 
-    assert(ofType.name.internalIdentifier, `${ofType}.internalName is falsy`);
+    assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
 
     return t.callInstruction(
       t.identifier(ofType.name.internalIdentifier),
@@ -133,10 +134,10 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
   }
 
   const blocks = matchers
-    .map(function emitNode(node: Nodes.MatcherNode): { condition; body; type } {
+    .map(function emitNode(node: Nodes.MatcherNode): { condition; body } {
       if (node instanceof Nodes.MatchDefaultNode) {
         const body = emit(node.rhs, document);
-        return { condition: null, body, type: node.rhs.ofType.binaryenType };
+        return { condition: null, body };
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
 
@@ -148,8 +149,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const body = emit(node.rhs, document);
         return {
           condition,
-          body,
-          type: node.rhs.ofType.binaryenType
+          body
         };
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
@@ -161,8 +161,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const body = emit(node.rhs, document);
         return {
           condition,
-          body,
-          type: node.rhs.ofType.binaryenType
+          body
         };
       }
     })
@@ -175,10 +174,9 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
     .map(($, $$) => t.instruction('br_if', [t.identifier(`${exitBlock}_${$$}`), $.condition]));
 
   const ret = blocks.reduceRight((prev, curr, ix) => {
-    //    if (ix == blocks.length - 1) return flatten([prev, curr.body]);
-
     const label = t.identifier(`${exitBlock}_${ix}`);
-    const newBlock = t.blockInstruction(label, flatten(prev), curr.type.binaryenType);
+
+    const newBlock = t.blockInstruction(label, flatten(prev));
 
     const ret = flatten([newBlock, curr.body]);
 
@@ -228,10 +226,23 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
   return t.instruction(node.symbol, (node.arguments || []).map($ => emitWast($ as any, document)));
 }
 
+function emitImplicitCall(implicitCallData: annotations.ImplicitCall, document: Nodes.DocumentNode) {
+  const ofType = implicitCallData.functionType;
+
+  assert(ofType instanceof FunctionType, 'implicit call is not a function');
+
+  return t.callInstruction(
+    t.identifier(ofType.name.internalIdentifier),
+    implicitCallData.args.map($ => emit($, document))
+  );
+}
+
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
     // try {
-    if (node instanceof Nodes.FunctionCallNode) {
+    if (node.hasAnnotation(annotations.ImplicitCall)) {
+      return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
+    } else if (node instanceof Nodes.FunctionCallNode) {
       return emitFunctionCall(node, document);
     } else if (node instanceof Nodes.WasmExpressionNode) {
       return flatten(node.atoms.map($ => emitWast($, document)));
@@ -239,6 +250,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
+    } else if (node instanceof Nodes.StringLiteral) {
+      const size = '00000000'; // node.length.toString(16);
+      const offset = ('00000000' + node.offset.toString(16)).substr(-8);
+      return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + size + offset, 'i64')]);
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {
@@ -248,25 +263,29 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
-      const isLocal = node.variable.isLocal;
-      const isValueNode = node.hasAnnotation(annotations.IsValueNode);
+      if (node.lhs instanceof Nodes.ReferenceNode) {
+        const isLocal = node.lhs.isLocal;
+        const isValueNode = node.hasAnnotation(annotations.IsValueNode);
 
-      if (isLocal) {
-        const instr = isValueNode ? 'tee_local' : 'set_local';
-        return t.instruction(instr, [t.identifier(node.variable.local.name), emit(node.value, document)]);
-      } else {
-        if (isValueNode) {
-          return t.blockInstruction(
-            t.identifier('tee_global_' + getModuleSecuentialId(document)),
-            [
-              t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]),
-              t.instruction('get_global', [t.identifier(node.variable.local.name)])
-            ],
-            node.value.ofType.binaryenType
-          );
+        if (isLocal) {
+          const instr = isValueNode ? 'tee_local' : 'set_local';
+          return t.instruction(instr, [t.identifier(node.lhs.local.name), emit(node.rhs, document)]);
         } else {
-          return t.instruction('set_global', [t.identifier(node.variable.local.name), emit(node.value, document)]);
+          if (isValueNode) {
+            return t.blockInstruction(
+              t.identifier('tee_global_' + getModuleSecuentialId(document)),
+              [
+                t.instruction('set_global', [t.identifier(node.lhs.local.name), emit(node.rhs, document)]),
+                t.instruction('get_global', [t.identifier(node.lhs.local.name)])
+              ],
+              node.rhs.ofType.binaryenType
+            );
+          } else {
+            return t.instruction('set_global', [t.identifier(node.lhs.local.name), emit(node.rhs, document)]);
+          }
         }
+      } else {
+        throw new Error('Error emiting AssignmentNode');
       }
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
@@ -311,17 +330,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
-      if (node.hasAnnotation(annotations.ImplicitCall)) {
-        const ofType = node.getAnnotation(annotations.ImplicitCall).functionType;
-
-        assert(ofType instanceof FunctionType, 'implicit call is not a function or struct');
-        assert(ofType.parameterNames.length == 0, 'implicit call only works without parameters');
-
-        return t.callInstruction(t.identifier(ofType.name.internalIdentifier), []);
-      } else {
-        const instr = node.isLocal ? 'get_local' : 'get_global';
-        return t.instruction(instr, [t.identifier(node.local.name)]);
-      }
+      const instr = node.isLocal ? 'get_local' : 'get_global';
+      return t.instruction(instr, [t.identifier(node.local.name)]);
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
@@ -436,13 +446,49 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return new WebAssembly.Instance(compiled, imports);
   }
 
-  generatePhase(compilationPhase: CompilationPhaseResult, exports: boolean): CompilationModuleResult {
+  generatePhase(
+    compilationPhase: CompilationPhaseResult,
+    exports: boolean,
+    startMemory: number
+  ): CompilationModuleResult {
     const globals = findNodesByType(compilationPhase.document, Nodes.VarDirectiveNode);
     const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
+    const bytesLiterals = findNodesByType(compilationPhase.document, Nodes.StringLiteral);
 
     const starters = [];
     const exportedElements = [];
     const createdFunctions = [];
+    const dataSection = [];
+
+    const endMemory = bytesLiterals.reduce<number>((offset, literal) => {
+      const str = literal.value;
+      const bytes: number[] = [];
+      const byteSize = str.length * 2;
+
+      bytes.push(byteSize & 0xff);
+      bytes.push((byteSize >> 8) & 0xff);
+      bytes.push((byteSize >> 16) & 0xff);
+      bytes.push((byteSize >> 24) & 0xff);
+
+      for (let index = 0; index < str.length; index++) {
+        const char = str.charCodeAt(index);
+        bytes.push(char & 0xff);
+        bytes.push(char >> 8);
+      }
+
+      bytes.push(0);
+
+      const size = bytes.length;
+      literal.offset = offset;
+      literal.length = size;
+
+      const numberLiteral = t.numberLiteralFromRaw(offset, 'i32');
+      const offsetToken = t.objectInstruction('const', 'i32', [numberLiteral]);
+
+      dataSection.push(t.data(t.memIndexLiteral(0), offsetToken, t.byteArray(bytes)));
+
+      return offset + size;
+    }, startMemory);
 
     const createdGlobals = globals.map($ => {
       // TODO: If the value is a literal, do not defer initialization to starters
@@ -491,14 +537,13 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     return {
       compilationPhase,
-      moduleParts: [...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
-      starters
+      moduleParts: [...dataSection, ...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
+      starters,
+      endMemory
     };
   }
 
   protected execute() {
-    const memory = t.memory(t.limit(1), t.indexLiteral(0));
-
     const exportList = [this.compilationPhaseResult];
 
     const moduleList = new Set<string>(this.compilationPhaseResult.typePhaseResult.scopePhaseResult.importedModules);
@@ -527,10 +572,21 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       }
     });
 
-    const generatedModules = exportList.map(($, ix) => this.generatePhase($, ix == 0));
+    let currentMemory = 16;
+
+    const generatedModules = exportList.map(($, ix) => {
+      const ret = this.generatePhase($, ix == 0, currentMemory);
+      currentMemory = ret.endMemory;
+      return ret;
+    });
 
     const starters = [];
     const moduleParts = [];
+
+    const memory = t.memory(t.limit(1), t.identifier('mem'));
+
+    moduleParts.push(memory);
+    moduleParts.push(t.moduleExport('memory', t.moduleExportDescr('Memory', t.identifier('mem'))));
 
     generatedModules.reverse().forEach(ret => {
       moduleParts.push(...ret.moduleParts);
@@ -543,7 +599,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       moduleParts.push(t.start(starterName));
     }
 
-    moduleParts.unshift(memory);
+    // moduleParts.unshift(memory);
 
     const module = t.module(null, moduleParts);
 

@@ -2,6 +2,7 @@ declare var describe;
 
 import { test } from './ExecutionHelper';
 import { expect } from 'chai';
+import { assert } from 'expect';
 
 describe('execution tests', () => {
   describe('numbers', () => {
@@ -13,6 +14,153 @@ describe('execution tests', () => {
       async (x, err) => {
         if (err) throw err;
         expect(x.exports.i32f32(44.9)).to.eq(44);
+      }
+    );
+  });
+
+  describe('strings', () => {
+    test(
+      'str len',
+      `
+          fun len(): i32 = "asd".length
+
+          fun b(x: i32): i32 = x match {
+            case 0 -> "".length
+            case 1 -> "1".length
+            case 2 -> "11".length
+            case 3 -> "⨔⨔⨔".length
+            else -> {
+              panic()
+              0
+            }
+          }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.len()).to.eq(6);
+        expect(x.exports.b(0)).to.eq(0);
+        expect(x.exports.b(1)).to.eq(2);
+        expect(x.exports.b(2)).to.eq(4);
+        expect(x.exports.b(3)).to.eq(6);
+        expect(() => x.exports.b(92)).to.throw();
+      }
+    );
+    test(
+      'str concat',
+      `
+          fun concat(lhs: bytes, rhs: bytes): bytes = {
+            var $ret = system::memory::allocBytes(lhs.length + rhs.length)
+            system::memory::memcpy($ret.ptr, lhs.ptr, lhs.length)
+            system::memory::memcpy($ret.ptr + lhs.length, rhs.ptr, rhs.length)
+            $ret
+          }
+
+          fun main(): i32 = concat("asd", "dsa").length
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.main()).to.eq(12);
+      }
+    );
+    test(
+      'String concat',
+      `
+          import system::string
+
+          fun strLen(): i32 = String("asd").length
+          fun byteLen(): i32 = String("dsa").data.length
+          fun concatStrLen(): i32 = (String("ds") + String("sa")).length
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.strLen()).to.eq(3);
+        expect(x.exports.byteLen()).to.eq(6);
+        expect(x.exports.concatStrLen()).to.eq(4);
+      }
+    );
+    test(
+      'charAt',
+      `
+          import system::string
+
+          val str = String("asd❮𝐑")
+
+          fun charAt(at: i32): u16 = String.charAt(str, at)
+          fun len(): i32 = str.length
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.len()).to.eq(6);
+
+        let str = String.fromCodePoint(...[0, 1, 2, 3, 4, 5].map($ => x.exports.charAt($)));
+
+        expect(str).to.eq('asd❮𝐑');
+
+        expect(() => x.exports.charAt(100)).to.throw();
+      }
+    );
+
+    function readString(memory: ArrayBuffer, offset: number) {
+      const dv = new DataView(memory);
+      let len = dv.getUint32(offset);
+      if (len == 0) return '';
+
+      let currentOffset = offset + 4;
+
+      const sb: string[] = [];
+
+      while (len > 1) {
+        sb.push(String.fromCharCode(dv.getUint16(currentOffset)));
+        currentOffset += 2;
+        len -= 2;
+      }
+
+      if (len == 1) assert(dv.getInt8(currentOffset) == 0, 'string must end in 0');
+
+      return sb.join('');
+    }
+
+    function readBytes(memory: ArrayBuffer, offset: number) {
+      const dv = new DataView(memory, offset);
+      let len = dv.getUint32(0, true);
+
+      if (len == 0) return [];
+
+      let currentOffset = 4;
+      len += 4;
+
+      const sb: number[] = [];
+      while (currentOffset < len) {
+        const r = dv.getUint8(currentOffset);
+
+        sb.push(r);
+        currentOffset += 1;
+      }
+
+      return sb;
+    }
+
+    test(
+      'keccak',
+      `
+        import system::string
+        import system::hash::keccak
+
+        fun someTests(ix: i32): i32 = keccak("").ptr - 4
+      `,
+      async (x, err) => {
+        if (err) throw err;
+
+        const ret = x.exports.someTests(0);
+
+        expect(ret).to.not.eq(-1);
+
+        const bytes = readBytes(x.exports.memory.buffer, ret);
+        expect(bytes.length).to.eq(32);
+
+        expect(bytes.map($ => ('00' + $.toString(16)).substr(-2)).join('')).to.eq(
+          'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470'
+        );
       }
     );
   });
@@ -35,6 +183,219 @@ describe('execution tests', () => {
   });
 
   describe('struct', () => {
+    test(
+      'recursive types forest',
+      `
+        type Tree {
+          Empty
+          Node(a: Tree | Forest)
+        }
+
+        type Forest {
+          Nil
+          Cons(tree: Tree | Forest)
+        }
+
+        fun testPassing(): void = {
+          var a = Nil
+          var b = Cons(Empty)
+          var c = Cons(Nil)
+          var d = Cons(Node(Empty))
+          var e = Node(Nil)
+
+          support::test::assert( a is Nil            == true )
+          support::test::assert( a is Forest         == true )
+          support::test::assert( b is Forest         == true )
+          support::test::assert( c is Cons           == true )
+          support::test::assert( e is Node           == true )
+          support::test::assert( e is Tree           == true )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'get struct values',
+      `
+        struct Vector3(x: i32, y: i32, z: i32)
+
+        fun testPassing(): void = {
+          var a = Vector3(1, 2, 3)
+
+          support::test::assert( a is Vector3 )
+          support::test::assert( Vector3.property_x(a)    == 1 )
+          support::test::assert( Vector3.property_y(a)    == 2 )
+          support::test::assert( Vector3.property_z(a)    == 3 )
+        }
+
+        fun testFailing(): void = {
+          var a = Vector3(1, 2, 3)
+          support::test::assert( Vector3.property_x(a)    == 999 )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+
+        expect(() => x.exports.testFailing()).to.throw();
+      }
+    );
+
+    test(
+      'set struct values',
+      `
+        type Color {
+          None
+          Red
+          Green
+          Blue
+          Custom(hex: i32)
+        }
+
+        struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
+
+        fun testPassing(): void = {
+          var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
+
+          support::test::assert( a is CatBag )
+          support::test::assert( CatBag.property_a(a)    == 1 )
+          support::test::assert( CatBag.property_b(a)    == true )
+          support::test::assert( CatBag.property_c(a)    == 3.0 )
+          support::test::assert( CatBag.property_d(a)    == 0x8 )
+          support::test::assert( CatBag.property_e(a)    == 0.4 as f64 )
+          support::test::assert( CatBag.property_f(a)    is Red )
+          support::test::assert( CatBag.property_g(a)    is Red )
+          support::test::assert( CatBag.property_f(a)    is Color )
+          support::test::assert( CatBag.property_g(a)    is Color )
+
+          CatBag.property_a(a, 5)
+          CatBag.property_b(a, false)
+          CatBag.property_c(a, -999.0)
+          CatBag.property_d(a, 0xdeadbeef as i64)
+          CatBag.property_e(a, 6.08e23 as f64)
+          CatBag.property_f(a, Custom(333))
+          CatBag.property_g(a, None)
+
+          support::test::assert( CatBag.property_a(a)    == 5 )
+          support::test::assert( CatBag.property_b(a)    == false )
+          support::test::assert( CatBag.property_c(a)    == -999.0 )
+          support::test::assert( CatBag.property_d(a)    == 0xdeadbeef as i64 )
+          support::test::assert( CatBag.property_e(a)    == 6.08e23 as f64 )
+          support::test::assert( CatBag.property_f(a)    is Custom )
+          support::test::assert( CatBag.property_g(a)    is None )
+          support::test::assert( CatBag.property_f(a)    is Color )
+          support::test::assert( CatBag.property_g(a)    is Color )
+
+          var custom = CatBag.property_f(a)
+
+          support::test::assert( custom is Custom )
+
+          custom match {
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            else -> panic()
+          }
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'set struct values with getters and setters',
+      `
+        type Color {
+          None
+          Red
+          Green
+          Blue
+          Custom(hex: i32)
+        }
+
+        struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
+
+        fun testPassing(): void = {
+          var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
+
+          support::test::assert( a   is CatBag )
+          support::test::assert( a.a == 1 )
+          support::test::assert( a.b == true )
+          support::test::assert( a.c == 3.0 )
+          support::test::assert( a.d == 0x8 )
+          support::test::assert( a.e == 0.4 as f64 )
+          support::test::assert( a.f is Red )
+          support::test::assert( a.g is Red )
+          support::test::assert( a.f is Color )
+          support::test::assert( a.g is Color )
+
+          a.a = 5
+          a.b = false
+          a.c = -999.0
+          a.d = 0xdeadbeef as i64
+          a.e = 6.08e23 as f64
+          a.f = Custom(333)
+          a.g = None
+
+          support::test::assert( a.a == 5 )
+          support::test::assert( a.b == false )
+          support::test::assert( a.c == -999.0 )
+          support::test::assert( a.d == 0xdeadbeef as i64 )
+          support::test::assert( a.e == 6.08e23 as f64 )
+          support::test::assert( a.f is Custom )
+          support::test::assert( a.g is None )
+          support::test::assert( a.f is Color )
+          support::test::assert( a.g is Color )
+
+          support::test::assert( a.f is Custom )
+
+          a.f match {
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            else -> panic()
+          }
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    test(
+      'varidic n-ary and pattern matching',
+      `
+        type Enum {
+          None
+          Custom(hex: i32)
+        }
+
+        fun testPassing(): void = {
+          var custom: Enum = Custom(333)
+
+          custom match {
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            else -> panic()
+          }
+        }
+
+        fun testFailing(): void = {
+          var custom: Enum = None
+
+          custom match {
+            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            else -> panic()
+          }
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(() => x.exports.testFailing()).to.throw();
+      }
+    );
+
     test(
       'is with pattern matchin',
       `
@@ -340,8 +701,8 @@ describe('execution tests', () => {
         const a = x.exports.retRef();
         const b = x.exports.retRef();
         const c = x.exports.retRef();
-        expect(b).to.eq(a + 8, 'a + 8 = b');
-        expect(c).to.eq(b + 8, 'b + 8 = c');
+        expect(b).to.eq(a + 16, 'a + 16 = b');
+        expect(c).to.eq(b + 16, 'b + 16 = c');
       }
     );
   });
@@ -352,13 +713,13 @@ describe('execution tests', () => {
         type i32
         type f32
 
-        ns f32 {
-          fun (+)(a: f32, b: i32): i32 = 0
+        impl f32 {
+          fun +(a: f32, b: i32): i32 = 0
         }
 
-        ns i32 {
-          fun (+)(a: i32, b: i32): i32 = 1
-          fun (+)(a: i32, b: f32): i32 = 4
+        impl i32 {
+          fun +(a: i32, b: i32): i32 = 1
+          fun +(a: i32, b: f32): i32 = 4
         }
 
         fun main1(a: i32, b: f32): i32 = {
@@ -699,6 +1060,21 @@ describe('execution tests', () => {
         expect(x.exports.test()).to.eq(1836311903);
       }
     );
+
+    test(
+      'factorial',
+      `
+        fun factorial(n: i32): i32 =
+          if (n >= 1)
+            n * factorial(n - 1)
+          else
+            1
+      `,
+      async x => {
+        expect(x.exports.factorial(10)).to.eq(3628800);
+      }
+    );
+
     test(
       'fibo pattern matchin',
       `

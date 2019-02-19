@@ -7,8 +7,6 @@ arrays
 strings
 closure functions
 
-change memory things from i32 to usize
-
 fun sizeOf(x: Type<A> | A): usize
 
 test parsing `type test {}`
@@ -16,6 +14,17 @@ test parsing `type test {}`
 MESSAGE TO FUTURE AGUS:
 
 struct and poly types should not receive a instance of Reference, they should receive only the nameIdentifier used for the declaration.
+
+---
+
+parser fails with
+
+```
+x match {
+  case None -> 123
+  case is Some -> 123
+}
+```
 
 ---
 
@@ -79,19 +88,19 @@ type Option<T> = Some<T> | None
 type Some<T>
 type None
 
-ns Option<T> {
-  fun (is)(x: ref) = {
+impl Option<T> {
+  fun is(x: ref) = {
     Some.is(x) || None.is(x)
   }
 
-  fun (as)(x: Some<T>): Option<T> = x
-  fun (as)(x: None): Option<Nothing> = x
+  fun as(x: Some<T>): Option<T> = x
+  fun as(x: None): Option<Nothing> = x
 }
 
-ns None {
-  val determinant: usize = 2
+impl None {
+  val determinant: u32 = 2
   val staticInstance: ref = determinant
-  fun (is)(x: ref) = x == staticInstance
+  fun is(x: ref) = x == staticInstance
 
   fun apply(): None = staticInstance
 }
@@ -111,19 +120,19 @@ type Temp = Celcius | Kelvin
 type Celcius
 type Kelvin
 
-ns Temp {
-  fun (is)(x: ref) = {
+impl Temp {
+  fun is(x: ref) = {
     Celcius.is(x) || Kelvin.is(x)
   }
 
-  fun (as)(x: Kelvin): Temp = x
-  fun (as)(x: Celcius): Temp = x
+  fun as(x: Kelvin): Temp = x
+  fun as(x: Celcius): Temp = x
 }
 
-ns Celcius {
+impl Celcius {
   val determinant = 1
   val memorySize = ref.memorySize + f32.memorySize /* temperature: f32 */
-  fun (is)(x: ref) = x.determinant == determinant
+  fun is(x: ref) = x.determinant == determinant
 
   fun apply(temperature: f32): Celcius = {
     val ptr = core::memory::malloc(memorySize)
@@ -143,10 +152,10 @@ ns Celcius {
   }
 }
 
-ns Kelvin {
+impl Kelvin {
   val determinant = 2
   val memorySize = ref.memorySize + f32.memorySize  /* n: f32 */
-  fun (is)(x: ref) = x.determinant == determinant
+  fun is(x: ref) = x.determinant == determinant
 
   fun apply(n: f32): Kelvin = {
     val ptr = core::memory::malloc(memorySize)
