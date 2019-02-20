@@ -1428,7 +1428,7 @@ describe('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Expecting arguments type (f32) but got (Type<f32>)
+        Cannot find member "apply" in (alias f32)
       `;
 
       checkMainType`
@@ -1436,7 +1436,7 @@ describe('Types', function() {
         ---
         fun() -> f32
         ---
-        Type<f32> is not a value, constructor or function.
+        Cannot find member "apply" in (alias f32)
       `;
     });
 

@@ -1,6 +1,6 @@
 //
 // Calculate the hash. Helper method incorporating the above three.
 //
-fun keccak(context_offset: i32, input_offset: i32, input_length: i32, output_offset: i32): i32 = {
-  system::hash::sha3::keccak(context_offset, input_offset, input_length, output_offset)
+fun keccak(input: bytes): bytes = {
+  system::hash::keccak::keccak(input)
 }

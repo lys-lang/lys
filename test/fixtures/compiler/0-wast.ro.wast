@@ -34,7 +34,7 @@
   (func $system::memory::calloc (param $itemCount i32) (param $itemSize i32) (result i32)
     (local $size i32)
     (local $$ret i32)
-    (block $unknown_block_55 (result i32)
+    (block $unknown_block_64 (result i32)
       (set_local $size (call $system::core::i32.* (get_local $itemCount) (get_local $itemSize)))
       (set_local $$ret (call $system::memory::malloc_2 (get_local $size)))
       (call $system::memory::memset_1 (get_local $$ret) (get_local $size) (i32.const 0))
@@ -47,13 +47,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_56 (result i32)
+    (block $unknown_block_65 (result i32)
       (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_57 (result i32)
+            (block $unknown_block_66 (result i32)
                 (if $a_wild_if (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_58
+                      (block $unknown_block_67
                           (call $system::core::panic_1)
                         )
                     )
@@ -64,15 +64,15 @@
                 (set_local $pagesBefore (call $system::memory::currentMemory))
                 (if $a_wild_if (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_59
+                      (block $unknown_block_68
                           (set_local $pagesNeeded (call $system::core::i32.>>> (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::i32.~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
                           (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_60
+                                (block $unknown_block_69
                                     (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_61
+                                          (block $unknown_block_70
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -91,7 +91,7 @@
               )
           )
           (else
-            (block $unknown_block_62 (result i32)
+            (block $unknown_block_71 (result i32)
                 (i32.const 0)
               )
           )
@@ -99,7 +99,7 @@
     )
   )
   (func $system::memory::free (param $ptr i32)
-    (block $unknown_block_63
+    (block $unknown_block_72
       (nop)
     )
   )
@@ -804,7 +804,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_25 (result i32)
+    (block $unknown_block_26 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )

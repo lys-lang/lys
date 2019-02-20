@@ -29,6 +29,12 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     node.rhs.annotate(valueNodeAnnotation);
   }
 
+  if (node instanceof Nodes.MemberNode) {
+    if (node.lhs instanceof Nodes.MemberNode) {
+      node.lhs.annotate(valueNodeAnnotation);
+    }
+  }
+
   if (node instanceof Nodes.FunctionNode) {
     let returnsVoidValue = false;
 

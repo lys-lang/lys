@@ -4,50 +4,26 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=(fun "keccak" ((alias i32) (alias i32) (alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "keccak" ((alias i32) (alias i32) (alias i32) (alias i32)) (alias i32))
+  |-OverloadedFunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=Injected
+    |-FunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes))
       |-ParameterNode
-        |-NameIdentifierNode="context_offset" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-ParameterNode
-        |-NameIdentifierNode="input_offset" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-ParameterNode
-        |-NameIdentifierNode="input_length" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-ParameterNode
-        |-NameIdentifierNode="output_offset" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="input" type=(alias bytes (native bytes))
+        |-ReferenceNode type=(type (alias bytes (native bytes)))
+          |-QNameNode=bytes
+            |-NameIdentifierNode="bytes"
       |-NameIdentifierNode="keccak"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-ReferenceNode type=(fun "keccak" ((alias i32) (alias i32) (alias i32) (alias i32)) (alias i32))
-            |-QNameNode=system::hash::sha3::keccak
+      |-ReferenceNode type=(type (alias bytes (native bytes)))
+        |-QNameNode=bytes
+          |-NameIdentifierNode="bytes"
+      |-BlockNode type=(alias bytes (native bytes)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-ReferenceNode type=(fun "keccak" ((alias bytes)) (alias bytes))
+            |-QNameNode=system::hash::keccak::keccak
               |-NameIdentifierNode="system"
               |-NameIdentifierNode="hash"
-              |-NameIdentifierNode="sha3"
               |-NameIdentifierNode="keccak"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-            |-QNameNode=context_offset
-              |-NameIdentifierNode="context_offset"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-            |-QNameNode=input_offset
-              |-NameIdentifierNode="input_offset"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-            |-QNameNode=input_length
-              |-NameIdentifierNode="input_length"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-            |-QNameNode=output_offset
-              |-NameIdentifierNode="output_offset"
-    |-NameIdentifierNode="keccak" type=(fun "keccak" ((alias i32) (alias i32) (alias i32) (alias i32)) (alias i32))
+              |-NameIdentifierNode="keccak"
+          |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-QNameNode=input
+              |-NameIdentifierNode="input"
+    |-NameIdentifierNode="keccak" type=(fun "keccak" ((alias bytes)) (alias bytes))

@@ -540,7 +540,7 @@ export class MemberTypeResolver extends TypeResolver {
           );
         }
       }
-      throw new AstNodeError(`???`, opNode.memberName);
+      throw new AstNodeError(`??? ${LHSType.inspect(100)}`, opNode.memberName);
     } catch (e) {
       if (!ctx.parsingContext.messageCollector.hasErrorFor(e.node)) {
         if (e instanceof AstNodeError) {

@@ -400,7 +400,7 @@ describe('Semantic', function() {
 
     testParseToken(
       `
-        fun hash(): i32 = system::hash::sha3::keccak(1,1,1,1)
+        fun hash(): i32 = system::hash::keccak::keccak("test")
       `,
       getFileName(),
       'Document',

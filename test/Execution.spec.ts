@@ -306,6 +306,38 @@ describe('execution tests', () => {
     );
 
     test(
+      'chained getters',
+      `
+        type Tree {
+          Leaf(value: i32)
+          Branch(left: Leaf)
+        }
+
+        fun testPassing(): void = {
+          var a = Branch(Leaf(1))
+
+          support::test::assert( a      is Branch )
+          support::test::assert( a.left is Leaf )
+          support::test::assert( a.left.value == 1 )
+          a.left.value = 2
+          support::test::assert( a.left.value == 2 )
+        }
+
+
+        fun testFailing(): void = {
+          var a = Branch(Leaf(1))
+          a.left.value = 2
+          support::test::assert( a.left.value == 1 )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+        expect(() => x.exports.testFailing()).to.throw();
+      }
+    );
+
+    test(
       'set struct values with getters and setters',
       `
         type Color {
