@@ -6,7 +6,7 @@
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode annotations=Injected
     |-FunctionNode
-      |-ParameterNode
+      |-ParameterNode annotations=Local(a:<no-type>#0)
         |-NameIdentifierNode="a"
         |-ReferenceNode
           |-QNameNode=i32
@@ -49,7 +49,7 @@
         |-NameIdentifierNode="Number"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Number
@@ -105,12 +105,12 @@
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=ref
@@ -130,12 +130,12 @@
       |-NameIdentifierNode="=="
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=ref
@@ -155,17 +155,17 @@
       |-NameIdentifierNode="!="
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#2)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -193,12 +193,12 @@
       |-NameIdentifierNode="store"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#1)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -227,7 +227,7 @@
         |-NameIdentifierNode="Infinity"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Infinity
@@ -247,7 +247,7 @@
         |-NameIdentifierNode="NDet"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=NDet
@@ -267,7 +267,7 @@
         |-NameIdentifierNode="Real"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Real
@@ -287,7 +287,7 @@
         |-NameIdentifierNode="Natural"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Natural
@@ -307,7 +307,7 @@
         |-NameIdentifierNode="Complex"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Complex
@@ -327,7 +327,7 @@
         |-NameIdentifierNode="Number"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-UnionTypeNode
             |-ReferenceNode
@@ -354,7 +354,7 @@
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Number
@@ -370,7 +370,7 @@
       |-NameIdentifierNode="as"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="Infinity"
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=Infinity
@@ -387,7 +387,7 @@
       |-NameIdentifierNode="apply"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Infinity
@@ -409,12 +409,12 @@
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:<no-type>#1)
           |-NameIdentifierNode="b"
           |-ReferenceNode
             |-QNameNode=ref
@@ -434,12 +434,12 @@
       |-NameIdentifierNode="=="
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:<no-type>#1)
           |-NameIdentifierNode="b"
           |-ReferenceNode
             |-QNameNode=ref
@@ -459,17 +459,17 @@
       |-NameIdentifierNode="!="
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#2)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -497,12 +497,12 @@
       |-NameIdentifierNode="store"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#1)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -527,7 +527,7 @@
       |-NameIdentifierNode="load"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="NDet"
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=NDet
@@ -544,7 +544,7 @@
       |-NameIdentifierNode="apply"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=NDet
@@ -566,12 +566,12 @@
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=NDet
               |-NameIdentifierNode="NDet"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:<no-type>#1)
           |-NameIdentifierNode="b"
           |-ReferenceNode
             |-QNameNode=ref
@@ -591,12 +591,12 @@
       |-NameIdentifierNode="=="
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=NDet
               |-NameIdentifierNode="NDet"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:<no-type>#1)
           |-NameIdentifierNode="b"
           |-ReferenceNode
             |-QNameNode=ref
@@ -616,17 +616,17 @@
       |-NameIdentifierNode="!="
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=NDet
               |-NameIdentifierNode="NDet"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#2)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -654,12 +654,12 @@
       |-NameIdentifierNode="store"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#1)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -684,7 +684,7 @@
       |-NameIdentifierNode="load"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="Real"
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=Real
@@ -722,7 +722,7 @@
       |-NameIdentifierNode="allocationSize"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(number:<no-type>#0)
           |-NameIdentifierNode="number"
           |-ReferenceNode
             |-QNameNode=f32
@@ -765,7 +765,7 @@
       |-NameIdentifierNode="apply"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(ptr:<no-type>#0)
           |-NameIdentifierNode="ptr"
           |-UnionTypeNode
             |-ReferenceNode
@@ -789,7 +789,7 @@
       |-NameIdentifierNode="fromPointer"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Real
@@ -809,12 +809,12 @@
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 annotations=IsValueNode
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=f32
@@ -836,12 +836,12 @@
       |-NameIdentifierNode="property_number"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=f32
@@ -866,7 +866,7 @@
       |-NameIdentifierNode="set$number"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Real
@@ -888,17 +888,17 @@
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#2)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -926,12 +926,12 @@
       |-NameIdentifierNode="store"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#1)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -956,7 +956,7 @@
       |-NameIdentifierNode="load"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="Natural"
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=Natural
@@ -994,7 +994,7 @@
       |-NameIdentifierNode="allocationSize"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(number:<no-type>#0)
           |-NameIdentifierNode="number"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1037,7 +1037,7 @@
       |-NameIdentifierNode="apply"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(ptr:<no-type>#0)
           |-NameIdentifierNode="ptr"
           |-UnionTypeNode
             |-ReferenceNode
@@ -1061,7 +1061,7 @@
       |-NameIdentifierNode="fromPointer"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Natural
@@ -1081,12 +1081,12 @@
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 annotations=IsValueNode
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1108,12 +1108,12 @@
       |-NameIdentifierNode="property_number"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1138,7 +1138,7 @@
       |-NameIdentifierNode="set$number"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Natural
@@ -1160,17 +1160,17 @@
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#2)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1198,12 +1198,12 @@
       |-NameIdentifierNode="store"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#1)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1228,7 +1228,7 @@
       |-NameIdentifierNode="load"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="Complex"
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=Complex
@@ -1269,12 +1269,12 @@
       |-NameIdentifierNode="allocationSize"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(real:<no-type>#0)
           |-NameIdentifierNode="real"
           |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(imaginary:<no-type>#1)
           |-NameIdentifierNode="imaginary"
           |-ReferenceNode
             |-QNameNode=f32
@@ -1327,7 +1327,7 @@
       |-NameIdentifierNode="apply"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(ptr:<no-type>#0)
           |-NameIdentifierNode="ptr"
           |-UnionTypeNode
             |-ReferenceNode
@@ -1351,7 +1351,7 @@
       |-NameIdentifierNode="fromPointer"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Complex
@@ -1371,12 +1371,12 @@
               |-NameIdentifierNode="target"
           |-IntegerLiteral=0 annotations=IsValueNode
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=f32
@@ -1398,12 +1398,12 @@
       |-NameIdentifierNode="property_real"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=f32
@@ -1428,7 +1428,7 @@
       |-NameIdentifierNode="set$real"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Complex
@@ -1448,12 +1448,12 @@
               |-NameIdentifierNode="target"
           |-IntegerLiteral=8 annotations=IsValueNode
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=f32
@@ -1475,12 +1475,12 @@
       |-NameIdentifierNode="property_imaginary"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(target:<no-type>#0)
           |-NameIdentifierNode="target"
           |-ReferenceNode
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(value:<no-type>#1)
           |-NameIdentifierNode="value"
           |-ReferenceNode
             |-QNameNode=f32
@@ -1505,7 +1505,7 @@
       |-NameIdentifierNode="set$imaginary"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
           |-ReferenceNode
             |-QNameNode=Complex
@@ -1527,17 +1527,17 @@
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:<no-type>#1)
           |-NameIdentifierNode="rhs"
           |-ReferenceNode
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#2)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1565,12 +1565,12 @@
       |-NameIdentifierNode="store"
     |-OverloadedFunctionNode annotations=Injected
       |-FunctionNode
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:<no-type>#0)
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:<no-type>#1)
           |-NameIdentifierNode="offset"
           |-ReferenceNode
             |-QNameNode=i32
@@ -1595,7 +1595,7 @@
       |-NameIdentifierNode="load"
   |-OverloadedFunctionNode annotations=Injected
     |-FunctionNode
-      |-ParameterNode
+      |-ParameterNode annotations=Local(number:<no-type>#0)
         |-NameIdentifierNode="number"
         |-ReferenceNode
           |-QNameNode=Number
@@ -1613,7 +1613,6 @@
           |-ReferenceNode
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
-          |-NameIdentifierNode="_"
           |-BooleanLiteral=false annotations=IsValueNode
         |-MatchCaseIsNode annotations=IsValueNode
           |-NameIdentifierNode="x"
@@ -1622,28 +1621,49 @@
               |-NameIdentifierNode="Infinity"
           |-BooleanLiteral=false annotations=IsValueNode
         |-MatchCaseIsNode annotations=IsValueNode
+          |-NameIdentifierNode="$"
           |-ReferenceNode
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
           |-BooleanLiteral=false annotations=IsValueNode
         |-MatchCaseIsNode annotations=IsValueNode
+          |-NameIdentifierNode="aNaturalNumber"
           |-ReferenceNode
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
-          |-NameIdentifierNode="_"
-          |-BooleanLiteral=false annotations=IsValueNode
+          |-BlockNode annotations=IsValueNode
+            |-ValDeclarationNode
+              |-NameIdentifierNode="x"
+              |-MemberNode annotations=IsValueNode
+                |-ReferenceNode
+                  |-QNameNode=aNaturalNumber
+                    |-NameIdentifierNode="aNaturalNumber"
+                |-NameIdentifierNode="x"
+            |-BinaryExpressionNode="==" annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-ReferenceNode annotations=IsValueNode
+                |-QNameNode=x
+                  |-NameIdentifierNode="x"
+              |-IntegerLiteral=0 annotations=IsValueNode
         |-MatchCaseIsNode annotations=IsValueNode
+          |-NameIdentifierNode="$"
           |-ReferenceNode
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
-          |-NameIdentifierNode="_"
-          |-NameIdentifierNode="imaginary"
-          |-BinaryExpressionNode="!=" annotations=IsValueNode
-            |-NameIdentifierNode="!="
-            |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=imaginary
+          |-BlockNode annotations=IsValueNode
+            |-ValDeclarationNode
+              |-NameIdentifierNode="imaginary"
+              |-MemberNode annotations=IsValueNode
+                |-ReferenceNode
+                  |-QNameNode=$
+                    |-NameIdentifierNode="$"
                 |-NameIdentifierNode="imaginary"
-            |-FloatLiteral=0 annotations=IsValueNode
+            |-BinaryExpressionNode="!=" annotations=IsValueNode
+              |-NameIdentifierNode="!="
+              |-ReferenceNode annotations=IsValueNode
+                |-QNameNode=imaginary
+                  |-NameIdentifierNode="imaginary"
+              |-FloatLiteral=0 annotations=IsValueNode
         |-MatchDefaultNode annotations=IsValueNode
           |-BooleanLiteral=false annotations=IsValueNode
     |-NameIdentifierNode="isComplex"

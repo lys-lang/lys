@@ -148,13 +148,13 @@ describe('Parser', () => {
     describe('namespaces', () => {
       test`
         type Enum
-        type Enum=???
-        type Enum = ???
-        type Enum =                    ???
+        type Enum= %struct{}
+        type Enum = %struct{}
+        type Enum =                    %struct{}
         impl Enum {
 
         } // a
-        type Enum =??? impl Enum {}
+        type Enum =%struct{} impl Enum {}
         type Enum impl Enum {}
         type Enum impl Enum {
           //

@@ -315,7 +315,7 @@ describe('Types', function() {
     describe('namespace types', () => {
       describe('apply', () => {
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(): Test = ???
@@ -327,7 +327,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(): Test = ???
@@ -339,7 +339,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(a: i32): Test = ???
@@ -354,7 +354,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(a: i32): Test = ???
@@ -519,9 +519,9 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type A = ???
-            type B = ???
-            type C = ???
+            type A = %struct{}
+            type B = %struct{}
+            type C = %struct{}
             type ABC = A | B | C
 
             impl A {
@@ -1961,7 +1961,7 @@ describe('Types', function() {
 
     describe('UnionType', () => {
       const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
-      const struct = (name: string) => new StructType(name);
+      const struct = (name: string) => new StructType(name, []);
       const union = (...of: Type[]) => new UnionType(of);
       const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));
       const structAlias = (name: string) => aliasOf(name, struct(name));
@@ -2547,8 +2547,8 @@ describe('Types', function() {
         ---
         fun(value: Enum) -> B
       `;
-      // TODO: Deconstruct
-      describe.skip('deconstruct', () => {
+
+      describe('deconstruct', () => {
         checkMainType`
           type Color {
             Red
@@ -2590,15 +2590,13 @@ describe('Types', function() {
           fun isRed(color: Color): i32 = {
             color match {
               case is Red -> 1
-              case is Custom(a, b, c, d) -> a
+              case is Custom(a, unexistentProperty) -> a
             }
           }
           ---
           fun(color: Color) -> i32
           ---
-          Invalid number of arguments. The type Custom only accepts 1
-          Invalid number of arguments. The type Custom only accepts 1
-          Invalid number of arguments. The type Custom only accepts 1
+          Cannot find member "property_unexistentProperty"
         `;
 
         checkMainType`
@@ -2617,7 +2615,7 @@ describe('Types', function() {
 
           fun isRed(color: Color): Red | Blue = {
             color match {
-              case is Custom(_,_,_,a) -> a
+              case is Custom(_,_,_,d) -> d
               else -> Blue
             }
           }

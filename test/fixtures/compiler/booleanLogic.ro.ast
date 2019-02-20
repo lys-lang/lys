@@ -6,12 +6,12 @@
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean)) annotations=Injected
     |-FunctionNode type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(a:boolean#0)
         |-NameIdentifierNode="a" type=(alias boolean (native boolean))
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-      |-ParameterNode
+      |-ParameterNode annotations=Local(b:boolean#1)
         |-NameIdentifierNode="b" type=(alias boolean (native boolean))
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
@@ -22,10 +22,10 @@
           |-NameIdentifierNode="boolean"
       |-BinaryExpressionNode="&&" type=(alias boolean (native boolean)) annotations=IsValueNode
         |-NameIdentifierNode="&&"
-        |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(a:boolean#0)
           |-QNameNode=a
             |-NameIdentifierNode="a"
-        |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(b:boolean#1)
           |-QNameNode=b
             |-NameIdentifierNode="b"
     |-NameIdentifierNode="test" type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean))

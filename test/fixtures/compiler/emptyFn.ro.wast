@@ -2,7 +2,7 @@
   (memory $mem 1)
   (export "memory" (memory $mem))
   (func $system::core::assert (param $x i32)
-    (if $a_wild_if (call $system::core::boolean.== (get_local $x) (i32.const 0))
+    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
       (then
         (call $system::core::panic_1)
       )
@@ -631,7 +631,7 @@
     (i32.or (i32.ne (get_local $lhs) (i32.const 0)) (i32.ne (get_local $rhs) (i32.const 0)))
   )
   (func $system::core::boolean.! (param $rhs i32) (result i32)
-    (if $a_wild_if (result i32) (get_local $rhs)
+    (if $IF1 (result i32) (get_local $rhs)
       (then
         (i32.const 0)
       )
@@ -689,7 +689,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_34 (result i32)
+    (block $B1 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )
@@ -707,7 +707,7 @@
   )
   (export "main" (func $test/fixtures/compiler/emptyFn.ro::main))
   (func $test/fixtures/compiler/emptyFn.ro::main
-    (block $unknown_block_1
+    (block $B1
       (nop)
     )
   )

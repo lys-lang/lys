@@ -6,7 +6,7 @@
       |-NameIdentifierNode="core"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="True" type=(type (alias True (struct True)))
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=True
@@ -23,7 +23,7 @@
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias True))
     |-OverloadedFunctionNode type=(fun "is" ((alias True)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias True)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:True#0)
           |-NameIdentifierNode="a" type=(alias True (struct True))
           |-ReferenceNode type=(type (alias True (struct True)))
             |-QNameNode=True
@@ -45,12 +45,12 @@
       |-NameIdentifierNode="is" type=(fun "is" ((alias True)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "==" ((alias True) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "==" ((alias True) (alias ref)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:True#0)
           |-NameIdentifierNode="a" type=(alias True (struct True))
           |-ReferenceNode type=(type (alias True (struct True)))
             |-QNameNode=True
               |-NameIdentifierNode="True"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:ref#1)
           |-NameIdentifierNode="b" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
@@ -70,12 +70,12 @@
       |-NameIdentifierNode="==" type=(fun "==" ((alias True) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "!=" ((alias True) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "!=" ((alias True) (alias ref)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:True#0)
           |-NameIdentifierNode="a" type=(alias True (struct True))
           |-ReferenceNode type=(type (alias True (struct True)))
             |-QNameNode=True
               |-NameIdentifierNode="True"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:ref#1)
           |-NameIdentifierNode="b" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
@@ -95,17 +95,17 @@
       |-NameIdentifierNode="!=" type=(fun "!=" ((alias True) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias True) (alias i32)) (alias void)) annotations=Injected
       |-FunctionNode type=(fun "store" ((alias ref) (alias True) (alias i32)) (alias void))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:True#1)
           |-NameIdentifierNode="rhs" type=(alias True (struct True))
           |-ReferenceNode type=(type (alias True (struct True)))
             |-QNameNode=True
               |-NameIdentifierNode="True"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:i32#2)
           |-NameIdentifierNode="offset" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
@@ -133,12 +133,12 @@
       |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias True) (alias i32)) (alias void))
     |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias True)) annotations=Injected
       |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias True))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:i32#1)
           |-NameIdentifierNode="offset" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
@@ -163,7 +163,7 @@
       |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias True))
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="False" type=(type (alias False (struct False)))
-    |-UnknownExpressionNode
+    |-StructSignarureNode
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=False
@@ -180,7 +180,7 @@
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias False))
     |-OverloadedFunctionNode type=(fun "is" ((alias False)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias False)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:False#0)
           |-NameIdentifierNode="a" type=(alias False (struct False))
           |-ReferenceNode type=(type (alias False (struct False)))
             |-QNameNode=False
@@ -202,12 +202,12 @@
       |-NameIdentifierNode="is" type=(fun "is" ((alias False)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "==" ((alias False) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "==" ((alias False) (alias ref)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:False#0)
           |-NameIdentifierNode="a" type=(alias False (struct False))
           |-ReferenceNode type=(type (alias False (struct False)))
             |-QNameNode=False
               |-NameIdentifierNode="False"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:ref#1)
           |-NameIdentifierNode="b" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
@@ -227,12 +227,12 @@
       |-NameIdentifierNode="==" type=(fun "==" ((alias False) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "!=" ((alias False) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "!=" ((alias False) (alias ref)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:False#0)
           |-NameIdentifierNode="a" type=(alias False (struct False))
           |-ReferenceNode type=(type (alias False (struct False)))
             |-QNameNode=False
               |-NameIdentifierNode="False"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(b:ref#1)
           |-NameIdentifierNode="b" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
@@ -252,17 +252,17 @@
       |-NameIdentifierNode="!=" type=(fun "!=" ((alias False) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias False) (alias i32)) (alias void)) annotations=Injected
       |-FunctionNode type=(fun "store" ((alias ref) (alias False) (alias i32)) (alias void))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:False#1)
           |-NameIdentifierNode="rhs" type=(alias False (struct False))
           |-ReferenceNode type=(type (alias False (struct False)))
             |-QNameNode=False
               |-NameIdentifierNode="False"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:i32#2)
           |-NameIdentifierNode="offset" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
@@ -290,12 +290,12 @@
       |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias False) (alias i32)) (alias void))
     |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias False)) annotations=Injected
       |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias False))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:i32#1)
           |-NameIdentifierNode="offset" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
@@ -333,7 +333,7 @@
         |-NameIdentifierNode="Boolean"
     |-OverloadedFunctionNode type=(fun "is" ((alias Boolean)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Boolean)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:Boolean#0)
           |-NameIdentifierNode="a" type=(alias Boolean (union (alias True (struct True)) (alias False (struct False))))
           |-ReferenceNode type=(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))
             |-QNameNode=Boolean
@@ -362,12 +362,12 @@
       |-NameIdentifierNode="is" type=(fun "is" ((alias Boolean)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "==" ((alias ref) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "==" ((alias ref) (alias ref)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:ref#1)
           |-NameIdentifierNode="rhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
@@ -387,12 +387,12 @@
       |-NameIdentifierNode="==" type=(fun "==" ((alias ref) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "!=" ((alias ref) (alias ref)) (alias boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:ref#1)
           |-NameIdentifierNode="rhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
@@ -412,17 +412,17 @@
       |-NameIdentifierNode="!=" type=(fun "!=" ((alias ref) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias Boolean) (alias i32)) (alias void)) annotations=Injected
       |-FunctionNode type=(fun "store" ((alias ref) (alias Boolean) (alias i32)) (alias void))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(rhs:Boolean#1)
           |-NameIdentifierNode="rhs" type=(alias Boolean (union (alias True (struct True)) (alias False (struct False))))
           |-ReferenceNode type=(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))
             |-QNameNode=Boolean
               |-NameIdentifierNode="Boolean"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:i32#2)
           |-NameIdentifierNode="offset" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
@@ -450,12 +450,12 @@
       |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Boolean) (alias i32)) (alias void))
     |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias Boolean)) annotations=Injected
       |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias Boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(lhs:ref#0)
           |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-        |-ParameterNode
+        |-ParameterNode annotations=Local(offset:i32#1)
           |-NameIdentifierNode="offset" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
@@ -484,7 +484,7 @@
         |-NameIdentifierNode="True"
     |-OverloadedFunctionNode type=(fun "as" ((alias True)) (alias Boolean)) annotations=Injected
       |-FunctionNode type=(fun "as" ((alias True)) (alias Boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:True#0)
           |-NameIdentifierNode="a" type=(alias True (struct True))
           |-ReferenceNode type=(type (alias True (struct True)))
             |-QNameNode=True
@@ -504,7 +504,7 @@
         |-NameIdentifierNode="False"
     |-OverloadedFunctionNode type=(fun "as" ((alias False)) (alias Boolean)) annotations=Injected
       |-FunctionNode type=(fun "as" ((alias False)) (alias Boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:False#0)
           |-NameIdentifierNode="a" type=(alias False (struct False))
           |-ReferenceNode type=(type (alias False (struct False)))
             |-QNameNode=False
@@ -524,7 +524,7 @@
         |-NameIdentifierNode="Boolean"
     |-OverloadedFunctionNode type=(intersection (fun "as" ((union (alias True) (alias False))) (alias Boolean)) (fun "as" ((alias Boolean)) (alias ref))) annotations=Injected
       |-FunctionNode type=(fun "as" ((union (alias True) (alias False))) (alias Boolean))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:True | False#0)
           |-NameIdentifierNode="a" type=(union (alias True (struct True)) (alias False (struct False)))
           |-UnionTypeNode type=(type (union (alias True (struct True)) (alias False (struct False))))
             |-ReferenceNode type=(type (alias True (struct True)))
@@ -542,7 +542,7 @@
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
       |-FunctionNode type=(fun "as" ((alias Boolean)) (alias ref))
-        |-ParameterNode
+        |-ParameterNode annotations=Local(a:Boolean#0)
           |-NameIdentifierNode="a" type=(alias Boolean (union (alias True (struct True)) (alias False (struct False))))
           |-ReferenceNode type=(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))
             |-QNameNode=Boolean
@@ -558,7 +558,7 @@
       |-NameIdentifierNode="as" type=(intersection (fun "as" ((union (alias True) (alias False))) (alias Boolean)) (fun "as" ((alias Boolean)) (alias ref)))
   |-OverloadedFunctionNode type=(fun "gt0" ((alias i32)) (alias Boolean)) annotations=Injected
     |-FunctionNode type=(fun "gt0" ((alias i32)) (alias Boolean))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(x:i32#0)
         |-NameIdentifierNode="x" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -589,7 +589,7 @@
     |-NameIdentifierNode="gt0" type=(fun "gt0" ((alias i32)) (alias Boolean))
   |-OverloadedFunctionNode type=(fun "isTrue" ((alias Boolean)) (alias boolean)) annotations=Injected
     |-FunctionNode type=(fun "isTrue" ((alias Boolean)) (alias boolean))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(a:Boolean#0)
         |-NameIdentifierNode="a" type=(alias Boolean (union (alias True (struct True)) (alias False (struct False))))
         |-ReferenceNode type=(type (alias Boolean (union (alias True (struct True)) (alias False (struct False)))))
           |-QNameNode=Boolean
@@ -603,6 +603,7 @@
           |-QNameNode=a
             |-NameIdentifierNode="a"
         |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-NameIdentifierNode="$" type=(alias True (struct True))
           |-ReferenceNode type=(type (alias True (struct True)))
             |-QNameNode=True
               |-NameIdentifierNode="True"

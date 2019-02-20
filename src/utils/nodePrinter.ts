@@ -70,6 +70,8 @@ export function printNode(node: Nodes.Node): string {
     return `(${node.symbol}${node.arguments.map($ => ' ' + printNode($)).join('')})`;
   } else if (node instanceof Nodes.WasmExpressionNode) {
     return `%wasm {\n${indent(node.atoms.map(printNode).join('\n'))}\n}`;
+  } else if (node instanceof Nodes.StructSignarureNode) {
+    return `%struct { ${node.names.join(', ')} }`;
   } else if (node instanceof Nodes.IfNode) {
     const printTrue = () => {
       if (node.truePart instanceof Nodes.BlockNode) {
@@ -117,12 +119,14 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.VarDirectiveNode) {
     return (node.isExported ? '' : 'private ') + printNode(node.decl);
   } else if (node instanceof Nodes.MatchCaseIsNode) {
+    const declaredName = node.declaredName && node.declaredName.name !== '$' ? `${printNode(node.declaredName)} ` : ``;
+
     if (node.deconstructorNames && node.deconstructorNames.length) {
-      return `case is ${printNode(node.typeReference)}(${node.deconstructorNames
+      return `case ${declaredName}is ${printNode(node.typeReference)}(${node.deconstructorNames
         .map(printNode)
         .join(', ')}) -> ${printNode(node.rhs)}`;
     } else {
-      return `case is ${printNode(node.typeReference)} -> ${printNode(node.rhs)}`;
+      return `case ${declaredName}is ${printNode(node.typeReference)} -> ${printNode(node.rhs)}`;
     }
   } else if (node instanceof Nodes.TypeDirectiveNode) {
     if (node.valueType) {

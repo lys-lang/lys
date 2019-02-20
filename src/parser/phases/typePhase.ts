@@ -18,9 +18,9 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
   (_node, _phase) => {},
   (node, phase: TypePhaseResult) => {
     if (node instanceof Nodes.TypeDirectiveNode) {
-      if (node.valueType instanceof Nodes.UnknownExpressionNode) {
+      if (node.valueType instanceof Nodes.StructSignarureNode) {
         node.variableName.ofType = TypeType.of(
-          new TypeAlias(node.variableName, new StructType(node.variableName.name))
+          new TypeAlias(node.variableName, new StructType(node.variableName.name, node.valueType.names))
         );
       } else if (!node.valueType) {
         if (node.variableName.name in InjectableTypes) {

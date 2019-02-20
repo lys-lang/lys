@@ -630,7 +630,7 @@ describe('execution tests', () => {
     );
 
     test(
-      'type alloc and basic pattern match',
+      'type alloc and basic pattern match, deconstruct',
       `
         type Color {
           Red
@@ -642,7 +642,7 @@ describe('execution tests', () => {
         fun isRed(color: Color): boolean = {
           color match {
             case is Red -> true
-            // case Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+            case is Custom(r, g, b) -> r == 255 && g == 0 && b == 0
             else -> false
           }
         }
@@ -651,11 +651,7 @@ describe('execution tests', () => {
           support::test::assert(isRed(Red) == true)
           support::test::assert(isRed(Green) == false)
           support::test::assert(isRed(Blue) == false)
-          support::test::assert(isRed(Custom(5,5,5)) == false)
-          /* support::test::assert(Red.isRed() == true)
-          support::test::assert(Green.isRed() == false)
-          support::test::assert(Blue.isRed() == false)
-          support::test::assert(Custom(5,5,5).isRed() == false) */
+          support::test::assert(isRed(Custom(255,0,0)) == true)
         }
       `,
       async (x, err) => {

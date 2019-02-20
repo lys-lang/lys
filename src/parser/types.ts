@@ -124,10 +124,6 @@ export class RefType extends Type {
     return getUnderlyingTypeFromAlias(otherType) === RefType.instance;
   }
 
-  static isRefType(otherType: Type) {
-    return getUnderlyingTypeFromAlias(otherType) instanceof RefType;
-  }
-
   toString() {
     return 'ref';
   }
@@ -162,7 +158,7 @@ export class RefType extends Type {
   }
 }
 
-function acceptsTypes(type: StructType | FunctionType, types: Type[], strict: boolean): number {
+function acceptsTypes(type: FunctionType, types: Type[], strict: boolean): number {
   if (type.parameterTypes.length !== types.length) {
     return 0;
   }
@@ -197,11 +193,13 @@ function acceptsTypes(type: StructType | FunctionType, types: Type[], strict: bo
   return score;
 }
 
-function downToRefTypes(type: Type): RefType[] {
+function downToRefTypes(type: Type): (RefType | StructType)[] {
   let argType = type;
 
   while (true) {
-    if (argType instanceof RefType) {
+    if (argType instanceof StructType) {
+      return [argType];
+    } else if (argType instanceof RefType) {
       return [argType];
     } else if (argType instanceof TypeAlias) {
       argType = argType.of;
@@ -231,16 +229,11 @@ export function getTypeSimilarity(lhs: Type, rhs: Type) {
   return Math.max.apply(Math, results);
 }
 
-export class StructType extends RefType {
-  parameterTypes: Type[] = [];
-  parameterNames: string[] = [];
+export class StructType extends Type {
+  nativeType: NativeTypes = NativeTypes.i64;
 
-  constructor(public structName: string) {
+  constructor(public structName: string, public parameterNames: string[]) {
     super();
-  }
-
-  acceptsTypes(types: Type[], strict: boolean) {
-    return acceptsTypes(this, types, strict);
   }
 
   equals(type: Type) {
@@ -249,6 +242,26 @@ export class StructType extends RefType {
 
   toString() {
     return this.structName;
+  }
+
+  canBeAssignedTo(otherType: Type) {
+    if (super.canBeAssignedTo(otherType)) {
+      return true;
+    }
+
+    if (RefType.isRefTypeStrict(otherType)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  typeSimilarity(to: Type, depth: number = 1): number {
+    if (this.equals(to)) {
+      return 1 / depth;
+    }
+
+    return 0;
   }
 
   inspect() {

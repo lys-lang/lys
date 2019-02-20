@@ -13,10 +13,12 @@ type Number {
 
 fun isComplex(number: Number): boolean =
   number match {
-    case x is Real(_) -> false
+    case x is Real -> false
     case x is Infinity -> false
     case is Infinity -> false
-    case is Natural(_) -> false
+    case aNaturalNumber is Natural(x) -> {
+      x == 0
+    }
     case is Complex(_, imaginary) -> imaginary != 0.0
     else -> false
   }

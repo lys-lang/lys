@@ -49,7 +49,9 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
   const typeDirective = new Nodes.TypeDirectiveNode();
   typeDirective.variableName = node.declaredName;
-  typeDirective.valueType = new Nodes.UnknownExpressionNode();
+  const signature = new Nodes.StructSignarureNode();
+  typeDirective.valueType = signature;
+
   typeDirective.annotate(new annotations.Injected());
 
   phase.parsingContext.registerType(typeDirective);
@@ -58,6 +60,8 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
     const accessors = node.parameters
       .map(({ parameterName, parameterType }, i) => {
         const offset = i * 8;
+
+        signature.names.push(parameterName.name);
 
         const parameter = printNode(parameterType);
 
@@ -388,6 +392,63 @@ const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
   }
 });
 
+const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _parent: Nodes.Node) => {
+  if (node instanceof Nodes.MatchCaseIsNode) {
+    if (!node.declaredName) {
+      node.declaredName = Nodes.NameIdentifierNode.fromString('$');
+    }
+
+    if (node.deconstructorNames && node.deconstructorNames.length) {
+      /**
+       * struct Node(value: i32)
+       * x match {
+       *   case x is Node(theValue) -> theValue
+       *   ...
+       * }
+       *
+       * roughly desugars to
+       *
+       * struct Node(value: i32)
+       * x match {
+       *   case x is Node -> {
+       *     val theValue = x.value
+       *     theValue
+       *   }
+       *   ...
+       * }
+       */
+      const newBlock = node.rhs instanceof Nodes.BlockNode ? node.rhs : new Nodes.BlockNode(node.rhs.astNode);
+
+      if (!newBlock.statements) {
+        newBlock.statements = [];
+      }
+
+      node.deconstructorNames.reverse().forEach($ => {
+        if ($.name !== '_') {
+          const decl = new Nodes.ValDeclarationNode();
+          decl.variableName = $;
+          const member = new Nodes.MemberNode($.astNode);
+          decl.value = member;
+          const ref = (member.lhs = new Nodes.ReferenceNode(node.declaredName.astNode));
+          ref.variable = Nodes.QNameNode.fromString(node.declaredName.name);
+          member.operator = '.';
+          member.memberName = new Nodes.NameIdentifierNode($.astNode);
+          member.memberName.name = $.name;
+
+          newBlock.statements.unshift(decl);
+        }
+      });
+
+      node.deconstructorNames.length = 0;
+
+      if (newBlock !== node.rhs) {
+        newBlock.statements.push(node.rhs);
+        node.rhs = newBlock;
+      }
+    }
+  }
+});
+
 export class SemanticPhaseResult extends PhaseResult {
   get document() {
     return this.canonicalPhaseResult.document;
@@ -408,6 +469,8 @@ export class SemanticPhaseResult extends PhaseResult {
 
     preprocessStructs(this.document, this);
     processUnions(this.document, this);
+
+    processDeconstruct(this.document, this);
 
     overloadFunctions(this.document, this);
     validateSignatures(this.document, this);

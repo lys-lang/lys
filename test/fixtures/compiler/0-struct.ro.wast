@@ -1,6 +1,24 @@
 (module
   (memory $mem 1)
   (export "memory" (memory $mem))
+  (func $support::test::TestStruct.apply (result i64)
+    (i64.const 0x600000000)
+  )
+  (func $support::test::TestStruct.is (param $a i64) (result i32)
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x600000000))
+  )
+  (func $support::test::TestStruct.== (param $a i64) (param $b i64) (result i32)
+    (i64.eq (get_local $a) (get_local $b))
+  )
+  (func $support::test::TestStruct.!= (param $a i64) (param $b i64) (result i32)
+    (i64.ne (get_local $a) (get_local $b))
+  )
+  (func $support::test::TestStruct.store (param $lhs i64) (param $rhs i64) (param $offset i32)
+    (i64.store (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))) (get_local $rhs))
+  )
+  (func $support::test::TestStruct.load (param $lhs i64) (param $offset i32) (result i64)
+    (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
+  )
   (func $support::test::identity (param $x i32) (result i32)
     (get_local $x)
   )
@@ -14,15 +32,12 @@
     (get_local $x)
   )
   (func $support::test::assert (param $x i32)
-    (if $a_wild_if (call $system::core::boolean.== (get_local $x) (i32.const 0))
+    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
       (then
-        (call $support::test::panic_1)
+        (call $system::core::panic_1)
       )
       (else)
     )
-  )
-  (func $support::test::panic_1
-    (unreachable)
   )
   (global $system::memory::AL_BITS (mut i32) (i32.const 0))
   (global $system::memory::AL_SIZE (mut i32) (i32.const 0))
@@ -39,7 +54,7 @@
     (current_memory)
   )
   (func $system::memory::max (param $a i32) (param $b i32) (result i32)
-    (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $a) (get_local $b))
+    (if $IF1 (result i32) (call $system::core::i32.> (get_local $a) (get_local $b))
       (then
         (get_local $a)
       )
@@ -57,7 +72,7 @@
   (func $system::memory::calloc (param $itemCount i32) (param $itemSize i32) (result i32)
     (local $size i32)
     (local $$ret i32)
-    (block $unknown_block_55 (result i32)
+    (block $B1 (result i32)
       (set_local $size (call $system::core::i32.* (get_local $itemCount) (get_local $itemSize)))
       (set_local $$ret (call $system::memory::malloc_2 (get_local $size)))
       (call $system::memory::memset_1 (get_local $$ret) (get_local $size) (i32.const 0))
@@ -70,13 +85,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_56 (result i32)
-      (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
+    (block $B1 (result i32)
+      (if $IF2 (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_57 (result i32)
-                (if $a_wild_if (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
+            (block $B3 (result i32)
+                (if $IF4 (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_58
+                      (block $B5
                           (call $system::core::panic_1)
                         )
                     )
@@ -85,17 +100,17 @@
                 (set_local $ptr (get_global $system::memory::offset))
                 (set_local $newPtr (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.+ (get_local $ptr) (get_local $size)) (get_global $system::memory::AL_MASK)) (call $system::core::i32.~ (get_global $system::memory::AL_MASK))))
                 (set_local $pagesBefore (call $system::memory::currentMemory))
-                (if $a_wild_if (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
+                (if $IF6 (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_59
+                      (block $B7
                           (set_local $pagesNeeded (call $system::core::i32.>>> (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::i32.~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
-                          (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
+                          (if $IF8 (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_60
-                                    (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
+                                (block $B9
+                                    (if $IF10 (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_61
+                                          (block $B11
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -114,7 +129,7 @@
               )
           )
           (else
-            (block $unknown_block_62 (result i32)
+            (block $B12 (result i32)
                 (i32.const 0)
               )
           )
@@ -122,7 +137,7 @@
     )
   )
   (func $system::memory::free (param $ptr i32)
-    (block $unknown_block_63
+    (block $B1
       (nop)
     )
   )
@@ -140,7 +155,7 @@
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
   )
   (func $system::core::assert (param $x i32)
-    (if $a_wild_if (call $system::core::boolean.== (get_local $x) (i32.const 0))
+    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
       (then
         (call $system::core::panic_1)
       )
@@ -769,7 +784,7 @@
     (i32.or (i32.ne (get_local $lhs) (i32.const 0)) (i32.ne (get_local $rhs) (i32.const 0)))
   )
   (func $system::core::boolean.! (param $rhs i32) (result i32)
-    (if $a_wild_if (result i32) (get_local $rhs)
+    (if $IF1 (result i32) (get_local $rhs)
       (then
         (i32.const 0)
       )
@@ -827,7 +842,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_25 (result i32)
+    (block $B1 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )
@@ -846,7 +861,7 @@
   (export "isRed" (func $test/fixtures/compiler/0-struct.ro::isRed))
   (export "testColors" (func $test/fixtures/compiler/0-struct.ro::testColors))
   (func $test/fixtures/compiler/0-struct.ro::Color.is (param $a i64) (result i32)
-    (block $unknown_block_1 (result i32)
+    (block $B1 (result i32)
       (call $system::core::boolean.|| (call $system::core::boolean.|| (call $system::core::boolean.|| (call $test/fixtures/compiler/0-struct.ro::Red.is (get_local $a)) (call $test/fixtures/compiler/0-struct.ro::Green.is (get_local $a))) (call $test/fixtures/compiler/0-struct.ro::Blue.is (get_local $a))) (call $test/fixtures/compiler/0-struct.ro::Custom.is (get_local $a)))
     )
   )
@@ -945,7 +960,7 @@
   )
   (func $test/fixtures/compiler/0-struct.ro::Custom.apply (param $r i32) (param $g i32) (param $b i32) (result i64)
     (local $$ref i64)
-    (block $unknown_block_2 (result i64)
+    (block $B1 (result i64)
       (set_local $$ref (call $test/fixtures/compiler/0-struct.ro::Custom.fromPointer (call $system::memory::calloc (i32.const 1) (call $test/fixtures/compiler/0-struct.ro::Custom.sizeOf))))
       (call $test/fixtures/compiler/0-struct.ro::Custom.set$r (get_local $$ref) (get_local $r))
       (call $test/fixtures/compiler/0-struct.ro::Custom.set$g (get_local $$ref) (get_local $g))
@@ -994,23 +1009,23 @@
   )
   (func $test/fixtures/compiler/0-struct.ro::isRed (param $color i64) (result i32)
     (local $var$1 i64)
-    (block $unknown_block_3 (result i32)
-      (block $B4 (result i32)
+    (block $B1 (result i32)
+      (block $B2 (result i32)
           (set_local $var$1 (get_local $color))
-          (block $B4_0
-              (block $B4_1
-                  (br_if $B4_0 (call $test/fixtures/compiler/0-struct.ro::Red.is (get_local $var$1)))
+          (block $B2_0
+              (block $B2_1
+                  (br_if $B2_0 (call $test/fixtures/compiler/0-struct.ro::Red.is (get_local $var$1)))
                 )
               (i32.const 0)
-              (br $B4)
+              (br $B2)
             )
           (i32.const 1)
-          (br $B4)
+          (br $B2)
         )
     )
   )
   (func $test/fixtures/compiler/0-struct.ro::testColors
-    (block $unknown_block_5
+    (block $B1
       (call $support::test::assert (call $system::core::boolean.== (call $test/fixtures/compiler/0-struct.ro::isRed (call $test/fixtures/compiler/0-struct.ro::Red.apply)) (i32.const 1)))
       (call $support::test::assert (call $system::core::boolean.== (call $test/fixtures/compiler/0-struct.ro::isRed (call $test/fixtures/compiler/0-struct.ro::Green.apply)) (i32.const 0)))
       (call $support::test::assert (call $system::core::boolean.== (call $test/fixtures/compiler/0-struct.ro::isRed (call $test/fixtures/compiler/0-struct.ro::Blue.apply)) (i32.const 0)))

@@ -39,7 +39,7 @@ impl Tree {
   }
 }
 
-type Empty = ???
+type Empty = %struct {  }
 
 impl Empty {
   fun apply(): Empty = %wasm {
@@ -67,7 +67,7 @@ impl Empty {
   }
 }
 
-type Node = ???
+type Node = %struct { a }
 
 impl Node {
   fun discriminant(): u64 = %wasm {
@@ -151,7 +151,7 @@ impl Forest {
   }
 }
 
-type Nil = ???
+type Nil = %struct {  }
 
 impl Nil {
   fun apply(): Nil = %wasm {
@@ -179,7 +179,7 @@ impl Nil {
   }
 }
 
-type Cons = ???
+type Cons = %struct { tree }
 
 impl Cons {
   fun discriminant(): u64 = %wasm {

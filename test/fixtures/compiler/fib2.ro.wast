@@ -2,7 +2,7 @@
   (memory $mem 1)
   (export "memory" (memory $mem))
   (func $system::core::assert (param $x i32)
-    (if $a_wild_if (call $system::core::boolean.== (get_local $x) (i32.const 0))
+    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
       (then
         (call $system::core::panic_1)
       )
@@ -631,7 +631,7 @@
     (i32.or (i32.ne (get_local $lhs) (i32.const 0)) (i32.ne (get_local $rhs) (i32.const 0)))
   )
   (func $system::core::boolean.! (param $rhs i32) (result i32)
-    (if $a_wild_if (result i32) (get_local $rhs)
+    (if $IF1 (result i32) (get_local $rhs)
       (then
         (i32.const 0)
       )
@@ -689,7 +689,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_36 (result i32)
+    (block $B1 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )
@@ -708,7 +708,7 @@
   (export "fib" (func $test/fixtures/compiler/fib2.ro::fib))
   (export "test" (func $test/fixtures/compiler/fib2.ro::test))
   (func $test/fixtures/compiler/fib2.ro::fibo (param $n i32) (param $x1 i32) (param $x2 i32) (result i32)
-    (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $n) (i32.const 0))
+    (if $IF1 (result i32) (call $system::core::i32.> (get_local $n) (i32.const 0))
       (then
         (call $test/fixtures/compiler/fib2.ro::fibo (call $system::core::i32.- (get_local $n) (i32.const 1)) (get_local $x2) (call $system::core::i32.+ (get_local $x1) (get_local $x2)))
       )

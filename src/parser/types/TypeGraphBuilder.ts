@@ -4,7 +4,6 @@ import {
   getTypeResolver,
   EdgeLabels,
   PassThroughTypeResolver,
-  StructDeconstructorTypeResolver,
   TypeFromTypeResolver,
   VarDeclarationTypeResolver,
   TypeDirectiveResolver
@@ -343,14 +342,6 @@ export class TypeGraphBuilder {
 
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
 
-      if (node.deconstructorNames) {
-        node.deconstructorNames.forEach(($, $$) => {
-          if ($.name !== '_') {
-            new Edge(typeRef, this.createNode($, new StructDeconstructorTypeResolver($$)));
-          }
-        });
-      }
-
       if (node.declaredName) {
         const nameTarget = this.createNode(node.declaredName, new TypeFromTypeResolver());
         new Edge(typeRef, nameTarget, EdgeLabels.LHS);
@@ -398,7 +389,7 @@ export class TypeGraphBuilder {
         this.createNode(directive.variableName, new TypeDirectiveResolver(directive.variableName.ofType as TypeAlias))
       );
 
-      if (directive.valueType && !(directive.valueType instanceof Nodes.UnknownExpressionNode)) {
+      if (directive.valueType && !(directive.valueType instanceof Nodes.StructSignarureNode)) {
         new Edge(this.traverse(directive.valueType), typeDirective);
       }
 

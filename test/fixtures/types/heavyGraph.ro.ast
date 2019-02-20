@@ -97,12 +97,12 @@
     |-NameIdentifierNode="offset" type=(fun "offset" () (alias i32))
   |-OverloadedFunctionNode type=(fun "max" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "max" ((alias i32) (alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(a:i32#0)
         |-NameIdentifierNode="a" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ParameterNode
+      |-ParameterNode annotations=Local(b:i32#1)
         |-NameIdentifierNode="b" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -138,7 +138,7 @@
     |-NameIdentifierNode="currentMemory" type=(fun "currentMemory" () (alias i32))
   |-OverloadedFunctionNode type=(fun "growMemory" ((alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "growMemory" ((alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(pages:i32#0)
         |-NameIdentifierNode="pages" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -155,7 +155,7 @@
     |-NameIdentifierNode="growMemory" type=(fun "growMemory" ((alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "malloc" ((alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "malloc" ((alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(size:i32#0)
         |-NameIdentifierNode="size" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32

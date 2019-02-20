@@ -5,7 +5,6 @@ import {
   FunctionType,
   Type,
   IntersectionType,
-  StructType,
   TypeType,
   RefType,
   TypeAlias,
@@ -767,51 +766,6 @@ export class MatchLiteralTypeResolver extends TypeResolver {
   }
 }
 
-export class StructDeconstructorTypeResolver extends TypeResolver {
-  constructor(public parameterIndex: number) {
-    super();
-  }
-  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const edge = node.incomingEdges()[0];
-
-    const structAliasType = getTypeTypeType(edge.source.astNode, edge.incomingType(), ctx);
-
-    if (structAliasType instanceof TypeAlias) {
-      const structType = structAliasType.of;
-
-      if (structType instanceof StructType) {
-        if (
-          !structType.parameterTypes ||
-          structType.parameterTypes.length == 0 ||
-          this.parameterIndex >= structType.parameterTypes.length
-        ) {
-          if (!structType.parameterTypes) {
-            ctx.currentParsingContext.messageCollector.error(
-              `Invalid number of arguments. ${structType}`,
-              node.astNode
-            );
-          } else {
-            ctx.currentParsingContext.messageCollector.error(
-              `Invalid number of arguments. The type ${structType} only accepts ${structType.parameterTypes.length} `,
-              node.astNode
-            );
-          }
-
-          return INVALID_TYPE;
-        }
-
-        return structType.parameterTypes[this.parameterIndex];
-      } else {
-        ctx.currentParsingContext.messageCollector.error(`Type ${structType} is not a struct`, node.astNode);
-        return INVALID_TYPE;
-      }
-    } else {
-      ctx.currentParsingContext.messageCollector.error(`Type ${structAliasType.inspect(10)} is an alias`, node.astNode);
-      return INVALID_TYPE;
-    }
-  }
-}
-
 export class MatchCaseIsTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const result = node.incomingEdgesByName(EdgeLabels.RHS)[0];
@@ -1101,11 +1055,6 @@ function findFunctionOverload(
 
     return new UnionType(incommingType.of.map(($: FunctionType) => $.returnType));
   } else if (incommingType instanceof FunctionType) {
-    if (!incommingType.acceptsTypes(argTypes, strict)) {
-      messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
-    }
-    return incommingType;
-  } else if (incommingType instanceof StructType) {
     if (!incommingType.acceptsTypes(argTypes, strict)) {
       messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
     }

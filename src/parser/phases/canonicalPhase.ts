@@ -420,6 +420,11 @@ const visitor = {
   UnknownExpression(astNode: Nodes.ASTNode) {
     return new Nodes.UnknownExpressionNode(astNode);
   },
+  StructLiteral(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.StructSignarureNode(astNode);
+    ret.names = astNode.children.map($ => $.text);
+    return ret;
+  },
   StructDeclaration(astNode: Nodes.ASTNode) {
     const ret = new Nodes.StructDeclarationNode(astNode);
 

@@ -6,6 +6,7 @@ import { PhaseResult } from './PhaseResult';
 import { TypePhaseResult } from './typePhase';
 import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
+import { annotations } from '../annotations';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -13,7 +14,7 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, pa
 });
 
 const resolveLocals = walkPreOrder(
-  (node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
+  (node: Nodes.Node, _: PhaseResult, _parent: Nodes.Node) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // create a local for lhs of MatchNode
 
@@ -22,22 +23,23 @@ const resolveLocals = walkPreOrder(
        *   ^^^^^^^^^^^^^^ this part will get its own local
        */
       const fn = findParentType(node, Nodes.FunctionNode);
+      const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType));
+      node.annotate(localAnnotation);
 
-      node.local = fn.getTempLocal(node.lhs.ofType);
-    } else if (node instanceof Nodes.MatcherNode && parent instanceof Nodes.PatternMatcherNode) {
-      // create a local for lhs of MatchNode
-      if (node.declaredName) {
-        node.local = parent.local;
-      }
+      node.matchingSet.forEach($ => {
+        $.annotate(localAnnotation);
+      });
     }
   },
   (node: Nodes.Node) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // release the local for lhs of MatchNode
 
-      if (node.local instanceof Local) {
+      const nodeLocal = node.getAnnotation(annotations.LocalIdentifier);
+
+      if (nodeLocal && nodeLocal.local instanceof Local) {
         const fn = findParentType(node, Nodes.FunctionNode);
-        fn.freeTempLocal(node.local);
+        fn.freeTempLocal(nodeLocal.local);
       }
     }
   }
@@ -45,26 +47,24 @@ const resolveLocals = walkPreOrder(
 
 const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: CompilationPhaseResult) => {
   if (node instanceof Nodes.ReferenceNode) {
-    const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
-
     if (node.resolvedReference.type === 'VALUE') {
+      const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
       if (
         decl instanceof Nodes.ParameterNode ||
         decl instanceof Nodes.VarDeclarationNode ||
         decl instanceof Nodes.ValDeclarationNode ||
         decl instanceof Nodes.MatcherNode
       ) {
-        node.local = decl.local;
+        const declLocal = decl.getAnnotation(annotations.LocalIdentifier);
 
-        if (!node.local) {
+        if (!declLocal) {
           throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
         }
+
+        node.annotate(declLocal);
       } else {
         throw new AstNodeError(`Value node has no local`, decl);
       }
-    } else {
-      // console.error(`Cannot emit reference of type ${node.resolvedReference.type}`);
-      // throw new AstNodeError(`Cannot emit reference of type ${node.resolvedReference.type}`, decl);
     }
   }
 });
@@ -72,12 +72,18 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: Compilati
 const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VarDeclarationNode) {
     if (node.parent instanceof Nodes.DirectiveNode) {
-      node.local = new Global(node.closure.getInternalIdentifier(node.variableName), node.variableName);
+      node.annotate(
+        new annotations.LocalIdentifier(
+          new Global(node.closure.getInternalIdentifier(node.variableName), node.variableName)
+        )
+      );
     } else {
       const fn = findParentType(node, Nodes.FunctionNode);
 
       if (fn) {
-        node.local = fn.addLocal(node.value.ofType, node.variableName.name, node.variableName);
+        node.annotate(
+          new annotations.LocalIdentifier(fn.addLocal(node.value.ofType, node.variableName.name, node.variableName))
+        );
       }
     }
   }

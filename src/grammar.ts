@@ -31,7 +31,7 @@ InlineModifier    ::= INLINE_KEYWORD
 TypeKind          ::= TYPE_KEYWORD
 
 UnknownExpression ::= '???'
-ValueType         ::= '=' WS* (Type | UnknownExpression) {fragment=true}
+ValueType         ::= '=' WS* (Type | StructLiteral) {fragment=true}
 
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
@@ -156,7 +156,7 @@ CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
 CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ Reference WS* DeconstructStruct? '->' WS* Expression {pin=4}
 CaseElse          ::= ELSE_KEYWORD WS* (NameIdentifier WS+)? '->' WS* Expression {pin=4}
 
-DeconstructStruct ::= '(' (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
+DeconstructStruct ::= '(' WS* (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
 NthNameIdentifier ::= ',' WS* NameIdentifier WS* {fragment=true}
 
 /* Function call */
@@ -182,6 +182,7 @@ NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])*
 QName             ::= NameIdentifier ('::' NameIdentifier)*
 
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
+StructLiteral     ::= STRUCT_LITERAL_KEYWORD WS* '{' (NameIdentifier WS* NthNameIdentifier*)? '}' WS* {pin=2}
 
 SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
 SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
@@ -194,6 +195,7 @@ KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD |
 /* Tokens */
 
 WASM_KEYWORD      ::= '%wasm' {pin=1}
+STRUCT_LITERAL_KEYWORD    ::= '%struct' {pin=1}
 FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+

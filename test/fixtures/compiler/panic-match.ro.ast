@@ -6,7 +6,7 @@
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias void)) annotations=Injected
     |-FunctionNode type=(fun "test" ((alias i32)) (alias void))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(x:i32#0)
         |-NameIdentifierNode="x" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -16,18 +16,18 @@
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-BlockNode type=(native void)
-        |-PatternMatcherNode type=(native void)
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-PatternMatcherNode type=(native void) annotations=Local(var$1:i32#1)
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
             |-QNameNode=x
               |-NameIdentifierNode="x"
-          |-MatchLiteralNode type=(native void)
+          |-MatchLiteralNode type=(native void) annotations=Local(var$1:i32#1)
             |-IntegerLiteral=1 type=(alias i32 (native i32))
             |-FunctionCallNode type=(alias void (native void))
               |-ReferenceNode type=(fun "assert" ((alias boolean)) (alias void))
                 |-QNameNode=assert
                   |-NameIdentifierNode="assert"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
-          |-MatchDefaultNode type=(native void)
+          |-MatchDefaultNode type=(native void) annotations=Local(var$1:i32#1)
             |-FunctionCallNode type=(alias never (never))
               |-ReferenceNode type=(fun "panic" () (alias never))
                 |-QNameNode=panic
