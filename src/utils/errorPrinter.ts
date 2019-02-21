@@ -160,11 +160,11 @@ function printErrors_(
             let message = '';
 
             if (i == x.end.line || x.end.line == x.start.line) {
-              message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
-
               if (x.start.column <= x.end.column && x.end.line == x.start.line) {
+                message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
                 message = message + ' ' + new Array(x.end.column + 1 - x.start.column).join('^') + ' ';
               } else {
+                message = '\n' + blackPadding + new Array(x.end.column).join(' ');
                 message = message + ' ^ ';
               }
 

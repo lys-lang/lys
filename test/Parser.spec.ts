@@ -145,6 +145,94 @@ describe('Parser', () => {
       `;
     });
 
+    describe('loop', () => {
+      test`
+        fun a(): void = {
+          continue
+        }
+        `;
+      test`
+        fun b(): void = {
+          break
+        }
+        `;
+      test`
+        fun c(): void = {
+          loop { continue }
+        }
+        `;
+      test`
+        fun d(): void = {
+          loop { break }
+        }
+        `;
+      test`
+        fun e(): void = {
+          loop {
+            continue
+            break
+          }
+        }
+        `;
+      test`
+        fun f(): void = {
+          loop {
+            break
+            continue
+          }
+        }
+        `;
+      test`
+        fun g(): void = {
+          loop
+          continue
+        }
+        `;
+      test`
+        fun h(): void = {
+          loop
+          break
+        }
+        `;
+      test`
+        fun i(): void = {
+          var x = 1
+          loop {
+            x = {
+              if (x == 1) continue
+              x + 1
+            }
+          }
+        }
+        `;
+      test`
+        fun j(e: i32): void = {
+          var x = 1
+          loop {
+            x = {
+              e match {
+                case 1 -> {
+                  if (x >= 1) {
+                    x match {
+                      case 1 -> {
+                        continue
+                        4
+                      }
+                      else -> {
+                        break
+                        3
+                      }
+                    }
+                  }
+                }
+                else -> continue
+              }
+              x + 1
+            }
+          }
+        }
+      `;
+    });
     describe('namespaces', () => {
       test`
         type Enum

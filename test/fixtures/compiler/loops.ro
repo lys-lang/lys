@@ -1,0 +1,38 @@
+fun test(): void = {
+  loop {
+    break
+  }
+}
+
+
+fun test1(): void = {
+  var x = 1
+  loop {
+    x = x + 1
+    if (x > 10)
+      break
+  }
+}
+
+fun test2(): void = {
+  var x = 1
+  loop {
+    x = x + 1
+    continue
+  }
+}
+
+
+fun test3(): void = {
+  var x = 1
+  loop {
+    loop {
+      x = x + 1
+      if (x == 10)
+        break
+    }
+    if (x > 100)
+      break
+    break
+  }
+}

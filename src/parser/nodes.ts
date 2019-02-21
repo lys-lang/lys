@@ -644,6 +644,14 @@ export namespace Nodes {
     matchingSet: MatcherNode[];
   }
 
+  export class LoopNode extends ExpressionNode {
+    body: ExpressionNode;
+  }
+
+  export class ContinueNode extends Node {}
+
+  export class BreakNode extends Node {}
+
   /////// Non-grammar nodes
 
   /** This node replaces the function body */

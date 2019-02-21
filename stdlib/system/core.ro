@@ -661,4 +661,21 @@ impl bytes {
  *   f32    f64
  *   u64    f32, f64
  */
+/*
+struct Range(from: i32, to: i32)
 
+struct IteratorState(currentValue: i32, targetValue: i32, step: i32)
+
+impl IteratorState {
+  fun next(state: IteratorState): i32 = {
+    state.currentValue = state.currentValue + state.step
+    state.currentValue
+  }
+
+  fun hasNext(state: IteratorState): boolean =
+    if (step > 0)
+      state.currentValue < state.targetValue
+    else
+      state.currentValue > state.targetValue
+}
+*/

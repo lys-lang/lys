@@ -69,6 +69,12 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
     return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.VarDeclarationNode) {
     return new LiteralTypeResolver(InjectableTypes.void);
+  } else if (astNode instanceof Nodes.LoopNode) {
+    return new LiteralTypeResolver(InjectableTypes.void);
+  } else if (astNode instanceof Nodes.ContinueNode) {
+    return new LiteralTypeResolver(InjectableTypes.void);
+  } else if (astNode instanceof Nodes.BreakNode) {
+    return new LiteralTypeResolver(InjectableTypes.void);
   } else if (astNode instanceof Nodes.OverloadedFunctionNode) {
     return new OverloadedFunctionTypeResolver();
   } else if (astNode instanceof Nodes.FunctionNode) {
@@ -120,7 +126,7 @@ function getTypeTypeType(node: Nodes.Node, type: Type, ctx: TypeResolutionContex
   if (type instanceof TypeType) {
     return type.of;
   } else {
-    ctx.parsingContext.messageCollector.error(new NotAValidType(node.toString(), node));
+    ctx.parsingContext.messageCollector.error(new NotAValidType(node));
     return INVALID_TYPE;
   }
 }
@@ -733,6 +739,7 @@ export class MatchLiteralTypeResolver extends TypeResolver {
 
         if (NeverType.isNeverType(matchingValueType)) {
           const opNode = node.astNode as Nodes.MatchLiteralNode;
+          opNode.rhs.annotate(new annotations.IsUnreachable());
           ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
           return INVALID_TYPE;
         }
@@ -755,6 +762,7 @@ export class MatchLiteralTypeResolver extends TypeResolver {
       } catch {
         ctx.parsingContext.messageCollector.error(new TypeMismatch(argTypes[1], argTypes[0], opNode.literal));
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+        opNode.rhs.annotate(new annotations.IsUnreachable());
       }
     }
 
@@ -778,6 +786,7 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
 
       if (NeverType.isNeverType(matchingValueType)) {
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+        opNode.rhs.annotate(new annotations.IsUnreachable());
         return INVALID_TYPE;
       } else if (!matchingValueType.canBeAssignedTo(RefType.instance)) {
         ctx.parsingContext.messageCollector.error(
@@ -819,6 +828,7 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
               new TypeMismatch(matchingValueType, argType, opNode.typeReference)
             );
             ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+            opNode.rhs.annotate(new annotations.IsUnreachable());
           }
         }
       }
@@ -865,6 +875,7 @@ export class MatchDefaultTypeResolver extends TypeResolver {
     if (NeverType.isNeverType(matchingValueType)) {
       const opNode = node.astNode as Nodes.MatchDefaultNode;
       ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+      opNode.rhs.annotate(new annotations.IsUnreachable());
       return INVALID_TYPE;
     }
 

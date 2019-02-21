@@ -38,12 +38,20 @@ export namespace annotations {
 
   export class IsTailRecCall extends Annotation {}
 
+  export class CurrentLoop extends Annotation {
+    constructor(public loop: Nodes.LoopNode) {
+      super();
+      //stub
+    }
+  }
+
   export class ImplicitCall extends Annotation {
     constructor(public functionType: FunctionType, public args: Nodes.ExpressionNode[]) {
       super();
     }
   }
 
+  export class IsUnreachable extends Annotation {}
   export class IsValueNode extends Annotation {}
   export class IsTypeNode extends Annotation {}
 

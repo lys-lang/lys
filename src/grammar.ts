@@ -96,7 +96,11 @@ FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 IsPointer         ::= '*'
 IsArray           ::= '[]'
 
-Expression        ::= IfExpression | AssignExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
+Expression        ::= IfExpression
+                    | LoopExpression
+                    | BreakStatement
+                    | ContinueStatement
+                    | AssignExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
 
 Statement         ::= ValDeclaration
                     | VarDeclaration
@@ -104,6 +108,10 @@ Statement         ::= ValDeclaration
                     | Expression {fragment=true}
 
 MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
+
+LoopExpression    ::= LOOP_KEYWORD WS* Expression {pin=1}
+ContinueStatement ::= CONTINUE_KEYWORD
+BreakStatement    ::= BREAK_KEYWORD
 
 BinMemberOperator ::= '.' | '#'
 
@@ -166,8 +174,6 @@ NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=N
 
 Reference         ::= QName
 
-
-
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
@@ -190,66 +196,89 @@ SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD
+                    | FALSE_KEYWORD
+                    | IF_KEYWORD
+                    | ELSE_KEYWORD
+                    | CASE_KEYWORD
+                    | VAR_KEYWORD
+                    | VAL_KEYWORD
+                    | TYPE_KEYWORD
+                    | EFFECT_KEYWORD
+                    | IMPL_KEYWORD
+                    | IMPORT_KEYWORD
+                    | FUN_KEYWORD
+                    | STRUCT_KEYWORD
+                    | PRIVATE_KEYWORD
+                    | MatchKeyword
+                    | AndKeyword
+                    | OrKeyword
+                    | LOOP_KEYWORD
+                    | CONTINUE_KEYWORD
+                    | BREAK_KEYWORD
+                    | RESERVED_WORDS
+                    | INLINE_KEYWORD
 
 /* Tokens */
 
 WASM_KEYWORD      ::= '%wasm' {pin=1}
-STRUCT_LITERAL_KEYWORD    ::= '%struct' {pin=1}
+STRUCT_LITERAL_KEYWORD
+                  ::= '%struct' {pin=1}
 FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
 IMPL_KEYWORD      ::= 'impl'      WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
+STRUCT_KEYWORD    ::= 'struct' WS+
+PRIVATE_KEYWORD   ::= 'private' WS+
+INLINE_KEYWORD    ::= 'inline' WS+
+
+LOOP_KEYWORD      ::= 'loop'     ![A-Za-z0-9_]
+CONTINUE_KEYWORD  ::= 'continue' ![a-zA-Z0-9_]
+BREAK_KEYWORD     ::= 'break'    ![A-Za-z0-9_]
+TRUE_KEYWORD      ::= 'true'     ![A-Za-z0-9_]
+FALSE_KEYWORD     ::= 'false'    ![A-Za-z0-9_]
+IF_KEYWORD        ::= 'if'       ![A-Za-z0-9_]
+ELSE_KEYWORD      ::= 'else'     ![A-Za-z0-9_]
+CASE_KEYWORD      ::= 'case'     ![A-Za-z0-9_]
+MatchKeyword      ::= 'match'    ![A-Za-z0-9_]
+
 
 TYPE_KEYWORD      ::= ( 'type'
                       | 'cotype'
                       | 'rectype'
                       ) WS+
 
-STRUCT_KEYWORD    ::= 'struct' WS+
-PRIVATE_KEYWORD   ::= 'private' WS+
-INLINE_KEYWORD    ::= 'inline' WS+
 
-RESERVED_WORDS    ::= ( 'async'
+RESERVED_WORDS    ::= ( 'abstract'
+                      | 'async'
                       | 'await'
-                      | 'defer'
-                      | 'package'
-                      | 'declare'
-                      | 'using'
-                      | 'delete'
-                      | 'break'
-                      | 'continue'
-                      | 'let'
-                      | 'const'
                       | 'class'
-                      | 'export'
-                      | 'public'
-                      | 'protected'
-                      | 'extends'
-                      | 'import'
-                      | 'from'
-                      | 'abstract'
-                      | 'finally'
-                      | 'new'
-                      | 'native'
-                      | 'enum'
-                      | 'type'
-                      | 'yield'
-                      | 'for'
+                      | 'const'
+                      | 'declare'
+                      | 'defer'
+                      | 'delete'
                       | 'do'
-                      | 'while'
-                      | 'try'
+                      | 'enum'
+                      | 'export'
+                      | 'extends'
+                      | 'finally'
+                      | 'for'
+                      | 'import'
                       | 'is'
-                      ) WS+
-
-TRUE_KEYWORD      ::= 'true'    ![A-Za-z0-9_]
-FALSE_KEYWORD     ::= 'false'   ![A-Za-z0-9_]
-IF_KEYWORD        ::= 'if'      ![A-Za-z0-9_]
-ELSE_KEYWORD      ::= 'else'    ![A-Za-z0-9_]
-CASE_KEYWORD      ::= 'case'    ![A-Za-z0-9_]
-MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
+                      | 'let'
+                      | 'native'
+                      | 'new'
+                      | 'package'
+                      | 'protected'
+                      | 'public'
+                      | 'try'
+                      | 'type'
+                      | 'using'
+                      | 'while'
+                      | 'yield'
+                      ) ![A-Za-z0-9_$]
 
 /* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
 

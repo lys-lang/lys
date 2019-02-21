@@ -96,10 +96,15 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   return moduleFun;
 }
 
-function emitTailCall(node: Nodes.TailRecLoopNode, document: Nodes.DocumentNode) {
-  const label = 'TailCallLoop' + getFunctionSeqId(node);
-  node.annotate(new annotations.LabelId(label));
-  return t.loopInstruction(t.identifier(label), void 0, emitList(node.body, document));
+function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode) {
+  const loopId = getFunctionSeqId(node);
+
+  node.annotate(new annotations.LabelId(loopId));
+
+  const continueLabel = t.identifier('Loop' + loopId);
+  const breakLabel = t.identifier('Break' + loopId);
+
+  return t.blockInstruction(breakLabel, [t.loopInstruction(continueLabel, void 0, emitList(node.body, document))]);
 }
 
 function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.DocumentNode) {
@@ -260,6 +265,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return emitFunctionCall(node, document);
     } else if (node instanceof Nodes.WasmExpressionNode) {
       return flatten(node.atoms.map($ => emitWast($, document)));
+    } else if (node instanceof Nodes.ContinueNode) {
+      const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
+      return t.instruction('br', [t.identifier('Loop' + loopLabel.label)]);
+    } else if (node instanceof Nodes.BreakNode) {
+      const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
+      return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
+    } else if (node instanceof Nodes.IntegerLiteral) {
+      return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
@@ -272,8 +285,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {
       return emitMatchingNode(node, document);
-    } else if (node instanceof Nodes.TailRecLoopNode) {
-      return emitTailCall(node, document);
+    } else if (node instanceof Nodes.LoopNode) {
+      return emitLoop(node, document);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
       return t.instruction('set_local', [t.identifier(local.name), emit(node.value, document)]);

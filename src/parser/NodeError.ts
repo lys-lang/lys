@@ -49,8 +49,8 @@ export class CannotInferReturnType extends AstNodeError {
 }
 
 export class NotAValidType extends AstNodeError {
-  constructor(public variableType: string, node: Nodes.Node) {
-    super(`The variable "${variableType}" is not a type`, node);
+  constructor(node: Nodes.Node) {
+    super(`This is not a type`, node);
   }
 }
 

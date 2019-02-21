@@ -25,6 +25,13 @@ const phases = function(txt: string, fileName: string): ScopePhaseResult {
   return scope;
 };
 
+const failingPhases = function(txt: string, fileName: string) {
+  parsingContext.reset();
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+  const canonical = new CanonicalPhaseResult(parsing);
+  return new SemanticPhaseResult(canonical, fileName);
+};
+
 describe('Types', function() {
   let n = 0;
 
@@ -3462,20 +3469,20 @@ describe('Types', function() {
     describe('Compiler errors', () => {
       folderBasedTest(
         '**/type-error/*.ro',
-        phases,
+        failingPhases,
         async (result, e) => {
           if (e) throw e;
 
-          const typePhase = new TypePhaseResult(result);
-
           try {
+            const scope = new ScopePhaseResult(result);
+            const typePhase = new TypePhaseResult(scope);
             typePhase.execute();
             typePhase.ensureIsValid();
           } catch (e) {
-            if (!typePhase.parsingContext.messageCollector.errors.length) {
+            if (!result.parsingContext.messageCollector.errors.length) {
               throw e;
             }
-            return printErrors(typePhase.parsingContext, true);
+            return printErrors(result.parsingContext, true);
           }
 
           throw new Error('Type phase did not fail');

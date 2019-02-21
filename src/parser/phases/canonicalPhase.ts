@@ -361,6 +361,23 @@ const visitor = {
     ret.rhs = visit(x.children[0]);
     return ret;
   },
+
+  LoopExpression(x: Nodes.ASTNode) {
+    const ret = new Nodes.LoopNode(x);
+    ret.body = visit(x.children[0]);
+    return ret;
+  },
+
+  ContinueStatement(x: Nodes.ASTNode) {
+    const ret = new Nodes.ContinueNode(x);
+    return ret;
+  },
+
+  BreakStatement(x: Nodes.ASTNode) {
+    const ret = new Nodes.BreakNode(x);
+    return ret;
+  },
+
   NumberLiteral(x: Nodes.ASTNode) {
     if (x.text.includes('.') || x.text.includes('E') || x.text.includes('e')) {
       return new Nodes.FloatLiteral(x);

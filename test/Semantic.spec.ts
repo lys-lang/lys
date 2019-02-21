@@ -110,6 +110,7 @@ describe('Semantic', function() {
       async (document, err) => {
         const didFail = !!err || !document || !document.isSuccess();
         if (!didFail) {
+          console.log(result);
           console.log(document.document.closure.deepInspect());
         }
         expect(didFail).toEqual(true, 'It must have failed');
@@ -412,73 +413,6 @@ describe('Semantic', function() {
     );
   });
 
-  describe('scope resolution', () => {
-    testParseToken(
-      `
-        fun x(a: i32): i32 = a
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
-      },
-      phases
-    );
-
-    testParseToken(
-      `
-        var a = 1
-        fun x(a: i32): i32 = a
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
-      },
-      phases
-    );
-    testParseToken(
-      `
-        val c = 1
-        var a = c
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('ValDeclaration');
-      },
-      phases
-    );
-    testParseToken(
-      `
-        var a = 1
-        fun x(b: i32): i32 = a
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('VarDeclaration');
-      },
-      phases
-    );
-  });
-
   describe('Scopes', () => {
     test`
       val a = true
@@ -503,14 +437,8 @@ describe('Semantic', function() {
       fun test(a: i32): i32 = a
     `;
 
-    testToFail`var a = a`;
     testToFail`
-      fun isComplex(number: i32): boolean =
-        number match {
-          case x is Real(_) -> false
-          case 2 -> false
-          else -> false
-        }
+      var a = a
     `;
 
     test`
@@ -533,7 +461,9 @@ describe('Semantic', function() {
     `;
     testToFail`type i32  var i32 = 1`;
 
-    test`var a = 1 var b = a`;
+    test`
+      var a = 1 var b = a
+    `;
 
     testToFail`
       fun test(a: i32): i32 = b

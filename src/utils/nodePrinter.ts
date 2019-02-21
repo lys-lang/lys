@@ -24,7 +24,13 @@ export function printNode(node: Nodes.Node): string {
     if (!node.statements.length) return '{}';
     return '{\n' + indent(node.statements.map(printNode).join('\n')) + '\n}';
   } else if (node instanceof Nodes.MemberNode) {
-    return printNode(node.lhs) + node.operator + printNode(node.memberName);
+    const memberName = printNode(node.memberName);
+
+    if (!node.operator && memberName === 'apply') {
+      return printNode(node.lhs);
+    }
+
+    return printNode(node.lhs) + node.operator + memberName;
   } else if (node instanceof Nodes.DocumentNode) {
     return node.directives.map(printNode).join('\n\n');
   } else if (node instanceof Nodes.FunctionNode) {
@@ -42,6 +48,19 @@ export function printNode(node: Nodes.Node): string {
     const functionName = printNode(node.functionName);
 
     return `fun ${functionName}(${params})${retType} =${body}`;
+  } else if (node instanceof Nodes.ContinueNode) {
+    return 'continue';
+  } else if (node instanceof Nodes.BreakNode) {
+    return 'break';
+  } else if (node instanceof Nodes.LoopNode) {
+    const bodyText = printNode(node.body);
+
+    const body =
+      node.body instanceof Nodes.BlockNode || node.body instanceof Nodes.WasmExpressionNode || !bodyText.includes('\n')
+        ? ' ' + bodyText
+        : '\n' + indent(bodyText);
+
+    return `loop${body}`;
   } else if (node instanceof Nodes.ImplDirective) {
     return `impl ${printNode(node.reference)} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
   } else if (node instanceof Nodes.ImportDirectiveNode) {

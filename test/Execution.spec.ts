@@ -17,6 +17,30 @@ describe('execution tests', () => {
       }
     );
   });
+  describe('loops', () => {
+    test(
+      'loop one',
+      `
+        fun sumTimes(i: i32): i32 = {
+          var current = i
+          var ret = 0
+          loop {
+            ret = ret + 1
+            current = current - 1
+            if (current == 0)
+              break
+            else
+              continue
+          }
+          ret
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.sumTimes(10)).to.eq(10);
+      }
+    );
+  });
 
   describe('strings', () => {
     test(
