@@ -7,6 +7,8 @@ import { TypePhaseResult } from './typePhase';
 import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
 import { annotations } from '../annotations';
+import { FunctionType } from '../types';
+import { last } from '../helpers';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -89,123 +91,92 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-// export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
-//   if (node instanceof Nodes.FunctionNode) {
-//     const isTailRec = isRecursiveCallExpression(node, node.body);
+export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.FunctionNode) {
+    const isTailRec = isRecursiveCallExpression(node, node.body);
 
-//     if (isTailRec) {
-//       node.annotate(new annotations.IsTailRec());
+    if (isTailRec) {
+      node.annotate(new annotations.IsTailRec());
+    }
+  }
+});
 
-//       const tailRecLoop = new Nodes.TailRecLoopNode();
-//       {
-//         tailRecLoop.body = node.body;
-//       }
+function annotateReturnExpressions(node: Nodes.Node) {
+  if (!node.hasAnnotation(annotations.IsValueNode)) return;
 
-//       const targetLocal = node.addLocal(node.functionReturnType.ofType);
+  if (node instanceof Nodes.PatternMatcherNode) {
+    node.matchingSet.forEach($ => annotateReturnExpressions($.rhs));
+  } else if (node instanceof Nodes.BlockNode) {
+    if (node.statements.length > 0) {
+      annotateReturnExpressions(last(node.statements));
+    }
+  } else if (node instanceof Nodes.IfNode) {
+    node.annotate(new annotations.IsReturnExpression());
+    annotateReturnExpressions(node.truePart);
+    annotateReturnExpressions(node.falsePart);
+  } else {
+    node.annotate(new annotations.IsReturnExpression());
+  }
+}
 
-//       const lastNode = new Nodes.GetLocalNode();
-//       {
-//         lastNode.local = targetLocal;
-//         lastNode.ofType = node.functionReturnType.ofType;
-//       }
+// find the last expression of every function body and mark the return expressions
+const detectReturnExpressions = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.FunctionNode) {
+    annotateReturnExpressions(node.body);
+  }
+});
 
-//       const block = (node.body = new Nodes.BlockNode());
-//       block.statements = [tailRecLoop, lastNode];
-//       block.annotate(new annotations.IsValueNode());
-//       block.ofType = lastNode.ofType;
+/**
+ * Returns true if the node is a recursive call to the specified function identifier
+ *
+ * @param functionNode The function identifier
+ * @param node               The node to check
+ * @return True if it is a recursive call to that
+ */
+function isRecursiveCallExpression(functionNode: Nodes.FunctionNode, node: Nodes.ExpressionNode): boolean {
+  if (node instanceof Nodes.FunctionCallNode) {
+    return isRecursiveFunctionCall(functionNode, node);
+  }
 
-//       walkPreOrder((child: Nodes.Node) => {
-//         const ann = child.getAnnotation(annotations.IsReturnExpression);
-//         if (ann) {
-//           ann.targetLocal = targetLocal;
-//         }
-//       })(node as any);
+  if (node instanceof Nodes.BlockNode) {
+    return node.statements.length && isRecursiveCallExpression(functionNode, last(node.statements));
+  }
 
-//       block.annotate(new annotations.IsReturnExpression());
-//     }
-//   }
-// });
+  if (node instanceof Nodes.IfNode) {
+    const truePart = isRecursiveCallExpression(functionNode, node.truePart);
+    const falsePart = isRecursiveCallExpression(functionNode, node.falsePart);
+    return truePart || falsePart;
+  }
 
-// function annotateReturnExpressions(node: Nodes.Node) {
-//   if (node instanceof Nodes.MatchNode) {
-//     node.matchingSet.forEach($ => annotateReturnExpressions($.rhs));
-//   } else if (node instanceof Nodes.IfNode) {
-//     node.annotate(new annotations.IsReturnExpression());
-//     // annotateReturnExpressions(last(node.truePart));
-//     // annotateReturnExpressions(last(node.falsePart));
+  if (node instanceof Nodes.PatternMatcherNode) {
+    return node.matchingSet.some(pattern => {
+      return isRecursiveCallExpression(functionNode, pattern.rhs);
+    });
+  }
 
-//     // if (
-//     //   last(node.truePart).hasAnnotation(annotations.IsReturnExpression) &&
-//     //   last(node.falsePart).hasAnnotation(annotations.IsReturnExpression)
-//     // ) {
-//     //   // TODO: unify types
-//     //   last(node.truePart).removeAnnotation(annotations.IsReturnExpression);
-//     //   last(node.falsePart).removeAnnotation(annotations.IsReturnExpression);
-//     //   node.annotate(new annotations.IsReturnExpression());
-//     // }
-//   } else {
-//     node.annotate(new annotations.IsReturnExpression());
-//   }
-// }
+  return false;
+}
 
-// // find the last expression of every function body and mark the return expressions
-// const detectReturnExpressions = walkPreOrder((node: Nodes.Node) => {
-//   if (node instanceof Nodes.FunctionNode) {
-//     annotateReturnExpressions(node.body);
-//   }
-// });
+function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.FunctionCallNode) {
+  if (fcn.functionNode instanceof Nodes.ReferenceNode) {
+    // Make sure the variable reference points to the same function
+    const referencedType = fcn.functionNode.ofType;
 
-// /**
-//  * Returns true if the node is a recursive call to the specified function identifier
-//  *
-//  * @param functionNode The function identifier
-//  * @param node               The node to check
-//  * @return True if it is a recursive call to that
-//  */
-// function isRecursiveCallExpression(functionNode: Nodes.FunctionNode, node: Nodes.ExpressionNode): boolean {
-//   if (node instanceof Nodes.FunctionCallNode) {
-//     return isRecursiveFunctionCall(functionNode, node);
-//   }
+    const functionNode = findParentType(fcn, Nodes.FunctionNode);
 
-//   if (node instanceof Nodes.BlockNode) {
-//     return isRecursiveCallExpression(functionNode, last(node.statements));
-//   }
+    if (referencedType instanceof FunctionType) {
+      const isTailRec = referencedType.name.internalIdentifier === functionNode.functionName.internalIdentifier;
 
-//   if (node instanceof Nodes.IfNode) {
-//     const truePart = isRecursiveCallExpression(functionNode, node.truePart);
-//     const falsePart = isRecursiveCallExpression(functionNode, node.falsePart);
-//     return truePart || falsePart;
-//   }
+      if (isTailRec) {
+        fcn.annotate(new annotations.IsTailRecCall());
+        fcn.removeAnnotation(annotations.IsReturnExpression);
+      }
 
-//   if (node instanceof Nodes.MatchNode) {
-//     return node.matchingSet.some(pattern => {
-//       return isRecursiveCallExpression(functionNode, pattern.rhs);
-//     });
-//   }
-
-//   return false;
-// }
-
-// function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.FunctionCallNode) {
-//   if (fcn.functionNode instanceof Nodes.VariableReferenceNode) {
-//     // Make sure the variable reference points to the same function
-//     const referencedType = fcn.functionNode.ofType;
-
-//     const functionNode = findParentType(fcn, Nodes.FunctionNode);
-
-//     if (referencedType instanceof FunctionType) {
-//       const isTailRec = referencedType.internalName === functionNode.internalIdentifier;
-
-//       if (isTailRec) {
-//         fcn.annotate(new annotations.IsTailRecCall());
-//         fcn.removeAnnotation(annotations.IsReturnExpression);
-//       }
-
-//       return isTailRec;
-//     }
-//   }
-//   return false;
-// }
+      return isTailRec;
+    }
+  }
+  return false;
+}
 
 export class CompilationPhaseResult extends PhaseResult {
   get parsingContext(): ParsingContext {
@@ -223,11 +194,14 @@ export class CompilationPhaseResult extends PhaseResult {
 
   protected execute() {
     fixParents(this.document, this, null);
+
+    detectReturnExpressions(this.document, this, null);
+    detectTailCall(this.document, this, null);
+
     resolveDeclarations(this.document, this, null);
     resolveLocals(this.document, this, null);
     resolveVariables(this.document, this, null);
-    // detectReturnExpressions(this.document);
-    // detectTailCall(this.document);
+
     fixParents(this.document, this, null);
 
     failIfErrors('Compilation phase', this.document, this);

@@ -35,7 +35,7 @@
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
         |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-          |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
             |-NameIdentifierNode="||"
             |-BinaryExpressionNode="||" type=(alias boolean (native boolean)) annotations=IsValueNode
               |-NameIdentifierNode="||"
@@ -86,7 +86,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-BinaryExpressionNode="==" type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-BinaryExpressionNode="==" type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="=="
           |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:ref#0)
             |-QNameNode=lhs
@@ -111,7 +111,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-BinaryExpressionNode="!=" type=(alias boolean (native boolean)) annotations=IsValueNode
+        |-BinaryExpressionNode="!=" type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="!="
           |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:ref#0)
             |-QNameNode=lhs
@@ -174,7 +174,7 @@
         |-ReferenceNode type=(type (alias Color (union (alias Red (struct Red)) (alias Green (struct Green)) (alias Blue (struct Blue)) (alias Custom (struct Custom)))))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -203,7 +203,7 @@
         |-ReferenceNode type=(type (alias Color (union (alias Red (struct Red)) (alias Green (struct Green)) (alias Blue (struct Blue)) (alias Custom (struct Custom)))))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -223,7 +223,7 @@
         |-ReferenceNode type=(type (alias Color (union (alias Red (struct Red)) (alias Green (struct Green)) (alias Blue (struct Blue)) (alias Custom (struct Custom)))))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -243,7 +243,7 @@
         |-ReferenceNode type=(type (alias Color (union (alias Red (struct Red)) (alias Green (struct Green)) (alias Blue (struct Blue)) (alias Custom (struct Custom)))))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -263,7 +263,7 @@
         |-ReferenceNode type=(type (alias Color (union (alias Red (struct Red)) (alias Green (struct Green)) (alias Blue (struct Blue)) (alias Custom (struct Custom)))))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -293,7 +293,7 @@
         |-ReferenceNode type=(type (alias Color (union (alias Red (struct Red)) (alias Green (struct Green)) (alias Blue (struct Blue)) (alias Custom (struct Custom)))))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -307,7 +307,7 @@
         |-ReferenceNode type=(type (alias ref (ref ?)))
           |-QNameNode=ref
             |-NameIdentifierNode="ref"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=get_local
             |-QNameNode=$a
               |-NameIdentifierNode="$a"
@@ -325,7 +325,7 @@
         |-ReferenceNode type=(type (alias Red (struct Red)))
           |-QNameNode=Red
             |-NameIdentifierNode="Red"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x200000000
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias Red))
@@ -340,7 +340,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -367,7 +367,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -392,7 +392,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.ne
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -455,7 +455,7 @@
         |-ReferenceNode type=(type (alias Red (struct Red)))
           |-QNameNode=Red
             |-NameIdentifierNode="Red"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -482,7 +482,7 @@
         |-ReferenceNode type=(type (alias Green (struct Green)))
           |-QNameNode=Green
             |-NameIdentifierNode="Green"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x300000000
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias Green))
@@ -497,7 +497,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -524,7 +524,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -549,7 +549,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.ne
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -612,7 +612,7 @@
         |-ReferenceNode type=(type (alias Green (struct Green)))
           |-QNameNode=Green
             |-NameIdentifierNode="Green"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -639,7 +639,7 @@
         |-ReferenceNode type=(type (alias Blue (struct Blue)))
           |-QNameNode=Blue
             |-NameIdentifierNode="Blue"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x400000000
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias Blue))
@@ -654,7 +654,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -681,7 +681,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -706,7 +706,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.ne
             |-WasmAtomNode=get_local
               |-QNameNode=$a
@@ -769,7 +769,7 @@
         |-ReferenceNode type=(type (alias Blue (struct Blue)))
           |-QNameNode=Blue
             |-NameIdentifierNode="Blue"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -796,7 +796,7 @@
         |-ReferenceNode type=(type (alias u64 (native u64)))
           |-QNameNode=u64
             |-NameIdentifierNode="u64"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x500000000
       |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
@@ -806,7 +806,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="+"
           |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
             |-NameIdentifierNode="+"
@@ -820,7 +820,7 @@
         |-ReferenceNode type=(type (alias u32 (native u32)))
           |-QNameNode=u32
             |-NameIdentifierNode="u32"
-        |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(fun "allocationSize" () (alias u32))
             |-ReferenceNode type=(type (alias ref (ref ?)))
               |-QNameNode=ref
@@ -896,7 +896,7 @@
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(b:i32#2)
               |-QNameNode=b
                 |-NameIdentifierNode="b"
-          |-ReferenceNode type=(alias Custom (struct Custom)) annotations=IsValueNode,Local($ref:Custom#3)
+          |-ReferenceNode type=(alias Custom (struct Custom)) annotations=IsValueNode,IsReturnExpression,Local($ref:Custom#3)
             |-QNameNode=$ref
               |-NameIdentifierNode="$ref"
       |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32) (alias i32) (alias i32)) (alias Custom))
@@ -915,7 +915,7 @@
         |-ReferenceNode type=(type (alias Custom (struct Custom)))
           |-QNameNode=Custom
             |-NameIdentifierNode="Custom"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x500000000
@@ -935,7 +935,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
@@ -1012,7 +1012,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
@@ -1089,7 +1089,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
@@ -1166,7 +1166,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -1231,7 +1231,7 @@
         |-ReferenceNode type=(type (alias Custom (struct Custom)))
           |-QNameNode=Custom
             |-NameIdentifierNode="Custom"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -1266,9 +1266,9 @@
             |-ReferenceNode type=(type (alias Red (struct Red)))
               |-QNameNode=Red
                 |-NameIdentifierNode="Red"
-            |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
           |-MatchDefaultNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:Color#1)
-            |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
     |-NameIdentifierNode="isRed" type=(fun "isRed" ((alias Color)) (alias boolean))
   |-OverloadedFunctionNode type=(fun "testColors" () (alias void)) annotations=Injected
     |-FunctionNode type=(fun "testColors" () (alias void))

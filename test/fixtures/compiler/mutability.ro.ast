@@ -22,7 +22,7 @@
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:i32#0)
           |-QNameNode=a
             |-NameIdentifierNode="a"
     |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
@@ -58,7 +58,7 @@
                   |-NameIdentifierNode="a"
               |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode
           |-BlockNode type=(native void)
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#1)
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:i32#1)
           |-QNameNode=a
             |-NameIdentifierNode="a"
     |-NameIdentifierNode="main2" type=(fun "main2" ((alias i32)) (alias i32))

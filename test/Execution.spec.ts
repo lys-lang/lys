@@ -40,6 +40,60 @@ describe('execution tests', () => {
         expect(x.exports.sumTimes(10)).to.eq(10);
       }
     );
+
+    test(
+      'iterator one',
+      `
+        struct Iterator(current: i32, target: i32)
+
+        type Maybe {
+          None
+          Some(value: i32)
+        }
+
+        impl Iterator {
+          fun next(iter: Iterator): Maybe = {
+            if (iter.current <= iter.target) {
+              var r = Some(iter.current)
+              iter.current = iter.current + 1
+              r
+            } else {
+              None
+            }
+          }
+        }
+
+        fun test(from: i32, to: i32): i32 = {
+          /**
+            * This is a candidate sugar syntax for
+            *
+            * var ret = 0
+            * for (value in Iterator(from, to)) {
+            *   ret = ret + value
+            * }
+            */
+          var ret = 0
+
+          val $iter$ = Iterator(from, to)
+          loop {
+            Iterator.next($iter$) match {
+              case is Some(value) -> {
+                ret = ret + value
+
+                continue
+              }
+              case is None -> break
+            }
+          }
+
+          ret
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.test(1, 10)).to.eq(55);
+      }
+    );
   });
 
   describe('strings', () => {

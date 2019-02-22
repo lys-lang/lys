@@ -107,33 +107,6 @@ function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode) {
   return t.blockInstruction(breakLabel, [t.loopInstruction(continueLabel, void 0, emitList(node.body, document))]);
 }
 
-function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.DocumentNode) {
-  if (node.hasAnnotation(annotations.IsTailRecCall)) {
-    const tailCallLoopNode = findParentType(node, Nodes.TailRecLoopNode);
-
-    const fn = findParentType(node, Nodes.FunctionNode);
-
-    const setArgsStatements = node.argumentsNode.map(($, $$) => {
-      return t.instruction('set_local', [t.identifier(fn.localsByIndex[$$].name), emit($, document)]);
-    });
-
-    const labelAnnotation = tailCallLoopNode.getAnnotation(annotations.LabelId);
-
-    setArgsStatements.push(t.instruction('br', [t.identifier(labelAnnotation.label)]));
-
-    return setArgsStatements;
-  } else {
-    const ofType = node.resolvedFunctionType;
-
-    assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
-
-    return t.callInstruction(
-      t.identifier(ofType.name.internalIdentifier),
-      node.argumentsNode.map($ => emit($, document))
-    );
-  }
-}
-
 function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.DocumentNode) {
   const matchers = match.matchingSet.slice(0);
   const ixDefaultBranch = matchers.findIndex($ => $ instanceof Nodes.MatchDefaultNode);
@@ -258,11 +231,17 @@ function emitImplicitCall(implicitCallData: annotations.ImplicitCall, document: 
 
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
-    // try {
     if (node.hasAnnotation(annotations.ImplicitCall)) {
       return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
     } else if (node instanceof Nodes.FunctionCallNode) {
-      return emitFunctionCall(node, document);
+      const ofType = node.resolvedFunctionType;
+
+      assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
+
+      return t.callInstruction(
+        t.identifier(ofType.name.internalIdentifier),
+        node.argumentsNode.map($ => emit($, document))
+      );
     } else if (node instanceof Nodes.WasmExpressionNode) {
       return flatten(node.atoms.map($ => emitWast($, document)));
     } else if (node instanceof Nodes.ContinueNode) {
@@ -367,24 +346,11 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
-    // } catch (e) {
-    //   node.errors.push(e);
-    // }
   }
 
   const generatedNode = _emit();
 
   if (!generatedNode) throw new AstNodeError(`Could not emit any code for node ${node.nodeName}`, node);
-
-  const retAnnotation = node.getAnnotation(annotations.IsReturnExpression);
-
-  if (retAnnotation) {
-    if (retAnnotation.targetLocal !== null) {
-      return t.instruction('set_local', [t.identifier(retAnnotation.targetLocal.name), generatedNode]);
-    } else {
-      return t.instruction('return', [generatedNode]);
-    }
-  }
 
   return generatedNode;
 }

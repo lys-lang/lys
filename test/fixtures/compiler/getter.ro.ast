@@ -17,7 +17,7 @@
         |-ReferenceNode type=(type (alias u64 (native u64)))
           |-QNameNode=u64
             |-NameIdentifierNode="u64"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
             |-HexLiteral=0x100000000
       |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
@@ -27,7 +27,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="+"
           |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
             |-NameIdentifierNode="+"
@@ -41,7 +41,7 @@
         |-ReferenceNode type=(type (alias u32 (native u32)))
           |-QNameNode=u32
             |-NameIdentifierNode="u32"
-        |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(fun "allocationSize" () (alias u32))
             |-ReferenceNode type=(type (alias ref (ref ?)))
               |-QNameNode=ref
@@ -117,7 +117,7 @@
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(b:i32#2)
               |-QNameNode=b
                 |-NameIdentifierNode="b"
-          |-ReferenceNode type=(alias Color (struct Color)) annotations=IsValueNode,Local($ref:Color#3)
+          |-ReferenceNode type=(alias Color (struct Color)) annotations=IsValueNode,IsReturnExpression,Local($ref:Color#3)
             |-QNameNode=$ref
               |-NameIdentifierNode="$ref"
       |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32) (alias i32) (alias i32)) (alias Color))
@@ -136,7 +136,7 @@
         |-ReferenceNode type=(type (alias Color (struct Color)))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
               |-HexLiteral=0x100000000
@@ -156,7 +156,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
@@ -233,7 +233,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
@@ -310,7 +310,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
@@ -387,7 +387,7 @@
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.eq
             |-WasmAtomNode=i64.and
               |-WasmAtomNode=i64.const
@@ -452,7 +452,7 @@
         |-ReferenceNode type=(type (alias Color (struct Color)))
           |-QNameNode=Color
             |-NameIdentifierNode="Color"
-        |-WasmExpressionNode type=(never) annotations=IsValueNode
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.load
             |-WasmAtomNode=i32.add
               |-WasmAtomNode=get_local
@@ -477,7 +477,7 @@
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-BinaryExpressionNode="|" type=(alias i32 (native i32)) annotations=IsValueNode
+      |-BinaryExpressionNode="|" type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
         |-NameIdentifierNode="|"
         |-BinaryExpressionNode="|" type=(alias i32 (native i32)) annotations=IsValueNode
           |-NameIdentifierNode="|"

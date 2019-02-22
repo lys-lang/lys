@@ -4,6 +4,373 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Iterator" type=(type (alias Iterator (struct Iterator)))
+    |-StructSignarureNode
+  |-ImplDirective
+    |-ReferenceNode
+      |-QNameNode=Iterator
+        |-NameIdentifierNode="Iterator"
+    |-OverloadedFunctionNode type=(fun "discriminant" () (alias u64)) annotations=Injected
+      |-FunctionNode type=(fun "discriminant" () (alias u64))
+        |-NameIdentifierNode="discriminant"
+        |-ReferenceNode type=(type (alias u64 (native u64)))
+          |-QNameNode=u64
+            |-NameIdentifierNode="u64"
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+          |-WasmAtomNode=i64.const
+            |-HexLiteral=0x100000000
+      |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
+    |-OverloadedFunctionNode type=(fun "sizeOf" () (alias i32)) annotations=Injected
+      |-FunctionNode type=(fun "sizeOf" () (alias i32))
+        |-NameIdentifierNode="sizeOf"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-NameIdentifierNode="+"
+          |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-NameIdentifierNode="sizeOf" type=(fun "sizeOf" () (alias i32))
+    |-OverloadedFunctionNode type=(fun "allocationSize" () (alias u32)) annotations=Injected
+      |-FunctionNode type=(fun "allocationSize" () (alias u32))
+        |-NameIdentifierNode="allocationSize"
+        |-ReferenceNode type=(type (alias u32 (native u32)))
+          |-QNameNode=u32
+            |-NameIdentifierNode="u32"
+        |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,IsReturnExpression
+          |-MemberNode type=(fun "allocationSize" () (alias u32))
+            |-ReferenceNode type=(type (alias ref (ref ?)))
+              |-QNameNode=ref
+                |-NameIdentifierNode="ref"
+            |-NameIdentifierNode="allocationSize"
+      |-NameIdentifierNode="allocationSize" type=(fun "allocationSize" () (alias u32))
+    |-OverloadedFunctionNode type=(fun "apply" ((alias i32) (alias i32)) (alias Iterator)) annotations=Injected
+      |-FunctionNode type=(fun "apply" ((alias i32) (alias i32)) (alias Iterator))
+        |-ParameterNode annotations=Local(current:i32#0)
+          |-NameIdentifierNode="current" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode annotations=Local(target:i32#1)
+          |-NameIdentifierNode="target" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="apply"
+        |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+          |-QNameNode=Iterator
+            |-NameIdentifierNode="Iterator"
+        |-BlockNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode
+          |-VarDeclarationNode type=(native void) annotations=Local($ref:Iterator#2)
+            |-NameIdentifierNode="$ref" type=(alias Iterator (struct Iterator))
+            |-FunctionCallNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode
+              |-ReferenceNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Iterator))
+                |-QNameNode=fromPointer
+                  |-NameIdentifierNode="fromPointer"
+              |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-ReferenceNode type=(fun "calloc" ((alias i32) (alias i32)) (alias i32))
+                  |-QNameNode=system::memory::calloc
+                    |-NameIdentifierNode="system"
+                    |-NameIdentifierNode="memory"
+                    |-NameIdentifierNode="calloc"
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+                |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-ReferenceNode type=(fun "sizeOf" () (alias i32))
+                    |-QNameNode=sizeOf
+                      |-NameIdentifierNode="sizeOf"
+          |-FunctionCallNode type=(alias void (native void))
+            |-ReferenceNode type=(fun "set$current" ((alias Iterator) (alias i32)) (alias void))
+              |-QNameNode=set$current
+                |-NameIdentifierNode="set$current"
+            |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local($ref:Iterator#2)
+              |-QNameNode=$ref
+                |-NameIdentifierNode="$ref"
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(current:i32#0)
+              |-QNameNode=current
+                |-NameIdentifierNode="current"
+          |-FunctionCallNode type=(alias void (native void))
+            |-ReferenceNode type=(fun "set$target" ((alias Iterator) (alias i32)) (alias void))
+              |-QNameNode=set$target
+                |-NameIdentifierNode="set$target"
+            |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local($ref:Iterator#2)
+              |-QNameNode=$ref
+                |-NameIdentifierNode="$ref"
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(target:i32#1)
+              |-QNameNode=target
+                |-NameIdentifierNode="target"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,IsReturnExpression,Local($ref:Iterator#2)
+            |-QNameNode=$ref
+              |-NameIdentifierNode="$ref"
+      |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32) (alias i32)) (alias Iterator))
+    |-OverloadedFunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Iterator)) annotations=Injected
+      |-FunctionNode type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Iterator))
+        |-ParameterNode annotations=Local(ptr:i32 | u32#0)
+          |-NameIdentifierNode="ptr" type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+          |-UnionTypeNode type=(type (union (alias i32 (native i32)) (alias u32 (native u32))))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-ReferenceNode type=(type (alias u32 (native u32)))
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
+        |-NameIdentifierNode="fromPointer"
+        |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+          |-QNameNode=Iterator
+            |-NameIdentifierNode="Iterator"
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+          |-WasmAtomNode=i64.or
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+            |-WasmAtomNode=i64.extend_u/i32
+              |-WasmAtomNode=get_local
+                |-QNameNode=$ptr
+                  |-NameIdentifierNode="$ptr"
+      |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((union (alias i32) (alias u32))) (alias Iterator))
+    |-OverloadedFunctionNode type=(intersection (fun "property_current" ((alias Iterator)) (alias i32)) (fun "property_current" ((alias Iterator) (alias i32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_current" ((alias Iterator)) (alias i32))
+        |-ParameterNode annotations=Local(target:Iterator#0)
+          |-NameIdentifierNode="target" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-NameIdentifierNode="property_current"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-NameIdentifierNode="load"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local(target:Iterator#0)
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-FunctionNode type=(fun "property_current" ((alias Iterator) (alias i32)) (alias void))
+        |-ParameterNode annotations=Local(target:Iterator#0)
+          |-NameIdentifierNode="target" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-ParameterNode annotations=Local(value:i32#1)
+          |-NameIdentifierNode="value" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="property_current"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-FunctionCallNode type=(alias void (native void))
+          |-ReferenceNode type=(fun "set$current" ((alias Iterator) (alias i32)) (alias void))
+            |-QNameNode=set$current
+              |-NameIdentifierNode="set$current"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local(target:Iterator#0)
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+      |-NameIdentifierNode="property_current" type=(intersection (fun "property_current" ((alias Iterator)) (alias i32)) (fun "property_current" ((alias Iterator) (alias i32)) (alias void)))
+    |-OverloadedFunctionNode type=(fun "set$current" ((alias Iterator) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set$current" ((alias Iterator) (alias i32)) (alias void))
+        |-ParameterNode annotations=Local(target:Iterator#0)
+          |-NameIdentifierNode="target" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-ParameterNode annotations=Local(value:i32#1)
+          |-NameIdentifierNode="value" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="set$current"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-FunctionCallNode type=(alias void (native void))
+          |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias i32)) (alias void)))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-NameIdentifierNode="store"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local(target:Iterator#0)
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+          |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-NameIdentifierNode="set$current" type=(fun "set$current" ((alias Iterator) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(intersection (fun "property_target" ((alias Iterator)) (alias i32)) (fun "property_target" ((alias Iterator) (alias i32)) (alias void))) annotations=Injected
+      |-FunctionNode type=(fun "property_target" ((alias Iterator)) (alias i32))
+        |-ParameterNode annotations=Local(target:Iterator#0)
+          |-NameIdentifierNode="target" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-NameIdentifierNode="property_target"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias i32)) (alias i32)))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-NameIdentifierNode="load"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local(target:Iterator#0)
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-FunctionNode type=(fun "property_target" ((alias Iterator) (alias i32)) (alias void))
+        |-ParameterNode annotations=Local(target:Iterator#0)
+          |-NameIdentifierNode="target" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-ParameterNode annotations=Local(value:i32#1)
+          |-NameIdentifierNode="value" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="property_target"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-FunctionCallNode type=(alias void (native void))
+          |-ReferenceNode type=(fun "set$target" ((alias Iterator) (alias i32)) (alias void))
+            |-QNameNode=set$target
+              |-NameIdentifierNode="set$target"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local(target:Iterator#0)
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+      |-NameIdentifierNode="property_target" type=(intersection (fun "property_target" ((alias Iterator)) (alias i32)) (fun "property_target" ((alias Iterator) (alias i32)) (alias void)))
+    |-OverloadedFunctionNode type=(fun "set$target" ((alias Iterator) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "set$target" ((alias Iterator) (alias i32)) (alias void))
+        |-ParameterNode annotations=Local(target:Iterator#0)
+          |-NameIdentifierNode="target" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-ParameterNode annotations=Local(value:i32#1)
+          |-NameIdentifierNode="value" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="set$target"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-FunctionCallNode type=(alias void (native void))
+          |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias i32)) (alias void)))
+            |-ReferenceNode type=(type (alias i32 (native i32)))
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
+            |-NameIdentifierNode="store"
+          |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local(target:Iterator#0)
+            |-QNameNode=target
+              |-NameIdentifierNode="target"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
+            |-QNameNode=value
+              |-NameIdentifierNode="value"
+          |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+      |-NameIdentifierNode="set$target" type=(fun "set$target" ((alias Iterator) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "is" ((alias Iterator)) (alias boolean)) annotations=Injected
+      |-FunctionNode type=(fun "is" ((alias Iterator)) (alias boolean))
+        |-ParameterNode annotations=Local(a:Iterator#0)
+          |-NameIdentifierNode="a" type=(alias Iterator (struct Iterator))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-NameIdentifierNode="is"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+          |-WasmAtomNode=i64.eq
+            |-WasmAtomNode=i64.and
+              |-WasmAtomNode=i64.const
+                |-HexLiteral=0xffffffff00000000
+              |-WasmAtomNode=get_local
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+            |-WasmAtomNode=i64.const
+              |-HexLiteral=0x100000000
+      |-NameIdentifierNode="is" type=(fun "is" ((alias Iterator)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias Iterator) (alias i32)) (alias void)) annotations=Injected
+      |-FunctionNode type=(fun "store" ((alias ref) (alias Iterator) (alias i32)) (alias void))
+        |-ParameterNode annotations=Local(lhs:ref#0)
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode annotations=Local(rhs:Iterator#1)
+          |-NameIdentifierNode="rhs" type=(alias Iterator (struct Iterator))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-ParameterNode annotations=Local(offset:i32#2)
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="store"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-WasmExpressionNode type=(never)
+          |-WasmAtomNode=i64.store
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+            |-WasmAtomNode=get_local
+              |-QNameNode=$rhs
+                |-NameIdentifierNode="$rhs"
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Iterator) (alias i32)) (alias void))
+    |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias Iterator)) annotations=Injected
+      |-FunctionNode type=(fun "load" ((alias ref) (alias i32)) (alias Iterator))
+        |-ParameterNode annotations=Local(lhs:ref#0)
+          |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
+          |-ReferenceNode type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+        |-ParameterNode annotations=Local(offset:i32#1)
+          |-NameIdentifierNode="offset" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="load"
+        |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+          |-QNameNode=Iterator
+            |-NameIdentifierNode="Iterator"
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+          |-WasmAtomNode=i64.load
+            |-WasmAtomNode=i32.add
+              |-WasmAtomNode=get_local
+                |-QNameNode=$offset
+                  |-NameIdentifierNode="$offset"
+              |-WasmAtomNode=call
+                |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
+                  |-QNameNode=addressFromRef
+                    |-NameIdentifierNode="addressFromRef"
+                |-WasmAtomNode=get_local
+                  |-QNameNode=$lhs
+                    |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias Iterator))
   |-TypeDirectiveNode
     |-NameIdentifierNode="Maybe" type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
     |-UnionTypeNode type=(type (union (alias None (struct None)) (alias Some (struct Some))))
@@ -20,7 +387,7 @@
     |-OverloadedFunctionNode type=(fun "is" ((alias Maybe)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Maybe)) (alias boolean))
         |-ParameterNode annotations=Local(a:Maybe#0)
-          |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))
+          |-NameIdentifierNode="a" type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
@@ -104,7 +471,7 @@
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
         |-ParameterNode annotations=Local(rhs:Maybe#1)
-          |-NameIdentifierNode="rhs" type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))
+          |-NameIdentifierNode="rhs" type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
@@ -229,7 +596,7 @@
               |-NameIdentifierNode="$a"
       |-FunctionNode type=(fun "as" ((alias Maybe)) (alias ref))
         |-ParameterNode annotations=Local(a:Maybe#0)
-          |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))
+          |-NameIdentifierNode="a" type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
@@ -257,12 +624,12 @@
             |-NameIdentifierNode="None"
         |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
-            |-HexLiteral=0x200000000
+            |-HexLiteral=0x300000000
       |-NameIdentifierNode="apply" type=(fun "apply" () (alias None))
     |-OverloadedFunctionNode type=(fun "is" ((alias None)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias None)) (alias boolean))
         |-ParameterNode annotations=Local(a:None#0)
-          |-NameIdentifierNode="a" type=(alias None (struct None))
+          |-NameIdentifierNode="a" type=(type (alias None (struct None)))
           |-ReferenceNode type=(type (alias None (struct None)))
             |-QNameNode=None
               |-NameIdentifierNode="None"
@@ -279,7 +646,7 @@
                 |-QNameNode=$a
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
-              |-HexLiteral=0x200000000
+              |-HexLiteral=0x300000000
       |-NameIdentifierNode="is" type=(fun "is" ((alias None)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "==" ((alias None) (alias ref)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "==" ((alias None) (alias ref)) (alias boolean))
@@ -414,7 +781,7 @@
             |-NameIdentifierNode="u64"
         |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.const
-            |-HexLiteral=0x300000000
+            |-HexLiteral=0x400000000
       |-NameIdentifierNode="discriminant" type=(fun "discriminant" () (alias u64))
     |-OverloadedFunctionNode type=(fun "sizeOf" () (alias i32)) annotations=Injected
       |-FunctionNode type=(fun "sizeOf" () (alias i32))
@@ -498,7 +865,7 @@
         |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
           |-WasmAtomNode=i64.or
             |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
+              |-HexLiteral=0x400000000
             |-WasmAtomNode=i64.extend_u/i32
               |-WasmAtomNode=get_local
                 |-QNameNode=$ptr
@@ -507,7 +874,7 @@
     |-OverloadedFunctionNode type=(intersection (fun "property_value" ((alias Some)) (alias i32)) (fun "property_value" ((alias Some) (alias i32)) (alias void))) annotations=Injected
       |-FunctionNode type=(fun "property_value" ((alias Some)) (alias i32))
         |-ParameterNode annotations=Local(target:Some#0)
-          |-NameIdentifierNode="target" type=(alias Some (struct Some))
+          |-NameIdentifierNode="target" type=(type (alias Some (struct Some)))
           |-ReferenceNode type=(type (alias Some (struct Some)))
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
@@ -527,7 +894,7 @@
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
       |-FunctionNode type=(fun "property_value" ((alias Some) (alias i32)) (alias void))
         |-ParameterNode annotations=Local(target:Some#0)
-          |-NameIdentifierNode="target" type=(alias Some (struct Some))
+          |-NameIdentifierNode="target" type=(type (alias Some (struct Some)))
           |-ReferenceNode type=(type (alias Some (struct Some)))
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
@@ -584,7 +951,7 @@
     |-OverloadedFunctionNode type=(fun "is" ((alias Some)) (alias boolean)) annotations=Injected
       |-FunctionNode type=(fun "is" ((alias Some)) (alias boolean))
         |-ParameterNode annotations=Local(a:Some#0)
-          |-NameIdentifierNode="a" type=(alias Some (struct Some))
+          |-NameIdentifierNode="a" type=(type (alias Some (struct Some)))
           |-ReferenceNode type=(type (alias Some (struct Some)))
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
@@ -601,7 +968,7 @@
                 |-QNameNode=$a
                   |-NameIdentifierNode="$a"
             |-WasmAtomNode=i64.const
-              |-HexLiteral=0x300000000
+              |-HexLiteral=0x400000000
       |-NameIdentifierNode="is" type=(fun "is" ((alias Some)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias Some) (alias i32)) (alias void)) annotations=Injected
       |-FunctionNode type=(fun "store" ((alias ref) (alias Some) (alias i32)) (alias void))
@@ -671,133 +1038,150 @@
                   |-QNameNode=$lhs
                     |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias i32)) (alias Some))
-  |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias boolean)) annotations=Injected
-    |-FunctionNode type=(fun "test" ((alias i32)) (alias boolean))
-      |-ParameterNode annotations=Local(a:i32#0)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
+  |-ImplDirective
+    |-ReferenceNode
+      |-QNameNode=Iterator
+        |-NameIdentifierNode="Iterator"
+    |-OverloadedFunctionNode type=(fun "next" ((alias Iterator)) (alias Maybe)) annotations=Injected
+      |-FunctionNode type=(fun "next" ((alias Iterator)) (alias Maybe))
+        |-ParameterNode annotations=Local(iter:Iterator#0)
+          |-NameIdentifierNode="iter" type=(type (alias Iterator (struct Iterator)))
+          |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+            |-QNameNode=Iterator
+              |-NameIdentifierNode="Iterator"
+        |-NameIdentifierNode="next"
+        |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
+          |-QNameNode=Maybe
+            |-NameIdentifierNode="Maybe"
+        |-BlockNode type=(union (alias Some (struct Some)) (alias None (struct None))) annotations=IsValueNode
+          |-IfNode type=(union (alias Some (struct Some)) (alias None (struct None))) annotations=IsValueNode,IsReturnExpression
+            |-BinaryExpressionNode="<=" type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="<="
+              |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall
+                |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=Local(iter:Iterator#0)
+                  |-QNameNode=iter
+                    |-NameIdentifierNode="iter"
+                |-NameIdentifierNode="current"
+              |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall
+                |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=Local(iter:Iterator#0)
+                  |-QNameNode=iter
+                    |-NameIdentifierNode="iter"
+                |-NameIdentifierNode="target"
+            |-BlockNode type=(alias Some (struct Some)) annotations=IsValueNode
+              |-VarDeclarationNode type=(native void) annotations=Local(r:Some#1)
+                |-NameIdentifierNode="r" type=(alias Some (struct Some))
+                |-FunctionCallNode type=(alias Some (struct Some)) annotations=IsValueNode
+                  |-MemberNode type=(fun "apply" ((alias i32)) (alias Some))
+                    |-ReferenceNode type=(type (alias Some (struct Some)))
+                      |-QNameNode=Some
+                        |-NameIdentifierNode="Some"
+                    |-NameIdentifierNode="apply"
+                  |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall
+                    |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=Local(iter:Iterator#0)
+                      |-QNameNode=iter
+                        |-NameIdentifierNode="iter"
+                    |-NameIdentifierNode="current"
+              |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall
+                |-MemberNode type=(intersection (fun "property_current" ((alias Iterator)) (alias i32)) (fun "property_current" ((alias Iterator) (alias i32)) (alias void)))
+                  |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=Local(iter:Iterator#0)
+                    |-QNameNode=iter
+                      |-NameIdentifierNode="iter"
+                  |-NameIdentifierNode="current"
+                |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-NameIdentifierNode="+"
+                  |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall
+                    |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=Local(iter:Iterator#0)
+                      |-QNameNode=iter
+                        |-NameIdentifierNode="iter"
+                    |-NameIdentifierNode="current"
+                  |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(alias Some (struct Some)) annotations=IsValueNode,IsReturnExpression,Local(r:Some#1)
+                |-QNameNode=r
+                  |-NameIdentifierNode="r"
+            |-BlockNode type=(alias None (struct None)) annotations=IsValueNode
+              |-ReferenceNode type=(alias None (struct None)) annotations=IsValueNode,ImplicitCall,IsReturnExpression
+                |-QNameNode=None
+                  |-NameIdentifierNode="None"
+      |-NameIdentifierNode="next" type=(fun "next" ((alias Iterator)) (alias Maybe))
+  |-OverloadedFunctionNode type=(fun "test" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
+    |-FunctionNode type=(fun "test" ((alias i32) (alias i32)) (alias i32))
+      |-ParameterNode annotations=Local(from:i32#0)
+        |-NameIdentifierNode="from" type=(alias i32 (native i32))
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+      |-ParameterNode annotations=Local(to:i32#1)
+        |-NameIdentifierNode="to" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-NameIdentifierNode="test"
-      |-ReferenceNode type=(type (alias boolean (native boolean)))
-        |-QNameNode=boolean
-          |-NameIdentifierNode="boolean"
-      |-PatternMatcherNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:i32#1)
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-        |-MatchLiteralNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=1 type=(alias i32 (native i32))
-          |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-        |-MatchDefaultNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-    |-NameIdentifierNode="test" type=(fun "test" ((alias i32)) (alias boolean))
-  |-OverloadedFunctionNode type=(fun "test2" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "test2" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(a:i32#0)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="test2"
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-PatternMatcherNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=10 type=(alias i32 (native i32))
-          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=20 type=(alias i32 (native i32))
-          |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=30 type=(alias i32 (native i32))
-          |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=40 type=(alias i32 (native i32))
-          |-IntegerLiteral=4 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=50 type=(alias i32 (native i32))
-          |-IntegerLiteral=5 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=60 type=(alias i32 (native i32))
-          |-IntegerLiteral=6 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=70 type=(alias i32 (native i32))
-          |-IntegerLiteral=7 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=80 type=(alias i32 (native i32))
-          |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=90 type=(alias i32 (native i32))
-          |-IntegerLiteral=9 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-MatchDefaultNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-    |-NameIdentifierNode="test2" type=(fun "test2" ((alias i32)) (alias i32))
-  |-OverloadedFunctionNode type=(fun "test3" ((alias Maybe)) (alias boolean)) annotations=Injected
-    |-FunctionNode type=(fun "test3" ((alias Maybe)) (alias boolean))
-      |-ParameterNode annotations=Local(a:Maybe#0)
-        |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))
-        |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
-          |-QNameNode=Maybe
-            |-NameIdentifierNode="Maybe"
-      |-NameIdentifierNode="test3"
-      |-ReferenceNode type=(type (alias boolean (native boolean)))
-        |-QNameNode=boolean
-          |-NameIdentifierNode="boolean"
-      |-PatternMatcherNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:Maybe#1)
-        |-ReferenceNode type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))) annotations=IsValueNode,Local(a:Maybe#0)
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-        |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:Maybe#1)
-          |-NameIdentifierNode="$" type=(alias Some (struct Some))
-          |-ReferenceNode type=(type (alias Some (struct Some)))
-            |-QNameNode=Some
-              |-NameIdentifierNode="Some"
-          |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-        |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:Maybe#1)
-          |-NameIdentifierNode="$" type=(alias None (struct None))
-          |-ReferenceNode type=(type (alias None (struct None)))
-            |-QNameNode=None
-              |-NameIdentifierNode="None"
-          |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-    |-NameIdentifierNode="test3" type=(fun "test3" ((alias Maybe)) (alias boolean))
-  |-OverloadedFunctionNode type=(fun "test4" ((alias Maybe)) (alias Some)) annotations=Injected
-    |-FunctionNode type=(fun "test4" ((alias Maybe)) (alias Some))
-      |-ParameterNode annotations=Local(a:Maybe#0)
-        |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some))))
-        |-ReferenceNode type=(type (alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))))
-          |-QNameNode=Maybe
-            |-NameIdentifierNode="Maybe"
-      |-NameIdentifierNode="test4"
-      |-ReferenceNode type=(type (alias Some (struct Some)))
-        |-QNameNode=Some
-          |-NameIdentifierNode="Some"
-      |-PatternMatcherNode type=(alias Some (struct Some)) annotations=IsValueNode,Local(var$1:Maybe#1)
-        |-ReferenceNode type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))) annotations=IsValueNode,Local(a:Maybe#0)
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-        |-MatchCaseIsNode type=(alias Some (struct Some)) annotations=IsValueNode,Local(var$1:Maybe#1)
-          |-NameIdentifierNode="x" type=(alias Some (struct Some))
-          |-ReferenceNode type=(type (alias Some (struct Some)))
-            |-QNameNode=Some
-              |-NameIdentifierNode="Some"
-          |-ReferenceNode type=(alias Some (struct Some)) annotations=IsValueNode,IsReturnExpression,Local(var$1:Maybe#1)
-            |-QNameNode=x
-              |-NameIdentifierNode="x"
-        |-MatchCaseIsNode type=(alias Some (struct Some)) annotations=IsValueNode,Local(var$1:Maybe#1)
-          |-NameIdentifierNode="$" type=(alias None (struct None))
-          |-ReferenceNode type=(type (alias None (struct None)))
-            |-QNameNode=None
-              |-NameIdentifierNode="None"
-          |-FunctionCallNode type=(alias Some (struct Some)) annotations=IsValueNode,IsReturnExpression
-            |-MemberNode type=(fun "apply" ((alias i32)) (alias Some))
-              |-ReferenceNode type=(type (alias Some (struct Some)))
-                |-QNameNode=Some
-                  |-NameIdentifierNode="Some"
+      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-VarDeclarationNode type=(native void) annotations=Local(ret:i32#2)
+          |-NameIdentifierNode="ret" type=(alias i32 (native i32))
+          |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ValDeclarationNode type=(native void) annotations=Local($iter$:Iterator#3)
+          |-NameIdentifierNode="$iter$" type=(alias Iterator (struct Iterator))
+          |-FunctionCallNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode
+            |-MemberNode type=(fun "apply" ((alias i32) (alias i32)) (alias Iterator))
+              |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+                |-QNameNode=Iterator
+                  |-NameIdentifierNode="Iterator"
               |-NameIdentifierNode="apply"
-            |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="test4" type=(fun "test4" ((alias Maybe)) (alias Some))
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(from:i32#0)
+              |-QNameNode=from
+                |-NameIdentifierNode="from"
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(to:i32#1)
+              |-QNameNode=to
+                |-NameIdentifierNode="to"
+        |-LoopNode type=(native void) annotations=LabelId
+          |-BlockNode type=(native void)
+            |-PatternMatcherNode type=(native void) annotations=Local(var$5:Maybe#5)
+              |-FunctionCallNode type=(alias Maybe (union (alias None (struct None)) (alias Some (struct Some)))) annotations=IsValueNode
+                |-MemberNode type=(fun "next" ((alias Iterator)) (alias Maybe))
+                  |-ReferenceNode type=(type (alias Iterator (struct Iterator)))
+                    |-QNameNode=Iterator
+                      |-NameIdentifierNode="Iterator"
+                  |-NameIdentifierNode="next"
+                |-ReferenceNode type=(alias Iterator (struct Iterator)) annotations=IsValueNode,Local($iter$:Iterator#3)
+                  |-QNameNode=$iter$
+                    |-NameIdentifierNode="$iter$"
+              |-MatchCaseIsNode type=(native void) annotations=Local(var$5:Maybe#5)
+                |-NameIdentifierNode="$" type=(alias Some (struct Some))
+                |-ReferenceNode type=(type (alias Some (struct Some)))
+                  |-QNameNode=Some
+                    |-NameIdentifierNode="Some"
+                |-BlockNode type=(native void)
+                  |-ValDeclarationNode type=(native void) annotations=Local(value:i32#4)
+                    |-NameIdentifierNode="value" type=(alias i32 (native i32))
+                    |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall
+                      |-ReferenceNode type=(alias Some (struct Some)) annotations=Local(var$5:Maybe#5)
+                        |-QNameNode=$
+                          |-NameIdentifierNode="$"
+                      |-NameIdentifierNode="value"
+                  |-AssignmentNode type=(alias i32 (native i32))
+                    |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(ret:i32#2)
+                      |-QNameNode=ret
+                        |-NameIdentifierNode="ret"
+                    |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-NameIdentifierNode="+"
+                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(ret:i32#2)
+                        |-QNameNode=ret
+                          |-NameIdentifierNode="ret"
+                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#4)
+                        |-QNameNode=value
+                          |-NameIdentifierNode="value"
+                  |-ContinueNode type=(native void) annotations=CurrentLoop
+              |-MatchCaseIsNode type=(native void) annotations=Local(var$5:Maybe#5)
+                |-NameIdentifierNode="$" type=(alias None (struct None))
+                |-ReferenceNode type=(type (alias None (struct None)))
+                  |-QNameNode=None
+                    |-NameIdentifierNode="None"
+                |-BreakNode type=(native void) annotations=CurrentLoop
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(ret:i32#2)
+          |-QNameNode=ret
+            |-NameIdentifierNode="ret"
+    |-NameIdentifierNode="test" type=(fun "test" ((alias i32) (alias i32)) (alias i32))
