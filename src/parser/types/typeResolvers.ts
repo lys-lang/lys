@@ -45,6 +45,7 @@ export const EdgeLabels = {
   CASE_EXPRESSION: 'CASE_EXPRESSION',
   LHS: 'LHS',
   RHS: 'RHS',
+  BOOLEAN: 'BOOLEAN',
   STATEMENTS: 'STATEMENTS',
   PATTERN_MATCHING_VALUE: 'PATTERN_MATCHING_VALUE',
   SUPER_TYPE: 'SUPER_TYPE',
@@ -371,15 +372,18 @@ export class IfElseTypeResolver extends TypeResolver {
     const conditionEdge: Edge = node.incomingEdgesByName(EdgeLabels.CONDITION)[0];
     const ifEdge: Edge = node.incomingEdgesByName(EdgeLabels.TRUE_PART)[0];
     const elseEdge: Edge = node.incomingEdgesByName(EdgeLabels.FALSE_PART)[0];
+    const booleanType = getTypeTypeType(
+      node.astNode,
+      node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(),
+      ctx
+    );
     if (ifEdge.incomingTypeDefined() || elseEdge.incomingTypeDefined()) {
       const ifNode = node.astNode as Nodes.IfNode;
 
       const condition = conditionEdge.incomingType();
 
-      if (!condition.canBeAssignedTo(InjectableTypes.boolean)) {
-        ctx.parsingContext.messageCollector.error(
-          new TypeMismatch(condition, InjectableTypes.boolean, ifNode.condition)
-        );
+      if (!condition.canBeAssignedTo(booleanType)) {
+        ctx.parsingContext.messageCollector.error(new TypeMismatch(condition, booleanType, ifNode.condition));
       }
 
       if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
@@ -644,7 +648,7 @@ export class IsOpTypeResolver extends TypeResolver {
     const opNode = node.astNode as Nodes.IsExpressionNode;
 
     let rhsType = getTypeTypeType(opNode.rhs, node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType(), ctx);
-    let booleanType = getTypeTypeType(opNode, node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType(), ctx);
+    let booleanType = getTypeTypeType(opNode, node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(), ctx);
 
     if (rhsType != INVALID_TYPE) {
       try {
@@ -732,6 +736,11 @@ export class MatchLiteralTypeResolver extends TypeResolver {
     {
       const opNode = node.astNode as Nodes.MatchLiteralNode;
       const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
+      const booleanType = getTypeTypeType(
+        node.astNode,
+        node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(),
+        ctx
+      );
       const argTypes = [matchingValueType, node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()];
       try {
         // Find the operator ==
@@ -752,10 +761,8 @@ export class MatchLiteralTypeResolver extends TypeResolver {
         if (fun instanceof FunctionType) {
           opNode.resolvedFunctionType = fun;
 
-          if (!fun.returnType.canBeAssignedTo(InjectableTypes.boolean)) {
-            ctx.parsingContext.messageCollector.error(
-              new TypeMismatch(fun.returnType, InjectableTypes.boolean, opNode)
-            );
+          if (!fun.returnType.canBeAssignedTo(booleanType)) {
+            ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, booleanType, opNode));
           }
         } else {
           throw 'this is only to fall into the catch hanler';
@@ -784,6 +791,11 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
       const opNode = node.astNode as Nodes.MatchCaseIsNode;
 
       const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
+      const booleanType = getTypeTypeType(
+        node.astNode,
+        node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(),
+        ctx
+      );
 
       if (NeverType.isNeverType(matchingValueType)) {
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
@@ -816,10 +828,8 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
             if (fun instanceof FunctionType) {
               opNode.resolvedFunctionType = fun;
 
-              if (!fun.returnType.canBeAssignedTo(InjectableTypes.boolean)) {
-                ctx.parsingContext.messageCollector.error(
-                  new TypeMismatch(fun.returnType, InjectableTypes.boolean, opNode)
-                );
+              if (!fun.returnType.canBeAssignedTo(booleanType)) {
+                ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, booleanType, opNode));
               }
             } else {
               throw 'this is only to fall into the catch hanler';

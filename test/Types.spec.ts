@@ -2880,7 +2880,7 @@ describe('Types', function() {
       checkMainType`
         type i32 = %stack { lowLevelType="i32" }
         type f32 = %stack { lowLevelType="f32" }
-        type boolean = %injected
+        type boolean = %stack { lowLevelType="i32" }
 
         impl boolean {
           fun +(x: boolean, y: i32): f32 = 1.0
@@ -2894,7 +2894,7 @@ describe('Types', function() {
       checkMainType`
         type i32 = %stack { lowLevelType="i32" }
         type f32 = %stack { lowLevelType="f32" }
-        type boolean = %injected
+        type boolean = %stack { lowLevelType="i32" }
 
         impl boolean {
           fun +(x: boolean, y: i32): i32 = 1
@@ -2911,7 +2911,7 @@ describe('Types', function() {
       checkMainType`
         type i32 = %stack { lowLevelType="i32" }
         type f32 = %stack { lowLevelType="f32" }
-        type boolean = %injected
+        type boolean = %stack { lowLevelType="i32" }
 
         impl boolean {
           fun +(x: boolean, y: i32): i32 = 1

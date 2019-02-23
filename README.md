@@ -193,7 +193,7 @@ val res = with X handle get()
 ```dwl
 type i32 = %stack { lowLevelType="i32" }
 type f32 = %stack { lowLevelType="f32" }
-type boolean = %injected
+type boolean = %stack { lowLevelType="i32" }
 
 type Number {
   Infinity

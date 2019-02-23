@@ -672,7 +672,6 @@ export class NeverType extends Type {
 }
 
 export const InjectableTypes = Object.assign(Object.create(null) as unknown, {
-  boolean: new StackType('boolean', NativeTypes.i32),
   void: new StackType('void', NativeTypes.void),
   ref: RefType.instance,
   never: new NeverType()
