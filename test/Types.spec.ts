@@ -11,7 +11,16 @@ import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
 import { ParsingContext } from '../dist/parser/ParsingContext';
-import { UnionType, StructType, RefType, TypeAlias, InjectableTypes, Type } from '../dist/parser/types';
+import {
+  UnionType,
+  StructType,
+  RefType,
+  TypeAlias,
+  InjectableTypes,
+  Type,
+  StackType,
+  NativeTypes
+} from '../dist/parser/types';
 import { printNode } from '../dist/utils/nodePrinter';
 
 const parsingContext = new ParsingContext();
@@ -23,6 +32,13 @@ const phases = function(txt: string, fileName: string): ScopePhaseResult {
   const semantic = new SemanticPhaseResult(canonical, fileName);
   const scope = new ScopePhaseResult(semantic);
   return scope;
+};
+
+const failingPhases = function(txt: string, fileName: string) {
+  parsingContext.reset();
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+  const canonical = new CanonicalPhaseResult(parsing);
+  return new SemanticPhaseResult(canonical, fileName);
 };
 
 describe('Types', function() {
@@ -134,6 +150,38 @@ describe('Types', function() {
       fun abc(): void = {/* empty block */}
       ---
       fun() -> void
+    `;
+
+    checkMainType`
+      var i32 = 1
+      ---
+      i32 := (alias never (never))
+    `;
+
+    checkMainType`
+      // this will be fixed once let constructs are implemented in the scope side
+      var a = a
+      ---
+      a := (alias never (never))
+    `;
+
+    checkMainType`
+      var a = "hello"
+      var bytes = a.length
+      ---
+      a := <ofType is NULL>
+      bytes := <ofType is NULL>
+    `;
+
+    checkMainType`
+      var b = 1
+      var a: b = 1
+      ---
+      b := (alias i32 (native i32))
+      a := (never)
+      ---
+      This is not a type
+      Type "i32" is not assignable to "never"
     `;
 
     checkMainType`
@@ -315,7 +363,7 @@ describe('Types', function() {
     describe('namespace types', () => {
       describe('apply', () => {
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(): Test = ???
@@ -327,7 +375,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(): Test = ???
@@ -339,7 +387,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(a: i32): Test = ???
@@ -354,7 +402,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test = ???
+          type Test = %struct{}
 
           impl Test {
             fun apply(a: i32): Test = ???
@@ -368,7 +416,7 @@ describe('Types', function() {
 
       describe('resolve static functions', () => {
         checkMainType`
-          type Test
+          type Test = %struct {}
           impl Test {
             fun WWW(): boolean = ???
           }
@@ -376,6 +424,33 @@ describe('Types', function() {
           var a = Test.WWW()
           ---
           a := (alias boolean (native boolean))
+        `;
+
+        checkMainType`
+          type CC = %struct {}
+          impl CC {
+            fun gta(): i32 = 1
+          }
+
+          fun test(a: i32): boolean = CC#gta()
+          ---
+          fun(a: i32) -> boolean
+          ---
+          Type "i32" is not assignable to "boolean"
+        `;
+
+        checkMainType`
+          type BB = %struct {}
+          type CC = %struct {}
+          impl CC {
+            fun gta(): i32 = 1
+          }
+
+          fun test(a: i32): boolean = BB#gta()
+          ---
+          fun(a: i32) -> boolean
+          ---
+          Cannot find member "gta" in (alias BB)
         `;
       });
 
@@ -519,9 +594,9 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type A = ???
-            type B = ???
-            type C = ???
+            type A = %struct{}
+            type B = %struct{}
+            type C = %struct{}
             type ABC = A | B | C
 
             impl A {
@@ -1212,8 +1287,7 @@ describe('Types', function() {
       `;
       describe('assign to ref', () => {
         checkMainType`
-          type void
-
+          type void = %injected
           type x {
             Nila
             Custom(r: i32)
@@ -1231,7 +1305,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type void
+          type void = %injected
 
           type x {
             Nila
@@ -1257,7 +1331,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type void
+          type void = %injected
 
           type x {
             Nila
@@ -1293,7 +1367,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type void
+          type void = %injected
 
           type x {
             Nila
@@ -1320,7 +1394,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type void
+          type void = %injected
 
           type x {
             Nila
@@ -1618,7 +1692,7 @@ describe('Types', function() {
     describe('match is not exhaustive', () => {
       checkMainType`
         fun test(x: i32): void = {
-          x match {
+          match x {
             case 1 -> assert(true)
             else -> panic()
           }
@@ -1633,7 +1707,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is Enum -> 1
           }
@@ -1648,7 +1722,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
           }
@@ -1663,7 +1737,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is Enum -> 1
           }
         ---
@@ -1677,7 +1751,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is Enum -> 1
             else -> 3
           }
@@ -1694,7 +1768,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is ref -> 1
             else -> 3
           }
@@ -1706,7 +1780,7 @@ describe('Types', function() {
 
       checkMainType`
         fun x(x: ref): i32 =
-          x match {
+          match x {
             case is ref -> 1
             else -> 3
           }
@@ -1723,7 +1797,7 @@ describe('Types', function() {
         }
 
         fun x(x: ref): i32 =
-          x match {
+          match x {
             case is Enum -> 1
             else -> 3
           }
@@ -1738,7 +1812,7 @@ describe('Types', function() {
         }
 
         fun x(x: ref): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             else -> 3
@@ -1754,7 +1828,7 @@ describe('Types', function() {
         }
 
         fun x(x: ref): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
           }
@@ -1771,7 +1845,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is Enum -> 1
@@ -1789,7 +1863,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is A -> 1
           }
         ---
@@ -1805,7 +1879,7 @@ describe('Types', function() {
         }
 
         fun x(x: A | B): i32 =
-          x match {
+          match x {
             case is A -> 1
           }
         ---
@@ -1821,7 +1895,7 @@ describe('Types', function() {
         }
 
         fun x(x: A | B): i32 =
-          x match {
+          match x {
             case is A -> 1
             else -> 1
           }
@@ -1841,7 +1915,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum | Enum2): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is C -> 1
@@ -1864,7 +1938,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum | Enum2): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is C -> 1
@@ -1886,7 +1960,7 @@ describe('Types', function() {
         }
 
         fun x(x: A | B | C): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is C -> 1
@@ -1907,7 +1981,7 @@ describe('Types', function() {
         }
 
         fun x(x: A | B | C): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is C -> 1
@@ -1928,7 +2002,7 @@ describe('Types', function() {
         }
 
         fun x(x: A | B | C | D): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is C -> 1
@@ -1949,7 +2023,7 @@ describe('Types', function() {
             panic()
 
         fun b(x: i32): i32 =
-          x match {
+          match x {
             case 0 -> x
             else -> panic()
           }
@@ -1961,7 +2035,7 @@ describe('Types', function() {
 
     describe('UnionType', () => {
       const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
-      const struct = (name: string) => new StructType(name);
+      const struct = (name: string) => new StructType(name, []);
       const union = (...of: Type[]) => new UnionType(of);
       const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));
       const structAlias = (name: string) => aliasOf(name, struct(name));
@@ -2255,8 +2329,10 @@ describe('Types', function() {
         });
 
         it('should not simplify aliases to the same type (i32)', () => {
-          const A = aliasOf('A', InjectableTypes.i32);
-          const B = aliasOf('B', InjectableTypes.i32);
+          const i32 = new StackType('i32', NativeTypes.i32);
+
+          const A = aliasOf('A', i32);
+          const B = aliasOf('B', i32);
 
           const union = new UnionType([A, B, B]);
           const simplified = union.simplify();
@@ -2387,7 +2463,7 @@ describe('Types', function() {
 
         var x: ref = ???
 
-        var y = x match {
+        var y = match x {
           case x is Enum -> x
           else -> Red
         }
@@ -2407,7 +2483,7 @@ describe('Types', function() {
           Red
         }
 
-        fun y(x: ref): Enum | Red = x match {
+        fun y(x: ref): Enum | Red = match x {
           case x is Enum -> x
           else -> Red
         }
@@ -2427,7 +2503,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum | Enum2 | A | B | C | D): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is B -> 1
@@ -2449,18 +2525,18 @@ describe('Types', function() {
 
         var value: Enum = A
 
-        var x = value match {
+        var x = match value {
           case b is B -> b
           else -> B
         }
 
-        var y = value match {
+        var y = match value {
           case a is A -> a
           case b is B -> b
           else -> B
         }
 
-        var z = value match {
+        var z = match value {
           case a is A -> a
           case b is B -> b
           else -> value
@@ -2484,7 +2560,7 @@ describe('Types', function() {
         }
 
         fun x(x: Enum): i32 =
-          x match {
+          match x {
             case is A -> 1
             case is B -> 1
             case is C -> 1
@@ -2501,7 +2577,7 @@ describe('Types', function() {
         }
 
         fun x(x: u64): i32 =
-          x match {
+          match x {
             case is A -> 1
             else -> 1
           }
@@ -2518,7 +2594,7 @@ describe('Types', function() {
         }
 
         fun x(x: B): i32 =
-          x match {
+          match x {
             case is A -> 1
             else -> 1
           }
@@ -2536,7 +2612,7 @@ describe('Types', function() {
         }
 
         fun test(value: Enum): B = {
-          value match {
+          match value {
             case b is B -> {
               var x: B = b
               x
@@ -2547,8 +2623,8 @@ describe('Types', function() {
         ---
         fun(value: Enum) -> B
       `;
-      // TODO: Deconstruct
-      describe.skip('deconstruct', () => {
+
+      describe('deconstruct', () => {
         checkMainType`
           type Color {
             Red
@@ -2556,7 +2632,7 @@ describe('Types', function() {
           }
 
           fun isRed(color: Color): boolean = {
-            color match {
+            match color {
               case is Red -> true
               case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
             }
@@ -2572,7 +2648,7 @@ describe('Types', function() {
           }
 
           fun isRed(color: Color): i32 = {
-            color match {
+            match color {
               case is Red -> 1
               case is Custom(a) -> a
             }
@@ -2588,17 +2664,15 @@ describe('Types', function() {
           }
 
           fun isRed(color: Color): i32 = {
-            color match {
+            match color {
               case is Red -> 1
-              case is Custom(a, b, c, d) -> a
+              case is Custom(a, unexistentProperty) -> a
             }
           }
           ---
           fun(color: Color) -> i32
           ---
-          Invalid number of arguments. The type Custom only accepts 1
-          Invalid number of arguments. The type Custom only accepts 1
-          Invalid number of arguments. The type Custom only accepts 1
+          Cannot find member "property_unexistentProperty"
         `;
 
         checkMainType`
@@ -2616,8 +2690,8 @@ describe('Types', function() {
           }
 
           fun isRed(color: Color): Red | Blue = {
-            color match {
-              case is Custom(_,_,_,a) -> a
+            match color {
+              case is Custom(_,_,_,d) -> d
               else -> Blue
             }
           }
@@ -2634,7 +2708,7 @@ describe('Types', function() {
           }
 
           fun isRed(color: Color): boolean = {
-            color match {
+            match color {
               case is Red -> true
               case is Custom(r,g,b) -> r == 255 && g == 0 && b == 0
               else -> false
@@ -2804,9 +2878,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
-        type boolean
+        type i32 = %stack { lowLevelType="i32" }
+        type f32 = %stack { lowLevelType="f32" }
+        type boolean = %stack { lowLevelType="i32" }
 
         impl boolean {
           fun +(x: boolean, y: i32): f32 = 1.0
@@ -2818,9 +2892,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
-        type boolean
+        type i32 = %stack { lowLevelType="i32" }
+        type f32 = %stack { lowLevelType="f32" }
+        type boolean = %stack { lowLevelType="i32" }
 
         impl boolean {
           fun +(x: boolean, y: i32): i32 = 1
@@ -2835,9 +2909,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32
-        type f32
-        type boolean
+        type i32 = %stack { lowLevelType="i32" }
+        type f32 = %stack { lowLevelType="f32" }
+        type boolean = %stack { lowLevelType="i32" }
 
         impl boolean {
           fun +(x: boolean, y: i32): i32 = 1
@@ -2959,7 +3033,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          fun testBool(i: i32): boolean = i match {
+          fun testBool(i: i32): boolean = match i {
             case 0 -> true
             case 1 -> true
             case 2 -> true
@@ -2988,7 +3062,7 @@ describe('Types', function() {
         `;
         checkMainType`
           fun matcher(x: i32): i32 =
-            x match {
+            match x {
               case 1.5 -> 1
               else -> 2
             }
@@ -3017,7 +3091,7 @@ describe('Types', function() {
       checkMainType`
 
         fun matcher(x: i32): i32 =
-          x match {
+          match x {
             case 1 -> 1
             else -> 2
           }
@@ -3028,7 +3102,7 @@ describe('Types', function() {
       checkMainType`
 
         fun matcher(x: i32): i32 =
-          x match {
+          match x {
             case 1.5 -> 1
             else -> 2
           }
@@ -3039,7 +3113,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
 
         fun matcher(): void = {}
         ---
@@ -3178,7 +3252,7 @@ describe('Types', function() {
       checkMainType`
 
         fun matcher(x: i32): i32 | f32 =
-          x match {
+          match x {
             case 1 -> 1
             else -> 2.1
           }
@@ -3302,7 +3376,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
         fun getX(x: i32): void = {}
         ---
         fun(x: i32) -> void
@@ -3343,7 +3417,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
 
         fun getX(x: i32): void =
           if (x > 0) {
@@ -3354,7 +3428,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
 
         fun getX(): void = {
           if (1 > 0) {
@@ -3366,7 +3440,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
 
         fun getX(): void =
           if (1 > 0) {
@@ -3377,7 +3451,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
 
         var x = 1
 
@@ -3391,7 +3465,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type void
+        type void = %injected
 
         var x = 1
 
@@ -3464,20 +3538,20 @@ describe('Types', function() {
     describe('Compiler errors', () => {
       folderBasedTest(
         '**/type-error/*.ro',
-        phases,
+        failingPhases,
         async (result, e) => {
           if (e) throw e;
 
-          const typePhase = new TypePhaseResult(result);
-
           try {
+            const scope = new ScopePhaseResult(result);
+            const typePhase = new TypePhaseResult(scope);
             typePhase.execute();
             typePhase.ensureIsValid();
           } catch (e) {
-            if (!typePhase.parsingContext.messageCollector.errors.length) {
+            if (!result.parsingContext.messageCollector.errors.length) {
               throw e;
             }
-            return printErrors(typePhase.parsingContext, true);
+            return printErrors(result.parsingContext, true);
           }
 
           throw new Error('Type phase did not fail');

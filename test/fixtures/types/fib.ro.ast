@@ -6,17 +6,17 @@
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(n:i32#0)
         |-NameIdentifierNode="n" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ParameterNode
+      |-ParameterNode annotations=Local(x1:i32#1)
         |-NameIdentifierNode="x1" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ParameterNode
+      |-ParameterNode annotations=Local(x2:i32#2)
         |-NameIdentifierNode="x2" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -59,7 +59,7 @@
     |-NameIdentifierNode="fibo" type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "fib" ((alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "fib" ((alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(n:i32#0)
         |-NameIdentifierNode="n" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32

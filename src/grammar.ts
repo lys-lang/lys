@@ -31,7 +31,7 @@ InlineModifier    ::= INLINE_KEYWORD
 TypeKind          ::= TYPE_KEYWORD
 
 UnknownExpression ::= '???'
-ValueType         ::= '=' WS* (Type | UnknownExpression) {fragment=true}
+ValueType         ::= '=' WS* (Type | StructLiteral | StackLiteral | InjectedLiteral) {fragment=true}
 
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
@@ -93,17 +93,23 @@ FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* '
 FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,recoverUntil=PAREN_RECOVERY}
 FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 
-IsPointer         ::= '*'
-IsArray           ::= '[]'
-
-Expression        ::= IfExpression | AssignExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
+Expression        ::= &('if') IfExpression
+                    | &('m') MatchExpression
+                    | &('l') LoopExpression
+                    | &('b') BreakStatement
+                    | &('c') ContinueStatement
+                    | AssignExpression {fragment=true}
 
 Statement         ::= ValDeclaration
                     | VarDeclaration
                     | FunDeclaration
                     | Expression {fragment=true}
 
-MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
+MatchExpression   ::= MatchKeyword WS* AssignExpression WS* MatchBody {pin=1}
+
+LoopExpression    ::= LOOP_KEYWORD WS* Expression {pin=1}
+ContinueStatement ::= CONTINUE_KEYWORD {pin=1}
+BreakStatement    ::= BREAK_KEYWORD {pin=1}
 
 BinMemberOperator ::= '.' | '#'
 
@@ -156,7 +162,7 @@ CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
 CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ Reference WS* DeconstructStruct? '->' WS* Expression {pin=4}
 CaseElse          ::= ELSE_KEYWORD WS* (NameIdentifier WS+)? '->' WS* Expression {pin=4}
 
-DeconstructStruct ::= '(' (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
+DeconstructStruct ::= '(' WS* (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
 NthNameIdentifier ::= ',' WS* NameIdentifier WS* {fragment=true}
 
 /* Function call */
@@ -165,8 +171,6 @@ Arguments         ::= WS* Expression WS* NthArgument* {fragment=true}
 NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 Reference         ::= QName
-
-
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
@@ -182,6 +186,11 @@ NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])*
 QName             ::= NameIdentifier ('::' NameIdentifier)*
 
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
+StructLiteral     ::= STRUCT_LITERAL_KEYWORD WS* '{' (NameIdentifier WS* NthNameIdentifier*)? '}' WS* {pin=2}
+StackLiteral      ::= STACK_LITERAL_KEYWORD WS* '{' WS* (NameLiteralPair WS*)* '}' WS* {pin=2}
+InjectedLiteral      ::= INJECTED_LITERAL_KEYWORD {pin=1}
+
+NameLiteralPair   ::= NameIdentifier WS* '=' WS* Literal {pin=1}
 
 SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
 SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
@@ -189,65 +198,89 @@ SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
 
 /* Keywords */
 
-KEYWORD           ::= TRUE_KEYWORD | FALSE_KEYWORD | IF_KEYWORD | ELSE_KEYWORD | CASE_KEYWORD | VAR_KEYWORD | VAL_KEYWORD | TYPE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | IMPORT_KEYWORD | FUN_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | MatchKeyword | AndKeyword | OrKeyword | RESERVED_WORDS | INLINE_KEYWORD
+KEYWORD           ::= TRUE_KEYWORD
+                    | FALSE_KEYWORD
+                    | IF_KEYWORD
+                    | ELSE_KEYWORD
+                    | CASE_KEYWORD
+                    | VAR_KEYWORD
+                    | VAL_KEYWORD
+                    | TYPE_KEYWORD
+                    | EFFECT_KEYWORD
+                    | IMPL_KEYWORD
+                    | IMPORT_KEYWORD
+                    | FUN_KEYWORD
+                    | STRUCT_KEYWORD
+                    | PRIVATE_KEYWORD
+                    | MatchKeyword
+                    | AndKeyword
+                    | OrKeyword
+                    | LOOP_KEYWORD
+                    | CONTINUE_KEYWORD
+                    | BREAK_KEYWORD
+                    | RESERVED_WORDS
+                    | INLINE_KEYWORD
 
 /* Tokens */
 
-WASM_KEYWORD      ::= '%wasm' {pin=1}
+WASM_KEYWORD            ::= '%wasm' {pin=1}
+STRUCT_LITERAL_KEYWORD  ::= '%struct' {pin=1}
+STACK_LITERAL_KEYWORD   ::= '%stack' {pin=1}
+INJECTED_LITERAL_KEYWORD::= '%injected' {pin=1}
+
 FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
 IMPL_KEYWORD      ::= 'impl'      WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
+STRUCT_KEYWORD    ::= 'struct'    WS+
+PRIVATE_KEYWORD   ::= 'private'   WS+
+INLINE_KEYWORD    ::= 'inline'    WS+
+
+LOOP_KEYWORD      ::= 'loop'      ![A-Za-z0-9_$]
+CONTINUE_KEYWORD  ::= 'continue'  ![a-zA-Z0-9_$]
+BREAK_KEYWORD     ::= 'break'     ![A-Za-z0-9_$]
+TRUE_KEYWORD      ::= 'true'      ![A-Za-z0-9_$]
+FALSE_KEYWORD     ::= 'false'     ![A-Za-z0-9_$]
+IF_KEYWORD        ::= 'if'        ![A-Za-z0-9_$]
+ELSE_KEYWORD      ::= 'else'      ![A-Za-z0-9_$]
+CASE_KEYWORD      ::= 'case'      ![A-Za-z0-9_$]
+MatchKeyword      ::= 'match'     ![A-Za-z0-9_$]
+
 
 TYPE_KEYWORD      ::= ( 'type'
-                      | 'cotype'
-                      | 'rectype'
-                      ) WS+
-
-STRUCT_KEYWORD    ::= 'struct' WS+
-PRIVATE_KEYWORD   ::= 'private' WS+
-INLINE_KEYWORD    ::= 'inline' WS+
-
-RESERVED_WORDS    ::= ( 'async'
-                      | 'await'
-                      | 'defer'
-                      | 'package'
-                      | 'declare'
-                      | 'using'
-                      | 'delete'
-                      | 'break'
-                      | 'continue'
-                      | 'let'
-                      | 'const'
-                      | 'class'
-                      | 'export'
-                      | 'public'
-                      | 'protected'
-                      | 'extends'
-                      | 'import'
-                      | 'from'
-                      | 'abstract'
-                      | 'finally'
-                      | 'new'
-                      | 'native'
                       | 'enum'
-                      | 'type'
-                      | 'yield'
-                      | 'for'
-                      | 'do'
-                      | 'while'
-                      | 'try'
-                      | 'is'
                       ) WS+
 
-TRUE_KEYWORD      ::= 'true'    ![A-Za-z0-9_]
-FALSE_KEYWORD     ::= 'false'   ![A-Za-z0-9_]
-IF_KEYWORD        ::= 'if'      ![A-Za-z0-9_]
-ELSE_KEYWORD      ::= 'else'    ![A-Za-z0-9_]
-CASE_KEYWORD      ::= 'case'    ![A-Za-z0-9_]
-MatchKeyword      ::= 'match'   ![A-Za-z0-9_]
+RESERVED_WORDS    ::= ( 'abstract'
+                      | 'async'
+                      | 'await'
+                      | 'class'
+                      | 'const'
+                      | 'declare'
+                      | 'defer'
+                      | 'delete'
+                      | 'do'
+                      | 'enum'
+                      | 'export'
+                      | 'extends'
+                      | 'finally'
+                      | 'for'
+                      | 'import'
+                      | 'is'
+                      | 'let'
+                      | 'native'
+                      | 'new'
+                      | 'package'
+                      | 'protected'
+                      | 'public'
+                      | 'try'
+                      | 'type'
+                      | 'using'
+                      | 'while'
+                      | 'yield'
+                      ) ![A-Za-z0-9_$]
 
 /* OPERATORS, ORDERED BY PRECEDENCE https://introcs.cs.princeton.edu/java/11precedence/ */
 

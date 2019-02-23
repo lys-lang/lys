@@ -6,6 +6,9 @@ import { PhaseResult } from './PhaseResult';
 import { TypePhaseResult } from './typePhase';
 import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
+import { annotations } from '../annotations';
+import { FunctionType } from '../types';
+import { last } from '../helpers';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -13,31 +16,32 @@ const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, pa
 });
 
 const resolveLocals = walkPreOrder(
-  (node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
+  (node: Nodes.Node, _: PhaseResult, _parent: Nodes.Node) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // create a local for lhs of MatchNode
 
       /**
-       *   aFunction(123) match { ... }
-       *   ^^^^^^^^^^^^^^ this part will get its own local
+       *   match aFunction(123) { ... }
+       *         ^^^^^^^^^^^^^^ this part will get its own local
        */
       const fn = findParentType(node, Nodes.FunctionNode);
+      const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType));
+      node.annotate(localAnnotation);
 
-      node.local = fn.getTempLocal(node.lhs.ofType);
-    } else if (node instanceof Nodes.MatcherNode && parent instanceof Nodes.PatternMatcherNode) {
-      // create a local for lhs of MatchNode
-      if (node.declaredName) {
-        node.local = parent.local;
-      }
+      node.matchingSet.forEach($ => {
+        $.annotate(localAnnotation);
+      });
     }
   },
   (node: Nodes.Node) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // release the local for lhs of MatchNode
 
-      if (node.local instanceof Local) {
+      const nodeLocal = node.getAnnotation(annotations.LocalIdentifier);
+
+      if (nodeLocal && nodeLocal.local instanceof Local) {
         const fn = findParentType(node, Nodes.FunctionNode);
-        fn.freeTempLocal(node.local);
+        fn.freeTempLocal(nodeLocal.local);
       }
     }
   }
@@ -45,26 +49,24 @@ const resolveLocals = walkPreOrder(
 
 const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: CompilationPhaseResult) => {
   if (node instanceof Nodes.ReferenceNode) {
-    const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
-
     if (node.resolvedReference.type === 'VALUE') {
+      const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
       if (
         decl instanceof Nodes.ParameterNode ||
         decl instanceof Nodes.VarDeclarationNode ||
         decl instanceof Nodes.ValDeclarationNode ||
         decl instanceof Nodes.MatcherNode
       ) {
-        node.local = decl.local;
+        const declLocal = decl.getAnnotation(annotations.LocalIdentifier);
 
-        if (!node.local) {
+        if (!declLocal) {
           throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
         }
+
+        node.annotate(declLocal);
       } else {
         throw new AstNodeError(`Value node has no local`, decl);
       }
-    } else {
-      // console.error(`Cannot emit reference of type ${node.resolvedReference.type}`);
-      // throw new AstNodeError(`Cannot emit reference of type ${node.resolvedReference.type}`, decl);
     }
   }
 });
@@ -72,134 +74,109 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: Compilati
 const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VarDeclarationNode) {
     if (node.parent instanceof Nodes.DirectiveNode) {
-      node.local = new Global(node.closure.getInternalIdentifier(node.variableName), node.variableName);
+      node.annotate(
+        new annotations.LocalIdentifier(
+          new Global(node.closure.getInternalIdentifier(node.variableName), node.variableName)
+        )
+      );
     } else {
       const fn = findParentType(node, Nodes.FunctionNode);
 
       if (fn) {
-        node.local = fn.addLocal(node.value.ofType, node.variableName.name, node.variableName);
+        node.annotate(
+          new annotations.LocalIdentifier(fn.addLocal(node.value.ofType, node.variableName.name, node.variableName))
+        );
       }
     }
   }
 });
 
-// export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
-//   if (node instanceof Nodes.FunctionNode) {
-//     const isTailRec = isRecursiveCallExpression(node, node.body);
+export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.FunctionNode) {
+    const isTailRec = isRecursiveCallExpression(node, node.body);
 
-//     if (isTailRec) {
-//       node.annotate(new annotations.IsTailRec());
+    if (isTailRec) {
+      node.annotate(new annotations.IsTailRec());
+    }
+  }
+});
 
-//       const tailRecLoop = new Nodes.TailRecLoopNode();
-//       {
-//         tailRecLoop.body = node.body;
-//       }
+function annotateReturnExpressions(node: Nodes.Node) {
+  if (!node.hasAnnotation(annotations.IsValueNode)) return;
 
-//       const targetLocal = node.addLocal(node.functionReturnType.ofType);
+  if (node instanceof Nodes.PatternMatcherNode) {
+    node.matchingSet.forEach($ => annotateReturnExpressions($.rhs));
+  } else if (node instanceof Nodes.BlockNode) {
+    if (node.statements.length > 0) {
+      annotateReturnExpressions(last(node.statements));
+    }
+  } else if (node instanceof Nodes.IfNode) {
+    node.annotate(new annotations.IsReturnExpression());
+    annotateReturnExpressions(node.truePart);
+    annotateReturnExpressions(node.falsePart);
+  } else {
+    node.annotate(new annotations.IsReturnExpression());
+  }
+}
 
-//       const lastNode = new Nodes.GetLocalNode();
-//       {
-//         lastNode.local = targetLocal;
-//         lastNode.ofType = node.functionReturnType.ofType;
-//       }
+// find the last expression of every function body and mark the return expressions
+const detectReturnExpressions = walkPreOrder((node: Nodes.Node) => {
+  if (node instanceof Nodes.FunctionNode) {
+    annotateReturnExpressions(node.body);
+  }
+});
 
-//       const block = (node.body = new Nodes.BlockNode());
-//       block.statements = [tailRecLoop, lastNode];
-//       block.annotate(new annotations.IsValueNode());
-//       block.ofType = lastNode.ofType;
+/**
+ * Returns true if the node is a recursive call to the specified function identifier
+ *
+ * @param functionNode The function identifier
+ * @param node               The node to check
+ * @return True if it is a recursive call to that
+ */
+function isRecursiveCallExpression(functionNode: Nodes.FunctionNode, node: Nodes.ExpressionNode): boolean {
+  if (node instanceof Nodes.FunctionCallNode) {
+    return isRecursiveFunctionCall(functionNode, node);
+  }
 
-//       walkPreOrder((child: Nodes.Node) => {
-//         const ann = child.getAnnotation(annotations.IsReturnExpression);
-//         if (ann) {
-//           ann.targetLocal = targetLocal;
-//         }
-//       })(node as any);
+  if (node instanceof Nodes.BlockNode) {
+    return node.statements.length && isRecursiveCallExpression(functionNode, last(node.statements));
+  }
 
-//       block.annotate(new annotations.IsReturnExpression());
-//     }
-//   }
-// });
+  if (node instanceof Nodes.IfNode) {
+    const truePart = isRecursiveCallExpression(functionNode, node.truePart);
+    const falsePart = isRecursiveCallExpression(functionNode, node.falsePart);
+    return truePart || falsePart;
+  }
 
-// function annotateReturnExpressions(node: Nodes.Node) {
-//   if (node instanceof Nodes.MatchNode) {
-//     node.matchingSet.forEach($ => annotateReturnExpressions($.rhs));
-//   } else if (node instanceof Nodes.IfNode) {
-//     node.annotate(new annotations.IsReturnExpression());
-//     // annotateReturnExpressions(last(node.truePart));
-//     // annotateReturnExpressions(last(node.falsePart));
+  if (node instanceof Nodes.PatternMatcherNode) {
+    return node.matchingSet.some(pattern => {
+      return isRecursiveCallExpression(functionNode, pattern.rhs);
+    });
+  }
 
-//     // if (
-//     //   last(node.truePart).hasAnnotation(annotations.IsReturnExpression) &&
-//     //   last(node.falsePart).hasAnnotation(annotations.IsReturnExpression)
-//     // ) {
-//     //   // TODO: unify types
-//     //   last(node.truePart).removeAnnotation(annotations.IsReturnExpression);
-//     //   last(node.falsePart).removeAnnotation(annotations.IsReturnExpression);
-//     //   node.annotate(new annotations.IsReturnExpression());
-//     // }
-//   } else {
-//     node.annotate(new annotations.IsReturnExpression());
-//   }
-// }
+  return false;
+}
 
-// // find the last expression of every function body and mark the return expressions
-// const detectReturnExpressions = walkPreOrder((node: Nodes.Node) => {
-//   if (node instanceof Nodes.FunctionNode) {
-//     annotateReturnExpressions(node.body);
-//   }
-// });
+function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.FunctionCallNode) {
+  if (fcn.functionNode instanceof Nodes.ReferenceNode) {
+    // Make sure the variable reference points to the same function
+    const referencedType = fcn.functionNode.ofType;
 
-// /**
-//  * Returns true if the node is a recursive call to the specified function identifier
-//  *
-//  * @param functionNode The function identifier
-//  * @param node               The node to check
-//  * @return True if it is a recursive call to that
-//  */
-// function isRecursiveCallExpression(functionNode: Nodes.FunctionNode, node: Nodes.ExpressionNode): boolean {
-//   if (node instanceof Nodes.FunctionCallNode) {
-//     return isRecursiveFunctionCall(functionNode, node);
-//   }
+    const functionNode = findParentType(fcn, Nodes.FunctionNode);
 
-//   if (node instanceof Nodes.BlockNode) {
-//     return isRecursiveCallExpression(functionNode, last(node.statements));
-//   }
+    if (referencedType instanceof FunctionType) {
+      const isTailRec = referencedType.name.internalIdentifier === functionNode.functionName.internalIdentifier;
 
-//   if (node instanceof Nodes.IfNode) {
-//     const truePart = isRecursiveCallExpression(functionNode, node.truePart);
-//     const falsePart = isRecursiveCallExpression(functionNode, node.falsePart);
-//     return truePart || falsePart;
-//   }
+      if (isTailRec) {
+        fcn.annotate(new annotations.IsTailRecCall());
+        fcn.removeAnnotation(annotations.IsReturnExpression);
+      }
 
-//   if (node instanceof Nodes.MatchNode) {
-//     return node.matchingSet.some(pattern => {
-//       return isRecursiveCallExpression(functionNode, pattern.rhs);
-//     });
-//   }
-
-//   return false;
-// }
-
-// function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.FunctionCallNode) {
-//   if (fcn.functionNode instanceof Nodes.VariableReferenceNode) {
-//     // Make sure the variable reference points to the same function
-//     const referencedType = fcn.functionNode.ofType;
-
-//     const functionNode = findParentType(fcn, Nodes.FunctionNode);
-
-//     if (referencedType instanceof FunctionType) {
-//       const isTailRec = referencedType.internalName === functionNode.internalIdentifier;
-
-//       if (isTailRec) {
-//         fcn.annotate(new annotations.IsTailRecCall());
-//         fcn.removeAnnotation(annotations.IsReturnExpression);
-//       }
-
-//       return isTailRec;
-//     }
-//   }
-//   return false;
-// }
+      return isTailRec;
+    }
+  }
+  return false;
+}
 
 export class CompilationPhaseResult extends PhaseResult {
   get parsingContext(): ParsingContext {
@@ -217,11 +194,14 @@ export class CompilationPhaseResult extends PhaseResult {
 
   protected execute() {
     fixParents(this.document, this, null);
+
+    detectReturnExpressions(this.document, this, null);
+    detectTailCall(this.document, this, null);
+
     resolveDeclarations(this.document, this, null);
     resolveLocals(this.document, this, null);
     resolveVariables(this.document, this, null);
-    // detectReturnExpressions(this.document);
-    // detectTailCall(this.document);
+
     fixParents(this.document, this, null);
 
     failIfErrors('Compilation phase', this.document, this);

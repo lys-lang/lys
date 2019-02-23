@@ -5,12 +5,12 @@ import {
   FunctionType,
   Type,
   IntersectionType,
-  StructType,
   TypeType,
   RefType,
   TypeAlias,
   InjectableTypes,
-  NeverType
+  NeverType,
+  NativeTypes
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -45,6 +45,7 @@ export const EdgeLabels = {
   CASE_EXPRESSION: 'CASE_EXPRESSION',
   LHS: 'LHS',
   RHS: 'RHS',
+  BOOLEAN: 'BOOLEAN',
   STATEMENTS: 'STATEMENTS',
   PATTERN_MATCHING_VALUE: 'PATTERN_MATCHING_VALUE',
   SUPER_TYPE: 'SUPER_TYPE',
@@ -69,6 +70,12 @@ export function getTypeResolver(astNode: Nodes.Node): TypeResolver {
   } else if (astNode instanceof Nodes.NameIdentifierNode) {
     return new PassThroughTypeResolver();
   } else if (astNode instanceof Nodes.VarDeclarationNode) {
+    return new LiteralTypeResolver(InjectableTypes.void);
+  } else if (astNode instanceof Nodes.LoopNode) {
+    return new LiteralTypeResolver(InjectableTypes.void);
+  } else if (astNode instanceof Nodes.ContinueNode) {
+    return new LiteralTypeResolver(InjectableTypes.void);
+  } else if (astNode instanceof Nodes.BreakNode) {
     return new LiteralTypeResolver(InjectableTypes.void);
   } else if (astNode instanceof Nodes.OverloadedFunctionNode) {
     return new OverloadedFunctionTypeResolver();
@@ -121,7 +128,7 @@ function getTypeTypeType(node: Nodes.Node, type: Type, ctx: TypeResolutionContex
   if (type instanceof TypeType) {
     return type.of;
   } else {
-    ctx.parsingContext.messageCollector.error(new NotAValidType(node.toString(), node));
+    ctx.parsingContext.messageCollector.error(new NotAValidType(node));
     return INVALID_TYPE;
   }
 }
@@ -349,7 +356,7 @@ export class AssignmentNodeTypeResolver extends TypeResolver {
       ctx.parsingContext.messageCollector.error(new TypeMismatch(rhs.incomingType(), lhsType, assignmentNode.rhs));
     }
 
-    if (InjectableTypes.void.equals(rhs.incomingType())) {
+    if (rhs.incomingType().nativeType == NativeTypes.void) {
       ctx.parsingContext.messageCollector.error(
         'The expression returns a void value, which cannot be assigned to any value',
         assignmentNode.rhs
@@ -365,15 +372,18 @@ export class IfElseTypeResolver extends TypeResolver {
     const conditionEdge: Edge = node.incomingEdgesByName(EdgeLabels.CONDITION)[0];
     const ifEdge: Edge = node.incomingEdgesByName(EdgeLabels.TRUE_PART)[0];
     const elseEdge: Edge = node.incomingEdgesByName(EdgeLabels.FALSE_PART)[0];
+    const booleanType = getTypeTypeType(
+      node.astNode,
+      node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(),
+      ctx
+    );
     if (ifEdge.incomingTypeDefined() || elseEdge.incomingTypeDefined()) {
       const ifNode = node.astNode as Nodes.IfNode;
 
       const condition = conditionEdge.incomingType();
 
-      if (!condition.canBeAssignedTo(InjectableTypes.boolean)) {
-        ctx.parsingContext.messageCollector.error(
-          new TypeMismatch(condition, InjectableTypes.boolean, ifNode.condition)
-        );
+      if (!condition.canBeAssignedTo(booleanType)) {
+        ctx.parsingContext.messageCollector.error(new TypeMismatch(condition, booleanType, ifNode.condition));
       }
 
       if (node.astNode.hasAnnotation(annotations.IsValueNode)) {
@@ -638,7 +648,7 @@ export class IsOpTypeResolver extends TypeResolver {
     const opNode = node.astNode as Nodes.IsExpressionNode;
 
     let rhsType = getTypeTypeType(opNode.rhs, node.incomingEdgesByName(EdgeLabels.RHS)[0].incomingType(), ctx);
-    let booleanType = getTypeTypeType(opNode, node.incomingEdgesByName(EdgeLabels.NAME)[0].incomingType(), ctx);
+    let booleanType = getTypeTypeType(opNode, node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(), ctx);
 
     if (rhsType != INVALID_TYPE) {
       try {
@@ -726,6 +736,11 @@ export class MatchLiteralTypeResolver extends TypeResolver {
     {
       const opNode = node.astNode as Nodes.MatchLiteralNode;
       const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
+      const booleanType = getTypeTypeType(
+        node.astNode,
+        node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(),
+        ctx
+      );
       const argTypes = [matchingValueType, node.incomingEdgesByName(EdgeLabels.LHS)[0].incomingType()];
       try {
         // Find the operator ==
@@ -734,6 +749,7 @@ export class MatchLiteralTypeResolver extends TypeResolver {
 
         if (NeverType.isNeverType(matchingValueType)) {
           const opNode = node.astNode as Nodes.MatchLiteralNode;
+          opNode.rhs.annotate(new annotations.IsUnreachable());
           ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
           return INVALID_TYPE;
         }
@@ -745,10 +761,8 @@ export class MatchLiteralTypeResolver extends TypeResolver {
         if (fun instanceof FunctionType) {
           opNode.resolvedFunctionType = fun;
 
-          if (!fun.returnType.canBeAssignedTo(InjectableTypes.boolean)) {
-            ctx.parsingContext.messageCollector.error(
-              new TypeMismatch(fun.returnType, InjectableTypes.boolean, opNode)
-            );
+          if (!fun.returnType.canBeAssignedTo(booleanType)) {
+            ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, booleanType, opNode));
           }
         } else {
           throw 'this is only to fall into the catch hanler';
@@ -756,6 +770,7 @@ export class MatchLiteralTypeResolver extends TypeResolver {
       } catch {
         ctx.parsingContext.messageCollector.error(new TypeMismatch(argTypes[1], argTypes[0], opNode.literal));
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+        opNode.rhs.annotate(new annotations.IsUnreachable());
       }
     }
 
@@ -764,51 +779,6 @@ export class MatchLiteralTypeResolver extends TypeResolver {
     }
 
     return InjectableTypes.void;
-  }
-}
-
-export class StructDeconstructorTypeResolver extends TypeResolver {
-  constructor(public parameterIndex: number) {
-    super();
-  }
-  execute(node: TypeNode, ctx: TypeResolutionContext): Type {
-    const edge = node.incomingEdges()[0];
-
-    const structAliasType = getTypeTypeType(edge.source.astNode, edge.incomingType(), ctx);
-
-    if (structAliasType instanceof TypeAlias) {
-      const structType = structAliasType.of;
-
-      if (structType instanceof StructType) {
-        if (
-          !structType.parameterTypes ||
-          structType.parameterTypes.length == 0 ||
-          this.parameterIndex >= structType.parameterTypes.length
-        ) {
-          if (!structType.parameterTypes) {
-            ctx.currentParsingContext.messageCollector.error(
-              `Invalid number of arguments. ${structType}`,
-              node.astNode
-            );
-          } else {
-            ctx.currentParsingContext.messageCollector.error(
-              `Invalid number of arguments. The type ${structType} only accepts ${structType.parameterTypes.length} `,
-              node.astNode
-            );
-          }
-
-          return INVALID_TYPE;
-        }
-
-        return structType.parameterTypes[this.parameterIndex];
-      } else {
-        ctx.currentParsingContext.messageCollector.error(`Type ${structType} is not a struct`, node.astNode);
-        return INVALID_TYPE;
-      }
-    } else {
-      ctx.currentParsingContext.messageCollector.error(`Type ${structAliasType.inspect(10)} is an alias`, node.astNode);
-      return INVALID_TYPE;
-    }
   }
 }
 
@@ -821,9 +791,15 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
       const opNode = node.astNode as Nodes.MatchCaseIsNode;
 
       const matchingValueType = node.incomingEdgesByName(EdgeLabels.PATTERN_MATCHING_VALUE)[0].incomingType();
+      const booleanType = getTypeTypeType(
+        node.astNode,
+        node.incomingEdgesByName(EdgeLabels.BOOLEAN)[0].incomingType(),
+        ctx
+      );
 
       if (NeverType.isNeverType(matchingValueType)) {
         ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+        opNode.rhs.annotate(new annotations.IsUnreachable());
         return INVALID_TYPE;
       } else if (!matchingValueType.canBeAssignedTo(RefType.instance)) {
         ctx.parsingContext.messageCollector.error(
@@ -852,10 +828,8 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
             if (fun instanceof FunctionType) {
               opNode.resolvedFunctionType = fun;
 
-              if (!fun.returnType.canBeAssignedTo(InjectableTypes.boolean)) {
-                ctx.parsingContext.messageCollector.error(
-                  new TypeMismatch(fun.returnType, InjectableTypes.boolean, opNode)
-                );
+              if (!fun.returnType.canBeAssignedTo(booleanType)) {
+                ctx.parsingContext.messageCollector.error(new TypeMismatch(fun.returnType, booleanType, opNode));
               }
             } else {
               throw 'this is only to fall into the catch hanler';
@@ -865,6 +839,7 @@ export class MatchCaseIsTypeResolver extends TypeResolver {
               new TypeMismatch(matchingValueType, argType, opNode.typeReference)
             );
             ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+            opNode.rhs.annotate(new annotations.IsUnreachable());
           }
         }
       }
@@ -911,6 +886,7 @@ export class MatchDefaultTypeResolver extends TypeResolver {
     if (NeverType.isNeverType(matchingValueType)) {
       const opNode = node.astNode as Nodes.MatchDefaultNode;
       ctx.parsingContext.messageCollector.error(new UnreachableCode(opNode.rhs));
+      opNode.rhs.annotate(new annotations.IsUnreachable());
       return INVALID_TYPE;
     }
 
@@ -1101,11 +1077,6 @@ function findFunctionOverload(
 
     return new UnionType(incommingType.of.map(($: FunctionType) => $.returnType));
   } else if (incommingType instanceof FunctionType) {
-    if (!incommingType.acceptsTypes(argTypes, strict)) {
-      messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
-    }
-    return incommingType;
-  } else if (incommingType instanceof StructType) {
     if (!incommingType.acceptsTypes(argTypes, strict)) {
       messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
     }

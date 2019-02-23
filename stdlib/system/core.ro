@@ -1,17 +1,17 @@
-type void
-type u8
-type i16
-type u16
-type i32
-type u32
-type i64
-type u64
-type f32
-type f64
-type boolean
-type ref
-type bytes
-type never
+type void = %injected
+type u8 = %stack { lowLevelType="i32" }
+type i16 = %stack { lowLevelType="i32" }
+type u16 = %stack { lowLevelType="i32" }
+type i32 = %stack { lowLevelType="i32" }
+type u32 = %stack { lowLevelType="i32" }
+type i64 = %stack { lowLevelType="i64" }
+type u64 = %stack { lowLevelType="i64" }
+type f32 = %stack { lowLevelType="f32" }
+type f64 = %stack { lowLevelType="f64" }
+type bytes = %stack { lowLevelType="i64" }
+type boolean = %stack { lowLevelType="i32" }
+type ref = %injected
+type never = %injected
 
 fun assert(x: boolean): void =
   if (x == false)
@@ -661,4 +661,21 @@ impl bytes {
  *   f32    f64
  *   u64    f32, f64
  */
+/*
+struct Range(from: i32, to: i32)
 
+struct IteratorState(currentValue: i32, targetValue: i32, step: i32)
+
+impl IteratorState {
+  fun next(state: IteratorState): i32 = {
+    state.currentValue = state.currentValue + state.step
+    state.currentValue
+  }
+
+  fun hasNext(state: IteratorState): boolean =
+    if (step > 0)
+      state.currentValue < state.targetValue
+    else
+      state.currentValue > state.targetValue
+}
+*/

@@ -1,7 +1,7 @@
 import { IToken, TokenError } from 'ebnf';
 import { Closure } from './Closure';
 import { Type, NativeTypes, FunctionType } from './types';
-import { Annotation, IAnnotationConstructor } from './annotations';
+import { Annotation, IAnnotationConstructor, annotations } from './annotations';
 import { Reference } from './Reference';
 
 export namespace Nodes {
@@ -178,8 +178,7 @@ export namespace Nodes {
 
   export class ReferenceNode extends ExpressionNode {
     variable: QNameNode;
-    /** local index in the function's scope */
-    local: LocalGlobalHeapReference;
+
     isLocal: boolean = false;
 
     resolvedReference: Reference;
@@ -212,7 +211,6 @@ export namespace Nodes {
     parameterName: NameIdentifierNode;
     parameterType: TypeNode;
     defaultValue: ExpressionNode;
-    local: LocalGlobalHeapReference;
   }
 
   export class FunctionNode extends ExpressionNode {
@@ -250,7 +248,7 @@ export namespace Nodes {
         let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
         this.localsByName.set(local.name, local);
         this.localsByIndex[local.index] = local;
-        parameter.local = local;
+        parameter.annotate(new annotations.LocalIdentifier(local));
       });
     }
 
@@ -434,7 +432,6 @@ export namespace Nodes {
     variableName: NameIdentifierNode;
     variableType: TypeNode;
     value: ExpressionNode;
-    local: LocalGlobalHeapReference;
   }
 
   export class ValDeclarationNode extends VarDeclarationNode {
@@ -486,6 +483,28 @@ export namespace Nodes {
   }
 
   export class UnknownExpressionNode extends ExpressionNode {}
+
+  export class StructTypeNode extends TypeNode {
+    names: string[] = [];
+
+    constructor(astNode?: ASTNode) {
+      super(astNode);
+    }
+  }
+
+  export class StackTypeNode extends TypeNode {
+    metadata: Record<string, LiteralNode<any>> = {};
+
+    constructor(astNode?: ASTNode) {
+      super(astNode);
+    }
+  }
+
+  export class InjectedTypeNode extends TypeNode {
+    constructor(astNode?: ASTNode) {
+      super(astNode);
+    }
+  }
 
   export class HexLiteral extends IntegerLiteral {
     // TODO: support bignumber here
@@ -585,8 +604,7 @@ export namespace Nodes {
 
   export abstract class MatcherNode extends ExpressionNode {
     declaredName?: NameIdentifierNode;
-    /** local index in the function's scope */
-    local: LocalGlobalHeapReference;
+
     rhs: ExpressionNode;
   }
 
@@ -601,8 +619,8 @@ export namespace Nodes {
   }
 
   export class MatchCaseIsNode extends MatcherNode {
+    deconstructorNames?: NameIdentifierNode[];
     typeReference: ReferenceNode;
-    deconstructorNames: NameIdentifierNode[];
     resolvedFunctionType: FunctionType;
   }
 
@@ -638,10 +656,15 @@ export namespace Nodes {
   export class PatternMatcherNode extends ExpressionNode {
     lhs: ExpressionNode;
     matchingSet: MatcherNode[];
-
-    /** local index in the function's scope */
-    local: LocalGlobalHeapReference;
   }
+
+  export class LoopNode extends ExpressionNode {
+    body: ExpressionNode;
+  }
+
+  export class ContinueNode extends Node {}
+
+  export class BreakNode extends Node {}
 
   /////// Non-grammar nodes
 

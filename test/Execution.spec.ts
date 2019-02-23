@@ -17,6 +17,84 @@ describe('execution tests', () => {
       }
     );
   });
+  describe('loops', () => {
+    test(
+      'loop one',
+      `
+        fun sumTimes(i: i32): i32 = {
+          var current = i
+          var ret = 0
+          loop {
+            ret = ret + 1
+            current = current - 1
+            if (current == 0)
+              break
+            else
+              continue
+          }
+          ret
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.sumTimes(10)).to.eq(10);
+      }
+    );
+
+    test(
+      'iterator one',
+      `
+        struct Iterator(current: i32, target: i32)
+
+        type Maybe {
+          None
+          Some(value: i32)
+        }
+
+        impl Iterator {
+          fun next(iter: Iterator): Maybe = {
+            if (iter.current <= iter.target) {
+              var r = Some(iter.current)
+              iter.current = iter.current + 1
+              r
+            } else {
+              None
+            }
+          }
+        }
+
+        fun test(from: i32, to: i32): i32 = {
+          /**
+            * This is a candidate sugar syntax for
+            *
+            * var ret = 0
+            * for (value in Iterator(from, to)) {
+            *   ret = ret + value
+            * }
+            */
+          var ret = 0
+
+          val $iter$ = Iterator(from, to)
+          loop {
+            match Iterator.next($iter$) {
+              case is Some(value) -> {
+                ret = ret + value
+
+                continue
+              }
+              case is None -> break
+            }
+          }
+
+          ret
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.test(1, 10)).to.eq(55);
+      }
+    );
+  });
 
   describe('strings', () => {
     test(
@@ -24,7 +102,7 @@ describe('execution tests', () => {
       `
           fun len(): i32 = "asd".length
 
-          fun b(x: i32): i32 = x match {
+          fun b(x: i32): i32 = match x {
             case 0 -> "".length
             case 1 -> "1".length
             case 2 -> "11".length
@@ -293,7 +371,7 @@ describe('execution tests', () => {
 
           support::test::assert( custom is Custom )
 
-          custom match {
+          match custom {
             case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
@@ -384,7 +462,7 @@ describe('execution tests', () => {
 
           support::test::assert( a.f is Custom )
 
-          a.f match {
+          match a.f {
             case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
@@ -407,7 +485,7 @@ describe('execution tests', () => {
         fun testPassing(): void = {
           var custom: Enum = Custom(333)
 
-          custom match {
+          match custom {
             case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
@@ -416,7 +494,7 @@ describe('execution tests', () => {
         fun testFailing(): void = {
           var custom: Enum = None
 
-          custom match {
+          match custom {
             case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
             else -> panic()
           }
@@ -449,42 +527,42 @@ describe('execution tests', () => {
         var value3: A = A
 
         fun isA(x: ref): boolean = {
-          x match {
+          match x {
             case is A -> true
             else -> false
           }
         }
 
         fun isB(x: ref): boolean = {
-          x match {
+          match x {
             case is B -> true
             else -> false
           }
         }
 
         fun isEnum(x: ref): boolean = {
-          x match {
+          match x {
             case is Enum -> true
             else -> false
           }
         }
 
         fun isRed(x: ref): boolean = {
-          x match {
+          match x {
             case is Red -> true
             else -> false
           }
         }
 
         fun isColor(x: ref): boolean = {
-          x match {
+          match x {
             case is Color -> true
             else -> false
           }
         }
 
         fun isCustom(x: ref): boolean = {
-          x match {
+          match x {
             case is Custom -> true
             else -> false
           }
@@ -605,10 +683,10 @@ describe('execution tests', () => {
         var value3: A = A
 
         fun toRed(col: ref): Color =
-          col match {
+          match col {
             case x is Red -> x
             case x is Enum ->
-              x match {
+              match x {
                 case is A -> Red
                 else -> Green
               }
@@ -630,7 +708,7 @@ describe('execution tests', () => {
     );
 
     test(
-      'type alloc and basic pattern match',
+      'type alloc and basic pattern match, deconstruct',
       `
         type Color {
           Red
@@ -640,9 +718,9 @@ describe('execution tests', () => {
         }
 
         fun isRed(color: Color): boolean = {
-          color match {
+          match color {
             case is Red -> true
-            // case Custom(r,g,b) -> r == 255 && g == 0 && b == 0
+            case is Custom(r, g, b) -> r == 255 && g == 0 && b == 0
             else -> false
           }
         }
@@ -651,11 +729,7 @@ describe('execution tests', () => {
           support::test::assert(isRed(Red) == true)
           support::test::assert(isRed(Green) == false)
           support::test::assert(isRed(Blue) == false)
-          support::test::assert(isRed(Custom(5,5,5)) == false)
-          /* support::test::assert(Red.isRed() == true)
-          support::test::assert(Green.isRed() == false)
-          support::test::assert(Blue.isRed() == false)
-          support::test::assert(Custom(5,5,5).isRed() == false) */
+          support::test::assert(isRed(Custom(255,0,0)) == true)
         }
       `,
       async (x, err) => {
@@ -742,8 +816,8 @@ describe('execution tests', () => {
     test(
       'single addition, overrides core',
       `
-        type i32
-        type f32
+        type i32 = %stack { lowLevelType="i32" }
+        type f32 = %stack { lowLevelType="f32" }
 
         impl f32 {
           fun +(a: f32, b: i32): i32 = 0
@@ -790,7 +864,7 @@ describe('execution tests', () => {
     test(
       'void return',
       `
-        type void
+        type void = %injected
         fun main(): void = {
           // stub
         }
@@ -802,7 +876,7 @@ describe('execution tests', () => {
     test(
       'void return 2',
       `
-        type void
+        type void = %injected
         fun main(): void = {}
       `,
       async x => {
@@ -839,7 +913,7 @@ describe('execution tests', () => {
           support::test::assert((0 <= 1) == true)
         }
 
-        fun testBool(i: i32): boolean = i match {
+        fun testBool(i: i32): boolean = match i {
           case 0 -> testBool0()
           case 1 -> testBool1()
           case 2 -> testBool2()
@@ -936,7 +1010,7 @@ describe('execution tests', () => {
     test(
       'mutable global',
       `
-        type void
+        type void = %injected
 
         val bc = 1
 
@@ -1112,7 +1186,7 @@ describe('execution tests', () => {
       `
 
         private fun fibo(n: i32, a: i32, b: i32): i32 =
-          n match {
+          match n {
             case 0 -> a
             case 1 -> b
             else   -> fibo(n - 1, b, a + b)
@@ -1181,7 +1255,7 @@ describe('execution tests', () => {
       `
 
         private fun fibo(n: i32, a: i32, b: i32): i32 =
-          n match {
+          match n {
             case 0 -> a
             case 1 -> b
             else   -> fibo(n - 1, b, a + b)
@@ -1226,13 +1300,13 @@ describe('execution tests', () => {
       `
 
         fun test1(a: i32): boolean =
-          a match {
+          match a {
             case 1 -> true
             else -> false
           }
 
         fun test2(a: i32): i32 =
-          a match {
+          match a {
             case 10 -> 1
             case 20 -> 2
             case 30 -> 3
@@ -1246,7 +1320,7 @@ describe('execution tests', () => {
           }
 
         fun test3(a: i32): boolean =
-          (a + 1) match {
+          match (a + 1) {
             case 1 -> true
             else -> false
           }

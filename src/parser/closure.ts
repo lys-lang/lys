@@ -136,7 +136,7 @@ export class Closure {
   }
 
   inspect(content: string = '') {
-    let localContent = `Scope ${this.name}:\n${Object.keys(this.nameMappings)
+    let localContent = `${this.name}: {\n${Object.keys(this.nameMappings)
       .map($ => 'let ' + $)
       .join('\n')
       .replace(/^(.*)/gm, '  $1')}`;
@@ -145,7 +145,7 @@ export class Closure {
       localContent = localContent + `\n${content.toString().replace(/^(.*)/gm, '  $1')}`;
     }
 
-    return localContent;
+    return localContent + '\n}';
   }
 
   deepInspect() {

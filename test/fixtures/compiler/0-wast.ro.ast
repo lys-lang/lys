@@ -14,12 +14,12 @@
     |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
   |-OverloadedFunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
     |-FunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(a:i32#0)
         |-NameIdentifierNode="a" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ParameterNode
+      |-ParameterNode annotations=Local(b:i32#1)
         |-NameIdentifierNode="b" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -28,7 +28,7 @@
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-WasmExpressionNode type=(never) annotations=IsValueNode
+      |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
         |-WasmAtomNode=local
           |-QNameNode=$t
             |-NameIdentifierNode="$t"
@@ -70,7 +70,7 @@
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+      |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
         |-ReferenceNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
           |-QNameNode=add
             |-NameIdentifierNode="add"

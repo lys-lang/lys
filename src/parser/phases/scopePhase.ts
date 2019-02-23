@@ -4,9 +4,10 @@ import { annotations } from '../annotations';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
-import { AstNodeError } from '../NodeError';
+import { AstNodeError, UnreachableCode } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
+import { findParentDelegate } from './helpers';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
 
@@ -121,15 +122,13 @@ const createClosures = walkPreOrder(
         }
       } else if (node instanceof Nodes.OverloadedFunctionNode) {
         node.closure.set(node.functionName, 'FUNCTION');
-      } else if (node instanceof Nodes.ReferenceNode) {
-        node.closure = node.closure.newChildClosure('Reference');
       } else if (node instanceof Nodes.VarDeclarationNode) {
         if (node.variableName.name in InjectableTypes) {
           phase.parsingContext.messageCollector.error(
             new AstNodeError('Cannot declare a variable with the name of an system type', node.variableName)
           );
         }
-        node.value.closure = node.closure.newChildClosure('VarDeclaration');
+        node.value.closure = node.closure.newChildClosure(node.variableName.name + '_VarDeclaration');
         node.closure.set(node.variableName, 'VALUE');
       } else if (node instanceof Nodes.ImplDirective) {
         node.closure = node.closure.newChildClosure(node.reference.variable.text + '.');
@@ -147,7 +146,7 @@ const createClosures = walkPreOrder(
         if (!node.body) {
           phase.parsingContext.messageCollector.error(new AstNodeError('Function has no body', node));
         } else {
-          node.body.closure = node.closure.newChildClosure('FunctionBody');
+          node.body.closure = node.closure.newChildClosure(node.functionName.name + '_Body');
 
           node.parameters.forEach($ => {
             node.body.closure.set($.parameterName, 'VALUE');
@@ -263,6 +262,53 @@ function injectCoreImport(document: Nodes.DocumentNode) {
   document.directives.unshift(coreModuleImport);
 }
 
+const fixParents = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, parent: Nodes.Node) => {
+  node.parent = parent;
+  return node;
+});
+
+const unreachableAnnotation = new annotations.IsUnreachable();
+
+const validateLoops = walkPreOrder(
+  (node: Nodes.Node, phaseResult: ScopePhaseResult) => {
+    if (node instanceof Nodes.ContinueNode || node instanceof Nodes.BreakNode) {
+      const relevantParent = findParentDelegate(node, $ => {
+        return (
+          $ instanceof Nodes.LoopNode || $ instanceof Nodes.FunctionNode || $.hasAnnotation(annotations.IsValueNode)
+        );
+      });
+
+      if (relevantParent instanceof Nodes.LoopNode) {
+        node.annotate(new annotations.CurrentLoop(relevantParent));
+      } else {
+        if (relevantParent instanceof Nodes.FunctionNode) {
+          phaseResult.parsingContext.messageCollector.error(`Invalid location: No loop was found`, node);
+        } else {
+          phaseResult.parsingContext.messageCollector.error(`Invalid location. Parent block must return a value`, node);
+          phaseResult.parsingContext.messageCollector.error(`Not all paths return a value`, relevantParent);
+        }
+      }
+    }
+  },
+  (node, phaseResult) => {
+    if (node instanceof Nodes.BlockNode) {
+      let nextAreUnreachable = false;
+
+      node.statements.forEach($ => {
+        if (nextAreUnreachable) {
+          phaseResult.parsingContext.messageCollector.error(new UnreachableCode($));
+          $.annotate(unreachableAnnotation);
+        }
+        if ($ instanceof Nodes.ContinueNode || $ instanceof Nodes.BreakNode) {
+          if ($.hasAnnotation(annotations.CurrentLoop)) {
+            nextAreUnreachable = true;
+          }
+        }
+      });
+    }
+  }
+);
+
 export class ScopePhaseResult extends PhaseResult {
   importedModules = new Set<string>();
 
@@ -302,6 +348,8 @@ export class ScopePhaseResult extends PhaseResult {
     findValueNodes(this.document, this, null);
 
     injectImplicitCalls(this.document, this, null);
+    fixParents(this.document, this);
+    validateLoops(this.document, this);
 
     failIfErrors('Scope phase', this.document, this);
   }

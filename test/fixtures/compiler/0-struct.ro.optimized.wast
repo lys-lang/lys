@@ -1,9 +1,9 @@
 (module
- (type $0 (func (param i32) (result i32)))
- (type $1 (func (param i32)))
- (type $2 (func))
+ (type $0 (func (param i64) (result i32)))
+ (type $1 (func (param i32) (result i32)))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i64) (result i32)))
+ (type $4 (func))
  (type $5 (func (param i64 i32)))
  (type $6 (func (param i64 i32 i32)))
  (type $7 (func (param i32 i32)))
@@ -22,7 +22,7 @@
  (export "isRed" (func $17))
  (export "testColors" (func $18))
  (start $19)
- (func $0 (; 0 ;) (type $1) (param $0 i32)
+ (func $0 (; 0 ;) (type $2) (param $0 i32)
   (if
    (call $11
     (local.get $0)
@@ -31,7 +31,7 @@
    (unreachable)
   )
  )
- (func $1 (; 1 ;) (type $0) (param $0 i32) (result i32)
+ (func $1 (; 1 ;) (type $1) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -179,7 +179,7 @@
    (local.get $1)
   )
  )
- (func $6 (; 6 ;) (type $0) (param $0 i32) (result i32)
+ (func $6 (; 6 ;) (type $1) (param $0 i32) (result i32)
   (i32.xor
    (local.get $0)
    (i32.const -1)
@@ -224,7 +224,7 @@
    )
   )
  )
- (func $12 (; 12 ;) (type $4) (param $0 i64) (result i32)
+ (func $12 (; 12 ;) (type $0) (param $0 i64) (result i32)
   (i64.eq
    (i64.and
     (local.get $0)
@@ -295,7 +295,7 @@
    (i32.const 16)
   )
  )
- (func $17 (; 17 ;) (type $4) (param $0 i64) (result i32)
+ (func $17 (; 17 ;) (type $0) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (drop
     (br_if $label$1
@@ -310,7 +310,7 @@
    (i32.const 1)
   )
  )
- (func $18 (; 18 ;) (type $2)
+ (func $18 (; 18 ;) (type $4)
   (call $0
    (call $11
     (call $17
@@ -344,7 +344,7 @@
    )
   )
  )
- (func $19 (; 19 ;) (type $2)
+ (func $19 (; 19 ;) (type $4)
   (global.set $global$0
    (i32.const 3)
   )

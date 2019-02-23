@@ -4,7 +4,6 @@ import {
   getTypeResolver,
   EdgeLabels,
   PassThroughTypeResolver,
-  StructDeconstructorTypeResolver,
   TypeFromTypeResolver,
   VarDeclarationTypeResolver,
   TypeDirectiveResolver
@@ -17,7 +16,7 @@ import { MessageCollector } from '../MessageCollector';
 
 export class TypeGraphBuilder {
   _nodeMap = new Map<Nodes.Node, TypeNode>();
-  _referenceNode: { reference: Reference; result: TypeNode }[] = [];
+  _referenceNode: { reference: Reference; result: TypeNode; edgeName?: string }[] = [];
 
   constructor(
     public parsingContext: ParsingContext,
@@ -89,10 +88,10 @@ export class TypeGraphBuilder {
   }
 
   private createTypeGraph(): TypeGraph {
-    this._referenceNode.forEach(({ result, reference }) => {
+    this._referenceNode.forEach(({ result, reference, edgeName: name }) => {
       const referencedType: TypeNode = this.resolveReferenceNode(reference);
       if (referencedType) {
-        new Edge(referencedType, result, EdgeLabels.NAME);
+        new Edge(referencedType, result, name || EdgeLabels.NAME);
       } else {
         // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
         throw new Error(
@@ -123,17 +122,17 @@ export class TypeGraphBuilder {
     }
   }
 
-  private resolveReference(reference: Reference, result: TypeNode): void {
+  private resolveReference(reference: Reference, result: TypeNode, edgeName?: string): void {
     if (!this._referenceNode.some($ => $.reference === reference && $.result == result)) {
-      this._referenceNode.push({ reference, result });
+      this._referenceNode.push({ reference, result, edgeName });
     }
   }
 
-  private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode): void {
+  private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode, edgeName?: string): void {
     const reference = node.closure.get(name, true);
 
     if (reference) {
-      this.resolveReference(reference, result);
+      this.resolveReference(reference, result, edgeName);
     } else {
       this.messageCollector.error(`Invalid reference ${name}` /* InvalidReferenceMessage */, node);
     }
@@ -196,6 +195,7 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.IfNode) {
       new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
       new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION);
+      this.resolveVariableByName(node, 'boolean', target, EdgeLabels.BOOLEAN);
 
       if (node.falsePart) {
         new Edge(this.traverse(node.falsePart), target, EdgeLabels.FALSE_PART);
@@ -209,7 +209,7 @@ export class TypeGraphBuilder {
       new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.IsExpressionNode) {
-      this.resolveVariableByName(node, 'boolean', target);
+      this.resolveVariableByName(node, 'boolean', target, EdgeLabels.BOOLEAN);
       new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.UnaryExpressionNode) {
@@ -280,6 +280,11 @@ export class TypeGraphBuilder {
           new Edge(newResult.bearerOfTypes, matchExpression, EdgeLabels.PATTERN_MATCHING_VALUE);
 
           /**
+           * Matchers require to know the boolean type to work
+           */
+          this.resolveVariableByName(matcherNode, 'boolean', matchExpression, EdgeLabels.BOOLEAN);
+
+          /**
            * The MatchDefaultNode (else) marks the end of the pattern matching
            * and it consumes every possible remaining value to match.
            */
@@ -343,14 +348,6 @@ export class TypeGraphBuilder {
 
       new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
 
-      if (node.deconstructorNames) {
-        node.deconstructorNames.forEach(($, $$) => {
-          if ($.name !== '_') {
-            new Edge(typeRef, this.createNode($, new StructDeconstructorTypeResolver($$)));
-          }
-        });
-      }
-
       if (node.declaredName) {
         const nameTarget = this.createNode(node.declaredName, new TypeFromTypeResolver());
         new Edge(typeRef, nameTarget, EdgeLabels.LHS);
@@ -398,13 +395,19 @@ export class TypeGraphBuilder {
         this.createNode(directive.variableName, new TypeDirectiveResolver(directive.variableName.ofType as TypeAlias))
       );
 
-      if (directive.valueType && !(directive.valueType instanceof Nodes.UnknownExpressionNode)) {
+      const shouldNotTraverse =
+        !directive.valueType ||
+        directive.valueType instanceof Nodes.StructTypeNode ||
+        directive.valueType instanceof Nodes.StackTypeNode ||
+        directive.valueType instanceof Nodes.InjectedTypeNode;
+
+      if (!shouldNotTraverse) {
         new Edge(this.traverse(directive.valueType), typeDirective);
       }
 
       return typeDirective;
     } else {
-      this.messageCollector.error('Cannot resolve TypeDirective', directive.valueType);
+      this.messageCollector.error('Cannot resolve TypeDirective', directive);
     }
   }
 

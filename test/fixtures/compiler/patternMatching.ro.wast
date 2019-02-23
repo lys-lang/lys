@@ -16,7 +16,7 @@
     (current_memory)
   )
   (func $system::memory::max (param $a i32) (param $b i32) (result i32)
-    (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $a) (get_local $b))
+    (if $IF1 (result i32) (call $system::core::i32.> (get_local $a) (get_local $b))
       (then
         (get_local $a)
       )
@@ -34,7 +34,7 @@
   (func $system::memory::calloc (param $itemCount i32) (param $itemSize i32) (result i32)
     (local $size i32)
     (local $$ret i32)
-    (block $unknown_block_91 (result i32)
+    (block $B1 (result i32)
       (set_local $size (call $system::core::i32.* (get_local $itemCount) (get_local $itemSize)))
       (set_local $$ret (call $system::memory::malloc_2 (get_local $size)))
       (call $system::memory::memset_1 (get_local $$ret) (get_local $size) (i32.const 0))
@@ -47,13 +47,13 @@
     (local $pagesBefore i32)
     (local $pagesNeeded i32)
     (local $pagesWanted i32)
-    (block $unknown_block_92 (result i32)
-      (if $a_wild_if (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
+    (block $B1 (result i32)
+      (if $IF2 (result i32) (call $system::core::i32.> (get_local $size) (i32.const 0))
           (then
-            (block $unknown_block_93 (result i32)
-                (if $a_wild_if (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
+            (block $B3 (result i32)
+                (if $IF4 (call $system::core::i32.> (get_local $size) (get_global $system::memory::MAX_SIZE_32))
                     (then
-                      (block $unknown_block_94
+                      (block $B5
                           (call $system::core::panic_1)
                         )
                     )
@@ -62,17 +62,17 @@
                 (set_local $ptr (get_global $system::memory::offset))
                 (set_local $newPtr (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.+ (get_local $ptr) (get_local $size)) (get_global $system::memory::AL_MASK)) (call $system::core::i32.~ (get_global $system::memory::AL_MASK))))
                 (set_local $pagesBefore (call $system::memory::currentMemory))
-                (if $a_wild_if (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
+                (if $IF6 (call $system::core::i32.> (get_local $newPtr) (call $system::core::i32.<< (get_local $pagesBefore) (i32.const 16)))
                     (then
-                      (block $unknown_block_95
+                      (block $B7
                           (set_local $pagesNeeded (call $system::core::i32.>>> (call $system::core::i32.& (call $system::core::i32.+ (call $system::core::i32.- (get_local $newPtr) (get_local $ptr)) (i32.const 65535)) (call $system::core::i32.~ (i32.const 65535))) (i32.const 16)))
                           (set_local $pagesWanted (call $system::memory::max (get_local $pagesBefore) (get_local $pagesNeeded)))
-                          (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
+                          (if $IF8 (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesWanted)) (i32.const 0))
                               (then
-                                (block $unknown_block_96
-                                    (if $a_wild_if (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
+                                (block $B9
+                                    (if $IF10 (call $system::core::i32.< (call $system::memory::growMemory (get_local $pagesNeeded)) (i32.const 0))
                                         (then
-                                          (block $unknown_block_97
+                                          (block $B11
                                               (call $system::core::panic_1)
                                             )
                                         )
@@ -91,7 +91,7 @@
               )
           )
           (else
-            (block $unknown_block_98 (result i32)
+            (block $B12 (result i32)
                 (i32.const 0)
               )
           )
@@ -99,7 +99,7 @@
     )
   )
   (func $system::memory::free (param $ptr i32)
-    (block $unknown_block_99
+    (block $B1
       (nop)
     )
   )
@@ -117,7 +117,7 @@
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
   )
   (func $system::core::assert (param $x i32)
-    (if $a_wild_if (call $system::core::boolean.== (get_local $x) (i32.const 0))
+    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
       (then
         (call $system::core::panic_1)
       )
@@ -746,7 +746,7 @@
     (i32.or (i32.ne (get_local $lhs) (i32.const 0)) (i32.ne (get_local $rhs) (i32.const 0)))
   )
   (func $system::core::boolean.! (param $rhs i32) (result i32)
-    (if $a_wild_if (result i32) (get_local $rhs)
+    (if $IF1 (result i32) (get_local $rhs)
       (then
         (i32.const 0)
       )
@@ -804,7 +804,7 @@
     (call $system::core::i32.load (call $system::core::bytes.as (get_local $str)))
   )
   (func $system::core::bytes.property_ptr (param $str i64) (result i32)
-    (block $unknown_block_47 (result i32)
+    (block $B1 (result i32)
       (call $system::core::i32.+ (call $system::core::i64.as_3 (call $system::core::bytes.toAddr (get_local $str))) (i32.const 4))
     )
   )
@@ -825,7 +825,7 @@
   (export "test3" (func $test/fixtures/compiler/patternMatching.ro::test3))
   (export "test4" (func $test/fixtures/compiler/patternMatching.ro::test4))
   (func $test/fixtures/compiler/patternMatching.ro::Maybe.is (param $a i64) (result i32)
-    (block $unknown_block_1 (result i32)
+    (block $B1 (result i32)
       (call $system::core::boolean.|| (call $test/fixtures/compiler/patternMatching.ro::None.is (get_local $a)) (call $test/fixtures/compiler/patternMatching.ro::Some.is (get_local $a)))
     )
   )
@@ -882,7 +882,7 @@
   )
   (func $test/fixtures/compiler/patternMatching.ro::Some.apply (param $value i32) (result i64)
     (local $$ref i64)
-    (block $unknown_block_2 (result i64)
+    (block $B1 (result i64)
       (set_local $$ref (call $test/fixtures/compiler/patternMatching.ro::Some.fromPointer (call $system::memory::calloc (i32.const 1) (call $test/fixtures/compiler/patternMatching.ro::Some.sizeOf))))
       (call $test/fixtures/compiler/patternMatching.ro::Some.set$value (get_local $$ref) (get_local $value))
       (get_local $$ref)
@@ -911,104 +911,104 @@
   )
   (func $test/fixtures/compiler/patternMatching.ro::test (param $a i32) (result i32)
     (local $var$1 i32)
-    (block $B3 (result i32)
+    (block $B1 (result i32)
       (set_local $var$1 (get_local $a))
-      (block $B3_0
-          (block $B3_1
-              (br_if $B3_0 (call $system::core::i32.== (i32.const 1) (get_local $var$1)))
+      (block $B1_0
+          (block $B1_1
+              (br_if $B1_0 (call $system::core::i32.== (i32.const 1) (get_local $var$1)))
             )
           (i32.const 0)
-          (br $B3)
+          (br $B1)
         )
       (i32.const 1)
-      (br $B3)
+      (br $B1)
     )
   )
   (func $test/fixtures/compiler/patternMatching.ro::test2 (param $a i32) (result i32)
     (local $var$1 i32)
-    (block $B4 (result i32)
+    (block $B1 (result i32)
       (set_local $var$1 (get_local $a))
-      (block $B4_0
-          (block $B4_1
-              (block $B4_2
-                  (block $B4_3
-                      (block $B4_4
-                          (block $B4_5
-                              (block $B4_6
-                                  (block $B4_7
-                                      (block $B4_8
-                                          (block $B4_9
-                                              (br_if $B4_0 (call $system::core::i32.== (i32.const 10) (get_local $var$1)))
-                                              (br_if $B4_1 (call $system::core::i32.== (i32.const 20) (get_local $var$1)))
-                                              (br_if $B4_2 (call $system::core::i32.== (i32.const 30) (get_local $var$1)))
-                                              (br_if $B4_3 (call $system::core::i32.== (i32.const 40) (get_local $var$1)))
-                                              (br_if $B4_4 (call $system::core::i32.== (i32.const 50) (get_local $var$1)))
-                                              (br_if $B4_5 (call $system::core::i32.== (i32.const 60) (get_local $var$1)))
-                                              (br_if $B4_6 (call $system::core::i32.== (i32.const 70) (get_local $var$1)))
-                                              (br_if $B4_7 (call $system::core::i32.== (i32.const 80) (get_local $var$1)))
-                                              (br_if $B4_8 (call $system::core::i32.== (i32.const 90) (get_local $var$1)))
+      (block $B1_0
+          (block $B1_1
+              (block $B1_2
+                  (block $B1_3
+                      (block $B1_4
+                          (block $B1_5
+                              (block $B1_6
+                                  (block $B1_7
+                                      (block $B1_8
+                                          (block $B1_9
+                                              (br_if $B1_0 (call $system::core::i32.== (i32.const 10) (get_local $var$1)))
+                                              (br_if $B1_1 (call $system::core::i32.== (i32.const 20) (get_local $var$1)))
+                                              (br_if $B1_2 (call $system::core::i32.== (i32.const 30) (get_local $var$1)))
+                                              (br_if $B1_3 (call $system::core::i32.== (i32.const 40) (get_local $var$1)))
+                                              (br_if $B1_4 (call $system::core::i32.== (i32.const 50) (get_local $var$1)))
+                                              (br_if $B1_5 (call $system::core::i32.== (i32.const 60) (get_local $var$1)))
+                                              (br_if $B1_6 (call $system::core::i32.== (i32.const 70) (get_local $var$1)))
+                                              (br_if $B1_7 (call $system::core::i32.== (i32.const 80) (get_local $var$1)))
+                                              (br_if $B1_8 (call $system::core::i32.== (i32.const 90) (get_local $var$1)))
                                             )
                                           (i32.const 0)
-                                          (br $B4)
+                                          (br $B1)
                                         )
                                       (i32.const 9)
-                                      (br $B4)
+                                      (br $B1)
                                     )
                                   (i32.const 8)
-                                  (br $B4)
+                                  (br $B1)
                                 )
                               (i32.const 7)
-                              (br $B4)
+                              (br $B1)
                             )
                           (i32.const 6)
-                          (br $B4)
+                          (br $B1)
                         )
                       (i32.const 5)
-                      (br $B4)
+                      (br $B1)
                     )
                   (i32.const 4)
-                  (br $B4)
+                  (br $B1)
                 )
               (i32.const 3)
-              (br $B4)
+              (br $B1)
             )
           (i32.const 2)
-          (br $B4)
+          (br $B1)
         )
       (i32.const 1)
-      (br $B4)
+      (br $B1)
     )
   )
   (func $test/fixtures/compiler/patternMatching.ro::test3 (param $a i64) (result i32)
     (local $var$1 i64)
-    (block $B5 (result i32)
+    (block $B1 (result i32)
       (set_local $var$1 (get_local $a))
-      (block $B5_0
-          (block $B5_1
-              (br_if $B5_0 (call $test/fixtures/compiler/patternMatching.ro::Some.is (get_local $var$1)))
-              (br_if $B5_1 (call $test/fixtures/compiler/patternMatching.ro::None.is (get_local $var$1)))
+      (block $B1_0
+          (block $B1_1
+              (br_if $B1_0 (call $test/fixtures/compiler/patternMatching.ro::Some.is (get_local $var$1)))
+              (br_if $B1_1 (call $test/fixtures/compiler/patternMatching.ro::None.is (get_local $var$1)))
             )
           (i32.const 0)
-          (br $B5)
+          (br $B1)
         )
       (i32.const 1)
-      (br $B5)
+      (br $B1)
     )
   )
   (func $test/fixtures/compiler/patternMatching.ro::test4 (param $a i64) (result i64)
     (local $var$1 i64)
-    (block $B6 (result i64)
+    (block $B1 (result i64)
       (set_local $var$1 (get_local $a))
-      (block $B6_0
-          (block $B6_1
-              (br_if $B6_0 (call $test/fixtures/compiler/patternMatching.ro::Some.is (get_local $var$1)))
-              (br_if $B6_1 (call $test/fixtures/compiler/patternMatching.ro::None.is (get_local $var$1)))
+      (block $B1_0
+          (block $B1_1
+              (br_if $B1_0 (call $test/fixtures/compiler/patternMatching.ro::Some.is (get_local $var$1)))
+              (br_if $B1_1 (call $test/fixtures/compiler/patternMatching.ro::None.is (get_local $var$1)))
             )
           (call $test/fixtures/compiler/patternMatching.ro::Some.apply (i32.const 0))
-          (br $B6)
+          (br $B1)
         )
       (get_local $var$1)
-      (br $B6)
+      (br $B1)
     )
   )
   (func $%%START%%

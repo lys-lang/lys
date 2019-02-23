@@ -12,7 +12,7 @@ import { flatten } from '../helpers';
 import { Nodes, findNodesByType } from '../nodes';
 import { failIfErrors } from './findAllErrors';
 import { findParentType } from './helpers';
-import { FunctionType, StructType, Type } from '../types';
+import { FunctionType, Type } from '../types';
 import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
@@ -35,10 +35,16 @@ declare var WebAssembly, console;
 (binaryen as any).setShrinkLevel(5);
 
 const secSymbol = Symbol('secuentialId');
-function getModuleSecuentialId(module) {
-  let num = module[secSymbol] || 0;
+
+function restartFunctionSeqId(node: Nodes.FunctionNode) {
+  node[secSymbol] = 0;
+}
+
+function getFunctionSeqId(node: Nodes.Node) {
+  let fun = findParentType(node, Nodes.FunctionNode) || findParentType(node, Nodes.DocumentNode);
+  let num = fun[secSymbol] || 0;
   num++;
-  module[secSymbol] = num;
+  fun[secSymbol] = num;
   return num;
 }
 
@@ -75,6 +81,8 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
 function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   const fnType = getTypeForFunction(fn);
 
+  restartFunctionSeqId(fn);
+
   const locals = fn.additionalLocals.map($ =>
     t.instruction('local', [t.identifier($.name), t.valtypeLiteral($.type.binaryenType)])
   );
@@ -88,43 +96,24 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   return moduleFun;
 }
 
-function emitTailCall(node: Nodes.TailRecLoopNode, document: Nodes.DocumentNode) {
-  const label = 'TailCallLoop' + getModuleSecuentialId(document);
-  node.annotate(new annotations.LabelId(label));
-  return t.loopInstruction(t.identifier(label), void 0, emitList(node.body, document));
-}
+function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode) {
+  const loopId = getFunctionSeqId(node);
 
-function emitFunctionCall(node: Nodes.FunctionCallNode, document: Nodes.DocumentNode) {
-  if (node.hasAnnotation(annotations.IsTailRecCall)) {
-    const tailCallLoopNode = findParentType(node, Nodes.TailRecLoopNode);
+  node.annotate(new annotations.LabelId(loopId));
 
-    const fn = findParentType(node, Nodes.FunctionNode);
+  const continueLabel = t.identifier('Loop' + loopId);
+  const breakLabel = t.identifier('Break' + loopId);
 
-    const setArgsStatements = node.argumentsNode.map(($, $$) => {
-      return t.instruction('set_local', [t.identifier(fn.localsByIndex[$$].name), emit($, document)]);
-    });
-
-    const labelAnnotation = tailCallLoopNode.getAnnotation(annotations.LabelId);
-
-    setArgsStatements.push(t.instruction('br', [t.identifier(labelAnnotation.label)]));
-
-    return setArgsStatements;
-  } else {
-    const ofType = node.resolvedFunctionType;
-
-    assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
-
-    return t.callInstruction(
-      t.identifier(ofType.name.internalIdentifier),
-      node.argumentsNode.map($ => emit($, document))
-    );
-  }
+  return t.blockInstruction(breakLabel, [t.loopInstruction(continueLabel, void 0, emitList(node.body, document))]);
 }
 
 function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.DocumentNode) {
   const matchers = match.matchingSet.slice(0);
   const ixDefaultBranch = matchers.findIndex($ => $ instanceof Nodes.MatchDefaultNode);
-  const lhs = t.instruction('set_local', [t.identifier(match.local.name), emit(match.lhs, document)]);
+
+  const local = match.getAnnotation(annotations.LocalIdentifier).local;
+
+  const lhs = t.instruction('set_local', [t.identifier(local.name), emit(match.lhs, document)]);
 
   if (ixDefaultBranch !== -1) {
     // the default branch must be the last element
@@ -141,9 +130,11 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
 
+        const local = match.getAnnotation(annotations.LocalIdentifier).local;
+
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           emit(node.literal, document),
-          t.instruction('get_local', [t.identifier(match.local.name)])
+          t.instruction('get_local', [t.identifier(local.name)])
         ]);
 
         const body = emit(node.rhs, document);
@@ -153,9 +144,10 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         };
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
+        const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
-          t.instruction('get_local', [t.identifier(match.local.name)])
+          t.instruction('get_local', [t.identifier(local.name)])
         ]);
 
         const body = emit(node.rhs, document);
@@ -166,7 +158,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
       }
     })
     .filter($ => !!$);
-  const exitBlock = 'B' + getModuleSecuentialId(document);
+  const exitBlock = 'B' + getFunctionSeqId(match);
   const exitLabel = t.identifier(exitBlock);
 
   const breaks = blocks
@@ -198,7 +190,7 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
 
 function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
   if (node instanceof Nodes.ReferenceNode) {
-    const ofType = node.ofType as StructType | FunctionType | Type;
+    const ofType = node.ofType as FunctionType | Type;
 
     if (ofType && 'name' in ofType) {
       return t.identifier(ofType.name.internalIdentifier);
@@ -239,13 +231,27 @@ function emitImplicitCall(implicitCallData: annotations.ImplicitCall, document: 
 
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
-    // try {
     if (node.hasAnnotation(annotations.ImplicitCall)) {
       return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
     } else if (node instanceof Nodes.FunctionCallNode) {
-      return emitFunctionCall(node, document);
+      const ofType = node.resolvedFunctionType;
+
+      assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
+
+      return t.callInstruction(
+        t.identifier(ofType.name.internalIdentifier),
+        node.argumentsNode.map($ => emit($, document))
+      );
     } else if (node instanceof Nodes.WasmExpressionNode) {
       return flatten(node.atoms.map($ => emitWast($, document)));
+    } else if (node instanceof Nodes.ContinueNode) {
+      const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
+      return t.instruction('br', [t.identifier('Loop' + loopLabel.label)]);
+    } else if (node instanceof Nodes.BreakNode) {
+      const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
+      return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
+    } else if (node instanceof Nodes.IntegerLiteral) {
+      return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
@@ -258,10 +264,11 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {
       return emitMatchingNode(node, document);
-    } else if (node instanceof Nodes.TailRecLoopNode) {
-      return emitTailCall(node, document);
+    } else if (node instanceof Nodes.LoopNode) {
+      return emitLoop(node, document);
     } else if (node instanceof Nodes.VarDeclarationNode) {
-      return t.instruction('set_local', [t.identifier(node.local.name), emit(node.value, document)]);
+      const local = node.getAnnotation(annotations.LocalIdentifier).local;
+      return t.instruction('set_local', [t.identifier(local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
       if (node.lhs instanceof Nodes.ReferenceNode) {
         const isLocal = node.lhs.isLocal;
@@ -269,19 +276,22 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
         if (isLocal) {
           const instr = isValueNode ? 'tee_local' : 'set_local';
-          return t.instruction(instr, [t.identifier(node.lhs.local.name), emit(node.rhs, document)]);
+          const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
+          return t.instruction(instr, [t.identifier(local.name), emit(node.rhs, document)]);
         } else {
           if (isValueNode) {
+            const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
             return t.blockInstruction(
-              t.identifier('tee_global_' + getModuleSecuentialId(document)),
+              t.identifier('tee_global_' + getFunctionSeqId(node)),
               [
-                t.instruction('set_global', [t.identifier(node.lhs.local.name), emit(node.rhs, document)]),
-                t.instruction('get_global', [t.identifier(node.lhs.local.name)])
+                t.instruction('set_global', [t.identifier(local.name), emit(node.rhs, document)]),
+                t.instruction('get_global', [t.identifier(local.name)])
               ],
               node.rhs.ofType.binaryenType
             );
           } else {
-            return t.instruction('set_global', [t.identifier(node.lhs.local.name), emit(node.rhs, document)]);
+            const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
+            return t.instruction('set_global', [t.identifier(local.name), emit(node.rhs, document)]);
           }
         }
       } else {
@@ -289,7 +299,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       }
     } else if (node instanceof Nodes.BlockNode) {
       // if (!node.label) throw new Error('Block node without label');
-      const label = t.identifier(node.label || 'unknown_block_' + getModuleSecuentialId(document));
+      const label = t.identifier(node.label || 'B' + getFunctionSeqId(node));
       const type = node.ofType.binaryenType;
       let instr = [];
 
@@ -304,7 +314,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.blockInstruction(label, instr, type);
     } else if (node instanceof Nodes.IfNode) {
       return t.ifInstruction(
-        t.identifier('a_wild_if'),
+        t.identifier('IF' + getFunctionSeqId(node)),
         [emit(node.condition, document)],
         node.ofType.binaryenType,
         emitList(node.truePart, document),
@@ -331,28 +341,16 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
       const instr = node.isLocal ? 'get_local' : 'get_global';
-      return t.instruction(instr, [t.identifier(node.local.name)]);
+      const local = node.getAnnotation(annotations.LocalIdentifier).local;
+      return t.instruction(instr, [t.identifier(local.name)]);
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
-    // } catch (e) {
-    //   node.errors.push(e);
-    // }
   }
 
   const generatedNode = _emit();
 
   if (!generatedNode) throw new AstNodeError(`Could not emit any code for node ${node.nodeName}`, node);
-
-  const retAnnotation = node.getAnnotation(annotations.IsReturnExpression);
-
-  if (retAnnotation) {
-    if (retAnnotation.targetLocal !== null) {
-      return t.instruction('set_local', [t.identifier(retAnnotation.targetLocal.name), generatedNode]);
-    } else {
-      return t.instruction('return', [generatedNode]);
-    }
-  }
 
   return generatedNode;
 }
@@ -495,7 +493,8 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
       const binaryenType = $.decl.variableName.ofType.binaryenType;
-      const identifier = t.identifier($.decl.local.name);
+      const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
+      const identifier = t.identifier(local.name);
 
       starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 

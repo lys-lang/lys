@@ -6,7 +6,7 @@
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" ((alias f32)) (alias f32))) annotations=Injected
     |-FunctionNode type=(fun "x" ((alias i32)) (alias i32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(x:i32#0)
         |-NameIdentifierNode="x" type=(alias i32 (native i32))
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
@@ -19,7 +19,7 @@
         |-QNameNode=x
           |-NameIdentifierNode="x"
     |-FunctionNode type=(fun "x" ((alias f32)) (alias f32))
-      |-ParameterNode
+      |-ParameterNode annotations=Local(x:f32#0)
         |-NameIdentifierNode="x" type=(alias f32 (native f32))
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32

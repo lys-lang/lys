@@ -107,10 +107,12 @@ describe('Semantic', function() {
       result,
       'MUST_FAIL_' + getFileName(),
       'Document',
-      async (document, err) => {
-        const didFail = !!err || !document || !document.isSuccess();
+      async (phaseResult, err) => {
+        const didFail = !!err || !phaseResult || !phaseResult.isSuccess();
         if (!didFail) {
-          console.log(document.document.closure.deepInspect());
+          console.log(result);
+          console.log(printAST(phaseResult.document));
+          console.log(phaseResult.document.closure.deepInspect());
         }
         expect(didFail).toEqual(true, 'It must have failed');
       },
@@ -220,7 +222,7 @@ describe('Semantic', function() {
   describe('namespaces', () => {
     test`
 
-      type BB
+      type BB = %injected
       type AA = BB
       impl BB {
         fun gta(): i32 = 1
@@ -231,19 +233,7 @@ describe('Semantic', function() {
 
     testToFail`
 
-      type AA = BB | CC
-      type BB
-      type CC
-      impl CC {
-        fun gta(): i32 = 1
-      }
-
-      fun test(a: i32): boolean = BB#gta()
-    `;
-
-    testToFail`
-
-      type BB
+      type BB = %injected
       type AA = BB
 
       impl BB {
@@ -255,7 +245,7 @@ describe('Semantic', function() {
 
     test`
 
-      type BB
+      type BB = %injected
 
       impl BB {
         var x = 1
@@ -285,16 +275,16 @@ describe('Semantic', function() {
 
   describe('Pattern matching', () => {
     test`
-      fun test(a: i32): boolean = a match {
+      fun test(a: i32): boolean = match a {
         case 1 -> true
         else -> false
       }
     `;
     testToFail`
-      fun test(a: i32): void = a match { }
+      fun test(a: i32): void = match a { }
     `;
     testToFail`
-      fun test(a: i32): i32 = a match { else -> 1 }
+      fun test(a: i32): i32 = match a { else -> 1 }
     `;
   });
 
@@ -412,73 +402,6 @@ describe('Semantic', function() {
     );
   });
 
-  describe('scope resolution', () => {
-    testParseToken(
-      `
-        fun x(a: i32): i32 = a
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
-      },
-      phases
-    );
-
-    testParseToken(
-      `
-        var a = 1
-        fun x(a: i32): i32 = a
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('Parameter');
-      },
-      phases
-    );
-    testParseToken(
-      `
-        val c = 1
-        var a = c
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('ValDeclaration');
-      },
-      phases
-    );
-    testParseToken(
-      `
-        var a = 1
-        fun x(b: i32): i32 = a
-      `,
-      getFileName(),
-      'Document',
-      async (x, e) => {
-        if (e) throw e;
-        fixParents(x.document);
-        const refs = findNodesByType(x.document, Nodes.ReferenceNode);
-        const resolved = refs[0].closure.getQName(refs[0].variable, true);
-        expect(resolved.referencedNode.parent.astNode.type).toBe('VarDeclaration');
-      },
-      phases
-    );
-  });
-
   describe('Scopes', () => {
     test`
       val a = true
@@ -503,16 +426,6 @@ describe('Semantic', function() {
       fun test(a: i32): i32 = a
     `;
 
-    testToFail`var a = a`;
-    testToFail`
-      fun isComplex(number: i32): boolean =
-        number match {
-          case x is Real(_) -> false
-          case 2 -> false
-          else -> false
-        }
-    `;
-
     test`
       import system::string
     `;
@@ -521,19 +434,22 @@ describe('Semantic', function() {
       import system::stringThatDoesNotExist
     `;
 
-    test`type i32  var a: i32 = 1`;
+    test`
+      type i32 = %stack { lowLevelType="i32" }
+      var a: i32 = 1
+    `;
 
     testToFail`var a: i32a = 1`;
 
-    testToFail`var b = 1 var a: b = 1`;
-    testToFail`var i32 = 1`;
     testToFail`
-      var a = "hello"
-      var bytes = a.length
+      type i32 = %stack { lowLevelType="i32" }
+      var i32 = 1
     `;
-    testToFail`type i32  var i32 = 1`;
 
-    test`var a = 1 var b = a`;
+    test`
+      var a = 1
+      var b = a
+    `;
 
     testToFail`
       fun test(a: i32): i32 = b

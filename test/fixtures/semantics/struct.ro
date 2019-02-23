@@ -9,7 +9,7 @@ type Number {
 // type Number = Infinity | NDet | Real | Natural | Complex
 
 fun isComplex(number: Number): boolean =
-  number match {
+  match number {
     case is Real(_) -> false
     case is Natural(_) -> false
     case is Complex(_, imaginary) -> imaginary != 0.0

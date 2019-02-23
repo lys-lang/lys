@@ -1,0 +1,75 @@
+fun a(): void = {
+  continue
+}
+
+fun b(): void = {
+  break
+}
+
+fun c(): void = {
+  loop { continue }
+}
+
+fun d(): void = {
+  loop { break }
+}
+
+fun e(): void = {
+  loop {
+    continue
+    break
+  }
+}
+
+fun f(): void = {
+  loop {
+    break
+    continue
+  }
+}
+
+fun g(): void = {
+  loop continue
+}
+
+fun h(): void = {
+  loop break
+}
+
+fun i(): void = {
+  var x = 1
+  loop {
+    x = {
+      if (x == 1)
+        continue
+      x + 1
+    }
+  }
+}
+
+fun j(e: i32): void = {
+  var x = 1
+  loop {
+    x = {
+      match e {
+        case 1 -> {
+          if (x >= 1) {
+            match x {
+              case 1 -> {
+                continue
+                4
+              }
+              else -> {
+                break
+                3
+              }
+            }
+          }
+        }
+        else -> continue
+      }
+      x + 1
+    }
+  }
+}
+

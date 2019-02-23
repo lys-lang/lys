@@ -57,7 +57,7 @@ impl Number {
   }
 }
 
-type Infinity = ???
+type Infinity = %struct {  }
 
 impl Infinity {
   fun apply(): Infinity = %wasm {
@@ -85,7 +85,7 @@ impl Infinity {
   }
 }
 
-type NDet = ???
+type NDet = %struct {  }
 
 impl NDet {
   fun apply(): NDet = %wasm {
@@ -113,7 +113,7 @@ impl NDet {
   }
 }
 
-type Real = ???
+type Real = %struct { number }
 
 impl Real {
   fun discriminant(): u64 = %wasm {
@@ -152,7 +152,7 @@ impl Real {
   }
 }
 
-type Natural = ???
+type Natural = %struct { number }
 
 impl Natural {
   fun discriminant(): u64 = %wasm {
@@ -191,7 +191,7 @@ impl Natural {
   }
 }
 
-type Complex = ???
+type Complex = %struct { real, imaginary }
 
 impl Complex {
   fun discriminant(): u64 = %wasm {
@@ -237,10 +237,17 @@ impl Complex {
 }
 
 fun isComplex(number: Number): boolean =
-  number match {
-    case is Real(_) -> false
-    case is Natural(_) -> false
-    case is Complex(_, imaginary) -> imaginary != 0.0
+  match number {
+    case is Real -> {
+      false
+    }
+    case is Natural -> {
+      false
+    }
+    case is Complex -> {
+      val imaginary = $.imaginary
+      imaginary != 0.0
+    }
     else -> false
   }
 

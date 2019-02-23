@@ -20,7 +20,7 @@ struct and poly types should not receive a instance of Reference, they should re
 parser fails with
 
 ```
-x match {
+match x {
   case None -> 123
   case is Some -> 123
 }

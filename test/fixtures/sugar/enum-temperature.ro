@@ -6,8 +6,8 @@ enum Temp {
 /// Desugars to:
 
 type Temp = Celcius | Kelvin
-type Celcius
-type Kelvin
+type Celcius = %struct {}
+type Kelvin = %struct {}
 
 impl Temp {
   fun is(x: ref) = {

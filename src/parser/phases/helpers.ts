@@ -12,3 +12,16 @@ export function findParentType<T extends Nodes.Node>(node: Nodes.Node, desiredCl
 
   return (parent as T) || null;
 }
+
+export function findParentDelegate(node: Nodes.Node, delegate: (current: Nodes.Node) => boolean): Nodes.Node | null {
+  let parent: Nodes.Node = node.parent;
+
+  while (parent && !delegate(parent)) {
+    parent = parent.parent;
+
+    // If the element has no parent, stop execution
+    if (!parent) return null;
+  }
+
+  return parent || null;
+}

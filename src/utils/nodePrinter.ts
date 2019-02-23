@@ -24,7 +24,13 @@ export function printNode(node: Nodes.Node): string {
     if (!node.statements.length) return '{}';
     return '{\n' + indent(node.statements.map(printNode).join('\n')) + '\n}';
   } else if (node instanceof Nodes.MemberNode) {
-    return printNode(node.lhs) + node.operator + printNode(node.memberName);
+    const memberName = printNode(node.memberName);
+
+    if (!node.operator && memberName === 'apply') {
+      return printNode(node.lhs);
+    }
+
+    return printNode(node.lhs) + node.operator + memberName;
   } else if (node instanceof Nodes.DocumentNode) {
     return node.directives.map(printNode).join('\n\n');
   } else if (node instanceof Nodes.FunctionNode) {
@@ -42,6 +48,19 @@ export function printNode(node: Nodes.Node): string {
     const functionName = printNode(node.functionName);
 
     return `fun ${functionName}(${params})${retType} =${body}`;
+  } else if (node instanceof Nodes.ContinueNode) {
+    return 'continue';
+  } else if (node instanceof Nodes.BreakNode) {
+    return 'break';
+  } else if (node instanceof Nodes.LoopNode) {
+    const bodyText = printNode(node.body);
+
+    const body =
+      node.body instanceof Nodes.BlockNode || node.body instanceof Nodes.WasmExpressionNode || !bodyText.includes('\n')
+        ? ' ' + bodyText
+        : '\n' + indent(bodyText);
+
+    return `loop${body}`;
   } else if (node instanceof Nodes.ImplDirective) {
     return `impl ${printNode(node.reference)} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
   } else if (node instanceof Nodes.ImportDirectiveNode) {
@@ -70,6 +89,14 @@ export function printNode(node: Nodes.Node): string {
     return `(${node.symbol}${node.arguments.map($ => ' ' + printNode($)).join('')})`;
   } else if (node instanceof Nodes.WasmExpressionNode) {
     return `%wasm {\n${indent(node.atoms.map(printNode).join('\n'))}\n}`;
+  } else if (node instanceof Nodes.StructTypeNode) {
+    return `%struct { ${node.names.join(', ')} }`;
+  } else if (node instanceof Nodes.InjectedTypeNode) {
+    return `%injected`;
+  } else if (node instanceof Nodes.StackTypeNode) {
+    return `%stack { ${Object.entries(node.metadata)
+      .map(([key, value]) => key + '=' + printNode(value))
+      .join(' ')} }`;
   } else if (node instanceof Nodes.IfNode) {
     const printTrue = () => {
       if (node.truePart instanceof Nodes.BlockNode) {
@@ -107,7 +134,7 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.EffectDeclarationNode) {
     return `effect ${printNode(node.name)} {\n${indent(node.elements.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.PatternMatcherNode) {
-    return `${printNode(node.lhs)} match {\n${indent(node.matchingSet.map(printNode).join('\n'))}\n}`;
+    return `match ${printNode(node.lhs)} {\n${indent(node.matchingSet.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.MatchConditionNode) {
     return `case if ${printNode(node.condition)} -> ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.MatchDefaultNode) {
@@ -117,12 +144,14 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.VarDirectiveNode) {
     return (node.isExported ? '' : 'private ') + printNode(node.decl);
   } else if (node instanceof Nodes.MatchCaseIsNode) {
+    const declaredName = node.declaredName && node.declaredName.name !== '$' ? `${printNode(node.declaredName)} ` : ``;
+
     if (node.deconstructorNames && node.deconstructorNames.length) {
-      return `case is ${printNode(node.typeReference)}(${node.deconstructorNames
+      return `case ${declaredName}is ${printNode(node.typeReference)}(${node.deconstructorNames
         .map(printNode)
         .join(', ')}) -> ${printNode(node.rhs)}`;
     } else {
-      return `case is ${printNode(node.typeReference)} -> ${printNode(node.rhs)}`;
+      return `case ${declaredName}is ${printNode(node.typeReference)} -> ${printNode(node.rhs)}`;
     }
   } else if (node instanceof Nodes.TypeDirectiveNode) {
     if (node.valueType) {

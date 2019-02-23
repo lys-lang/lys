@@ -1,4 +1,4 @@
-import { Local, Nodes } from './nodes';
+import { Local, Nodes, Global } from './nodes';
 import { FunctionType } from './types';
 
 export abstract class Annotation {
@@ -21,14 +21,37 @@ export namespace annotations {
       //stub
     }
   }
+  export class LocalIdentifier extends Annotation {
+    constructor(public local: Local | Global) {
+      super();
+      //stub
+    }
+
+    toString() {
+      if (this.local instanceof Local) {
+        return `Local(${this.local.name}:${this.local.type || '<no-type>'}#${this.local.index})`;
+      } else {
+        return `Global(${this.local.name}:${this.local.type || '<no-type>'})`;
+      }
+    }
+  }
 
   export class IsTailRecCall extends Annotation {}
+
+  export class CurrentLoop extends Annotation {
+    constructor(public loop: Nodes.LoopNode) {
+      super();
+      //stub
+    }
+  }
+
   export class ImplicitCall extends Annotation {
     constructor(public functionType: FunctionType, public args: Nodes.ExpressionNode[]) {
       super();
     }
   }
 
+  export class IsUnreachable extends Annotation {}
   export class IsValueNode extends Annotation {}
   export class IsTypeNode extends Annotation {}
 
