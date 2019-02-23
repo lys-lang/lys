@@ -1,5 +1,5 @@
 import { TypeGraph, TypeNode, Edge } from './TypeGraph';
-import { Closure } from '../Closure';
+import { Closure } from '../aclosure';
 import { Nodes } from '../nodes';
 import { Type } from '../types';
 import { TypeGraphBuilder } from './TypeGraphBuilder';

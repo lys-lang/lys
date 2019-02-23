@@ -1,5 +1,5 @@
 import { IToken, TokenError } from 'ebnf';
-import { Closure } from './Closure';
+import { Closure } from './aclosure';
 import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor, annotations } from './annotations';
 import { Reference } from './Reference';
