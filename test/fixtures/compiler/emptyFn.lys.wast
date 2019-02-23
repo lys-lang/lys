@@ -705,8 +705,8 @@
   (func $system::core::bytes.load_1 (param $lhs i64) (param $offset i32) (result i64)
     (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
   )
-  (export "main" (func $test/fixtures/compiler/emptyFn.ro::main))
-  (func $test/fixtures/compiler/emptyFn.ro::main
+  (export "main" (func $test/fixtures/compiler/emptyFn.lys::main))
+  (func $test/fixtures/compiler/emptyFn.lys::main
     (block $B1
       (nop)
     )

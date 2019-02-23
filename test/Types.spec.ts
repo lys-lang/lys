@@ -575,7 +575,6 @@ describe('Types', function() {
         });
 
         describe('union types', function() {
-          this.bail(true);
           checkMainType`
             struct A()
             struct B()
@@ -946,8 +945,6 @@ describe('Types', function() {
     describe('assign', () => {
       describe('enums', () => {
         describe('assign unions', function() {
-          // this.bail(true);
-
           checkMainType`
             type BOOLEAN {
               TRUE

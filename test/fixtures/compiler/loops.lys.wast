@@ -705,11 +705,11 @@
   (func $system::core::bytes.load_1 (param $lhs i64) (param $offset i32) (result i64)
     (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
   )
-  (export "test" (func $test/fixtures/compiler/loops.ro::test))
-  (export "test1" (func $test/fixtures/compiler/loops.ro::test1))
-  (export "test2" (func $test/fixtures/compiler/loops.ro::test2))
-  (export "test3" (func $test/fixtures/compiler/loops.ro::test3))
-  (func $test/fixtures/compiler/loops.ro::test
+  (export "test" (func $test/fixtures/compiler/loops.lys::test))
+  (export "test1" (func $test/fixtures/compiler/loops.lys::test1))
+  (export "test2" (func $test/fixtures/compiler/loops.lys::test2))
+  (export "test3" (func $test/fixtures/compiler/loops.lys::test3))
+  (func $test/fixtures/compiler/loops.lys::test
     (block $B1
       (block $Break2
           (loop $Loop2
@@ -720,7 +720,7 @@
         )
     )
   )
-  (func $test/fixtures/compiler/loops.ro::test1
+  (func $test/fixtures/compiler/loops.lys::test1
     (local $x i32)
     (block $B1
       (set_local $x (i32.const 1))
@@ -739,7 +739,7 @@
         )
     )
   )
-  (func $test/fixtures/compiler/loops.ro::test2
+  (func $test/fixtures/compiler/loops.lys::test2
     (local $x i32)
     (block $B1
       (set_local $x (i32.const 1))
@@ -753,7 +753,7 @@
         )
     )
   )
-  (func $test/fixtures/compiler/loops.ro::test3
+  (func $test/fixtures/compiler/loops.lys::test3
     (local $x i32)
     (block $B1
       (set_local $x (i32.const 1))

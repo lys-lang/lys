@@ -20,7 +20,7 @@ digraph Document {
     16 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
     17 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     15 -> 16[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/c.ro::x(i32)";
+  label="test/fixtures/types/c.lys::x(i32)";
 }
   subgraph cluster1 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -28,7 +28,7 @@ digraph Document {
     19 [label="Ref: x\n(alias f32 (native f32))", fillcolor=grey];
     20 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
     18 -> 19[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/c.ro::x_3(f32)";
+  label="test/fixtures/types/c.lys::x_3(f32)";
 }
   subgraph cluster2 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -38,7 +38,7 @@ digraph Document {
     24 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     22 -> 21[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
     23 -> 21[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/c.ro::outer()";
+  label="test/fixtures/types/c.lys::outer()";
 }
   1 -> 10[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];

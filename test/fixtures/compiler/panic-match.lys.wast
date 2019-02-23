@@ -705,8 +705,8 @@
   (func $system::core::bytes.load_1 (param $lhs i64) (param $offset i32) (result i64)
     (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
   )
-  (export "test" (func $test/fixtures/compiler/panic-match.ro::test))
-  (func $test/fixtures/compiler/panic-match.ro::test (param $x i32)
+  (export "test" (func $test/fixtures/compiler/panic-match.lys::test))
+  (func $test/fixtures/compiler/panic-match.lys::test (param $x i32)
     (local $var$1 i32)
     (block $B1
       (block $B2

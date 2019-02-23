@@ -120,13 +120,13 @@ digraph Document {
     node [style=filled, fillcolor=grey];
     117 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     118 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::WithInt.discriminant()";
+  label="test/fixtures/types/struct.lys::WithInt.discriminant()";
 }
   subgraph cluster1 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     119 [label="Int: 8\n(alias i32 (native i32))", fillcolor=grey];
     120 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::WithInt.sizeOf()";
+  label="test/fixtures/types/struct.lys::WithInt.sizeOf()";
 }
   subgraph cluster2 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -136,13 +136,13 @@ digraph Document {
     124 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
     122 -> 121[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
     123 -> 122[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/struct.ro::WithInt.allocationSize()";
+  label="test/fixtures/types/struct.lys::WithInt.allocationSize()";
 }
   subgraph cluster3 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     125 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     126 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::Simple.apply()";
+  label="test/fixtures/types/struct.lys::Simple.apply()";
 }
   subgraph cluster4 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -151,7 +151,7 @@ digraph Document {
     129 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     130 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     131 [label="Ref: Simple\n(type (alias Simple (struct Simple)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::Simple.load(ref,i32)";
+  label="test/fixtures/types/struct.lys::Simple.load(ref,i32)";
 }
   subgraph cluster5 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -188,14 +188,14 @@ digraph Document {
     145 -> 143[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
     146 -> 143[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
     147 -> 133[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/struct.ro::WithInt.apply(i32)";
+  label="test/fixtures/types/struct.lys::WithInt.apply(i32)";
 }
   subgraph cluster6 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     149 [label="Name: ptr\n(type (union (alias i32 (native i32)) (alias u32 (native u32))))", fillcolor=grey];
     150 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     151 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::WithInt.fromPointer(i32 | u32)";
+  label="test/fixtures/types/struct.lys::WithInt.fromPointer(i32 | u32)";
 }
   subgraph cluster7 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -215,7 +215,7 @@ digraph Document {
     157 -> 154[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
     158 -> 154[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
     159 -> 154[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/struct.ro::WithInt.set$a(WithInt,i32)";
+  label="test/fixtures/types/struct.lys::WithInt.set$a(WithInt,i32)";
 }
   subgraph cluster8 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -224,14 +224,14 @@ digraph Document {
     163 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     164 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     165 [label="Ref: WithInt\n(type (alias WithInt (struct WithInt)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::WithInt.load(ref,i32)";
+  label="test/fixtures/types/struct.lys::WithInt.load(ref,i32)";
 }
   subgraph cluster9 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     166 [label="Name: a\n(alias Simple (struct Simple))", fillcolor=grey];
     167 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     168 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::Simple.is(Simple)";
+  label="test/fixtures/types/struct.lys::Simple.is(Simple)";
 }
   subgraph cluster10 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -239,7 +239,7 @@ digraph Document {
     170 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     171 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     172 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::Simple.==(Simple,ref)";
+  label="test/fixtures/types/struct.lys::Simple.==(Simple,ref)";
 }
   subgraph cluster11 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -247,7 +247,7 @@ digraph Document {
     174 [label="Name: b\n(alias ref (ref ?))", fillcolor=grey];
     175 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     176 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::Simple.!=(Simple,ref)";
+  label="test/fixtures/types/struct.lys::Simple.!=(Simple,ref)";
 }
   subgraph cluster12 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -257,7 +257,7 @@ digraph Document {
     180 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     181 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     182 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::Simple.store(ref,Simple,i32)";
+  label="test/fixtures/types/struct.lys::Simple.store(ref,Simple,i32)";
 }
   subgraph cluster13 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -273,7 +273,7 @@ digraph Document {
     186 -> 185[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
     187 -> 184[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
     188 -> 184[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/struct.ro::WithInt.property_a(WithInt)";
+  label="test/fixtures/types/struct.lys::WithInt.property_a(WithInt)";
 }
   subgraph cluster14 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -289,14 +289,14 @@ digraph Document {
     193 -> 192[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
     194 -> 192[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
     195 -> 192[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/struct.ro::WithInt.property_a_1(WithInt,i32)";
+  label="test/fixtures/types/struct.lys::WithInt.property_a_1(WithInt,i32)";
 }
   subgraph cluster15 { rankdir=TB;
     node [style=filled, fillcolor=grey];
     197 [label="Name: a\n(alias WithInt (struct WithInt))", fillcolor=grey];
     198 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     199 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::WithInt.is(WithInt)";
+  label="test/fixtures/types/struct.lys::WithInt.is(WithInt)";
 }
   subgraph cluster16 { rankdir=TB;
     node [style=filled, fillcolor=grey];
@@ -306,7 +306,7 @@ digraph Document {
     203 [label="WasmExpressionNode\n(never)", fillcolor=grey];
     204 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
     205 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
-  label="test/fixtures/types/struct.ro::WithInt.store(ref,WithInt,i32)";
+  label="test/fixtures/types/struct.lys::WithInt.store(ref,WithInt,i32)";
 }
   1 -> 4[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
   1 -> 8[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];

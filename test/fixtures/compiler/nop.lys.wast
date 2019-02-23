@@ -705,8 +705,8 @@
   (func $system::core::bytes.load_1 (param $lhs i64) (param $offset i32) (result i64)
     (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
   )
-  (export "x" (func $test/fixtures/compiler/nop.ro::x))
-  (func $test/fixtures/compiler/nop.ro::x
+  (export "x" (func $test/fixtures/compiler/nop.lys::x))
+  (func $test/fixtures/compiler/nop.lys::x
     (block $B1
       (nop)
     )

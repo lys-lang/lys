@@ -820,21 +820,21 @@
   (func $system::core::bytes.load_1 (param $lhs i64) (param $offset i32) (result i64)
     (i64.load (i32.add (get_local $offset) (call $system::core::addressFromRef (get_local $lhs))))
   )
-  (export "main" (func $test/fixtures/compiler/0-wast.ro::main))
-  (func $test/fixtures/compiler/0-wast.ro::xx
+  (export "main" (func $test/fixtures/compiler/0-wast.lys::main))
+  (func $test/fixtures/compiler/0-wast.lys::xx
     (block $B1
       (nop)
     )
   )
-  (func $test/fixtures/compiler/0-wast.ro::add (param $a i32) (param $b i32) (result i32)
+  (func $test/fixtures/compiler/0-wast.lys::add (param $a i32) (param $b i32) (result i32)
     (local $t i32)
     (set_local $t (i32.const 3))
-    (call $test/fixtures/compiler/0-wast.ro::xx)
+    (call $test/fixtures/compiler/0-wast.lys::xx)
     (drop (call $system::memory::malloc_2 (i32.const 1)))
     (i32.mul (i32.add (get_local $a) (get_local $b)) (get_local $t))
   )
-  (func $test/fixtures/compiler/0-wast.ro::main (result i32)
-    (call $test/fixtures/compiler/0-wast.ro::add (i32.const 1) (i32.const 2))
+  (func $test/fixtures/compiler/0-wast.lys::main (result i32)
+    (call $test/fixtures/compiler/0-wast.lys::add (i32.const 1) (i32.const 2))
   )
   (func $%%START%%
     (set_global $system::memory::AL_BITS (i32.const 3))
