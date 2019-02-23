@@ -6,20 +6,20 @@ import { ParsingContext } from '../dist/parser/ParsingContext';
 
 const phases = function(txt: string): CanonicalPhaseResult {
   const parsingContext = new ParsingContext();
-  const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+  const parsing = parsingContext.getParsingPhaseForContent('test.lys', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
 };
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/canonical/*.ro', phases, result => printAST(result.document), '.ast');
+  folderBasedTest('test/fixtures/canonical/*.lys', phases, result => printAST(result.document), '.ast');
 });
 
 describe('Canonical', function() {
   let testCount = 0;
 
   function getFileName() {
-    return `canonical_tests_${testCount++}.ro`;
+    return `canonical_tests_${testCount++}.lys`;
   }
 
   function test(literals, ...placeholders) {

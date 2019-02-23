@@ -252,7 +252,7 @@ function injectCoreImport(document: Nodes.DocumentNode) {
   // TODO: Fix this horrible hack, check correctly if we are in a stdlib
   // context. If so, do not inject the system::core import
 
-  if (document.file && document.file.endsWith('stdlib/system/core.ro')) return;
+  if (document.file && document.file.endsWith('stdlib/system/core.lys')) return;
 
   const coreModuleImport = new Nodes.ImportDirectiveNode();
 

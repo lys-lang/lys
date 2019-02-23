@@ -36,7 +36,7 @@ const phases = function(txt: string, fileName: string): CodeGenerationPhaseResul
 describe('Compiler', function() {
   describe('Core lib', () => {
     folderBasedTest(
-      'stdlib/**/*.ro',
+      'stdlib/**/*.lys',
       compilationPhases,
       async (_result, e) => {
         if (e) throw e;
@@ -47,11 +47,11 @@ describe('Compiler', function() {
   });
 
   describe('AST', () => {
-    folderBasedTest('**/compiler/*.ro', phases, async result => printAST(result.document), '.ast');
+    folderBasedTest('**/compiler/*.lys', phases, async result => printAST(result.document), '.ast');
   });
 
   describe('Compilation', () => {
-    folderBasedTest('**/compiler/*.ro', phases, async (result, e) => {
+    folderBasedTest('**/compiler/*.lys', phases, async (result, e) => {
       if (e) throw e;
       await result.validate(false);
       return print(result.programAST);
@@ -59,7 +59,7 @@ describe('Compiler', function() {
   });
   describe('Compilation-optimized', () => {
     folderBasedTest(
-      '**/compiler/*.ro',
+      '**/compiler/*.lys',
       phases,
       async (result, e) => {
         if (e) throw e;

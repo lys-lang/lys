@@ -1,0 +1,7 @@
+test/fixtures/type-error/global-assignment.lys
+    1│ var x = 1
+    2│ 
+    3│ fun addOne(): i32 = {
+    4│   x = x + 1.0
+     │       ^^^^^^^ Invalid signature. Expecting arguments type (i32, i32) but got (i32, f32)
+    5│ }

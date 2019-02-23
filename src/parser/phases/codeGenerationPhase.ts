@@ -377,7 +377,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     const wabtModule = wabt.parseWat(
       this.compilationPhaseResult.typePhaseResult.scopePhaseResult.semanticPhaseResult.canonicalPhaseResult
-        .parsingPhaseResult.fileName || 'main.ro',
+        .parsingPhaseResult.fileName || 'main.lys',
       text
     );
 

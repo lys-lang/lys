@@ -1,0 +1,87 @@
+test/fixtures/type-error/loops.lys
+    1│ fun a(): void = {
+    2│   continue
+     │   ^^^^^^^^ Invalid location: No loop was found
+    3│ }
+    4│ 
+    5│ fun b(): void = {
+    6│   break
+     │   ^^^^^ Invalid location: No loop was found
+    7│ }
+    8│ 
+    9│ fun c(): void = {
+   10│   loop { continue }
+   11│ }
+   12│ 
+   13│ fun d(): void = {
+   14│   loop { break }
+   15│ }
+   16│ 
+   17│ fun e(): void = {
+   18│   loop {
+   19│     continue
+   20│     break
+     │     ^^^^^ Unreachable code
+   21│   }
+   22│ }
+   23│ 
+   24│ fun f(): void = {
+   25│   loop {
+   26│     break
+   27│     continue
+     │     ^^^^^^^^ Unreachable code
+   28│   }
+   29│ }
+   30│ 
+   31│ fun g(): void = {
+   32│   loop continue
+   33│ }
+   34│ 
+   35│ fun h(): void = {
+   36│   loop break
+   37│ }
+   38│ 
+   39│ fun i(): void = {
+   40│   var x = 1
+   41│   loop {
+   42│     x = {
+   43│       if (x == 1)
+   44│         continue
+     │         ^^^^^^^^ Invalid location. Parent block must return a value
+   45│       x + 1
+   46│     }
+     │     ^ Not all paths return a value
+   47│   }
+   48│ }
+   49│ 
+   50│ fun j(e: i32): void = {
+   51│   var x = 1
+   52│   loop {
+   53│     x = {
+   54│       match e {
+   55│         case 1 -> {
+   56│           if (x >= 1) {
+   57│             match x {
+   58│               case 1 -> {
+   59│                 continue
+     │                 ^^^^^^^^ Invalid location. Parent block must return a value
+   60│                 4
+   61│               }
+   62│               else -> {
+   63│                 break
+     │                 ^^^^^ Invalid location. Parent block must return a value
+   64│                 3
+   65│               }
+   66│             }
+   67│           }
+   68│         }
+   69│         else -> continue
+     │                 ^^^^^^^^ Invalid location. Parent block must return a value
+   70│       }
+   71│       x + 1
+   72│     }
+     │     ^ Not all paths return a value
+   73│   }
+   74│ }
+   75│ 
+   76│ 
