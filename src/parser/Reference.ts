@@ -1,5 +1,5 @@
 import { Nodes } from './nodes';
-import { Closure, ReferenceType } from './aclosure';
+import { Closure, ReferenceType } from './Closure';
 
 export class Reference {
   usages = 0;

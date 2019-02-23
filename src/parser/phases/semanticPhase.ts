@@ -1,6 +1,6 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { Closure } from '../aclosure';
+import { Closure } from '../Closure';
 import { failIfErrors } from './findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { CanonicalPhaseResult } from './canonicalPhase';
