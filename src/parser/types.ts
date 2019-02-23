@@ -573,40 +573,6 @@ export class TypeAlias extends Type {
   }
 }
 
-export class PropertyType extends Type {
-  constructor(
-    public name: Nodes.NameIdentifierNode,
-    public readonly getter: Nodes.NameIdentifierNode,
-    public readonly setter: Nodes.NameIdentifierNode
-  ) {
-    super();
-  }
-
-  get binaryenType(): Valtype {
-    return 'i64';
-  }
-
-  get nativeType(): NativeTypes {
-    return NativeTypes.anyfunc;
-  }
-
-  canBeAssignedTo() {
-    return false;
-  }
-
-  equals(other: Type) {
-    return other === this;
-  }
-
-  toString() {
-    return this.name.name;
-  }
-
-  inspect() {
-    return `(property ${this.name.name})`;
-  }
-}
-
 export class TypeType extends Type {
   private constructor(public readonly of: Type) {
     super();
@@ -637,13 +603,26 @@ export class TypeType extends Type {
   }
 }
 
-export class NativeType extends Type {
+export class StackType extends Type {
   constructor(public typeName: string, public nativeType: NativeTypes) {
     super();
   }
 
   equals(other: Type) {
     return other === this;
+  }
+
+  canBeAssignedTo(other: Type) {
+    const otherType = getUnderlyingTypeFromAlias(other);
+
+    if (
+      otherType instanceof StackType &&
+      otherType.nativeType == this.nativeType &&
+      otherType.typeName == this.typeName
+    )
+      return true;
+
+    return super.canBeAssignedTo(other);
   }
 
   toString() {
@@ -693,18 +672,8 @@ export class NeverType extends Type {
 }
 
 export const InjectableTypes = Object.assign(Object.create(null) as unknown, {
-  u8: new NativeType('u8', NativeTypes.i32),
-  boolean: new NativeType('boolean', NativeTypes.i32),
-  i16: new NativeType('i16', NativeTypes.i32),
-  u16: new NativeType('u16', NativeTypes.i32),
-  i32: new NativeType('i32', NativeTypes.i32),
-  u32: new NativeType('u32', NativeTypes.i32),
-  i64: new NativeType('i64', NativeTypes.i64),
-  u64: new NativeType('u64', NativeTypes.i64),
-  f32: new NativeType('f32', NativeTypes.f32),
-  f64: new NativeType('f64', NativeTypes.f64),
-  void: new NativeType('void', NativeTypes.void),
-  bytes: new NativeType('bytes', NativeTypes.i64),
+  boolean: new StackType('boolean', NativeTypes.i32),
+  void: new StackType('void', NativeTypes.void),
   ref: RefType.instance,
   never: new NeverType()
 });

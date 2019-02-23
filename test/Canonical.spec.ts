@@ -106,23 +106,27 @@ describe('Canonical', function() {
   `;
 
   test`
-    fun fn(): Int  = a match {else -> 1}
+    fun fn(): Int  = match a {else -> 1}
   `;
 
   test`
-    fun fn(): Int = a match {case 1 -> 2 else -> 1}
+    fun fn(): Int = match a {case 1 -> 2 else -> 1}
   `;
 
   test`
-    fun fn(): Int = { {a} match {case 1 -> {2} else -> {1}} }
+    fun fn(): Int = { match {a} {case 1 -> {2} else -> {1}} }
   `;
 
   test`
-    fun fn(): Int = { a match {case 1 -> 2 else -> 1} }
+    fun fn(): Int = { match 1 + 2 {case 1 -> {2} else -> {1}} }
   `;
 
   test`
-    fun fn(): Int = a match {
+    fun fn(): Int = { match a {case 1 -> 2 else -> 1} }
+  `;
+
+  test`
+    fun fn(): Int = match a {
       case 1 -> 2
       case a if a < 3 -> 3.1
       else -> 1

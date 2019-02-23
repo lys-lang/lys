@@ -8,7 +8,7 @@
 /**
  * Injected system types, they have no explicit type, it is only a delcaration
  */
-type i32
+type i32 = %stack {lowLevelType="i32"}
 
 /**
  * Type aliases
@@ -81,7 +81,7 @@ type maybe<T> {
  * This function "adds the method" isRed to the type `color``
  */
 fun isRed(col: color) =
-  col match {
+  match col {
     case Red ->             // type match, in this case is a literal match
       true
     case Custom(r,g,b) ->   // deconstruct
@@ -96,7 +96,7 @@ fun isRed(col: color) =
  * Monads
  */
 fun getOrElse<T>(value: maybe<T>, fn: fun() -> T): T =
-  value match {
+  match value {
     case original is Some(x) ->
       x                     // desonstruct preserving the original value in scope
                             // original type is Some<T>, NOT maybe<T>
@@ -104,7 +104,7 @@ fun getOrElse<T>(value: maybe<T>, fn: fun() -> T): T =
   }
 
 fun otherScenarios(x: i32) =
-  x match {
+  match x {
     case 0 -> 0             // literal pattern matching
     case y if (y > 20) -> y // condition and scoped value
   }
@@ -191,9 +191,9 @@ val res = with X handle get()
 ##
 
 ```dwl
-type i32
-type f32
-type boolean
+type i32 = %stack { lowLevelType="i32" }
+type f32 = %stack { lowLevelType="f32" }
+type boolean = %injected
 
 type Number {
   Infinity
@@ -206,7 +206,7 @@ type Number {
 // type Number = Infinity | NDet | Real(f32) | Natural(i32) | Complex(f32, f32)
 
 fun isComplex(number: Number): boolean =
-  number match {
+  match number {
     case is Real(_) -> false
     case is Natural(_) -> false
     case is Complex(_, imaginary) -> imaginary != 0.0

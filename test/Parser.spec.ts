@@ -77,8 +77,8 @@ describe('Parser', () => {
       testEquivalence(`val z = (HEAP_BASE + AL_MASK) & ~AL_MASK`, `val z = (HEAP_BASE + AL_MASK) & (~AL_MASK)`);
       testEquivalence(`val z = newPtr > pagesBefore << 16`, `val z = newPtr > (pagesBefore << 16)`);
       testEquivalence(
-        `var x = if (a) 1 else b match { else -> 1 }`,
-        `var x = (   if(a) (1) else ((b) match { else -> 1 })   )`
+        `var x = if (a) 1 else match b { else -> 1 }`,
+        `var x = (   if(a) (1) else (match (b) { else -> 1 })   )`
       );
       testEquivalence(
         `var x = a | b ^ c & d | e || f && g || h && y && j & 5`,
@@ -210,10 +210,10 @@ describe('Parser', () => {
           var x = 1
           loop {
             x = {
-              e match {
+              match e {
                 case 1 -> {
                   if (x >= 1) {
-                    x match {
+                    match x {
                       case 1 -> {
                         continue
                         4
@@ -234,6 +234,13 @@ describe('Parser', () => {
       `;
     });
     describe('namespaces', () => {
+      test`
+        type void    = %stack { lowLevel="void" asd="asd" ddd=0x12313 }
+        type void    = %stack {}
+        type void    = %stack { }
+        type void    = %stack{ }
+        type void    = %stack{ a=false }
+      `;
       test`
         type Enum
         type Enum= %struct{}
@@ -462,16 +469,18 @@ describe('Parser', () => {
 
       test`
         // 8 bit
-        cotype byte
+        enum byte
 
         // 16 bit
         type short
-        rectype ushort
+        enum ushort {
+          asd
+        }
 
         // 32 bit
         private type int32
         type float
-        private rectype uint32
+        private enum uint32
 
         // 64 bit
         type int64
@@ -492,8 +501,8 @@ describe('Parser', () => {
       `;
 
       test`
-        type void
-        type i32
+        type void = %injected
+        type i32 = %stack { lowLevelType="i32" }
 
         effect state {
           get(): i32
@@ -502,8 +511,8 @@ describe('Parser', () => {
       `;
 
       test`
-        type void
-        type i32
+        type void = %injected
+        type i32 = %stack { lowLevelType="i32" }
 
         effect state<T> {
           get(): T
@@ -620,11 +629,11 @@ describe('Parser', () => {
     // private fun getTest() = test
     // `;
 
-    test`val test = 1 match {}`;
-    test`val test = 1 match { else -> 1 }`;
-    test`val test = {1 match { else -> 1 }}`;
+    test`val test = match 1 {}`;
+    test`val test = match 1 { else -> 1 }`;
+    test`val test = {match 1 { else -> 1 }}`;
     test`
-      val test = 1 match {
+      val test = match 1 {
         case 2 -> true
         else -> false
       }
@@ -642,24 +651,24 @@ describe('Parser', () => {
       }
     `;
 
-    test`val test = 1 match { case 2 -> true else -> false }`;
+    test`val test = match 1 { case 2 -> true else -> false }`;
 
     test`
-      val test = 1 match {
+      val test = match 1 {
         case 2->true
         else->false
       }
     `;
 
     test`
-      val test = 1 match {
+      val test = match 1 {
         case 2 -> true
         else -> false
       }
     `;
 
     test`
-      val test = 1 match {
+      val test = match 1 {
         case x if true -> true
         case x if x < 1 && x < 10 -> true
         case 2 -> true
@@ -697,8 +706,8 @@ describe('Parser', () => {
           ifa()
           `;
 
-    test`val test = 1 match { case x if x < 1 && x < 10 -> true }`;
-    test`var a = (x match { else -> 1 }).map(1 * 2)`;
+    test`val test = match 1 { case x if x < 1 && x < 10 -> true }`;
+    test`var a = (match x { else -> 1 }).map(1 * 2)`;
 
     test`var a = !x()`;
     test`var a = x()`;

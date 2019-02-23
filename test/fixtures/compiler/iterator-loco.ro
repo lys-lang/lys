@@ -30,7 +30,7 @@ fun test(from: i32, to: i32): i32 = {
 
   val $iter$ = Iterator(from, to)
   loop {
-    Iterator.next($iter$) match {
+    match Iterator.next($iter$) {
       case is Some(value) -> {
         ret = ret + value
 

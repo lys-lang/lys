@@ -8,7 +8,16 @@ import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { ParsingContext } from '../ParsingContext';
 import { print } from '../../utils/typeGraphPrinter';
-import { InjectableTypes, StructType, UnionType, TypeType, TypeAlias, IntersectionType } from '../types';
+import {
+  InjectableTypes,
+  StructType,
+  UnionType,
+  TypeType,
+  TypeAlias,
+  IntersectionType,
+  StackType,
+  NativeTypes
+} from '../types';
 
 const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
   node.parent = parent;
@@ -18,28 +27,49 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
   (_node, _phase) => {},
   (node, phase: TypePhaseResult) => {
     if (node instanceof Nodes.TypeDirectiveNode) {
-      if (node.valueType instanceof Nodes.StructSignarureNode) {
+      if (node.valueType instanceof Nodes.StructTypeNode) {
         node.variableName.ofType = TypeType.of(
           new TypeAlias(node.variableName, new StructType(node.variableName.name, node.valueType.names))
         );
-      } else if (!node.valueType) {
+      } else if (node.valueType instanceof Nodes.StackTypeNode) {
+        const lowLevelType = node.valueType.metadata['lowLevelType'];
+
+        if (!lowLevelType) {
+          phase.parsingContext.messageCollector.error(`Missing lowLevelType schema`, node.valueType);
+          node.variableName.ofType = InjectableTypes.never;
+          return;
+        }
+
+        if (lowLevelType instanceof Nodes.StringLiteral) {
+          const type: NativeTypes = lowLevelType.value as any;
+
+          if (type in NativeTypes) {
+            node.variableName.ofType = TypeType.of(
+              new TypeAlias(node.variableName, new StackType(node.variableName.name, type))
+            );
+          } else {
+            node.variableName.ofType = InjectableTypes.never;
+            phase.parsingContext.messageCollector.error(`Unknown lowLevelType ${lowLevelType.value}`, lowLevelType);
+          }
+        } else {
+          node.variableName.ofType = InjectableTypes.never;
+          phase.parsingContext.messageCollector.error(`lowLevelType must be a string`, lowLevelType);
+        }
+      } else if (node.valueType instanceof Nodes.InjectedTypeNode) {
         if (node.variableName.name in InjectableTypes) {
           node.variableName.ofType = TypeType.of(
             new TypeAlias(node.variableName, InjectableTypes[node.variableName.name])
           );
         } else {
+          phase.parsingContext.messageCollector.error(`Unknown injectable type`, node.valueType);
           node.variableName.ofType = TypeType.of(new TypeAlias(node.variableName, InjectableTypes.never));
         }
-      } else if (node.variableName.name in InjectableTypes) {
-        node.variableName.ofType = TypeType.of(InjectableTypes.never);
-        phase.parsingContext.messageCollector.error(
-          `Cannot find built-in type "${node.variableName.name}"`,
-          node.variableName
-        );
       } else if (node.valueType instanceof Nodes.UnionTypeNode) {
         node.variableName.ofType = TypeType.of(new TypeAlias(node.variableName, new UnionType()));
       } else if (node.valueType instanceof Nodes.IntersectionTypeNode) {
         node.variableName.ofType = TypeType.of(new TypeAlias(node.variableName, new IntersectionType()));
+      } else if (!node.valueType) {
+        phase.parsingContext.messageCollector.error(`Missing type`, node);
       }
     }
   }

@@ -484,9 +484,23 @@ export namespace Nodes {
 
   export class UnknownExpressionNode extends ExpressionNode {}
 
-  export class StructSignarureNode extends TypeNode {
+  export class StructTypeNode extends TypeNode {
     names: string[] = [];
 
+    constructor(astNode?: ASTNode) {
+      super(astNode);
+    }
+  }
+
+  export class StackTypeNode extends TypeNode {
+    metadata: Record<string, LiteralNode<any>> = {};
+
+    constructor(astNode?: ASTNode) {
+      super(astNode);
+    }
+  }
+
+  export class InjectedTypeNode extends TypeNode {
     constructor(astNode?: ASTNode) {
       super(astNode);
     }

@@ -21,8 +21,8 @@ const resolveLocals = walkPreOrder(
       // create a local for lhs of MatchNode
 
       /**
-       *   aFunction(123) match { ... }
-       *   ^^^^^^^^^^^^^^ this part will get its own local
+       *   match aFunction(123) { ... }
+       *         ^^^^^^^^^^^^^^ this part will get its own local
        */
       const fn = findParentType(node, Nodes.FunctionNode);
       const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType));

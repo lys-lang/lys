@@ -1,6 +1,6 @@
 test/fixtures/type-error/scope-failure.ro
     1│ fun isComplex(number: i32): boolean =
-    2│   number match {
+    2│   match number {
     3│     case x is Real(_) -> false
      │               ^^^^ Cannot resolve reference "Real"
     4│     case 2 -> false

@@ -7,8 +7,8 @@ test/fixtures/type-error/notExhaustiveMatch.ro
     6│ 
     7│ 
     8│ fun test(x: color): color =
-    9│   x match {
-     │     ^^^^^ Match is not exhaustive, not covered types: Blue
+    9│   match x {
+     │   ^^^^^ Match is not exhaustive, not covered types: Blue
    10│     // there MUST be an error here ^^^^
    11│ 
    12│ 
@@ -17,5 +17,5 @@ test/fixtures/type-error/notExhaustiveMatch.ro
    15│   }
    16│ 
    17│ fun test1(x: color): color =
-   18│   x match {
+   18│   match x {
 … 35

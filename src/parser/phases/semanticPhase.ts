@@ -49,7 +49,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
   const typeDirective = new Nodes.TypeDirectiveNode();
   typeDirective.variableName = node.declaredName;
-  const signature = new Nodes.StructSignarureNode();
+  const signature = new Nodes.StructTypeNode();
   typeDirective.valueType = signature;
 
   typeDirective.annotate(new annotations.Injected());
@@ -278,6 +278,11 @@ const processUnions = function(
     if (node instanceof Nodes.TypeDirectiveNode) {
       const { valueType, variableName } = node;
 
+      if (!valueType) {
+        phase.parsingContext.messageCollector.error(`Missing type value`, variableName);
+        return;
+      }
+
       phase.parsingContext.registerType(node);
 
       if (valueType instanceof Nodes.UnionTypeNode) {
@@ -401,7 +406,7 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResul
     if (node.deconstructorNames && node.deconstructorNames.length) {
       /**
        * struct Node(value: i32)
-       * x match {
+       * match x {
        *   case x is Node(theValue) -> theValue
        *   ...
        * }
@@ -409,7 +414,7 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResul
        * roughly desugars to
        *
        * struct Node(value: i32)
-       * x match {
+       * match x {
        *   case x is Node -> {
        *     val theValue = x.value
        *     theValue
@@ -465,7 +470,7 @@ export class SemanticPhaseResult extends PhaseResult {
   }
 
   protected execute() {
-    this.document.closure = new Closure(this.parsingContext, null, this.moduleName, 'document');
+    this.document.closure = new Closure(this.parsingContext, null, this.moduleName, 'document_' + this.moduleName);
 
     preprocessStructs(this.document, this);
     processUnions(this.document, this);

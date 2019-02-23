@@ -31,7 +31,7 @@ InlineModifier    ::= INLINE_KEYWORD
 TypeKind          ::= TYPE_KEYWORD
 
 UnknownExpression ::= '???'
-ValueType         ::= '=' WS* (Type | StructLiteral) {fragment=true}
+ValueType         ::= '=' WS* (Type | StructLiteral | StackLiteral | InjectedLiteral) {fragment=true}
 
 TypeVariableList  ::= TypeVariable NthTypeVariable? WS*
 NthTypeVariable   ::= ',' WS* TypeVariable WS* {fragment=true}
@@ -93,25 +93,23 @@ FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* '
 FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,recoverUntil=PAREN_RECOVERY}
 FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 
-IsPointer         ::= '*'
-IsArray           ::= '[]'
-
-Expression        ::= IfExpression
-                    | LoopExpression
-                    | BreakStatement
-                    | ContinueStatement
-                    | AssignExpression (WS* MatchExpression)* {simplifyWhenOneChildren=true}
+Expression        ::= &('if') IfExpression
+                    | &('m') MatchExpression
+                    | &('l') LoopExpression
+                    | &('b') BreakStatement
+                    | &('c') ContinueStatement
+                    | AssignExpression {fragment=true}
 
 Statement         ::= ValDeclaration
                     | VarDeclaration
                     | FunDeclaration
                     | Expression {fragment=true}
 
-MatchExpression   ::= MatchKeyword WS* MatchBody {pin=1,fragment=true}
+MatchExpression   ::= MatchKeyword WS* AssignExpression WS* MatchBody {pin=1}
 
 LoopExpression    ::= LOOP_KEYWORD WS* Expression {pin=1}
-ContinueStatement ::= CONTINUE_KEYWORD
-BreakStatement    ::= BREAK_KEYWORD
+ContinueStatement ::= CONTINUE_KEYWORD {pin=1}
+BreakStatement    ::= BREAK_KEYWORD {pin=1}
 
 BinMemberOperator ::= '.' | '#'
 
@@ -189,6 +187,10 @@ QName             ::= NameIdentifier ('::' NameIdentifier)*
 
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
 StructLiteral     ::= STRUCT_LITERAL_KEYWORD WS* '{' (NameIdentifier WS* NthNameIdentifier*)? '}' WS* {pin=2}
+StackLiteral      ::= STACK_LITERAL_KEYWORD WS* '{' WS* (NameLiteralPair WS*)* '}' WS* {pin=2}
+InjectedLiteral      ::= INJECTED_LITERAL_KEYWORD {pin=1}
+
+NameLiteralPair   ::= NameIdentifier WS* '=' WS* Literal {pin=1}
 
 SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
 SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
@@ -221,35 +223,35 @@ KEYWORD           ::= TRUE_KEYWORD
 
 /* Tokens */
 
-WASM_KEYWORD      ::= '%wasm' {pin=1}
-STRUCT_LITERAL_KEYWORD
-                  ::= '%struct' {pin=1}
+WASM_KEYWORD            ::= '%wasm' {pin=1}
+STRUCT_LITERAL_KEYWORD  ::= '%struct' {pin=1}
+STACK_LITERAL_KEYWORD   ::= '%stack' {pin=1}
+INJECTED_LITERAL_KEYWORD::= '%injected' {pin=1}
+
 FUN_KEYWORD       ::= 'fun'       WS+
 VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
 IMPL_KEYWORD      ::= 'impl'      WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
-STRUCT_KEYWORD    ::= 'struct' WS+
-PRIVATE_KEYWORD   ::= 'private' WS+
-INLINE_KEYWORD    ::= 'inline' WS+
+STRUCT_KEYWORD    ::= 'struct'    WS+
+PRIVATE_KEYWORD   ::= 'private'   WS+
+INLINE_KEYWORD    ::= 'inline'    WS+
 
-LOOP_KEYWORD      ::= 'loop'     ![A-Za-z0-9_]
-CONTINUE_KEYWORD  ::= 'continue' ![a-zA-Z0-9_]
-BREAK_KEYWORD     ::= 'break'    ![A-Za-z0-9_]
-TRUE_KEYWORD      ::= 'true'     ![A-Za-z0-9_]
-FALSE_KEYWORD     ::= 'false'    ![A-Za-z0-9_]
-IF_KEYWORD        ::= 'if'       ![A-Za-z0-9_]
-ELSE_KEYWORD      ::= 'else'     ![A-Za-z0-9_]
-CASE_KEYWORD      ::= 'case'     ![A-Za-z0-9_]
-MatchKeyword      ::= 'match'    ![A-Za-z0-9_]
+LOOP_KEYWORD      ::= 'loop'      ![A-Za-z0-9_$]
+CONTINUE_KEYWORD  ::= 'continue'  ![a-zA-Z0-9_$]
+BREAK_KEYWORD     ::= 'break'     ![A-Za-z0-9_$]
+TRUE_KEYWORD      ::= 'true'      ![A-Za-z0-9_$]
+FALSE_KEYWORD     ::= 'false'     ![A-Za-z0-9_$]
+IF_KEYWORD        ::= 'if'        ![A-Za-z0-9_$]
+ELSE_KEYWORD      ::= 'else'      ![A-Za-z0-9_$]
+CASE_KEYWORD      ::= 'case'      ![A-Za-z0-9_$]
+MatchKeyword      ::= 'match'     ![A-Za-z0-9_$]
 
 
 TYPE_KEYWORD      ::= ( 'type'
-                      | 'cotype'
-                      | 'rectype'
+                      | 'enum'
                       ) WS+
-
 
 RESERVED_WORDS    ::= ( 'abstract'
                       | 'async'

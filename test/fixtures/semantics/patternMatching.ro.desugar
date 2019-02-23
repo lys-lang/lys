@@ -1,5 +1,5 @@
 fun test(a: i32): boolean =
-  a match {
+  match a {
     case 1 -> true
     else -> false
   }
@@ -243,7 +243,7 @@ impl Complex {
 }
 
 fun isComplex(number: Number): boolean =
-  number match {
+  match number {
     case x is Real -> false
     case x is Infinity -> false
     case is Infinity -> false

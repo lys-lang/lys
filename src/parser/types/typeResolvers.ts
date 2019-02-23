@@ -9,7 +9,8 @@ import {
   RefType,
   TypeAlias,
   InjectableTypes,
-  NeverType
+  NeverType,
+  NativeTypes
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -354,7 +355,7 @@ export class AssignmentNodeTypeResolver extends TypeResolver {
       ctx.parsingContext.messageCollector.error(new TypeMismatch(rhs.incomingType(), lhsType, assignmentNode.rhs));
     }
 
-    if (InjectableTypes.void.equals(rhs.incomingType())) {
+    if (rhs.incomingType().nativeType == NativeTypes.void) {
       ctx.parsingContext.messageCollector.error(
         'The expression returns a void value, which cannot be assigned to any value',
         assignmentNode.rhs

@@ -389,13 +389,19 @@ export class TypeGraphBuilder {
         this.createNode(directive.variableName, new TypeDirectiveResolver(directive.variableName.ofType as TypeAlias))
       );
 
-      if (directive.valueType && !(directive.valueType instanceof Nodes.StructSignarureNode)) {
+      const shouldNotTraverse =
+        !directive.valueType ||
+        directive.valueType instanceof Nodes.StructTypeNode ||
+        directive.valueType instanceof Nodes.StackTypeNode ||
+        directive.valueType instanceof Nodes.InjectedTypeNode;
+
+      if (!shouldNotTraverse) {
         new Edge(this.traverse(directive.valueType), typeDirective);
       }
 
       return typeDirective;
     } else {
-      this.messageCollector.error('Cannot resolve TypeDirective', directive.valueType);
+      this.messageCollector.error('Cannot resolve TypeDirective', directive);
     }
   }
 

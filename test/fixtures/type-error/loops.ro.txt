@@ -58,10 +58,10 @@ test/fixtures/type-error/loops.ro
    51│   var x = 1
    52│   loop {
    53│     x = {
-   54│       e match {
+   54│       match e {
    55│         case 1 -> {
    56│           if (x >= 1) {
-   57│             x match {
+   57│             match x {
    58│               case 1 -> {
    59│                 continue
      │                 ^^^^^^^^ Invalid location. Parent block must return a value

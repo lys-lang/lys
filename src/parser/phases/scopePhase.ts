@@ -122,15 +122,13 @@ const createClosures = walkPreOrder(
         }
       } else if (node instanceof Nodes.OverloadedFunctionNode) {
         node.closure.set(node.functionName, 'FUNCTION');
-      } else if (node instanceof Nodes.ReferenceNode) {
-        node.closure = node.closure.newChildClosure('Reference');
       } else if (node instanceof Nodes.VarDeclarationNode) {
         if (node.variableName.name in InjectableTypes) {
           phase.parsingContext.messageCollector.error(
             new AstNodeError('Cannot declare a variable with the name of an system type', node.variableName)
           );
         }
-        node.value.closure = node.closure.newChildClosure('VarDeclaration');
+        node.value.closure = node.closure.newChildClosure(node.variableName.name + '_VarDeclaration');
         node.closure.set(node.variableName, 'VALUE');
       } else if (node instanceof Nodes.ImplDirective) {
         node.closure = node.closure.newChildClosure(node.reference.variable.text + '.');
@@ -148,7 +146,7 @@ const createClosures = walkPreOrder(
         if (!node.body) {
           phase.parsingContext.messageCollector.error(new AstNodeError('Function has no body', node));
         } else {
-          node.body.closure = node.closure.newChildClosure('FunctionBody');
+          node.body.closure = node.closure.newChildClosure(node.functionName.name + '_Body');
 
           node.parameters.forEach($ => {
             node.body.closure.set($.parameterName, 'VALUE');

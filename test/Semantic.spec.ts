@@ -107,11 +107,12 @@ describe('Semantic', function() {
       result,
       'MUST_FAIL_' + getFileName(),
       'Document',
-      async (document, err) => {
-        const didFail = !!err || !document || !document.isSuccess();
+      async (phaseResult, err) => {
+        const didFail = !!err || !phaseResult || !phaseResult.isSuccess();
         if (!didFail) {
           console.log(result);
-          console.log(document.document.closure.deepInspect());
+          console.log(printAST(phaseResult.document));
+          console.log(phaseResult.document.closure.deepInspect());
         }
         expect(didFail).toEqual(true, 'It must have failed');
       },
@@ -221,7 +222,7 @@ describe('Semantic', function() {
   describe('namespaces', () => {
     test`
 
-      type BB
+      type BB = %injected
       type AA = BB
       impl BB {
         fun gta(): i32 = 1
@@ -232,19 +233,7 @@ describe('Semantic', function() {
 
     testToFail`
 
-      type AA = BB | CC
-      type BB
-      type CC
-      impl CC {
-        fun gta(): i32 = 1
-      }
-
-      fun test(a: i32): boolean = BB#gta()
-    `;
-
-    testToFail`
-
-      type BB
+      type BB = %injected
       type AA = BB
 
       impl BB {
@@ -256,7 +245,7 @@ describe('Semantic', function() {
 
     test`
 
-      type BB
+      type BB = %injected
 
       impl BB {
         var x = 1
@@ -286,16 +275,16 @@ describe('Semantic', function() {
 
   describe('Pattern matching', () => {
     test`
-      fun test(a: i32): boolean = a match {
+      fun test(a: i32): boolean = match a {
         case 1 -> true
         else -> false
       }
     `;
     testToFail`
-      fun test(a: i32): void = a match { }
+      fun test(a: i32): void = match a { }
     `;
     testToFail`
-      fun test(a: i32): i32 = a match { else -> 1 }
+      fun test(a: i32): i32 = match a { else -> 1 }
     `;
   });
 
@@ -437,10 +426,6 @@ describe('Semantic', function() {
       fun test(a: i32): i32 = a
     `;
 
-    testToFail`
-      var a = a
-    `;
-
     test`
       import system::string
     `;
@@ -449,7 +434,10 @@ describe('Semantic', function() {
       import system::stringThatDoesNotExist
     `;
 
-    test`type i32  var a: i32 = 1`;
+    test`
+      type i32 = %stack { lowLevelType="i32" }
+      var a: i32 = 1
+    `;
 
     testToFail`var a: i32a = 1`;
 
@@ -459,7 +447,10 @@ describe('Semantic', function() {
       var a = "hello"
       var bytes = a.length
     `;
-    testToFail`type i32  var i32 = 1`;
+    testToFail`
+      type i32 = %stack { lowLevelType="i32" }
+      var i32 = 1
+    `;
 
     test`
       var a = 1 var b = a

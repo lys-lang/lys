@@ -245,34 +245,13 @@ const visitor = {
 
     return ret;
   },
-  Expression(astNode: Nodes.ASTNode) {
-    let ret = visit(astNode.children[0]);
+  MatchExpression(astNode: Nodes.ASTNode) {
+    const match = new Nodes.PatternMatcherNode(astNode.children[0]);
 
-    for (let currentChildren = 1; currentChildren < astNode.children.length; currentChildren++) {
-      const currentNode = astNode.children[currentChildren];
+    match.lhs = visit(astNode.children[1]);
+    match.matchingSet = astNode.children[2].children.map($ => visit($));
 
-      const nextNode = astNode.children[currentChildren + 1];
-
-      if (currentNode.type === 'MatchKeyword') {
-        const match = new Nodes.PatternMatcherNode(currentNode);
-        match.lhs = ret;
-
-        const doesItHaveMatchingSet = nextNode && nextNode.type === 'MatchBody';
-
-        if (doesItHaveMatchingSet) {
-          currentChildren++;
-          match.matchingSet = nextNode.children.map($ => visit($));
-        } else {
-          match.matchingSet = [];
-        }
-
-        ret = match;
-      } else {
-        console.log('Dont know what to doooo2' + currentNode.text);
-      }
-    }
-
-    return ret;
+    return match;
   },
   Reference(astNode: Nodes.ASTNode) {
     const ret = new Nodes.ReferenceNode(astNode);
@@ -438,8 +417,22 @@ const visitor = {
     return new Nodes.UnknownExpressionNode(astNode);
   },
   StructLiteral(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.StructSignarureNode(astNode);
+    const ret = new Nodes.StructTypeNode(astNode);
     ret.names = astNode.children.map($ => $.text);
+    return ret;
+  },
+  StackLiteral(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.StackTypeNode(astNode);
+    ret.metadata = Object.create(null);
+
+    for (let namePair of astNode.children) {
+      ret.metadata[namePair.children[0].text] = visit(namePair.children[1]);
+    }
+
+    return ret;
+  },
+  InjectedLiteral(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.InjectedTypeNode(astNode);
     return ret;
   },
   StructDeclaration(astNode: Nodes.ASTNode) {

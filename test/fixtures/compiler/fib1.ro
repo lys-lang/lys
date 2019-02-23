@@ -1,5 +1,5 @@
 private fun fibo(n: i32, a: i32, b: i32): i32 =
-  n match {
+  match n {
     case 0 -> a
     case 1 -> b
     else   -> fibo(n - 1, b, a + b)

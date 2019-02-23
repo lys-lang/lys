@@ -6,7 +6,7 @@ type Color {
 }
 
 fun isRed(x: Color): boolean = {
-  x match {
+  match x {
     case is Red -> true
     case is Custom(a) -> a == 0xFF0000
     else -> false

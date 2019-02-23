@@ -7,7 +7,7 @@ struct Complex(real: f32, imaginary: f32)
 type Number = Infinity | NDet | Real | Natural | Complex
 
 fun isComplex(number: Number): boolean =
-  number match {
+  match number {
     case is Real -> false
     case is Natural -> false
     // TODO: deconstruct

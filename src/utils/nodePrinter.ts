@@ -89,8 +89,14 @@ export function printNode(node: Nodes.Node): string {
     return `(${node.symbol}${node.arguments.map($ => ' ' + printNode($)).join('')})`;
   } else if (node instanceof Nodes.WasmExpressionNode) {
     return `%wasm {\n${indent(node.atoms.map(printNode).join('\n'))}\n}`;
-  } else if (node instanceof Nodes.StructSignarureNode) {
+  } else if (node instanceof Nodes.StructTypeNode) {
     return `%struct { ${node.names.join(', ')} }`;
+  } else if (node instanceof Nodes.InjectedTypeNode) {
+    return `%injected`;
+  } else if (node instanceof Nodes.StackTypeNode) {
+    return `%stack { ${Object.entries(node.metadata)
+      .map(([key, value]) => key + '=' + printNode(value))
+      .join(' ')} }`;
   } else if (node instanceof Nodes.IfNode) {
     const printTrue = () => {
       if (node.truePart instanceof Nodes.BlockNode) {
@@ -128,7 +134,7 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.EffectDeclarationNode) {
     return `effect ${printNode(node.name)} {\n${indent(node.elements.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.PatternMatcherNode) {
-    return `${printNode(node.lhs)} match {\n${indent(node.matchingSet.map(printNode).join('\n'))}\n}`;
+    return `match ${printNode(node.lhs)} {\n${indent(node.matchingSet.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.MatchConditionNode) {
     return `case if ${printNode(node.condition)} -> ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.MatchDefaultNode) {
