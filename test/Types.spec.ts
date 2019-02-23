@@ -57,7 +57,7 @@ describe('Types', function() {
       it(`type inference test #${number}`, async function() {
         this.timeout(5000);
 
-        const phaseResult = phases(program, `types_${number}.ro`);
+        const phaseResult = phases(program, `types_${number}.lys`);
 
         const typePhase = new TypePhaseResult(phaseResult);
 
@@ -138,7 +138,7 @@ describe('Types', function() {
     //     this.fullTitle()
     //       .replace(/\s+/g, '/')
     //       .replace('XXX', n)
-    //       .toLowerCase() + '.ro';
+    //       .toLowerCase() + '.lys';
     //   const folder = dirname(path);
     //   mkdirSync(folder, { recursive: true } as any);
     //   writeFileSync('fixtures/' + path, result);
@@ -3489,7 +3489,7 @@ describe('Types', function() {
   describe('file based tests', () => {
     describe('Resolution', () => {
       folderBasedTest(
-        '**/types/*.ro',
+        '**/types/*.lys',
         phases,
         async (result, e) => {
           if (e) throw e;
@@ -3510,7 +3510,7 @@ describe('Types', function() {
 
     describe('Resolution-ast', () => {
       folderBasedTest(
-        '**/types/*.ro',
+        '**/types/*.lys',
         phases,
         async (result, e) => {
           if (e) {
@@ -3537,7 +3537,7 @@ describe('Types', function() {
 
     describe('Compiler errors', () => {
       folderBasedTest(
-        '**/type-error/*.ro',
+        '**/type-error/*.lys',
         failingPhases,
         async (result, e) => {
           if (e) throw e;

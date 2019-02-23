@@ -38,7 +38,7 @@ export class ParsingContext {
   }
 
   private resolveModule(moduleName: string) {
-    const relative = moduleName.replace(/::/g, '/') + '.ro';
+    const relative = moduleName.replace(/::/g, '/') + '.lys';
 
     let x = resolve(process.cwd(), relative);
 

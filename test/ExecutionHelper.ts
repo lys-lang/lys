@@ -16,7 +16,7 @@ const parsingContext = new ParsingContext();
 
 const phases = function(txt: string): CodeGenerationPhaseResult {
   parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent('test.ro', txt);
+  const parsing = parsingContext.getParsingPhaseForContent('test.lys', txt);
 
   const canonical = new CanonicalPhaseResult(parsing);
   const semantic = new SemanticPhaseResult(canonical, 'test');

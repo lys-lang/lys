@@ -38,7 +38,7 @@ describe('Semantic', function() {
 
   describe('Files', () => {
     folderBasedTest(
-      'test/fixtures/semantics/*.ro',
+      'test/fixtures/semantics/*.lys',
       phases,
       async (result, err) => {
         if (err) {
@@ -50,7 +50,7 @@ describe('Semantic', function() {
       '.ast'
     );
     folderBasedTest(
-      'test/fixtures/semantics/*.ro',
+      'test/fixtures/semantics/*.lys',
       phases1,
       async (result, err) => {
         if (err) {
@@ -66,7 +66,7 @@ describe('Semantic', function() {
   let semanticTestCount = 0;
 
   function getFileName() {
-    return `semantic_tests_${semanticTestCount++}.ro`;
+    return `semantic_tests_${semanticTestCount++}.lys`;
   }
 
   function test(literals, ...placeholders) {

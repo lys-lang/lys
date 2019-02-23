@@ -14,7 +14,7 @@ describe('Parser', () => {
   };
   describe('Failing examples', () => {
     folderBasedTest(
-      '**/parser-error/*.ro',
+      '**/parser-error/*.lys',
       phases,
       async (result, e) => {
         if (!e && result && result.isSuccess()) {
@@ -30,7 +30,7 @@ describe('Parser', () => {
   let testCount = 0;
 
   function getFileName() {
-    return `parser_tests_${testCount++}.ro`;
+    return `parser_tests_${testCount++}.lys`;
   }
 
   describe('Basic sanity tests', function() {
