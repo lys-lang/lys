@@ -3,15 +3,26 @@
   |-TypeDirectiveNode
     |-NameIdentifierNode="bool"
     |-StackTypeNode
-  |-TypeDirectiveNode
+  |-EnumDirectiveNode
     |-NameIdentifierNode="Color"
-    |-TypeDeclarationNode
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Red"
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Green"
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Blue"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Red"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Green"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Blue"
+  |-TypeDirectiveNode
+    |-NameIdentifierNode="theFn1"
+    |-UnionTypeNode
+      |-ReferenceNode
+        |-QNameNode=A
+          |-NameIdentifierNode="A"
+      |-ReferenceNode
+        |-QNameNode=B
+          |-NameIdentifierNode="B"
+      |-ReferenceNode
+        |-QNameNode=C
+          |-NameIdentifierNode="C"
   |-TypeDirectiveNode
     |-NameIdentifierNode="theFn1"
     |-FunctionTypeNode
@@ -300,36 +311,35 @@
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
       |-IntegerLiteral=1
-  |-TypeDirectiveNode
+  |-EnumDirectiveNode
     |-NameIdentifierNode="Number"
-    |-TypeDeclarationNode
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Infinity"
-      |-StructDeclarationNode
-        |-NameIdentifierNode="NDet"
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Real"
-        |-ParameterNode
-          |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Natural"
-        |-ParameterNode
-          |-NameIdentifierNode="number"
-          |-ReferenceNode
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-      |-StructDeclarationNode
-        |-NameIdentifierNode="Complex"
-        |-ParameterNode
-          |-NameIdentifierNode="real"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
-        |-ParameterNode
-          |-NameIdentifierNode="imaginary"
-          |-ReferenceNode
-            |-QNameNode=f32
-              |-NameIdentifierNode="f32"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Infinity"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="NDet"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Real"
+      |-ParameterNode
+        |-NameIdentifierNode="number"
+        |-ReferenceNode
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Natural"
+      |-ParameterNode
+        |-NameIdentifierNode="number"
+        |-ReferenceNode
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+    |-StructDeclarationNode
+      |-NameIdentifierNode="Complex"
+      |-ParameterNode
+        |-NameIdentifierNode="real"
+        |-ReferenceNode
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+      |-ParameterNode
+        |-NameIdentifierNode="imaginary"
+        |-ReferenceNode
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"

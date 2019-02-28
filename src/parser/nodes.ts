@@ -457,6 +457,11 @@ export namespace Nodes {
     typeDiscriminant: number | null = null;
   }
 
+  export class EnumDirectiveNode extends DirectiveNode {
+    variableName: NameIdentifierNode;
+    declarations: StructDeclarationNode[];
+  }
+
   export abstract class LiteralNode<T> extends ExpressionNode {
     value: T;
     get text() {
@@ -640,10 +645,6 @@ export namespace Nodes {
   export class StructDeclarationNode extends TypeNode {
     declaredName: NameIdentifierNode;
     parameters: ParameterNode[];
-  }
-
-  export class TypeDeclarationNode extends TypeNode {
-    declarations: StructDeclarationNode[];
   }
 
   export class EffectDeclarationNode extends Node {

@@ -24,7 +24,7 @@ struct Node(name: string)
 
 // is the same as
 
-type node {
+enum node {
   Node(name: string)
 }
 
@@ -32,7 +32,7 @@ type node {
  * Every element of the type declaration registers a top level name.
  * So, color is globally available as long with Red Green Blue and Custom
  */
-type color {
+enum color {
   Red
   Green
   Blue
@@ -195,7 +195,7 @@ type i32 = %stack { lowLevelType="i32" }
 type f32 = %stack { lowLevelType="f32" }
 type boolean = %stack { lowLevelType="i32" }
 
-type Number {
+enum Number {
   Infinity
   NDet
   Real(number: f32)

@@ -135,16 +135,37 @@ const visitor = {
       ret.isExported = true;
     }
 
-    child; // this is the type kind "type, rectype, cotype"
-
-    child = children.shift(); // this is the NameIdentifier
-
     ret.variableName = visit(child);
 
     if (children.length) {
       ret.valueType = visitLastChild(astNode) as Nodes.TypeNode;
     } else {
       ret.valueType = null;
+    }
+
+    return ret;
+  },
+  EnumDirective(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.EnumDirectiveNode(astNode);
+    const children = astNode.children.slice();
+
+    let child = children.shift();
+
+    if (child.type === 'PrivateModifier') {
+      ret.isExported = false;
+      child = children.shift();
+    } else {
+      ret.isExported = true;
+    }
+
+    ret.variableName = visit(child);
+
+    const typeDeclElements = findChildrenType(astNode, 'TypeDeclElements');
+
+    if (typeDeclElements) {
+      ret.declarations = typeDeclElements.children.map($ => visit($));
+    } else {
+      ret.declarations = [];
     }
 
     return ret;
@@ -445,19 +466,6 @@ const visitor = {
       ret.parameters = params.children.map($ => visit($));
     } else {
       ret.parameters = [];
-    }
-
-    return ret;
-  },
-  TypeDeclaration(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.TypeDeclarationNode(astNode);
-
-    const typeDeclElements = findChildrenType(astNode, 'TypeDeclElements');
-
-    if (typeDeclElements) {
-      ret.declarations = typeDeclElements.children.map($ => visit($));
-    } else {
-      ret.declarations = [];
     }
 
     return ret;

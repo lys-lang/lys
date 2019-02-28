@@ -46,7 +46,7 @@ describe('execution tests', () => {
       `
         struct Iterator(current: i32, target: i32)
 
-        type Maybe {
+        enum Maybe {
           None
           Some(value: i32)
         }
@@ -264,12 +264,12 @@ describe('execution tests', () => {
     test(
       'recursive types forest',
       `
-        type Tree {
+        enum Tree {
           Empty
           Node(a: Tree | Forest)
         }
 
-        type Forest {
+        enum Forest {
           Nil
           Cons(tree: Tree | Forest)
         }
@@ -325,7 +325,7 @@ describe('execution tests', () => {
     test(
       'set struct values',
       `
-        type Color {
+        enum Color {
           None
           Red
           Green
@@ -386,7 +386,7 @@ describe('execution tests', () => {
     test(
       'chained getters',
       `
-        type Tree {
+        enum Tree {
           Leaf(value: i32)
           Branch(left: Leaf)
         }
@@ -418,7 +418,7 @@ describe('execution tests', () => {
     test(
       'set struct values with getters and setters',
       `
-        type Color {
+        enum Color {
           None
           Red
           Green
@@ -477,7 +477,7 @@ describe('execution tests', () => {
     test(
       'varidic n-ary and pattern matching',
       `
-        type Enum {
+        enum Enum {
           None
           Custom(hex: i32)
         }
@@ -509,13 +509,13 @@ describe('execution tests', () => {
     test(
       'is with pattern matchin',
       `
-        type Enum {
+        enum Enum {
           A
           B
           C
         }
 
-        type Color {
+        enum Color {
           Red
           Green
           Blue
@@ -606,13 +606,13 @@ describe('execution tests', () => {
     test(
       'is',
       `
-        type Enum {
+        enum Enum {
           A
           B
           C
         }
 
-        type Color {
+        enum Color {
           Red
           Green
           Blue
@@ -663,13 +663,13 @@ describe('execution tests', () => {
     test(
       'is, pattern matching variable',
       `
-        type Enum {
+        enum Enum {
           A
           B
           C
         }
 
-        type Color {
+        enum Color {
           Red
           Green
           Blue
@@ -710,7 +710,7 @@ describe('execution tests', () => {
     test(
       'type alloc and basic pattern match, deconstruct',
       `
-        type Color {
+        enum Color {
           Red
           Green
           Blue
@@ -778,7 +778,7 @@ describe('execution tests', () => {
     test(
       'store values 2',
       `
-        type x {
+        enum x {
           Custom(r: i32, g: i32)
         }
 

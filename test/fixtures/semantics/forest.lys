@@ -1,9 +1,9 @@
-type Tree {
+enum Tree {
   Empty
   Node(a: Tree | Forest)
 }
 
-type Forest {
+enum Forest {
   Nil
   Cons(tree: Tree | Forest)
 }

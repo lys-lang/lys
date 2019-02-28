@@ -9,7 +9,7 @@ closure functions
 
 fun sizeOf(x: Type<A> | A): usize
 
-test parsing `type test {}`
+test parsing `enum test {}`
 
 MESSAGE TO FUTURE AGUS:
 

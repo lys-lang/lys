@@ -244,23 +244,23 @@ const preprocessStructs = function(
   phase: SemanticPhaseResult
 ) {
   document.directives.slice().forEach((node: Nodes.Node) => {
-    if (node instanceof Nodes.TypeDirectiveNode && node.valueType instanceof Nodes.TypeDeclarationNode) {
-      const decls = node.valueType;
-
-      const union = (node.valueType = new Nodes.UnionTypeNode());
+    if (node instanceof Nodes.EnumDirectiveNode) {
+      const newTypeNode = new Nodes.TypeDirectiveNode(node.astNode);
+      newTypeNode.variableName = node.variableName;
+      const union = (newTypeNode.valueType = new Nodes.UnionTypeNode());
       union.of = [];
-      phase.parsingContext.registerType(node);
+      phase.parsingContext.registerType(newTypeNode);
 
-      const newDirectives = [];
+      const newDirectives: Nodes.DirectiveNode[] = [newTypeNode];
 
-      decls.declarations.forEach($ => {
+      node.declarations.forEach($ => {
         newDirectives.push(...processStruct($, phase));
         const refNode = new Nodes.ReferenceNode();
         refNode.variable = Nodes.QNameNode.fromString($.declaredName.name);
         union.of.push(refNode);
       });
 
-      document.directives.splice(document.directives.indexOf(node) + 1, 0, ...newDirectives);
+      document.directives.splice(document.directives.indexOf(node), 1, ...newDirectives);
     } else if (node instanceof Nodes.StructDeclarationNode) {
       const newDirectives = processStruct(node, phase);
       document.directives.splice(document.directives.indexOf(node as any), 1, ...newDirectives);
