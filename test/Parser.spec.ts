@@ -439,11 +439,11 @@ describe('Parser', () => {
       `;
 
       test`
-        type Boolean {
+        enum Boolean {
           True
           False
         }
-        type colors {
+        enum colors {
           Red
           Green
           Blue
@@ -451,14 +451,14 @@ describe('Parser', () => {
       `;
 
       test`
-        type Maybe {
+        enum Maybe {
           None
           Some(a: T)
         }
       `;
 
       test`
-        type Maybe {
+        enum Maybe {
           Some(a: T, b: X, c: asd)
         }
       `;
@@ -469,7 +469,7 @@ describe('Parser', () => {
 
       test`
         // 8 bit
-        enum byte
+        type byte
 
         // 16 bit
         type short
@@ -480,7 +480,7 @@ describe('Parser', () => {
         // 32 bit
         private type int32
         type float
-        private enum uint32
+        private enum uint32 {}
 
         // 64 bit
         type int64

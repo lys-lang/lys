@@ -467,7 +467,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test { Case1 }
+          enum Test { Case1 }
           impl Test {
             fun WWW(x: ref): boolean = x is Test
           }
@@ -478,7 +478,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Test { Case1 }
+          enum Test { Case1 }
 
           impl Test {
             fun WWW(x: ref): boolean = x is Test
@@ -490,7 +490,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Temperature {
+          enum Temperature {
             Kelvin(x: f32)
           }
 
@@ -504,7 +504,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Temperature {
+          enum Temperature {
             Celcius(x: f32)
             Kelvin(x: f32)
           }
@@ -531,7 +531,7 @@ describe('Types', function() {
       describe('resolve "is" and "as" functions', () => {
         describe('sugar', () => {
           checkMainType`
-            type Test {
+            enum Test {
               A
               B
             }
@@ -544,7 +544,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Test {
+            enum Test {
               A
               B
             }
@@ -557,7 +557,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Test {
+            enum Test {
               A
               B
             }
@@ -781,7 +781,7 @@ describe('Types', function() {
 
     describe('recursive types', () => {
       checkMainType`
-        type Test {
+        enum Test {
           Null
           Some(x: ref)
         }
@@ -792,7 +792,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Test {
+        enum Test {
           Null
           Some(x: Test)
         }
@@ -803,7 +803,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Test {
+        enum Test {
           Null
           Some(x: ref)
         }
@@ -816,7 +816,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Test {
+        enum Test {
           Null
           Some(x: Test)
         }
@@ -829,7 +829,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Test {
+        enum Test {
           Null
           Some(x: Test)
         }
@@ -847,12 +847,12 @@ describe('Types', function() {
 
       describe('forest', () => {
         checkMainType`
-          type Tree {
+          enum Tree {
             Empty
             Node(a: Tree | Forest)
           }
 
-          type Forest {
+          enum Forest {
             Nil
             Cons(tree: Tree | Forest)
           }
@@ -946,7 +946,7 @@ describe('Types', function() {
       describe('enums', () => {
         describe('assign unions', function() {
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -963,7 +963,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -983,7 +983,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -1001,7 +1001,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -1036,7 +1036,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -1060,7 +1060,7 @@ describe('Types', function() {
             // TRUE | FALSE | NONE satisfies all the subtypes of BOOLEAN.
             // so, BOOLEAN is not assignable to TRUE | FALSE | NONE. So far.
 
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -1111,7 +1111,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -1127,7 +1127,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type BOOLEAN {
+            enum BOOLEAN {
               TRUE
               FALSE
               NONE
@@ -1144,7 +1144,7 @@ describe('Types', function() {
         });
         describe('unify complete types', () => {
           checkMainType`
-            type Boolean {
+            enum Boolean {
               True
               False
             }
@@ -1155,7 +1155,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Boolean {
+            enum Boolean {
               True(a: i32)
               False(a: i32)
             }
@@ -1166,7 +1166,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Boolean {
+            enum Boolean {
               True
               False
             }
@@ -1177,7 +1177,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Boolean {
+            enum Boolean {
               True
               False
               None
@@ -1189,7 +1189,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Maybe {
+            enum Maybe {
               Some(a: i32)
               None
             }
@@ -1200,7 +1200,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Maybe {
+            enum Maybe {
               Some(a: i32)
               None
             }
@@ -1211,7 +1211,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type Maybe {
+            enum Maybe {
               Some(a: i32)
               None
             }
@@ -1222,7 +1222,7 @@ describe('Types', function() {
           `;
 
           checkMainType`
-            type P {
+            enum P {
               A
               B
             }
@@ -1235,7 +1235,7 @@ describe('Types', function() {
 
           describe('funny case that doesnt work.', () => {
             checkMainType`
-              type P {
+              enum P {
                 B(x: i32)
                 A(x: i32)
               }
@@ -1258,7 +1258,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type x {
+        enum x {
           Nila
           Custom(r: i32)
         }
@@ -1285,7 +1285,7 @@ describe('Types', function() {
       describe('assign to ref', () => {
         checkMainType`
           type void = %injected
-          type x {
+          enum x {
             Nila
             Custom(r: i32)
           }
@@ -1304,7 +1304,7 @@ describe('Types', function() {
         checkMainType`
           type void = %injected
 
-          type x {
+          enum x {
             Nila
             Custom(r: i32)
           }
@@ -1330,7 +1330,7 @@ describe('Types', function() {
         checkMainType`
           type void = %injected
 
-          type x {
+          enum x {
             Nila
           }
 
@@ -1346,7 +1346,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type x {
+          enum x {
             Nila
             Custom(r: i32)
           }
@@ -1366,7 +1366,7 @@ describe('Types', function() {
         checkMainType`
           type void = %injected
 
-          type x {
+          enum x {
             Nila
             Custom(r: i32)
           }
@@ -1393,7 +1393,7 @@ describe('Types', function() {
         checkMainType`
           type void = %injected
 
-          type x {
+          enum x {
             Nila
             Custom(r: i32)
           }
@@ -1419,7 +1419,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type x {
+          enum x {
             Nila
             Custom(r: i32)
           }
@@ -1445,7 +1445,7 @@ describe('Types', function() {
         `;
       });
       checkMainType`
-        type x {
+        enum x {
           Custom(r: i32)
         }
 
@@ -1464,7 +1464,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type x {
+        enum x {
           TEST
           XXX(a: i32)
         }
@@ -1481,7 +1481,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type x {
+        enum x {
           TEST
         }
 
@@ -1543,7 +1543,7 @@ describe('Types', function() {
 
     describe('named types', () => {
       checkMainType`
-        type Color {
+        enum Color {
           Red
           Green
           Blue
@@ -1564,7 +1564,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Color {
+        enum Color {
           Red
           Green
           Blue
@@ -1597,7 +1597,7 @@ describe('Types', function() {
 
     describe('struct "is"', () => {
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
           C
@@ -1636,7 +1636,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
         }
 
@@ -1698,7 +1698,7 @@ describe('Types', function() {
         fun(x: i32) -> void
       `;
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1713,7 +1713,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1728,7 +1728,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1742,7 +1742,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1759,7 +1759,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1788,7 +1788,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1803,7 +1803,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1819,7 +1819,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1836,7 +1836,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1854,7 +1854,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1870,7 +1870,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1886,7 +1886,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -1901,12 +1901,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -1924,12 +1924,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -1946,12 +1946,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -1967,12 +1967,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -1988,12 +1988,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -2450,11 +2450,11 @@ describe('Types', function() {
 
     describe('struct pattern matching', () => {
       checkMainType`
-        type Enum {
+        enum Enum {
           A
         }
 
-        type Color {
+        enum Color {
           Red
         }
 
@@ -2470,13 +2470,13 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
           C
         }
 
-        type Color {
+        enum Color {
           Red
         }
 
@@ -2489,12 +2489,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -2514,7 +2514,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
           C
@@ -2546,12 +2546,12 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
 
-        type Enum2 {
+        enum Enum2 {
           C
           D
         }
@@ -2569,7 +2569,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
         }
 
@@ -2585,7 +2585,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -2603,7 +2603,7 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type Enum {
+        enum Enum {
           A
           B
         }
@@ -2623,7 +2623,7 @@ describe('Types', function() {
 
       describe('deconstruct', () => {
         checkMainType`
-          type Color {
+          enum Color {
             Red
             Custom(r: i32, g: i32, b: i32)
           }
@@ -2639,7 +2639,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Color {
+          enum Color {
             Red
             Custom(a: i32)
           }
@@ -2655,7 +2655,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Color {
+          enum Color {
             Red
             Custom(a: i32)
           }
@@ -2673,7 +2673,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Color {
+          enum Color {
             Red
             Blue
             // TODO: check duplicated params in structs
@@ -2697,7 +2697,7 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type Color {
+          enum Color {
             Red
             Green
             Blue
@@ -2727,7 +2727,7 @@ describe('Types', function() {
 
     describe('structs', () => {
       checkMainType`
-        type BOOLEAN {
+        enum BOOLEAN {
           TRUE
           FALSE
           NONE
@@ -2800,7 +2800,7 @@ describe('Types', function() {
       checkMainType`
         struct X()
 
-        type Y {
+        enum Y {
           X1
         }
 
@@ -2815,7 +2815,7 @@ describe('Types', function() {
       checkMainType`
         struct X()
 
-        type Y {
+        enum Y {
           Z
         }
 
@@ -3119,7 +3119,7 @@ describe('Types', function() {
 
       checkMainType`
 
-        type Boolean {
+        enum Boolean {
           True()
           False()
         }
@@ -3146,12 +3146,12 @@ describe('Types', function() {
 
       checkMainType`
 
-        type Boolean {
+        enum Boolean {
           True()
           False()
         }
 
-        type Boolean2 {
+        enum Boolean2 {
           True2()
         }
 
@@ -3189,12 +3189,12 @@ describe('Types', function() {
 
       checkMainType`
 
-        type Boolean {
+        enum Boolean {
           True()
           False()
         }
 
-        type Boolean2 {
+        enum Boolean2 {
           True2()
         }
 
@@ -3209,7 +3209,7 @@ describe('Types', function() {
 
       checkMainType`
 
-        type Boolean {
+        enum Boolean {
           True()
           False()
         }

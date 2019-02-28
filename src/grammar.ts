@@ -11,6 +11,7 @@ Directive         ::= ( FunctionDirective
                       | VarDirective
                       | StructDirective
                       | TypeDirective
+                      | EnumDirective
                       | ImportDirective
                       | EffectDirective
                       | ImplDirective
@@ -20,7 +21,8 @@ ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as'
 FunctionDirective ::= PrivateModifier? InlineModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
-TypeDirective     ::= PrivateModifier? TypeKind NameIdentifier WS* (&('{') TypeDeclaration | &('=') ValueType)? {pin=2}
+TypeDirective     ::= PrivateModifier? TYPE_KEYWORD NameIdentifier WS* (&('=') ValueType)? {pin=2}
+EnumDirective     ::= PrivateModifier? ENUM_KEYWORD NameIdentifier WS* '{' TypeDeclElements? WS* '}' {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 ImplDirective     ::= PrivateModifier? IMPL_KEYWORD ImplDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
@@ -80,7 +82,6 @@ NamespaceElementList ::= '{' (WS* Directive)* WS* '}' {pin=1,recoverUntil=BLOCK_
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
 EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
-TypeDeclaration   ::= '{' TypeDeclElements? WS* '}' (WS* &'{' NamespaceElementList)? {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 FunctionEffect    ::= '<' WS* (Type WS*)? '>' {pin=1}
 Type              ::= UnionType
@@ -188,7 +189,7 @@ QName             ::= NameIdentifier ('::' NameIdentifier)*
 WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
 StructLiteral     ::= STRUCT_LITERAL_KEYWORD WS* '{' (NameIdentifier WS* NthNameIdentifier*)? '}' WS* {pin=2}
 StackLiteral      ::= STACK_LITERAL_KEYWORD WS* '{' WS* (NameLiteralPair WS*)* '}' WS* {pin=2}
-InjectedLiteral      ::= INJECTED_LITERAL_KEYWORD {pin=1}
+InjectedLiteral   ::= INJECTED_LITERAL_KEYWORD {pin=1}
 
 NameLiteralPair   ::= NameIdentifier WS* '=' WS* Literal {pin=1}
 
@@ -206,6 +207,7 @@ KEYWORD           ::= TRUE_KEYWORD
                     | VAR_KEYWORD
                     | VAL_KEYWORD
                     | TYPE_KEYWORD
+                    | ENUM_KEYWORD
                     | EFFECT_KEYWORD
                     | IMPL_KEYWORD
                     | IMPORT_KEYWORD
@@ -237,6 +239,8 @@ IMPORT_KEYWORD    ::= 'import'    WS+
 STRUCT_KEYWORD    ::= 'struct'    WS+
 PRIVATE_KEYWORD   ::= 'private'   WS+
 INLINE_KEYWORD    ::= 'inline'    WS+
+TYPE_KEYWORD      ::= 'type'      WS+
+ENUM_KEYWORD      ::= 'enum'      WS+
 
 LOOP_KEYWORD      ::= 'loop'      ![A-Za-z0-9_$]
 CONTINUE_KEYWORD  ::= 'continue'  ![a-zA-Z0-9_$]
@@ -249,9 +253,6 @@ CASE_KEYWORD      ::= 'case'      ![A-Za-z0-9_$]
 MatchKeyword      ::= 'match'     ![A-Za-z0-9_$]
 
 
-TYPE_KEYWORD      ::= ( 'type'
-                      | 'enum'
-                      ) WS+
 
 RESERVED_WORDS    ::= ( 'abstract'
                       | 'async'
@@ -302,7 +303,7 @@ AndKeyword        ::= '&&'      ![A-Za-z0-9_]
 OrKeyword         ::= '||'      ![A-Za-z0-9_]
 
 
-DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | RESERVED_WORDS)
+DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | ENUM_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')

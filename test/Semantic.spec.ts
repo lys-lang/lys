@@ -131,7 +131,7 @@ describe('Semantic', function() {
 
   describe('scope shadowing', () => {
     test`
-      type x {
+      enum x {
         Nila
       }
 
@@ -139,7 +139,7 @@ describe('Semantic', function() {
     `;
 
     test`
-      type x {
+      enum x {
         Nila
       }
 
@@ -147,7 +147,7 @@ describe('Semantic', function() {
     `;
 
     testToFail`
-      type N {
+      enum N {
         x
       }
 
@@ -155,7 +155,7 @@ describe('Semantic', function() {
     `;
 
     testToFail`
-      type x {
+      enum x {
         N
       }
 

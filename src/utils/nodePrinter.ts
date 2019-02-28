@@ -129,8 +129,6 @@ export function printNode(node: Nodes.Node): string {
     return node.of.length > 1 ? '(' + node.of.map(printNode).join(' & ') + ')' : node.of.map(printNode).join(' & ');
   } else if (node instanceof Nodes.StructDeclarationNode) {
     return `struct ${printNode(node.declaredName)}(${node.parameters.map(printNode).join(', ')})`;
-  } else if (node instanceof Nodes.TypeDeclarationNode) {
-    return `{\n` + indent(node.declarations.map(printNode).join('\n')) + `\n}`;
   } else if (node instanceof Nodes.EffectDeclarationNode) {
     return `effect ${printNode(node.name)} {\n${indent(node.elements.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.PatternMatcherNode) {
@@ -159,6 +157,10 @@ export function printNode(node: Nodes.Node): string {
     } else {
       return `type ${printNode(node.variableName)}`;
     }
+  } else if (node instanceof Nodes.EnumDirectiveNode) {
+    const types = indent(node.declarations.map($ => printNode($)).join('\n'));
+
+    return `enum ${printNode(node.variableName)} {\n${types}\n}`;
   } else if (node instanceof Nodes.VarDeclarationNode) {
     return (
       (node.mutable ? 'var ' : 'val ') +
