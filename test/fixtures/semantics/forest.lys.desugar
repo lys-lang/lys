@@ -18,6 +18,12 @@ impl Tree {
   }
 }
 
+impl Tree {
+  fun as(a: Tree): ref = %wasm {
+    (get_local $a)
+  }
+}
+
 impl Empty {
   fun as(a: Empty): Tree = %wasm {
     (get_local $a)
@@ -30,24 +36,23 @@ impl Node {
   }
 }
 
-impl Tree {
-  fun as(a: (Empty | Node)): Tree = %wasm {
-    (get_local $a)
-  }
-  fun as(a: Tree): ref = %wasm {
-    (get_local $a)
-  }
-}
-
 type Empty = %struct {  }
 
+type Node = %struct { a: (Tree | Forest) }
+
 impl Empty {
+  #[inline]
+  private fun Empty$discriminant(): i64 = {
+    val discriminant: i32 = Empty.^discriminant
+    discriminant as i64 << 32
+  }
+  
   fun apply(): Empty = %wasm {
-    (i64.const 0x200000000)
+    (call Empty$discriminant)
   }
   
   fun is(a: Empty): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x200000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Empty$discriminant))
   }
   
   fun ==(a: Empty, b: ref): boolean = %wasm {
@@ -67,38 +72,43 @@ impl Empty {
   }
 }
 
-type Node = %struct { a }
-
 impl Node {
-  fun discriminant(): u64 = %wasm {
-    (i64.const 0x300000000)
+  #[inline]
+  private fun Node$discriminant(): i64 = {
+    val discriminant: i32 = Node.^discriminant
+    discriminant as i64 << 32
   }
   
-  fun sizeOf(): i32 = 8
-  
-  fun allocationSize(): u32 = ref.allocationSize()
-  
-  fun apply(a: (Tree | Forest)): Node = {
-    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    set$a($ref, a)
+  fun apply(a: ((Tree | Forest))): Node = {
+    var $ref = fromPointer(system::memory::calloc(1, Node.^byteSize))
+    property$0($ref, a)
     $ref
   }
   
-  fun fromPointer(ptr: (i32 | u32)): Node = %wasm {
-    (i64.or (i64.const 0x300000000) (i64.extend_u/i32 (get_local $ptr)))
+  private fun fromPointer(ptr: i32): Node = %wasm {
+    (i64.or (call Node$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_a(target: Node): (Tree | Forest) = %wasm {
-    (i64.load (i32.add (i32.const 0) (call addressFromRef (get_local $target))))
-  }
-  fun property_a(target: Node, value: (Tree | Forest)): void = set$a(target, value)
+  fun property_a(target: Node): ((Tree | Forest)) = property$0(target)
+  fun property_a(target: Node, value: ((Tree | Forest))): void = property$0(target, value)
   
-  fun set$a(target: Node, value: (Tree | Forest)): void = %wasm {
-    (i64.store (i32.add (i32.const 0) (call addressFromRef (get_local $target))) (get_local $value))
+  #[inline]
+  private fun property$0(target: Node, value: ((Tree | Forest))): void = storePropertyWithOffset$0(target, value, Node.^property$0_offset)
+  #[inline]
+  private fun property$0(target: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(target, Node.^property$0_offset)
+  
+  #[inline]
+  private fun loadPropertyWithOffset$0(target: Node, offset: i32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $target))))
+  }
+  
+  #[inline]
+  private fun storePropertyWithOffset$0(target: Node, value: ((Tree | Forest)), offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $target))) (get_local $value))
   }
   
   fun is(a: Node): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x300000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Node$discriminant))
   }
   
   fun store(lhs: ref, rhs: Node, offset: i32): void = %wasm {
@@ -130,6 +140,12 @@ impl Forest {
   }
 }
 
+impl Forest {
+  fun as(a: Forest): ref = %wasm {
+    (get_local $a)
+  }
+}
+
 impl Nil {
   fun as(a: Nil): Forest = %wasm {
     (get_local $a)
@@ -142,24 +158,23 @@ impl Cons {
   }
 }
 
-impl Forest {
-  fun as(a: (Nil | Cons)): Forest = %wasm {
-    (get_local $a)
-  }
-  fun as(a: Forest): ref = %wasm {
-    (get_local $a)
-  }
-}
-
 type Nil = %struct {  }
 
+type Cons = %struct { tree: (Tree | Forest) }
+
 impl Nil {
+  #[inline]
+  private fun Nil$discriminant(): i64 = {
+    val discriminant: i32 = Nil.^discriminant
+    discriminant as i64 << 32
+  }
+  
   fun apply(): Nil = %wasm {
-    (i64.const 0x500000000)
+    (call Nil$discriminant)
   }
   
   fun is(a: Nil): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x500000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Nil$discriminant))
   }
   
   fun ==(a: Nil, b: ref): boolean = %wasm {
@@ -179,38 +194,43 @@ impl Nil {
   }
 }
 
-type Cons = %struct { tree }
-
 impl Cons {
-  fun discriminant(): u64 = %wasm {
-    (i64.const 0x600000000)
+  #[inline]
+  private fun Cons$discriminant(): i64 = {
+    val discriminant: i32 = Cons.^discriminant
+    discriminant as i64 << 32
   }
   
-  fun sizeOf(): i32 = 8
-  
-  fun allocationSize(): u32 = ref.allocationSize()
-  
-  fun apply(tree: (Tree | Forest)): Cons = {
-    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    set$tree($ref, tree)
+  fun apply(tree: ((Tree | Forest))): Cons = {
+    var $ref = fromPointer(system::memory::calloc(1, Cons.^byteSize))
+    property$0($ref, tree)
     $ref
   }
   
-  fun fromPointer(ptr: (i32 | u32)): Cons = %wasm {
-    (i64.or (i64.const 0x600000000) (i64.extend_u/i32 (get_local $ptr)))
+  private fun fromPointer(ptr: i32): Cons = %wasm {
+    (i64.or (call Cons$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_tree(target: Cons): (Tree | Forest) = %wasm {
-    (i64.load (i32.add (i32.const 0) (call addressFromRef (get_local $target))))
-  }
-  fun property_tree(target: Cons, value: (Tree | Forest)): void = set$tree(target, value)
+  fun property_tree(target: Cons): ((Tree | Forest)) = property$0(target)
+  fun property_tree(target: Cons, value: ((Tree | Forest))): void = property$0(target, value)
   
-  fun set$tree(target: Cons, value: (Tree | Forest)): void = %wasm {
-    (i64.store (i32.add (i32.const 0) (call addressFromRef (get_local $target))) (get_local $value))
+  #[inline]
+  private fun property$0(target: Cons, value: ((Tree | Forest))): void = storePropertyWithOffset$0(target, value, Cons.^property$0_offset)
+  #[inline]
+  private fun property$0(target: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(target, Cons.^property$0_offset)
+  
+  #[inline]
+  private fun loadPropertyWithOffset$0(target: Cons, offset: i32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $target))))
+  }
+  
+  #[inline]
+  private fun storePropertyWithOffset$0(target: Cons, value: ((Tree | Forest)), offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $target))) (get_local $value))
   }
   
   fun is(a: Cons): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x600000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Cons$discriminant))
   }
   
   fun store(lhs: ref, rhs: Cons, offset: i32): void = %wasm {

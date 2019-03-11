@@ -41,10 +41,6 @@ export namespace Nodes {
       return accumulator;
     }
 
-    get text() {
-      return '';
-    }
-
     hasAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
       if (!this.annotations) return false;
 
@@ -113,10 +109,6 @@ export namespace Nodes {
     name: string;
 
     namespaceNames: Map<string, NameIdentifierNode>;
-
-    get text() {
-      return JSON.stringify(this.name);
-    }
 
     static fromString(name: string) {
       const r = new NameIdentifierNode();
@@ -195,8 +187,14 @@ export namespace Nodes {
     operator: string;
   }
 
+  export class DecoratorNode extends Node {
+    decoratorName: NameIdentifierNode;
+    arguments: LiteralNode<any>[];
+  }
+
   export abstract class DirectiveNode extends Node {
-    isExported: boolean = false;
+    decorators: DecoratorNode[];
+    isPublic: boolean = false;
   }
 
   export class DocumentNode extends Node {
@@ -424,7 +422,7 @@ export namespace Nodes {
 
   export class OverloadedFunctionNode extends DirectiveNode {
     functionName: NameIdentifierNode;
-    functions: FunctionNode[] = [];
+    functions: FunDirectiveNode[] = [];
   }
 
   export class VarDeclarationNode extends Node {
@@ -454,7 +452,6 @@ export namespace Nodes {
   export class TypeDirectiveNode extends DirectiveNode {
     variableName: NameIdentifierNode;
     valueType: TypeNode;
-    typeDiscriminant: number | null = null;
   }
 
   export class EnumDirectiveNode extends DirectiveNode {
@@ -464,9 +461,6 @@ export namespace Nodes {
 
   export abstract class LiteralNode<T> extends ExpressionNode {
     value: T;
-    get text() {
-      return JSON.stringify(this.value);
-    }
   }
 
   export class FloatLiteral extends LiteralNode<number> {
@@ -490,7 +484,7 @@ export namespace Nodes {
   export class UnknownExpressionNode extends ExpressionNode {}
 
   export class StructTypeNode extends TypeNode {
-    names: string[] = [];
+    parameters: ParameterNode[] = [];
 
     constructor(astNode?: ASTNode) {
       super(astNode);
@@ -519,10 +513,6 @@ export namespace Nodes {
     }
     set value(value: number) {
       this.astNode.text = value.toString(16);
-    }
-
-    get text() {
-      return this.astNode.text;
     }
   }
 
@@ -554,11 +544,6 @@ export namespace Nodes {
     operator: NameIdentifierNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      if (!this.operator) throw new Error('BinaryExpressionNode w/o operator');
-      return this.operator.text;
-    }
   }
 
   export class AsExpressionNode extends ExpressionNode {
@@ -566,10 +551,6 @@ export namespace Nodes {
     rhs: TypeNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      return 'as';
-    }
   }
 
   export class IsExpressionNode extends ExpressionNode {
@@ -577,10 +558,6 @@ export namespace Nodes {
     rhs: TypeNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      return 'is';
-    }
   }
 
   export class UnaryExpressionNode extends ExpressionNode {
@@ -588,19 +565,11 @@ export namespace Nodes {
     operator: NameIdentifierNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      return this.operator.text;
-    }
   }
 
   export class WasmAtomNode extends ExpressionNode {
     arguments: ExpressionNode[] = [];
     symbol: string;
-
-    get text() {
-      return this.symbol;
-    }
   }
 
   export class WasmExpressionNode extends ExpressionNode {

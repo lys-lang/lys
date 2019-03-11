@@ -758,7 +758,7 @@ private fun keccak_reset(context_offset: i32): void = {
 //
 // Push input to the context
 //
-private fun keccak_update(context_offset: i32, input_offset: i32, input_length: i32): void = %wasm {
+private fun keccak_update(context_offset: i32, input_offset: i32, input_length: u32): void = %wasm {
   (local $residue_offset i32)
   (local $residue_buffer i32)
   (local $residue_index i32)
@@ -805,18 +805,19 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
   )
 
   // while (input_length > block_size)
-    (block $done
-  (loop $loop
-    (if (i32.lt_u (get_local $input_length) (i32.const 136))
-      (br $done)
+  (block $done
+    (loop $loop
+      (if (i32.lt_u (get_local $input_length) (i32.const 136))
+        (br $done)
+      )
+
+      (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+
+      (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 136)))
+      (set_local $input_length (i32.sub (get_local $input_length) (i32.const 136)))
+      (br $loop)
     )
-
-    (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
-
-    (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 136)))
-    (set_local $input_length (i32.sub (get_local $input_length) (i32.const 136)))
-    (br $loop)
-  ))
+  )
 
   // copy to the residue buffer
   (if (i32.gt_u (get_local $input_length) (i32.const 0))
@@ -878,7 +879,7 @@ private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm
 fun keccak(input: bytes): bytes = {
   val context = system::memory::calloc(616, 1)
 
-  val ret = system::memory::allocBytes(32)
+  val ret = system::memory::allocBytes(32 as u32)
 
   keccak_init(context)
   keccak_update(context, input.ptr, input.length)

@@ -1,0 +1,93 @@
+import support::test
+import support::env
+
+enum Color {
+  None
+  Red
+  Custom(hex: i32)
+}
+
+struct CatBag(f: Color, g: Red | None)
+
+#[export]
+fun main(): void = {
+  START("set values in struct")
+
+  var a = CatBag(Red, Red)
+
+  {
+    START("getters of the constructor")
+
+    verify(  a is CatBag, "a is CatBag" )
+    verify( a.f is Color, "a.f is Color" )
+    verify( a.g is Color, "a.g is Color" )
+    verify( a.f is Red, "a.f is Red" )
+    verify( a.g is Red, "a.g is Red" )
+
+    END()
+  }
+
+  {
+    START("setters")
+
+    val y = Custom(0xAABBCCDD)
+
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+
+    printNumber(y.hex)
+    verify( y.hex == 0xAABBCCDD, "y.hex == 0xAABBCCDD" )
+
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+
+    a.f = y
+
+    printf("y: %d", addressFromRef(y))
+    printf("a.f: %d", addressFromRef(a.f))
+
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+
+    verify( y == y, "y == y" )
+
+
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+    var tmp = a.f
+    verify( tmp == y, "tmp == y" )
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+    verify( a.f == y, "a.f == y" )
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+    verify( a.f == tmp, "a.f == tmp" )
+
+    a.g = None
+
+    printMemory(addressFromRef(y), Custom.^allocationSize)
+
+    END()
+  }
+
+  {
+    START("validate setters")
+
+    verify( a.f is Custom, "a.f is Custom" )
+    verify( a.g is None, "a.g is None" )
+    verify( a.f is Color, "a.f is Color" )
+    verify( a.g is Color, "a.g is Color" )
+
+    match a.f {
+      case x is Custom(hex) -> {
+        printf("a.f (2): %d", addressFromRef(a.f))
+        printf("x: %d", addressFromRef(x))
+        printf("hex: %d", hex)
+        printf("x.hex: %d", x.hex)
+        printNumber(x.hex)
+
+        printMemory(addressFromRef(x), 16)
+        verify( x.hex == 0xAABBCCDD, "x.hex == 0xAABBCCDD" )
+        verify( hex == 0xAABBCCDD, "hex == 0xAABBCCDD" )
+      }
+      else -> verify( false, "a.f is not Custom in pattern matching" )
+    }
+
+    END()
+  }
+  END()
+}

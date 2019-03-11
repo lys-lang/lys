@@ -1,57 +1,60 @@
-digraph Document {
-  node [shape=box,fontsize=10]; rankdir=LR;
-  1 [label="FunOverload: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
-  2 [label="FunNode: x\n(fun 'x' ((alias i32)) (alias i32))", fillcolor=grey];
-  3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  4 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
-  5 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  6 [label="FunNode: x\n(fun 'x' ((alias f32)) (alias f32))", fillcolor=grey];
-  7 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
-  8 [label="Name: x\n(alias f32 (native f32))", fillcolor=grey];
-  9 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
-  10 [label="Name: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
-  11 [label="FunOverload: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
-  12 [label="FunNode: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
-  13 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  14 [label="Name: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
-  subgraph cluster0 { rankdir=TB;
-    node [style=filled, fillcolor=grey];
-    15 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
-    16 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-    17 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    15 -> 16[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/c.lys::x(i32)";
-}
-  subgraph cluster1 { rankdir=TB;
-    node [style=filled, fillcolor=grey];
-    18 [label="Name: x\n(alias f32 (native f32))", fillcolor=grey];
-    19 [label="Ref: x\n(alias f32 (native f32))", fillcolor=grey];
-    20 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
-    18 -> 19[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/c.lys::x_3(f32)";
-}
-  subgraph cluster2 { rankdir=TB;
-    node [style=filled, fillcolor=grey];
-    21 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
-    22 [label="Ref: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
-    23 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-    24 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    22 -> 21[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
-    23 -> 21[taillabel="[PARAMETER]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/c.lys::outer()";
-}
-  1 -> 10[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
-  2 -> 1[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
-  3 -> 4[taillabel="[EXPECTED_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  4 -> 2[taillabel="[x]" fontname="times" fontsize = 7 color="black" ];
-  5 -> 2[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  6 -> 1[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
-  7 -> 8[taillabel="[EXPECTED_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  8 -> 6[taillabel="[x]" fontname="times" fontsize = 7 color="black" ];
-  9 -> 6[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  10 -> 22[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-  11 -> 14[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
-  12 -> 11[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
-  13 -> 12[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  label="";
+digraph LYS {
+  node [shape=box,fontsize=10];
+  subgraph "cluster_test/fixtures/types/c.lys" {
+    1 [label="FunOverload: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
+    2 [label="FunNode: x\n(fun 'x' ((alias i32)) (alias i32))", fillcolor=grey];
+    3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+    4 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
+    5 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+    6 [label="FunNode: x\n(fun 'x' ((alias f32)) (alias f32))", fillcolor=grey];
+    7 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
+    8 [label="Name: x\n(alias f32 (native f32))", fillcolor=grey];
+    9 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
+    10 [label="Name: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
+    11 [label="FunOverload: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
+    12 [label="FunNode: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
+    13 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+    14 [label="Name: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
+    subgraph "cluster_test/fixtures/types/c.lys_0" { rankdir=TB;
+      node [style=filled, fillcolor=grey];
+      15 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
+      16 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
+      17 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      label="test/fixtures/types/c.lys::x(i32)";
+    }
+    subgraph "cluster_test/fixtures/types/c.lys_1" { rankdir=TB;
+      node [style=filled, fillcolor=grey];
+      18 [label="Name: x\n(alias f32 (native f32))", fillcolor=grey];
+      19 [label="Ref: x\n(alias f32 (native f32))", fillcolor=grey];
+      20 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
+      label="test/fixtures/types/c.lys::x_3(f32)";
+    }
+    subgraph "cluster_test/fixtures/types/c.lys_2" { rankdir=TB;
+      node [style=filled, fillcolor=grey];
+      21 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
+      22 [label="Ref: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
+      23 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
+      24 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      label="test/fixtures/types/c.lys::outer()";
+    }
+    label="test/fixtures/types/c.lys";
+  }
+  1 -> 10[taillabel="[]" fontsize=7 fontname="times" color="black" ];
+  2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
+  3 -> 4[taillabel="[EXPECTED_TYPE]" fontsize=7 fontname="times" color="black" ];
+  4 -> 2[taillabel="[x]" fontsize=7 fontname="times" color="black" ];
+  5 -> 2[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
+  6 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
+  7 -> 8[taillabel="[EXPECTED_TYPE]" fontsize=7 fontname="times" color="black" ];
+  8 -> 6[taillabel="[x]" fontsize=7 fontname="times" color="black" ];
+  9 -> 6[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
+  10 -> 22[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  11 -> 14[taillabel="[]" fontsize=7 fontname="times" color="black" ];
+  12 -> 11[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
+  13 -> 12[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
+  15 -> 16[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  18 -> 19[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  22 -> 21[taillabel="[]" fontsize=7 fontname="times" color="black" ];
+  23 -> 21[taillabel="[PARAMETER]" fontsize=7 fontname="times" color="black" ];
+  label="LYS";
 }

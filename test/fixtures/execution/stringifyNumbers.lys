@@ -1,0 +1,96 @@
+import system::string
+import support::test
+
+fun assertNumber(numberToSerialize: u64, expected: bytes): void =
+  assertEquals(String.stringify(numberToSerialize), expected)
+fun assertNumber(numberToSerialize: i64, expected: bytes): void =
+  assertEquals(String.stringify(numberToSerialize), expected)
+fun assertNumber(numberToSerialize: i32, expected: bytes): void =
+  assertNumber(numberToSerialize as i64, expected)
+fun assertNumber(numberToSerialize: u32, expected: bytes): void =
+  assertNumber(numberToSerialize as u64, expected)
+
+fun assertNumberLength(numberToSerialize: i64, expected: i32): void = {
+  val size = String.charLength(numberToSerialize)
+  val result = size as i32 == expected
+
+  if (!result) {
+    support::env::printf("    number: %d", numberToSerialize as i32)
+    support::env::printf("     given: %d", size as i32)
+    support::env::printf("  expected: %d", expected)
+  }
+
+  verify(result, "assertNumberLength")
+}
+
+fun assertEquals(given: bytes, expected: bytes): void = {
+  val msg = concatBytes(concatBytes(concatBytes(concatBytes(
+    "Given: '", given), "' Expected: '"), expected), "'"
+  )
+
+  val result = given == expected
+
+  if (!result) {
+    support::env::printf("given:")
+    support::env::printf(given)
+    support::env::printf("expected:")
+    support::env::printf(expected)
+  }
+
+  verify(result, msg)
+}
+
+#[export]
+fun main(): void = {
+  START("stringifycation of numbers")
+
+  {
+    START("test string equality")
+
+    assertEquals("abcd", "abcd")
+
+    END()
+  }
+
+  {
+    START("get number characters length")
+
+    assertNumberLength(2    as i64, 1)
+    assertNumberLength(4444 as i64, 4)
+    assertNumberLength(-2   as i64, 2)
+    assertNumberLength(-33  as i64, 3)
+    assertNumberLength(-1   as i64, 2)
+    assertNumberLength(0    as i64, 1)
+
+    assertNumberLength(2222222 as i64, 7)
+    assertNumberLength(3333333 as i64, 7)
+    assertNumberLength(-444444 as i64, 7)
+    assertNumberLength(123456789 as u32 as i64, 9)
+    assertNumberLength(1e5 as i64, 6)
+    assertNumberLength(2E3 as i64, 4)
+    assertNumberLength(3e5 as i64, 6)
+    assertNumberLength(4E3 as i64, 4)
+    assertNumberLength(-4E3 as i64, 5)
+
+    END()
+  }
+
+  {
+    START("number serialization")
+
+    assertNumber(1, "1")
+    assertNumber(-1, "-1")
+    assertNumber(2222222 as u64, "2222222")
+    assertNumber(3333333, "3333333")
+    assertNumber(-444444, "-444444")
+    assertNumber(123456789 as u32, "123456789")
+    assertNumber(1e5 as u32, "100000")
+    assertNumber(2E3 as u32, "2000")
+    assertNumber(3e5 as i32, "300000")
+    assertNumber(4E3 as i32, "4000")
+
+    END()
+  }
+
+  END()
+}

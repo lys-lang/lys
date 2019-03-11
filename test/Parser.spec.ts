@@ -1,9 +1,10 @@
 declare var describe, it, require, console;
 
-import { folderBasedTest, testParseToken, printAST } from './TestHelpers';
+import { folderBasedTest, testParseToken } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { expect } from 'chai';
 import { ParsingContext } from '../dist/parser/ParsingContext';
+import { printAST } from '../dist/utils/astPrinter';
 
 describe('Parser', () => {
   const phases = function(txt: string, fileName: string): CanonicalPhaseResult {
@@ -241,6 +242,16 @@ describe('Parser', () => {
         type void    = %stack{ }
         type void    = %stack{ a=false }
       `;
+      test`type Enum = %struct{a: i32}`;
+      test`type Enum = %struct{}`;
+      test`type Enum = %struct{a,b,c}`;
+      test`type Enum = %struct{a:i32,b: string}`;
+      test`
+            type Enum = %struct{a: i32}
+            type Enum = %struct{}
+            type Enum = %struct{a,b,c}
+            type Enum = %struct{a:i32,b: string}
+      `;
       test`
         type Enum
         type Enum= %struct{}
@@ -334,12 +345,77 @@ describe('Parser', () => {
 
     describe('WasmExpression', () => {
       test`
-        private inline fun test(): void = %wasm {
+        private fun test(): void = %wasm {}
+      `;
+      test`
+        fun malloc(size: i32): i32 = %wasm {
+          (local $address i32)
+          (set_local $address (get_global freeblock))
+          (set_global
+            $freeblock
+            (i32.add
+              (get_local $address)
+              (get_local $size)
+            )
+          )
+          (get_local $address)
+        }
+      `;
+      test`
+        fun malloc(size: i32): i32 = %wasm {
+          (local $address i32)
+        }
+      `;
+      test`
+      fun strAdd(a: i32, b: i32): i32 = %wasm {
+        (local $sum i32)
+        (local $aSize i32)
+        (local $newStr i32)
+        (return
+          (set_local $aSize (i32.load8_u a))
+          (set_local $sum
+            (i32.sub
+              (i32.add
+                (get_local $aSize)
+                (i32.load8_u b)
+              )
+              (i32.const 1)
+            )
+          )
+          (set_local $newStr
+            (call malloc
+              (i32.add
+                (get_local $sum)
+                (i32.const 1)
+              )
+            )
+          )
+          (i32.store8
+            (get_local $newStr)
+            (get_local $sum)
+          )
+          (call string_copy (get_local $a) (get_local $newStr))
+          (call string_copy
+            (get_local $b)
+            (i32.sub
+              (i32.add
+                (get_local $newStr)
+                (get_local $aSize)
+              )
+              (i32.const 1)
+            )
+          )
+          (get_local $newStr)
+        )
+      }
+      `;
+      test`
+        private fun test(): void = %wasm {
 
         }
 
-        private inline fun test(): void = %wasm { }
-        private inline fun test(): void =%wasm{}
+        private fun test(): void = %wasm { }
+        private fun test(): void =%wasm{}
 
         var freeblock = 0
 
@@ -502,7 +578,7 @@ describe('Parser', () => {
 
       test`
         type void = %injected
-        type i32 = %stack { lowLevelType="i32" }
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
 
         effect state {
           get(): i32
@@ -512,7 +588,7 @@ describe('Parser', () => {
 
       test`
         type void = %injected
-        type i32 = %stack { lowLevelType="i32" }
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
 
         effect state<T> {
           get(): T
@@ -550,6 +626,61 @@ describe('Parser', () => {
         var f = sarasa::sarasanga( a.b.c == b.c.d )
         var g = sarasa::sarasanga( a.b.c == 1 )
         var g = sarasa::sarasanga( a.b.c() == 1 )
+      `;
+    });
+
+    describe('decorators', () => {
+      test`
+        fun aNormalFunction(): a = 1
+
+        #[inline]
+        fun printf(str: u32, extra: i32): void = never
+      `;
+
+      test`
+        #[inline]
+        fun printf(str: u32, extra: i32): void = never
+      `;
+
+      test`
+        #[   inline     ]
+        fun printf(str: u32, extra: i32): void = never
+      `;
+
+      test`
+        #[export]
+        #[   inline     ]
+        fun printf(str: u32, extra: i32): void = never
+      `;
+      test`
+        #[export] #[   inline     ] fun printf(str: u32, extra: i32): void = never
+      `;
+
+      test`
+        #[export]fun printf(str: u32, extra: i32): void = never
+      `;
+
+      test`
+        #[export] // Xomment
+        #[   inline     ] /* multiline
+        */ fun printf(str: u32, extra: i32): void = never
+      `;
+
+      test`
+        fun aNormalFunction(): a = 1
+
+        #[extern "env" "printf"]
+        fun printf(str: u32, extra: i32): void = never
+
+        #[extern "env" "putchar"]
+        fun putchar(char: u32): void = never
+
+        #[explicit]
+        #[explicit]
+        fun as(): void = never
+
+        #[a 123 false]
+        fun a(): void = never
       `;
     });
 

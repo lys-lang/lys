@@ -1,4 +1,8 @@
-type TestingContext = %struct{}
+struct TestingContext()
+
+fun assert(x: boolean): void = {
+  if (!x) panic()
+}
 
 fun assertEqual(x: boolean, y: boolean): void = {
   assert(x == y)

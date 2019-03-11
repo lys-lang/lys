@@ -1,8 +1,8 @@
-private fun fibo(n: i32, a: i32, b: i32): i32 =
+fun fibo(n: i32, a: i32, b: i32): i32 =
   match n {
     case 0 -> a
     case 1 -> b
     else   -> fibo(n - 1, b, a + b)
   }
 
-fun fib(n: i32): i32 = fibo(n, 0, 1)
+#[export] fun fib(n: i32): i32 = fibo(n, 0, 1)

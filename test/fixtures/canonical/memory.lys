@@ -1,0 +1,110 @@
+/** Number of alignment bits. */
+val AL_BITS: i32 = 3
+
+/** Number of possible alignment values. */
+val AL_SIZE: i32 = 1 << AL_BITS
+
+/** Mask to obtain just the alignment bits. */
+val AL_MASK: i32 = AL_SIZE - 1
+
+/** Maximum 32-bit allocation size. */
+val MAX_SIZE_32: i32 = 1 << 30 // 1G
+
+val HEAP_BASE = 0
+
+private var startOffset: i32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
+private var offset: i32 = startOffset
+
+private var lastPtr: i32 = 0
+
+private fun growMemory(pages: i32): i32 = %wasm {
+  (grow_memory (get_local $pages))
+}
+
+private fun currentMemory(): i32 = %wasm {
+  (current_memory)
+}
+
+private fun max(a: i32, b: i32): i32 = if (a > b) a else b
+
+fun allocBytes(size: i32): bytes = %wasm {
+  (local $allocation i32)
+  (set_local $allocation (call $malloc (get_local $size)))
+  (i32.store (get_local $allocation) (get_local $size))
+  (i64.or
+    (i64.extend_s/i32 (get_local $allocation))
+    (i64.shl
+      (i64.extend_s/i32 (i32.const 0))
+      (i64.const 32)
+    )
+  )
+}
+
+fun calloc(itemCount: i32, itemSize: i32): i32 = {
+  val size = itemCount * itemSize
+  val $ret = malloc(size)
+  memset($ret, size, 0)
+  $ret
+}
+
+fun malloc(size: i32): i32 = {
+  if (size > 0) {
+    if (size > MAX_SIZE_32) {
+      panic()
+    }
+    val ptr = offset
+    val newPtr = (ptr + size + AL_MASK) & ~AL_MASK
+    val pagesBefore = currentMemory()
+    if (newPtr > pagesBefore << 16) {
+      val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >>> 16
+      val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
+      if (growMemory(pagesWanted) < 0) {
+        if (growMemory(pagesNeeded) < 0) {
+          panic() // out of memory
+        }
+      }
+    }
+    offset = newPtr
+    ptr
+  } else {
+    0
+  }
+}
+
+fun free(ptr: i32): void = {
+  // stub
+}
+
+fun discriminant(v: ref): u64 = %wasm {
+  (i64.and
+    (i64.const 0xffffffff00000000)
+    (get_local $v)
+  )
+}
+
+fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
+  (local $end i32)
+  (set_local $end (i32.add (get_local $from) (get_local $len)))
+  (block $exit
+    (loop $cont
+      (br_if $exit (i32.eq (get_local $from) (get_local $end)))
+      (i32.store8 (get_local $to) (i32.load8_u (get_local $from)))
+      (set_local $from (i32.add (get_local $from) (i32.const 1)))
+      (set_local $to (i32.add (get_local $to) (i32.const 1)))
+      (br $cont)
+    )
+  )
+}
+
+fun memset(ptr: i32, content: i32, len: i32): void = %wasm {
+  (local $end i32)
+  (set_local $end (i32.add (get_local $ptr) (get_local $len)))
+  (block $exit
+    (loop $cont
+      (br_if $exit (i32.eq (get_local $ptr) (get_local $end)))
+      (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content)))
+      (set_local $ptr (i32.add (get_local $ptr) (i32.const 1)))
+      (br $cont)
+    )
+  )
+}

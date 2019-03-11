@@ -18,6 +18,12 @@ impl Number {
   }
 }
 
+impl Number {
+  fun as(a: Number): ref = %wasm {
+    (get_local $a)
+  }
+}
+
 impl Infinity {
   fun as(a: Infinity): Number = %wasm {
     (get_local $a)
@@ -48,24 +54,29 @@ impl Complex {
   }
 }
 
-impl Number {
-  fun as(a: (Infinity | NDet | Real | Natural | Complex)): Number = %wasm {
-    (get_local $a)
-  }
-  fun as(a: Number): ref = %wasm {
-    (get_local $a)
-  }
-}
-
 type Infinity = %struct {  }
 
+type NDet = %struct {  }
+
+type Real = %struct { number: f32 }
+
+type Natural = %struct { number: i32 }
+
+type Complex = %struct { real: f32, imaginary: f32 }
+
 impl Infinity {
+  #[inline]
+  private fun Infinity$discriminant(): i64 = {
+    val discriminant: i32 = Infinity.^discriminant
+    discriminant as i64 << 32
+  }
+  
   fun apply(): Infinity = %wasm {
-    (i64.const 0x200000000)
+    (call Infinity$discriminant)
   }
   
   fun is(a: Infinity): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x200000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Infinity$discriminant))
   }
   
   fun ==(a: Infinity, b: ref): boolean = %wasm {
@@ -85,15 +96,19 @@ impl Infinity {
   }
 }
 
-type NDet = %struct {  }
-
 impl NDet {
+  #[inline]
+  private fun NDet$discriminant(): i64 = {
+    val discriminant: i32 = NDet.^discriminant
+    discriminant as i64 << 32
+  }
+  
   fun apply(): NDet = %wasm {
-    (i64.const 0x300000000)
+    (call NDet$discriminant)
   }
   
   fun is(a: NDet): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x300000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call NDet$discriminant))
   }
   
   fun ==(a: NDet, b: ref): boolean = %wasm {
@@ -113,34 +128,33 @@ impl NDet {
   }
 }
 
-type Real = %struct { number }
-
 impl Real {
-  fun discriminant(): u64 = %wasm {
-    (i64.const 0x400000000)
+  #[inline]
+  private fun Real$discriminant(): i64 = {
+    val discriminant: i32 = Real.^discriminant
+    discriminant as i64 << 32
   }
   
-  fun sizeOf(): i32 = 8
-  
-  fun allocationSize(): u32 = ref.allocationSize()
-  
   fun apply(number: f32): Real = {
-    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    set$number($ref, number)
+    var $ref = fromPointer(system::memory::calloc(1, Real.^byteSize))
+    property$0($ref, number)
     $ref
   }
   
-  fun fromPointer(ptr: (i32 | u32)): Real = %wasm {
-    (i64.or (i64.const 0x400000000) (i64.extend_u/i32 (get_local $ptr)))
+  private fun fromPointer(ptr: i32): Real = %wasm {
+    (i64.or (call Real$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_number(target: Real): f32 = f32.load(target, 0)
-  fun property_number(target: Real, value: f32): void = set$number(target, value)
+  fun property_number(target: Real): f32 = property$0(target)
+  fun property_number(target: Real, value: f32): void = property$0(target, value)
   
-  fun set$number(target: Real, value: f32): void = f32.store(target, value, 0)
+  #[inline]
+  private fun property$0(target: Real): f32 = f32.load(target, Real.^property$0_offset)
+  #[inline]
+  private fun property$0(target: Real, value: f32): void = f32.store(target, value, Real.^property$0_offset)
   
   fun is(a: Real): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x400000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Real$discriminant))
   }
   
   fun store(lhs: ref, rhs: Real, offset: i32): void = %wasm {
@@ -152,34 +166,33 @@ impl Real {
   }
 }
 
-type Natural = %struct { number }
-
 impl Natural {
-  fun discriminant(): u64 = %wasm {
-    (i64.const 0x500000000)
+  #[inline]
+  private fun Natural$discriminant(): i64 = {
+    val discriminant: i32 = Natural.^discriminant
+    discriminant as i64 << 32
   }
   
-  fun sizeOf(): i32 = 8
-  
-  fun allocationSize(): u32 = ref.allocationSize()
-  
   fun apply(number: i32): Natural = {
-    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    set$number($ref, number)
+    var $ref = fromPointer(system::memory::calloc(1, Natural.^byteSize))
+    property$0($ref, number)
     $ref
   }
   
-  fun fromPointer(ptr: (i32 | u32)): Natural = %wasm {
-    (i64.or (i64.const 0x500000000) (i64.extend_u/i32 (get_local $ptr)))
+  private fun fromPointer(ptr: i32): Natural = %wasm {
+    (i64.or (call Natural$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_number(target: Natural): i32 = i32.load(target, 0)
-  fun property_number(target: Natural, value: i32): void = set$number(target, value)
+  fun property_number(target: Natural): i32 = property$0(target)
+  fun property_number(target: Natural, value: i32): void = property$0(target, value)
   
-  fun set$number(target: Natural, value: i32): void = i32.store(target, value, 0)
+  #[inline]
+  private fun property$0(target: Natural): i32 = i32.load(target, Natural.^property$0_offset)
+  #[inline]
+  private fun property$0(target: Natural, value: i32): void = i32.store(target, value, Natural.^property$0_offset)
   
   fun is(a: Natural): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x500000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Natural$discriminant))
   }
   
   fun store(lhs: ref, rhs: Natural, offset: i32): void = %wasm {
@@ -191,40 +204,42 @@ impl Natural {
   }
 }
 
-type Complex = %struct { real, imaginary }
-
 impl Complex {
-  fun discriminant(): u64 = %wasm {
-    (i64.const 0x600000000)
+  #[inline]
+  private fun Complex$discriminant(): i64 = {
+    val discriminant: i32 = Complex.^discriminant
+    discriminant as i64 << 32
   }
   
-  fun sizeOf(): i32 = 8 + 8
-  
-  fun allocationSize(): u32 = ref.allocationSize()
-  
   fun apply(real: f32, imaginary: f32): Complex = {
-    var $ref = fromPointer(system::memory::calloc(1, sizeOf()))
-    set$real($ref, real)
-    set$imaginary($ref, imaginary)
+    var $ref = fromPointer(system::memory::calloc(1, Complex.^byteSize))
+    property$0($ref, real)
+    property$1($ref, imaginary)
     $ref
   }
   
-  fun fromPointer(ptr: (i32 | u32)): Complex = %wasm {
-    (i64.or (i64.const 0x600000000) (i64.extend_u/i32 (get_local $ptr)))
+  private fun fromPointer(ptr: i32): Complex = %wasm {
+    (i64.or (call Complex$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_real(target: Complex): f32 = f32.load(target, 0)
-  fun property_real(target: Complex, value: f32): void = set$real(target, value)
+  fun property_real(target: Complex): f32 = property$0(target)
+  fun property_real(target: Complex, value: f32): void = property$0(target, value)
   
-  fun set$real(target: Complex, value: f32): void = f32.store(target, value, 0)
+  #[inline]
+  private fun property$0(target: Complex): f32 = f32.load(target, Complex.^property$0_offset)
+  #[inline]
+  private fun property$0(target: Complex, value: f32): void = f32.store(target, value, Complex.^property$0_offset)
   
-  fun property_imaginary(target: Complex): f32 = f32.load(target, 8)
-  fun property_imaginary(target: Complex, value: f32): void = set$imaginary(target, value)
+  fun property_imaginary(target: Complex): f32 = property$1(target)
+  fun property_imaginary(target: Complex, value: f32): void = property$1(target, value)
   
-  fun set$imaginary(target: Complex, value: f32): void = f32.store(target, value, 8)
+  #[inline]
+  private fun property$1(target: Complex): f32 = f32.load(target, Complex.^property$1_offset)
+  #[inline]
+  private fun property$1(target: Complex, value: f32): void = f32.store(target, value, Complex.^property$1_offset)
   
   fun is(a: Complex): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (i64.const 0x600000000))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Complex$discriminant))
   }
   
   fun store(lhs: ref, rhs: Complex, offset: i32): void = %wasm {

@@ -1,7 +1,14 @@
 import { Nodes } from '../parser/nodes';
 import { indent } from './astPrinter';
 
-export function printNode(node: Nodes.Node): string {
+function printDecorators(node: Nodes.DirectiveNode) {
+  if (node.decorators && node.decorators.length) {
+    return node.decorators.map($ => printNode($)).join('');
+  }
+  return '';
+}
+
+function privatePrint(node: Nodes.Node) {
   if (!node) {
     throw new Error('Trying to print a null node');
   }
@@ -20,6 +27,8 @@ export function printNode(node: Nodes.Node): string {
     return `fun(${node.parameters.map(printNode).join(', ')}) -> ${printNode(node.returnType)}`;
   } else if (node instanceof Nodes.ReferenceNode) {
     return printNode(node.variable);
+  } else if (node instanceof Nodes.DecoratorNode) {
+    return '#[' + printNode(node.decoratorName) + node.arguments.map($ => ' ' + printNode($)).join('') + ']\n';
   } else if (node instanceof Nodes.BlockNode) {
     if (!node.statements.length) return '{}';
     return '{\n' + indent(node.statements.map(printNode).join('\n')) + '\n}';
@@ -66,9 +75,9 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     return `import ${printNode(node.module)}`;
   } else if (node instanceof Nodes.FunDirectiveNode) {
-    return (node.isExported ? '' : 'private ') + printNode(node.functionNode);
+    return printDecorators(node) + (node.isPublic ? '' : 'private ') + printNode(node.functionNode);
   } else if (node instanceof Nodes.EffectDirectiveNode) {
-    return (node.isExported ? '' : 'private ') + printNode(node.effect);
+    return printDecorators(node) + (node.isPublic ? '' : 'private ') + printNode(node.effect);
   } else if (node instanceof Nodes.OverloadedFunctionNode) {
     return node.functions.map(printNode).join('\n');
   } else if (node instanceof Nodes.AssignmentNode) {
@@ -90,7 +99,7 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.WasmExpressionNode) {
     return `%wasm {\n${indent(node.atoms.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.StructTypeNode) {
-    return `%struct { ${node.names.join(', ')} }`;
+    return `%struct { ${node.parameters.map(printNode).join(', ')} }`;
   } else if (node instanceof Nodes.InjectedTypeNode) {
     return `%injected`;
   } else if (node instanceof Nodes.StackTypeNode) {
@@ -140,7 +149,7 @@ export function printNode(node: Nodes.Node): string {
   } else if (node instanceof Nodes.MatchLiteralNode) {
     return `case ${printNode(node.literal)} -> ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.VarDirectiveNode) {
-    return (node.isExported ? '' : 'private ') + printNode(node.decl);
+    return (node.isPublic ? '' : 'private ') + printNode(node.decl);
   } else if (node instanceof Nodes.MatchCaseIsNode) {
     const declaredName = node.declaredName && node.declaredName.name !== '$' ? `${printNode(node.declaredName)} ` : ``;
 
@@ -186,4 +195,11 @@ export function printNode(node: Nodes.Node): string {
   }
 
   throw new Error(node.nodeName + ' cannot be printed');
+}
+
+export function printNode(node: Nodes.Node): string {
+  if (node.hasParentheses) {
+    return `(${privatePrint(node)})`;
+  }
+  return privatePrint(node);
 }

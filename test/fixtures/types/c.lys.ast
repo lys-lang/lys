@@ -5,42 +5,45 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" ((alias f32)) (alias f32))) annotations=Injected
-    |-FunctionNode type=(fun "x" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(x:i32#0)
-        |-NameIdentifierNode="x" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "x" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:i32#0)
+          |-NameIdentifierNode="x" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="x"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="x"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-QNameNode=x
-          |-NameIdentifierNode="x"
-    |-FunctionNode type=(fun "x" ((alias f32)) (alias f32))
-      |-ParameterNode annotations=Local(x:f32#0)
-        |-NameIdentifierNode="x" type=(alias f32 (native f32))
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=x
+            |-NameIdentifierNode="x"
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "x" ((alias f32)) (alias f32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:f32#0)
+          |-NameIdentifierNode="x" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="x"
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-      |-NameIdentifierNode="x"
-      |-ReferenceNode type=(type (alias f32 (native f32)))
-        |-QNameNode=f32
-          |-NameIdentifierNode="f32"
-      |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
-        |-QNameNode=x
-          |-NameIdentifierNode="x"
-    |-NameIdentifierNode="x" type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" ((alias f32)) (alias f32)))
-  |-OverloadedFunctionNode type=(fun "outer" () (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "outer" () (alias i32))
-      |-NameIdentifierNode="outer"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-ReferenceNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" ((alias f32)) (alias f32)))
+        |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
           |-QNameNode=x
             |-NameIdentifierNode="x"
-        |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-NameIdentifierNode="x" type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" ((alias f32)) (alias f32)))
+  |-OverloadedFunctionNode type=(fun "outer" () (alias i32)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "outer" () (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="outer"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" ((alias f32)) (alias f32)))
+            |-QNameNode=x
+              |-NameIdentifierNode="x"
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
     |-NameIdentifierNode="outer" type=(fun "outer" () (alias i32))

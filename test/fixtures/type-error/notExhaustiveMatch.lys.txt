@@ -8,14 +8,20 @@ test/fixtures/type-error/notExhaustiveMatch.lys
     7│ 
     8│ fun test(x: color): color =
     9│   match x {
-     │   ^^^^^ Match is not exhaustive, not covered types: Blue
    10│     // there MUST be an error here ^^^^
    11│ 
    12│ 
    13│     case is Red -> Red
    14│     case is Green -> Green
    15│   }
+     │   ^ Match is not exhaustive, not covered types: Blue
    16│ 
    17│ fun test1(x: color): color =
    18│   match x {
+   19│     // there MUST NOT be error here ^^^^
+   20│ 
+   21│ 
+   22│     case is Red -> Red
+   23│     case is Green -> Green
+   24│     case is Blue -> Blue
 … 35

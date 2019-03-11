@@ -10,12 +10,16 @@ val AL_MASK: i32 = AL_SIZE - 1
 /** Maximum 32-bit allocation size. */
 val MAX_SIZE_32: i32 = 1 << 30 // 1G
 
-val HEAP_BASE = 0
+val HEAP_BASE = 64 * 1024 // TODO: this must be dynamic
 
 private var startOffset: i32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
 private var offset: i32 = startOffset
 
-private var lastPtr: i32 = 0
+#[extern "env" "segfault"]
+fun segfault(): void = panic()
+
+#[export "test_getMaxMemory"]
+fun getMaxMemory(): i32 = offset
 
 private fun growMemory(pages: i32): i32 = %wasm {
   (grow_memory (get_local $pages))
@@ -27,14 +31,15 @@ private fun currentMemory(): i32 = %wasm {
 
 private fun max(a: i32, b: i32): i32 = if (a > b) a else b
 
-fun allocBytes(size: i32): bytes = %wasm {
+fun allocBytes(size: u32): bytes = %wasm {
   (local $allocation i32)
   (set_local $allocation (call $malloc (get_local $size)))
+  (call $memset (get_local $allocation) (get_local $size) (i32.const 0))
   (i32.store (get_local $allocation) (get_local $size))
   (i64.or
-    (i64.extend_s/i32 (get_local $allocation))
+    (i64.extend_u/i32 (get_local $allocation))
     (i64.shl
-      (i64.extend_s/i32 (i32.const 0))
+      (i64.extend_u/i32 (i32.const 0))
       (i64.const 32)
     )
   )
@@ -65,8 +70,10 @@ fun malloc(size: i32): i32 = {
       }
     }
     offset = newPtr
-    ptr
+    ptr + 8
   } else {
+    support::env::printf("trying to allocate 0 bytes")
+    segfault()
     0
   }
 }
@@ -82,18 +89,23 @@ fun discriminant(v: ref): u64 = %wasm {
   )
 }
 
-fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
-  (local $end i32)
-  (set_local $end (i32.add (get_local $from) (get_local $len)))
-  (block $exit
-    (loop $cont
-      (br_if $exit (i32.eq (get_local $from) (get_local $end)))
-      (i32.store8 (get_local $to) (i32.load8_u (get_local $from)))
-      (set_local $from (i32.add (get_local $from) (i32.const 1)))
-      (set_local $to (i32.add (get_local $to) (i32.const 1)))
-      (br $cont)
-    )
-  )
+fun memcpy(src: i32, dst: i32, length: u32): i32 = {
+  var i = 0
+  var l = length as i32
+
+  val SRC = src as ref
+  val DST = dst as ref
+
+  loop {
+    if (i >= l) {
+      break
+    }
+    u8.store(DST, u8.load(SRC, i), i)
+    i = i + 1
+    continue
+  }
+
+  dst + length as i32
 }
 
 fun memset(ptr: i32, content: i32, len: i32): void = %wasm {

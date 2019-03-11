@@ -5,33 +5,34 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "gte" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "gte" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(x:i32#0)
-        |-NameIdentifierNode="x" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "gte" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:i32#0)
+          |-NameIdentifierNode="x" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="gte"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="gte"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-VarDeclarationNode type=(native void)
-          |-NameIdentifierNode="ttt" type=(alias i32 (native i32))
-          |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-AssignmentNode type=(alias i32 (native i32))
-          |-ReferenceNode type=(alias i32 (native i32))
-            |-QNameNode=ttt
-              |-NameIdentifierNode="ttt"
-          |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-            |-NameIdentifierNode="+"
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-VarDeclarationNode type=(native void)
+            |-NameIdentifierNode="ttt" type=(alias i32 (native i32))
+            |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-AssignmentNode type=(alias i32 (native i32))
+            |-ReferenceNode type=(alias i32 (native i32))
               |-QNameNode=ttt
                 |-NameIdentifierNode="ttt"
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-              |-QNameNode=x
-                |-NameIdentifierNode="x"
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-QNameNode=ttt
-            |-NameIdentifierNode="ttt"
+            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-NameIdentifierNode="+"
+              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-QNameNode=ttt
+                  |-NameIdentifierNode="ttt"
+              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-QNameNode=x
+                  |-NameIdentifierNode="x"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-QNameNode=ttt
+              |-NameIdentifierNode="ttt"
     |-NameIdentifierNode="gte" type=(fun "gte" ((alias i32)) (alias i32))

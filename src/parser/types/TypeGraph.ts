@@ -2,6 +2,7 @@ import { Nodes } from '../nodes';
 import { Type } from '../types';
 import { TypeResolutionContext } from './TypePropagator';
 import { AstNodeError } from '../NodeError';
+import { ParsingContext } from '../ParsingContext';
 
 export abstract class TypeResolver {
   abstract execute(node: TypeNode, ctx: TypeResolutionContext): Type | null;
@@ -225,25 +226,59 @@ export class Edge {
   private _incomingType: Type | null = null;
   private _error: boolean | null = null;
 
-  constructor(public source: TypeNode, public target: TypeNode, public label: string = '') {
+  static addEdge(ctx: ParsingContext, source: TypeNode, target: TypeNode, label: string = '') {
     if (source.outgoingEdges().some($ => $.target == target)) {
-      throw new AstNodeError('duplicated edge in source', source.astNode);
+      ctx.messageCollector.error(new AstNodeError('duplicated edge in source', source.astNode));
     }
 
     if (target.incomingEdges().some($ => $.source == source)) {
-      throw new AstNodeError('duplicated edge in target', target.astNode);
+      ctx.messageCollector.error(new AstNodeError('duplicated edge in target', target.astNode));
     }
 
     if (source.incomingEdges().some($ => $.source == target)) {
-      throw new AstNodeError('crossed edges are not allowed 1', source.astNode);
+      ctx.messageCollector.error(new AstNodeError('crossed edges are not allowed 1', source.astNode));
     }
 
     if (target.outgoingEdges().some($ => $.target == source)) {
-      throw new AstNodeError('crossed edges are not allowed 2', target.astNode);
+      ctx.messageCollector.error(new AstNodeError('crossed edges are not allowed 2', target.astNode));
     }
 
+    new Edge(source, target, label);
+
+    const recStack: TypeNode[] = [];
+
+    if (this.isCyclic(target, new Set(), recStack)) {
+      const id = ctx.messageCollector.errors.length.toString(36);
+
+      ctx.messageCollector.error(new AstNodeError(`Cyclic dependency #${id} origin`, source.astNode));
+      ctx.messageCollector.error(new AstNodeError(`Cyclic dependency #${id} target`, target.astNode));
+    }
+  }
+
+  private constructor(public source: TypeNode, public target: TypeNode, public label: string = '') {
     source.addOutgoingEdge(this);
     target.addIncomingEdge(this);
+  }
+
+  private static isCyclic(node: TypeNode, visited: Set<TypeNode>, recStack: Array<TypeNode>) {
+    // Mark the current node as visited and
+    // part of recursion stack
+    if (recStack.includes(node)) return true;
+    if (visited.has(node)) return false;
+
+    visited.add(node);
+
+    recStack.push(node);
+
+    for (let child of node.incomingEdges()) {
+      if (this.isCyclic(child.source, visited, recStack)) {
+        return true;
+      }
+    }
+
+    recStack.pop();
+
+    return false;
   }
 
   /**

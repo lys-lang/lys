@@ -5,75 +5,80 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "xx" () (alias void)) annotations=Injected
-    |-FunctionNode type=(fun "xx" () (alias void))
-      |-NameIdentifierNode="xx"
-      |-ReferenceNode type=(type (alias void (native void)))
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode type=(native void)
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "xx" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="xx"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
     |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
   |-OverloadedFunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(a:i32#0)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(a:i32#0)
+          |-NameIdentifierNode="a" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode annotations=Local(b:i32#1)
+          |-NameIdentifierNode="b" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="add"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ParameterNode annotations=Local(b:i32#1)
-        |-NameIdentifierNode="b" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="add"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
-        |-WasmAtomNode=local
-          |-QNameNode=$t
-            |-NameIdentifierNode="$t"
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-WasmAtomNode=set_local
-          |-QNameNode=$t
-            |-NameIdentifierNode="$t"
-          |-WasmAtomNode=i32.const
-            |-IntegerLiteral=3
-        |-WasmAtomNode=call
-          |-ReferenceNode type=(fun "xx" () (alias void))
-            |-QNameNode=xx
-              |-NameIdentifierNode="xx"
-        |-WasmAtomNode=drop
-          |-WasmAtomNode=call
-            |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
-              |-QNameNode=system::memory::malloc
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="memory"
-                |-NameIdentifierNode="malloc"
-            |-WasmAtomNode=i32.const
-              |-IntegerLiteral=1
-        |-WasmAtomNode=i32.mul
-          |-WasmAtomNode=i32.add
-            |-WasmAtomNode=get_local
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
-            |-WasmAtomNode=get_local
-              |-QNameNode=$b
-                |-NameIdentifierNode="$b"
-          |-WasmAtomNode=get_local
+        |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+          |-WasmAtomNode
             |-QNameNode=$t
               |-NameIdentifierNode="$t"
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-WasmAtomNode
+            |-QNameNode=$t
+              |-NameIdentifierNode="$t"
+            |-WasmAtomNode
+              |-IntegerLiteral=3
+          |-WasmAtomNode
+            |-ReferenceNode type=(fun "xx" () (alias void))
+              |-QNameNode=xx
+                |-NameIdentifierNode="xx"
+          |-WasmAtomNode
+            |-WasmAtomNode
+              |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+                |-QNameNode=system::memory::malloc
+                  |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="memory"
+                  |-NameIdentifierNode="malloc"
+              |-WasmAtomNode
+                |-IntegerLiteral=1
+          |-WasmAtomNode
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+            |-WasmAtomNode
+              |-QNameNode=$t
+                |-NameIdentifierNode="$t"
     |-NameIdentifierNode="add" type=(fun "add" ((alias i32) (alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "main" () (alias i32))
-      |-NameIdentifierNode="main"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-ReferenceNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
-          |-QNameNode=add
-            |-NameIdentifierNode="add"
-        |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="main"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-ReferenceNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
+            |-QNameNode=add
+              |-NameIdentifierNode="add"
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
     |-NameIdentifierNode="main" type=(fun "main" () (alias i32))

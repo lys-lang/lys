@@ -1,6 +1,7 @@
 //
 // Calculate the hash. Helper method incorporating the above three.
 //
+#[export "keccak"]
 fun keccak(input: bytes): bytes = {
   system::hash::keccak::keccak(input)
 }

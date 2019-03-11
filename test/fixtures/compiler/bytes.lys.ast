@@ -13,12 +13,15 @@
       |-NameIdentifierNode="b" type=(alias bytes (native bytes))
       |-StringLiteral="utf «【】»" type=(alias bytes (native bytes)) annotations=IsValueNode
   |-OverloadedFunctionNode type=(fun "main" () (alias bytes)) annotations=Injected
-    |-FunctionNode type=(fun "main" () (alias bytes))
-      |-NameIdentifierNode="main"
-      |-ReferenceNode type=(type (alias bytes (native bytes)))
-        |-QNameNode=bytes
-          |-NameIdentifierNode="bytes"
-      |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression,Global(test/fixtures/compiler/bytes.lys::a_2:<no-type>)
-        |-QNameNode=a
-          |-NameIdentifierNode="a"
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "main" () (alias bytes)) annotations=IsOverloaded
+        |-NameIdentifierNode="main"
+        |-ReferenceNode type=(type (alias bytes (native bytes)))
+          |-QNameNode=bytes
+            |-NameIdentifierNode="bytes"
+        |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression,Global(test/fixtures/compiler/bytes.lys::a_2:<no-type>)
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
     |-NameIdentifierNode="main" type=(fun "main" () (alias bytes))

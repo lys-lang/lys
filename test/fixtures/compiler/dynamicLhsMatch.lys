@@ -1,10 +1,10 @@
-fun test(a: i32): i32 =
+#[export] fun test(a: i32): i32 =
   match (a + 1) {
     case 1 -> 0
     else -> 1
   }
 
-fun test2(a: i32): i32 =
+#[export] fun test2(a: i32): i32 =
   if (a + 1 == 1)
     0
   else

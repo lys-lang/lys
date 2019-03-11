@@ -51,6 +51,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
 
   if (node instanceof Nodes.BinaryExpressionNode) {
     node.lhs.annotate(valueNodeAnnotation);
+
     node.rhs.annotate(valueNodeAnnotation);
   }
 
@@ -220,8 +221,8 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult:
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
       phaseResult.parsingContext.getScopePhase(node.module.text);
-    } catch {
-      phaseResult.parsingContext.messageCollector.error(`Unable to load module ${node.module.text}`, node);
+    } catch (e) {
+      phaseResult.parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node);
     }
   }
 });

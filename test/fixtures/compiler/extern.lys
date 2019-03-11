@@ -1,0 +1,11 @@
+#[extern "env" "printf"]
+fun printf(str: u32, extra: i32): void = panic()
+
+#[extern "env" "putchar"]
+fun putchar(char: u32): void = panic()
+
+#[export]
+fun main(): void = {
+  putchar(0 as u32)
+  printf(0 as u32, 0)
+}

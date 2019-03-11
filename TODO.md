@@ -11,6 +11,20 @@ fun sizeOf(x: Type<A> | A): usize
 
 test parsing `enum test {}`
 
+test parsing
+
+```lys
+fun malloc(size: i32): i32 = {
+  if (size > 0) {
+    val sizeToAlloc = size + 8 /* asd */
+    if (sizeToAlloc > MAX_SIZE_32) {
+      panic()
+    }
+  }
+}
+
+```
+
 MESSAGE TO FUTURE AGUS:
 
 struct and poly types should not receive a instance of Reference, they should receive only the nameIdentifier used for the declaration.
@@ -170,3 +184,17 @@ impl Kelvin {
   }
 }
 ```
+
+grammar changes:
+
+```
+#[...]
+
+""
+
+as <type>
+```
+
+porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
+
+immutable parameters, immutable `val`

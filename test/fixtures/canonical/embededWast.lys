@@ -1,9 +1,12 @@
-private inline fun test(): void = %wasm {
+#[inline]
+private fun test(): void = %wasm {
 
 }
 
-private inline fun test(): void = %wasm { }
-private inline fun test(): void =%wasm{}
+#[inline]
+private fun test(): void = %wasm { }
+#[inline]
+private fun test(): void =%wasm{}
 
 var freeblock = 0
 

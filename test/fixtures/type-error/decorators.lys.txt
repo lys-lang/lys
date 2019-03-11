@@ -1,0 +1,31 @@
+test/fixtures/type-error/decorators.lys
+    1│ #[inline]
+    2│ fun x(): void = {}
+    3│ 
+    4│ #[asd]
+     │   ^^^ Unknown decorator "asd"
+    5│ fun test(): void = {}
+    6│ 
+    7│ #[export]
+    8│ fun main(): void = {}
+    9│ 
+   10│ #[export 123]
+     │          ^^^ exportedName must be a string
+   11│ fun test2(): void = {}
+   12│ 
+   13│ #[export "test"]
+   14│ fun test3(): void = {}
+   15│ 
+   16│ #[export ""]
+     │          ^^ exportedName must be a string
+   17│ fun test4(): void = {}
+   18│ 
+   19│ #[extern "asd" "dsa"]
+   20│ fun imported(): void = {}
+   21│ 
+   22│ 
+   23│ 
+   24│ #[extern false 1]
+     │          ^^^^^ module must be a string
+     │                ^ functionName must be a string
+   25│ fun imported(): void = {}

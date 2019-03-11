@@ -12,6 +12,8 @@ val MAX_SIZE_32: i32 = 1 << 30 // 1G
 
 val HEAP_BASE = 0
 
+struct asd()
+
 private var startOffset: i32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
 private var offset: i32 = startOffset
 
@@ -27,6 +29,7 @@ private fun currentMemory(): i32 = %wasm {
 
 private fun max(a: i32, b: i32): i32 = if (a > b) a else b
 
+#[inline]
 fun allocBytes(size: i32): bytes = %wasm {
   (local $allocation i32)
   (set_local $allocation (call $malloc (get_local $size)))
@@ -40,6 +43,9 @@ fun allocBytes(size: i32): bytes = %wasm {
   )
 }
 
+#[inline]
+#[export "calloc"]
+#[explicit]
 fun calloc(itemCount: i32, itemSize: i32): i32 = {
   val size = itemCount * itemSize
   val $ret = malloc(size)
@@ -191,7 +197,7 @@ fun testPassing(): void = {
 
 
 
-fun test(): void = {
+fun testFn(): void = {
   var x = 1
   loop {
     x = x + 1
@@ -200,7 +206,7 @@ fun test(): void = {
   }
 }
 
-fun test(): void = {
+fun testFn2(): void = {
   var x = 1
   loop {
     x = x + 1
@@ -261,7 +267,7 @@ impl Iterator {
   }
 }
 
-fun test(from: i32, to: i32): i32 = {
+fun testFn3(from: i32, to: i32): i32 = {
   /**
     * This is a candidate sugar syntax for
     *

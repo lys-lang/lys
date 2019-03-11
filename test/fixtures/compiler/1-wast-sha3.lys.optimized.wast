@@ -17,7 +17,6 @@
  (global $global$4 (mut i32) (i32.const 0))
  (global $global$5 (mut i32) (i32.const 0))
  (global $global$6 (mut i32) (i32.const 0))
- (global $global$7 (mut i32) (i32.const 0))
  (export "memory" (memory $0))
  (export "keccak" (func $21))
  (start $22)
@@ -26,12 +25,12 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  (if
+  (if (result i32)
    (call $18
     (local.get $0)
     (i32.const 0)
    )
-   (block
+   (block (result i32)
     (if
      (call $18
       (local.get $0)
@@ -118,9 +117,13 @@
     (global.set $global$6
      (local.get $0)
     )
+    (call $14
+     (local.get $3)
+     (i32.const 8)
+    )
    )
+   (i32.const 0)
   )
-  (local.get $3)
  )
  (func $1 (; 1 ;) (type $4) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -2336,9 +2339,6 @@
   )
   (global.set $global$6
    (global.get $global$5)
-  )
-  (global.set $global$7
-   (i32.const 0)
   )
  )
 )

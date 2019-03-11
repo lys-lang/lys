@@ -1,6 +1,6 @@
 declare var describe, it, console;
 
-import { folderBasedTest, printAST } from './TestHelpers';
+import { folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
 import { TypePhaseResult } from '../dist/parser/phases/typePhase';
@@ -11,17 +11,9 @@ import { expect } from 'chai';
 import { annotations } from '../dist/parser/annotations';
 import { Nodes } from '../dist/parser/nodes';
 import { ParsingContext } from '../dist/parser/ParsingContext';
-import {
-  UnionType,
-  StructType,
-  RefType,
-  TypeAlias,
-  InjectableTypes,
-  Type,
-  StackType,
-  NativeTypes
-} from '../dist/parser/types';
+import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes } from '../dist/parser/types';
 import { printNode } from '../dist/utils/nodePrinter';
+import { printAST } from '../dist/utils/astPrinter';
 
 const parsingContext = new ParsingContext();
 
@@ -37,8 +29,7 @@ const phases = function(txt: string, fileName: string): ScopePhaseResult {
 const failingPhases = function(txt: string, fileName: string) {
   parsingContext.reset();
   const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
-  const canonical = new CanonicalPhaseResult(parsing);
-  return new SemanticPhaseResult(canonical, fileName);
+  return new CanonicalPhaseResult(parsing);
 };
 
 describe('Types', function() {
@@ -64,8 +55,9 @@ describe('Types', function() {
         try {
           typePhase.execute();
         } catch (e) {
-          console.log(print(typePhase.typeGraph));
+          console.log(printNode(typePhase.document));
           console.log(printAST(typePhase.document));
+          console.log(print(typePhase.typeGraph));
           throw e;
         }
 
@@ -307,22 +299,16 @@ describe('Types', function() {
         This cast is useless
         Cannot convert type i32 into u8
         Cannot convert type i32 into i16
-        Cannot convert type i32 into u16
         This cast is useless
-        Cannot convert type i32 into u32
-        Cannot convert type i32 into u64
         Cannot convert type u32 into u8
         Cannot convert type u32 into i16
         Cannot convert type u32 into u16
-        Cannot convert type u32 into i32
         This cast is useless
         Cannot convert type i64 into u8
         Cannot convert type i64 into i16
         Cannot convert type i64 into u16
         Cannot convert type i64 into u32
         This cast is useless
-        Cannot convert type i64 into u64
-        Cannot convert type u64 into u8
         Cannot convert type u64 into i16
         Cannot convert type u64 into u16
         Cannot convert type u64 into i32
@@ -356,11 +342,32 @@ describe('Types', function() {
         var len = a.length
         ---
         a := (alias bytes (native bytes))
-        len := (alias i32 (native i32))
+        len := (alias u32 (native u32))
       `;
     });
 
     describe('namespace types', () => {
+      describe('%struct', () => {
+        checkMainType`
+          type Test = %struct { x: i32 }
+
+          impl Test {
+            fun apply(): Test = ???
+          }
+
+          var a = Test.apply()
+          ---
+          a := (alias Test (struct))
+        `;
+        checkMainType`
+          struct Test(x: i32)
+
+          var a = Test(1)
+          ---
+          a := (alias Test (struct))
+        `;
+      });
+
       describe('apply', () => {
         checkMainType`
           type Test = %struct{}
@@ -371,7 +378,7 @@ describe('Types', function() {
 
           var a = Test.apply()
           ---
-          a := (alias Test (struct Test))
+          a := (alias Test (struct))
         `;
 
         checkMainType`
@@ -383,7 +390,7 @@ describe('Types', function() {
 
           var a = Test()
           ---
-          a := (alias Test (struct Test))
+          a := (alias Test (struct))
         `;
 
         checkMainType`
@@ -397,8 +404,8 @@ describe('Types', function() {
           var a = Test(1)
           var b = Test()
           ---
-          a := (alias Test (struct Test))
-          b := (alias Test (struct Test))
+          a := (alias Test (struct))
+          b := (alias Test (struct))
         `;
 
         checkMainType`
@@ -410,7 +417,7 @@ describe('Types', function() {
 
           var a = Test(1)
           ---
-          a := (alias Test (struct Test))
+          a := (alias Test (struct))
         `;
       });
 
@@ -432,7 +439,7 @@ describe('Types', function() {
             fun gta(): i32 = 1
           }
 
-          fun test(a: i32): boolean = CC#gta()
+          fun test(a: i32): boolean = CC.gta()
           ---
           fun(a: i32) -> boolean
           ---
@@ -446,7 +453,7 @@ describe('Types', function() {
             fun gta(): i32 = 1
           }
 
-          fun test(a: i32): boolean = BB#gta()
+          fun test(a: i32): boolean = BB.gta()
           ---
           fun(a: i32) -> boolean
           ---
@@ -553,7 +560,7 @@ describe('Types', function() {
             var b = A
             ---
             a := (alias Test (union (alias A) (alias B)))
-            b := (alias A (struct A))
+            b := (alias A (struct))
           `;
 
           checkMainType`
@@ -567,8 +574,8 @@ describe('Types', function() {
             var c = a as Test
             var d = b as Test
             ---
-            a := (alias A (struct A))
-            b := (alias B (struct B))
+            a := (alias A (struct))
+            b := (alias B (struct))
             c := (alias Test (union (alias A) (alias B)))
             d := (alias Test (union (alias A) (alias B)))
           `;
@@ -586,9 +593,9 @@ describe('Types', function() {
             var c: C = ???
             var d: ABC = a
             ---
-            a := (alias A (struct A))
-            b := (alias B (struct B))
-            c := (alias C (struct C))
+            a := (alias A (struct))
+            b := (alias B (struct))
+            c := (alias C (struct))
             d := (alias ABC (union (alias A) (alias B) (alias C)))
           `;
 
@@ -622,9 +629,9 @@ describe('Types', function() {
             var isBABC = b is ABC
             var isCABC = c is ABC
             ---
-            a := (alias A (struct A))
-            b := (alias B (struct B))
-            c := (alias C (struct C))
+            a := (alias A (struct))
+            b := (alias B (struct))
+            c := (alias C (struct))
             d := (alias ABC (union (alias A) (alias B) (alias C)))
             isA := (alias boolean (native boolean))
             isB := (alias boolean (native boolean))
@@ -746,22 +753,16 @@ describe('Types', function() {
           This cast is useless
           Cannot convert type i32 into u8
           Cannot convert type i32 into i16
-          Cannot convert type i32 into u16
           This cast is useless
-          Cannot convert type i32 into u32
-          Cannot convert type i32 into u64
           Cannot convert type u32 into u8
           Cannot convert type u32 into i16
           Cannot convert type u32 into u16
-          Cannot convert type u32 into i32
           This cast is useless
           Cannot convert type i64 into u8
           Cannot convert type i64 into i16
           Cannot convert type i64 into u16
           Cannot convert type i64 into u32
           This cast is useless
-          Cannot convert type i64 into u64
-          Cannot convert type u64 into u8
           Cannot convert type u64 into i16
           Cannot convert type u64 into u16
           Cannot convert type u64 into i32
@@ -788,7 +789,7 @@ describe('Types', function() {
 
         var b = Some(Null)
         ---
-        b := (alias Some (struct Some))
+        b := (alias Some (struct))
       `;
 
       checkMainType`
@@ -799,7 +800,7 @@ describe('Types', function() {
 
         var b = Some(Null)
         ---
-        b := (alias Some (struct Some))
+        b := (alias Some (struct))
       `;
 
       checkMainType`
@@ -812,7 +813,7 @@ describe('Types', function() {
         var b = Some(Null)
         ---
         a := (alias Test (union (alias Null) (alias Some)))
-        b := (alias Some (struct Some))
+        b := (alias Some (struct))
       `;
 
       checkMainType`
@@ -825,7 +826,7 @@ describe('Types', function() {
         var b = Some(Null)
         ---
         a := (alias Test (union (alias Null) (alias Some)))
-        b := (alias Some (struct Some))
+        b := (alias Some (struct))
       `;
 
       checkMainType`
@@ -863,11 +864,11 @@ describe('Types', function() {
           var d = Cons(Node(Empty))
           var e = Cons(Node(Nil))
           ---
-          a := (alias Nil (struct Nil))
-          b := (alias Cons (struct Cons))
-          c := (alias Cons (struct Cons))
-          d := (alias Cons (struct Cons))
-          e := (alias Cons (struct Cons))
+          a := (alias Nil (struct))
+          b := (alias Cons (struct))
+          c := (alias Cons (struct))
+          d := (alias Cons (struct))
+          e := (alias Cons (struct))
         `;
       });
     });
@@ -1173,7 +1174,7 @@ describe('Types', function() {
 
             var x = if (true) True else True
             ---
-            x := (alias True (struct True))
+            x := (alias True (struct))
           `;
 
           checkMainType`
@@ -1207,7 +1208,7 @@ describe('Types', function() {
 
             var x = if (true) Some(1) else Some(2)
             ---
-            x := (alias Some (struct Some))
+            x := (alias Some (struct))
           `;
 
           checkMainType`
@@ -1621,7 +1622,7 @@ describe('Types', function() {
         ---
         value1 := (alias Enum (union (alias A) (alias B) (alias C)))
         value2 := (union (alias A) (alias B))
-        value3 := (alias A (struct A))
+        value3 := (alias A (struct))
         x1 := (alias boolean (native boolean))
         y1 := (alias boolean (native boolean))
         z1 := (alias boolean (native boolean))
@@ -1685,9 +1686,51 @@ describe('Types', function() {
         Could not find a valid overload
       `;
     });
+    describe('type schema', () => {
+      checkMainType`
+        struct X(value: i32)
+        var x = X(1)
+        var a = x.^byteSize
+        ---
+        x := (alias X (struct))
+        a := (never)
+        ---
+        This is not a type
+      `;
 
+      checkMainType`
+        struct X(value: i32)
+        var a: i32 = X.^byteSize
+        var b: i32 = X.^discriminant
+        ---
+        a := (alias i32 (native i32))
+        b := (alias i32 (native i32))
+      `;
+
+      checkMainType`
+        struct X(value: i32)
+        var a: boolean = X.^asd
+        ---
+        a := (alias boolean (native boolean))
+        ---
+        Invalid schema property
+      `;
+
+      checkMainType`
+        struct X(value: i32)
+        var a: boolean = X.^byteSize
+        ---
+        a := (alias boolean (native boolean))
+        ---
+        Type "i32" is not assignable to "boolean"
+      `;
+    });
     describe('match is not exhaustive', () => {
       checkMainType`
+        fun assert(x: boolean): void =
+          if (x == false)
+            panic()
+
         fun test(x: i32): void = {
           match x {
             case 1 -> assert(true)
@@ -2032,7 +2075,7 @@ describe('Types', function() {
 
     describe('UnionType', () => {
       const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
-      const struct = (name: string) => new StructType(name, []);
+      const struct = (name: string) => new StructType([]);
       const union = (...of: Type[]) => new UnionType(of);
       const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));
       const structAlias = (name: string) => aliasOf(name, struct(name));
@@ -2054,7 +2097,7 @@ describe('Types', function() {
           ).expand();
 
           expect(simplified.inspect(100)).to.eq(
-            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+            `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
         });
       });
@@ -2076,7 +2119,7 @@ describe('Types', function() {
           ).subtract(D);
 
           expect(newType.inspect(100)).to.eq(
-            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (struct F) (struct G) (struct H) (struct I))`.trim()
+            `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
         });
 
@@ -2149,9 +2192,7 @@ describe('Types', function() {
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
           ).subtract(ABC);
 
-          expect(newType.inspect(100)).to.eq(
-            `(union (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
-          );
+          expect(newType.inspect(100)).to.eq(`(union (alias D (struct)) (struct) (struct) (struct) (struct))`.trim());
         });
 
         it('should subtract entire unioimpl from non-expanded union', () => {
@@ -2167,14 +2208,12 @@ describe('Types', function() {
           );
 
           expect(simplified.inspect(100)).to.eq(
-            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+            `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
 
           const newType = simplified.subtract(ABC);
 
-          expect(newType.inspect(100)).to.eq(
-            `(union (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
-          );
+          expect(newType.inspect(100)).to.eq(`(union (alias D (struct)) (struct) (struct) (struct) (struct))`.trim());
         });
 
         it('subtract A from AB should yield B', () => {
@@ -2182,8 +2221,8 @@ describe('Types', function() {
           const B = structAlias('B');
           const AB = union(A, B);
 
-          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct B))`.trim());
-          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct B))`.trim());
+          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct))`.trim());
+          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct))`.trim());
         });
 
         it('subtract A and B from AB should yield NeverType', () => {
@@ -2207,13 +2246,13 @@ describe('Types', function() {
           );
 
           expect(simplified.inspect(100)).to.eq(
-            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (struct F) (struct G) (struct H) (struct I))`.trim()
+            `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
 
           const newType = simplified.subtract(D);
 
           expect(newType.inspect(100)).to.eq(
-            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (struct F) (struct G) (struct H) (struct I))`.trim()
+            `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
         });
       });
@@ -2230,7 +2269,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-              (union (struct A) (struct B) (struct C) (struct D))
+              (union (struct) (struct) (struct) (struct))
             `.trim()
           );
         });
@@ -2241,7 +2280,7 @@ describe('Types', function() {
           const union = new UnionType([A, A]);
           const simplified = union.simplify();
 
-          expect(simplified.inspect(100)).to.eq(`(struct A)`.trim());
+          expect(simplified.inspect(100)).to.eq(`(struct)`.trim());
         });
 
         it('should simplify deeply nested unions', () => {
@@ -2255,7 +2294,7 @@ describe('Types', function() {
           const simplified = union(A, B, C, D, AB, CD, D, D).simplify();
 
           expect(simplified.inspect(100)).to.eq(
-            `(union (alias AB (union (struct A) (struct B))) (alias CD (union (struct C) (struct D))))`.trim()
+            `(union (alias AB (union (struct) (struct))) (alias CD (union (struct) (struct))))`.trim()
           );
         });
 
@@ -2271,7 +2310,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-              (union (struct A) (struct B) (struct C) (struct D))
+              (union (struct) (struct) (struct) (struct))
             `.trim()
           );
         });
@@ -2288,7 +2327,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-            (union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)))
+            (union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)))
             `.trim()
           );
         });
@@ -2305,7 +2344,7 @@ describe('Types', function() {
           const simplified = union(A, B, C, D, AB, BC, D, D, F).simplify();
 
           expect(simplified.inspect(100)).to.eq(
-            `(union (alias A (struct A)) (alias B (struct B)) (alias C (struct C)) (alias D (struct D)) (alias F (struct F)) (alias AB1 (struct AB1)) (alias BC1 (struct BC1)))`.trim()
+            `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (alias F (struct)) (alias AB1 (struct)) (alias BC1 (struct)))`.trim()
           );
         });
 
@@ -2320,13 +2359,13 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-              (union (struct A) (struct B) (struct C) (struct D) (ref ?))
+              (union (struct) (struct) (struct) (struct) (ref ?))
             `.trim()
           );
         });
 
         it('should not simplify aliases to the same type (i32)', () => {
-          const i32 = new StackType('i32', NativeTypes.i32);
+          const i32 = StackType.of('i32', NativeTypes.i32, 4);
 
           const A = aliasOf('A', i32);
           const B = aliasOf('B', i32);
@@ -2374,7 +2413,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-              (union (alias A (struct A)) (alias B (struct B)))
+              (union (alias A (struct)) (alias B (struct)))
             `.trim()
           );
 
@@ -2403,7 +2442,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-              (union (struct A) (struct B) (struct C) (struct D) (alias Ref (ref ?)))
+              (union (struct) (struct) (struct) (struct) (alias Ref (ref ?)))
             `.trim()
           );
         });
@@ -2422,7 +2461,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(100)).to.eq(
             `
-              (union (struct A) (struct B) (union (struct C) (struct D)))
+              (union (struct) (struct) (union (struct) (struct)))
             `.trim()
           );
         });
@@ -2441,7 +2480,7 @@ describe('Types', function() {
 
           expect(simplified.inspect(0)).to.eq(
             `
-              (union (struct A) (struct B) (alias CDUnion))
+              (union (struct) (struct) (alias CDUnion))
             `.trim()
           );
         });
@@ -2540,7 +2579,7 @@ describe('Types', function() {
         }
         ---
         value := (alias Enum (union (alias A) (alias B) (alias C)))
-        x := (alias B (struct B))
+        x := (alias B (struct))
         y := (union (alias A) (alias B))
         z := (alias Enum (union (alias A) (alias B) (alias C)))
       `;
@@ -2750,7 +2789,7 @@ describe('Types', function() {
 
         var x = Custom(1)
         ---
-        x := (alias Custom (struct Custom))
+        x := (alias Custom (struct))
       `;
 
       checkMainType`
@@ -2875,9 +2914,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32 = %stack { lowLevelType="i32" }
-        type f32 = %stack { lowLevelType="f32" }
-        type boolean = %stack { lowLevelType="i32" }
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
+        type f32 = %stack { lowLevelType="f32" byteSize=4 }
+        type boolean = %stack { lowLevelType="i32" byteSize=4 }
 
         impl boolean {
           fun +(x: boolean, y: i32): f32 = 1.0
@@ -2889,9 +2928,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32 = %stack { lowLevelType="i32" }
-        type f32 = %stack { lowLevelType="f32" }
-        type boolean = %stack { lowLevelType="i32" }
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
+        type f32 = %stack { lowLevelType="f32" byteSize=4 }
+        type boolean = %stack { lowLevelType="i32" byteSize=4 }
 
         impl boolean {
           fun +(x: boolean, y: i32): i32 = 1
@@ -2906,9 +2945,9 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32 = %stack { lowLevelType="i32" }
-        type f32 = %stack { lowLevelType="f32" }
-        type boolean = %stack { lowLevelType="i32" }
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
+        type f32 = %stack { lowLevelType="f32" byteSize=4 }
+        type boolean = %stack { lowLevelType="i32" byteSize=4 }
 
         impl boolean {
           fun +(x: boolean, y: i32): i32 = 1
@@ -3536,19 +3575,20 @@ describe('Types', function() {
       folderBasedTest(
         '**/type-error/*.lys',
         failingPhases,
-        async (result, e) => {
+        async (canonical, e) => {
           if (e) throw e;
 
           try {
+            const result = new SemanticPhaseResult(canonical, canonical.parsingPhaseResult.fileName);
             const scope = new ScopePhaseResult(result);
             const typePhase = new TypePhaseResult(scope);
             typePhase.execute();
             typePhase.ensureIsValid();
           } catch (e) {
-            if (!result.parsingContext.messageCollector.errors.length) {
+            if (!canonical.parsingContext.messageCollector.errors.length) {
               throw e;
             }
-            return printErrors(result.parsingContext, true);
+            return printErrors(canonical.parsingContext, true);
           }
 
           throw new Error('Type phase did not fail');

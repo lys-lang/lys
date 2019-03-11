@@ -1,4 +1,4 @@
-fun gcd(x: i32, y: i32): i32 =
+#[export] fun gcd(x: i32, y: i32): i32 =
   if (x > y)
     gcd(x - y, y)
   else if (x < y)
@@ -6,10 +6,10 @@ fun gcd(x: i32, y: i32): i32 =
   else
     x
 
-fun test(): i32 = gcd(119,7) // must return 7
+#[export] fun test(): i32 = gcd(119,7) // must return 7
 
 
-fun ifWithoutElse(x: i32): i32 = {
+#[export] fun ifWithoutElse(x: i32): i32 = {
   var a: i32 = 1
 
   if (x == 1) {

@@ -5,110 +5,122 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" () (alias void)) annotations=Injected
-    |-FunctionNode type=(fun "test" () (alias void))
-      |-NameIdentifierNode="test"
-      |-ReferenceNode type=(type (alias void (native void)))
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode type=(native void)
-        |-LoopNode type=(native void) annotations=LabelId
-          |-BlockNode type=(native void)
-            |-BreakNode type=(native void) annotations=CurrentLoop
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "test" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="test"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
+          |-LoopNode type=(native void) annotations=LabelId
+            |-BlockNode type=(native void)
+              |-BreakNode type=(native void) annotations=CurrentLoop
     |-NameIdentifierNode="test" type=(fun "test" () (alias void))
   |-OverloadedFunctionNode type=(fun "test1" () (alias void)) annotations=Injected
-    |-FunctionNode type=(fun "test1" () (alias void))
-      |-NameIdentifierNode="test1"
-      |-ReferenceNode type=(type (alias void (native void)))
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode type=(native void)
-        |-VarDeclarationNode type=(native void) annotations=Local(x:i32#0)
-          |-NameIdentifierNode="x" type=(alias i32 (native i32))
-          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-LoopNode type=(native void) annotations=LabelId
-          |-BlockNode type=(native void)
-            |-AssignmentNode type=(alias i32 (native i32))
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(x:i32#0)
-                |-QNameNode=x
-                  |-NameIdentifierNode="x"
-              |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-                |-NameIdentifierNode="+"
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "test1" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="test1"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
+          |-VarDeclarationNode type=(native void) annotations=Local(x:i32#0)
+            |-NameIdentifierNode="x" type=(alias i32 (native i32))
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-LoopNode type=(native void) annotations=LabelId
+            |-BlockNode type=(native void)
+              |-AssignmentNode type=(alias i32 (native i32))
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(x:i32#0)
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
-                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-IfNode type=(native void)
-              |-BinaryExpressionNode=">" type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-NameIdentifierNode=">"
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
-                  |-QNameNode=x
-                    |-NameIdentifierNode="x"
-                |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
-              |-BreakNode type=(native void) annotations=CurrentLoop
-    |-NameIdentifierNode="test1" type=(fun "test1" () (alias void))
-  |-OverloadedFunctionNode type=(fun "test2" () (alias void)) annotations=Injected
-    |-FunctionNode type=(fun "test2" () (alias void))
-      |-NameIdentifierNode="test2"
-      |-ReferenceNode type=(type (alias void (native void)))
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode type=(native void)
-        |-VarDeclarationNode type=(native void) annotations=Local(x:i32#0)
-          |-NameIdentifierNode="x" type=(alias i32 (native i32))
-          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-LoopNode type=(native void) annotations=LabelId
-          |-BlockNode type=(native void)
-            |-AssignmentNode type=(alias i32 (native i32))
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(x:i32#0)
-                |-QNameNode=x
-                  |-NameIdentifierNode="x"
-              |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-                |-NameIdentifierNode="+"
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
-                  |-QNameNode=x
-                    |-NameIdentifierNode="x"
-                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ContinueNode type=(native void) annotations=CurrentLoop
-    |-NameIdentifierNode="test2" type=(fun "test2" () (alias void))
-  |-OverloadedFunctionNode type=(fun "test3" () (alias void)) annotations=Injected
-    |-FunctionNode type=(fun "test3" () (alias void))
-      |-NameIdentifierNode="test3"
-      |-ReferenceNode type=(type (alias void (native void)))
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode type=(native void)
-        |-VarDeclarationNode type=(native void) annotations=Local(x:i32#0)
-          |-NameIdentifierNode="x" type=(alias i32 (native i32))
-          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-LoopNode type=(native void) annotations=LabelId
-          |-BlockNode type=(native void)
-            |-LoopNode type=(native void) annotations=LabelId
-              |-BlockNode type=(native void)
-                |-AssignmentNode type=(alias i32 (native i32))
-                  |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(x:i32#0)
+                |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-NameIdentifierNode="+"
+                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
-                  |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-                    |-NameIdentifierNode="+"
-                    |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
-                      |-QNameNode=x
-                        |-NameIdentifierNode="x"
-                    |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-                |-IfNode type=(native void)
-                  |-BinaryExpressionNode="==" type=(alias boolean (native boolean)) annotations=IsValueNode
-                    |-NameIdentifierNode="=="
-                    |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
-                      |-QNameNode=x
-                        |-NameIdentifierNode="x"
-                    |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-BreakNode type=(native void) annotations=CurrentLoop
-            |-IfNode type=(native void)
-              |-BinaryExpressionNode=">" type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-NameIdentifierNode=">"
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+                  |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-IfNode type=(native void)
+                |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+                  |-NameIdentifierNode=">"
+                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BreakNode type=(native void) annotations=CurrentLoop
+    |-NameIdentifierNode="test1" type=(fun "test1" () (alias void))
+  |-OverloadedFunctionNode type=(fun "test2" () (alias void)) annotations=Injected
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "test2" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="test2"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
+          |-VarDeclarationNode type=(native void) annotations=Local(x:i32#0)
+            |-NameIdentifierNode="x" type=(alias i32 (native i32))
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-LoopNode type=(native void) annotations=LabelId
+            |-BlockNode type=(native void)
+              |-AssignmentNode type=(alias i32 (native i32))
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(x:i32#0)
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
-                |-IntegerLiteral=100 type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-NameIdentifierNode="+"
+                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ContinueNode type=(native void) annotations=CurrentLoop
+    |-NameIdentifierNode="test2" type=(fun "test2" () (alias void))
+  |-OverloadedFunctionNode type=(fun "test3" () (alias void)) annotations=Injected
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "test3" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="test3"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
+          |-VarDeclarationNode type=(native void) annotations=Local(x:i32#0)
+            |-NameIdentifierNode="x" type=(alias i32 (native i32))
+            |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-LoopNode type=(native void) annotations=LabelId
+            |-BlockNode type=(native void)
+              |-LoopNode type=(native void) annotations=LabelId
+                |-BlockNode type=(native void)
+                  |-AssignmentNode type=(alias i32 (native i32))
+                    |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(x:i32#0)
+                      |-QNameNode=x
+                        |-NameIdentifierNode="x"
+                    |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-NameIdentifierNode="+"
+                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+                        |-QNameNode=x
+                          |-NameIdentifierNode="x"
+                      |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-IfNode type=(native void)
+                    |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+                      |-NameIdentifierNode="=="
+                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+                        |-QNameNode=x
+                          |-NameIdentifierNode="x"
+                      |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-BreakNode type=(native void) annotations=CurrentLoop
+              |-IfNode type=(native void)
+                |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+                  |-NameIdentifierNode=">"
+                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-IntegerLiteral=100 type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BreakNode type=(native void) annotations=CurrentLoop
               |-BreakNode type=(native void) annotations=CurrentLoop
-            |-BreakNode type=(native void) annotations=CurrentLoop
     |-NameIdentifierNode="test3" type=(fun "test3" () (alias void))

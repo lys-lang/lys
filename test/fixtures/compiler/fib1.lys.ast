@@ -5,81 +5,85 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) annotations=IsTailRec
-      |-ParameterNode annotations=Local(n:i32#0)
-        |-NameIdentifierNode="n" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded,IsTailRec
+        |-ParameterNode annotations=Local(n:i32#0)
+          |-NameIdentifierNode="n" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode annotations=Local(a:i32#1)
+          |-NameIdentifierNode="a" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode annotations=Local(b:i32#2)
+          |-NameIdentifierNode="b" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="fibo"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ParameterNode annotations=Local(a:i32#1)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-ParameterNode annotations=Local(b:i32#2)
-        |-NameIdentifierNode="b" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="fibo"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-PatternMatcherNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(n:i32#0)
-          |-QNameNode=n
-            |-NameIdentifierNode="n"
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
-          |-IntegerLiteral=0 type=(alias i32 (native i32))
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:i32#1)
-            |-QNameNode=a
-              |-NameIdentifierNode="a"
-        |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
-          |-IntegerLiteral=1 type=(alias i32 (native i32))
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(b:i32#2)
-            |-QNameNode=b
-              |-NameIdentifierNode="b"
-        |-MatchDefaultNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsTailRecCall
-            |-ReferenceNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
-              |-QNameNode=fibo
-                |-NameIdentifierNode="fibo"
-            |-BinaryExpressionNode="-" type=(alias i32 (native i32)) annotations=IsValueNode
-              |-NameIdentifierNode="-"
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(n:i32#0)
-                |-QNameNode=n
-                  |-NameIdentifierNode="n"
-              |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(b:i32#2)
+        |-PatternMatcherNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(n:i32#0)
+            |-QNameNode=n
+              |-NameIdentifierNode="n"
+          |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
+            |-IntegerLiteral=0 type=(alias i32 (native i32))
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:i32#1)
+              |-QNameNode=a
+                |-NameIdentifierNode="a"
+          |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
+            |-IntegerLiteral=1 type=(alias i32 (native i32))
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(b:i32#2)
               |-QNameNode=b
                 |-NameIdentifierNode="b"
-            |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-              |-NameIdentifierNode="+"
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#1)
-                |-QNameNode=a
-                  |-NameIdentifierNode="a"
+          |-MatchDefaultNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$3:i32#3)
+            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsTailRecCall
+              |-ReferenceNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
+                |-QNameNode=fibo
+                  |-NameIdentifierNode="fibo"
+              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-NameIdentifierNode="-"
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(n:i32#0)
+                  |-QNameNode=n
+                    |-NameIdentifierNode="n"
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(b:i32#2)
                 |-QNameNode=b
                   |-NameIdentifierNode="b"
+              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-NameIdentifierNode="+"
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#1)
+                  |-QNameNode=a
+                    |-NameIdentifierNode="a"
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(b:i32#2)
+                  |-QNameNode=b
+                    |-NameIdentifierNode="b"
     |-NameIdentifierNode="fibo" type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "fib" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "fib" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(n:i32#0)
-        |-NameIdentifierNode="n" type=(alias i32 (native i32))
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "fib" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(n:i32#0)
+          |-NameIdentifierNode="n" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="fib"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="fib"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-        |-ReferenceNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
-          |-QNameNode=fibo
-            |-NameIdentifierNode="fibo"
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(n:i32#0)
-          |-QNameNode=n
-            |-NameIdentifierNode="n"
-        |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-        |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-ReferenceNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
+            |-QNameNode=fibo
+              |-NameIdentifierNode="fibo"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(n:i32#0)
+            |-QNameNode=n
+              |-NameIdentifierNode="n"
+          |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+          |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
     |-NameIdentifierNode="fib" type=(fun "fib" ((alias i32)) (alias i32))

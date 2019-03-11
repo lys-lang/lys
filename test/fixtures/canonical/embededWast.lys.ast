@@ -1,6 +1,8 @@
 
 |-DocumentNode
   |-FunDirectiveNode
+    |-DecoratorNode
+      |-NameIdentifierNode="inline"
     |-FunctionNode
       |-NameIdentifierNode="test"
       |-ReferenceNode
@@ -8,6 +10,8 @@
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
   |-FunDirectiveNode
+    |-DecoratorNode
+      |-NameIdentifierNode="inline"
     |-FunctionNode
       |-NameIdentifierNode="test"
       |-ReferenceNode
@@ -15,6 +19,8 @@
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
   |-FunDirectiveNode
+    |-DecoratorNode
+      |-NameIdentifierNode="inline"
     |-FunctionNode
       |-NameIdentifierNode="test"
       |-ReferenceNode
@@ -37,30 +43,30 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-WasmExpressionNode
-        |-WasmAtomNode=local
+        |-WasmAtomNode
           |-QNameNode=$address
             |-NameIdentifierNode="$address"
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-WasmAtomNode=set_local
+        |-WasmAtomNode
           |-QNameNode=$address
             |-NameIdentifierNode="$address"
-          |-WasmAtomNode=get_global
+          |-WasmAtomNode
             |-ReferenceNode
               |-QNameNode=freeblock
                 |-NameIdentifierNode="freeblock"
-        |-WasmAtomNode=set_global
+        |-WasmAtomNode
           |-ReferenceNode
             |-QNameNode=freeblock
               |-NameIdentifierNode="freeblock"
-          |-WasmAtomNode=i32.add
-            |-WasmAtomNode=get_local
+          |-WasmAtomNode
+            |-WasmAtomNode
               |-QNameNode=$address
                 |-NameIdentifierNode="$address"
-            |-WasmAtomNode=get_local
+            |-WasmAtomNode
               |-QNameNode=$size
                 |-NameIdentifierNode="$size"
-        |-WasmAtomNode=get_local
+        |-WasmAtomNode
           |-QNameNode=$address
             |-NameIdentifierNode="$address"
   |-FunDirectiveNode
@@ -80,88 +86,88 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-WasmExpressionNode
-        |-WasmAtomNode=local
+        |-WasmAtomNode
           |-QNameNode=$sum
             |-NameIdentifierNode="$sum"
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-WasmAtomNode=local
+        |-WasmAtomNode
           |-QNameNode=$aSize
             |-NameIdentifierNode="$aSize"
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-WasmAtomNode=local
+        |-WasmAtomNode
           |-QNameNode=$newStr
             |-NameIdentifierNode="$newStr"
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-WasmAtomNode=return
-          |-WasmAtomNode=set_local
+        |-WasmAtomNode
+          |-WasmAtomNode
             |-QNameNode=$aSize
               |-NameIdentifierNode="$aSize"
-            |-WasmAtomNode=i32.load8_u
+            |-WasmAtomNode
               |-QNameNode=a
                 |-NameIdentifierNode="a"
-          |-WasmAtomNode=set_local
+          |-WasmAtomNode
             |-QNameNode=$sum
               |-NameIdentifierNode="$sum"
-            |-WasmAtomNode=i32.sub
-              |-WasmAtomNode=i32.add
-                |-WasmAtomNode=get_local
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-WasmAtomNode
                   |-QNameNode=$aSize
                     |-NameIdentifierNode="$aSize"
-                |-WasmAtomNode=i32.load8_u
+                |-WasmAtomNode
                   |-QNameNode=b
                     |-NameIdentifierNode="b"
-              |-WasmAtomNode=i32.const
+              |-WasmAtomNode
                 |-IntegerLiteral=1
-          |-WasmAtomNode=set_local
+          |-WasmAtomNode
             |-QNameNode=$newStr
               |-NameIdentifierNode="$newStr"
-            |-WasmAtomNode=call
+            |-WasmAtomNode
               |-ReferenceNode
                 |-QNameNode=malloc
                   |-NameIdentifierNode="malloc"
-              |-WasmAtomNode=i32.add
-                |-WasmAtomNode=get_local
+              |-WasmAtomNode
+                |-WasmAtomNode
                   |-QNameNode=$sum
                     |-NameIdentifierNode="$sum"
-                |-WasmAtomNode=i32.const
+                |-WasmAtomNode
                   |-IntegerLiteral=1
-          |-WasmAtomNode=i32.store8
-            |-WasmAtomNode=get_local
+          |-WasmAtomNode
+            |-WasmAtomNode
               |-QNameNode=$newStr
                 |-NameIdentifierNode="$newStr"
-            |-WasmAtomNode=get_local
+            |-WasmAtomNode
               |-QNameNode=$sum
                 |-NameIdentifierNode="$sum"
-          |-WasmAtomNode=call
+          |-WasmAtomNode
             |-ReferenceNode
               |-QNameNode=string_copy
                 |-NameIdentifierNode="string_copy"
-            |-WasmAtomNode=get_local
+            |-WasmAtomNode
               |-QNameNode=$a
                 |-NameIdentifierNode="$a"
-            |-WasmAtomNode=get_local
+            |-WasmAtomNode
               |-QNameNode=$newStr
                 |-NameIdentifierNode="$newStr"
-          |-WasmAtomNode=call
+          |-WasmAtomNode
             |-ReferenceNode
               |-QNameNode=string_copy
                 |-NameIdentifierNode="string_copy"
-            |-WasmAtomNode=get_local
+            |-WasmAtomNode
               |-QNameNode=$b
                 |-NameIdentifierNode="$b"
-            |-WasmAtomNode=i32.sub
-              |-WasmAtomNode=i32.add
-                |-WasmAtomNode=get_local
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-WasmAtomNode
                   |-QNameNode=$newStr
                     |-NameIdentifierNode="$newStr"
-                |-WasmAtomNode=get_local
+                |-WasmAtomNode
                   |-QNameNode=$aSize
                     |-NameIdentifierNode="$aSize"
-              |-WasmAtomNode=i32.const
+              |-WasmAtomNode
                 |-IntegerLiteral=1
-          |-WasmAtomNode=get_local
+          |-WasmAtomNode
             |-QNameNode=$newStr
               |-NameIdentifierNode="$newStr"

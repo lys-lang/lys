@@ -5,23 +5,25 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32))) annotations=Injected
-    |-FunctionNode type=(fun "x" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(a:i32#0)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "x" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(a:i32#0)
+          |-NameIdentifierNode="a" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="x"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="x"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-QNameNode=a
-          |-NameIdentifierNode="a"
-    |-FunctionNode type=(fun "x" () (alias i32))
-      |-NameIdentifierNode="x"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "x" () (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="x"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
     |-NameIdentifierNode="x" type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32)))
