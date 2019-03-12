@@ -157,38 +157,44 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         if (param.parameterType instanceof Nodes.UnionTypeNode) {
           return `
             // #[getter]
-            fun property_${parameterName}(target: ${typeName}): ${parameterType} =
-              property$${i}(target)
+            fun property_${parameterName}(self: ${typeName}): ${parameterType} =
+              property$${i}(self)
 
             // #[setter]
-            fun property_${parameterName}(target: ${typeName}, value: ${parameterType}): void =
-              property$${i}(target, value)
+            fun property_${parameterName}(self: ${typeName}, value: ${parameterType}): void =
+              property$${i}(self, value)
 
             #[inline]
-            private fun property$${i}(target: ${typeName}): ${parameterType} =
-              loadPropertyWithOffset$${i}(target, ${typeName}.^property$${i}_offset)
+            private fun property$${i}(self: ${typeName}): ${parameterType} =
+              loadPropertyWithOffset$${i}(
+                self,
+                ${typeName}.^property$${i}_offset
+              )
 
             #[inline]
-            private fun property$${i}(target: ${typeName}, value: ${parameterType}): void =
-              storePropertyWithOffset$${i}(target, value, ${typeName}.^property$${i}_offset)
-
+            private fun property$${i}(self: ${typeName}, value: ${parameterType}): void =
+              storePropertyWithOffset$${i}(
+                self,
+                value,
+                ${typeName}.^property$${i}_offset
+              )
 
             #[inline]
-            private fun loadPropertyWithOffset$${i}(target: ${typeName}, offset: i32): ${parameterType} = %wasm {
+            private fun loadPropertyWithOffset$${i}(self: ${typeName}, offset: i32): ${parameterType} = %wasm {
               (i64.load
                 (i32.add
                   (get_local $offset)
-                  (call $addressFromRef (get_local $target))
+                  (call $addressFromRef (get_local $self))
                 )
               )
             }
 
             #[inline]
-            private fun storePropertyWithOffset$${i}(target: ${typeName}, value: ${parameterType}, offset: i32): void = %wasm {
+            private fun storePropertyWithOffset$${i}(self: ${typeName}, value: ${parameterType}, offset: i32): void = %wasm {
               (i64.store
                 (i32.add
                   (get_local $offset)
-                  (call $addressFromRef (get_local $target))
+                  (call $addressFromRef (get_local $self))
                 )
                 (get_local $value)
               )
@@ -197,21 +203,21 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         } else {
           return `
             // #[getter]
-            fun property_${parameterName}(target: ${typeName}): ${parameterType} =
-              property$${i}(target)
+            fun property_${parameterName}(self: ${typeName}): ${parameterType} =
+              property$${i}(self)
 
             // #[setter]
-            fun property_${parameterName}(target: ${typeName}, value: ${parameterType}): void =
-              property$${i}(target, value)
+            fun property_${parameterName}(self: ${typeName}, value: ${parameterType}): void =
+              property$${i}(self, value)
 
             /* ${param.parameterType.nodeName} */
             #[inline]
-            private fun property$${i}(target: ${typeName}): ${parameterType} =
-              ${parameterType}.load(target, ${typeName}.^property$${i}_offset)
+            private fun property$${i}(self: ${typeName}): ${parameterType} =
+              ${parameterType}.load(self, ${typeName}.^property$${i}_offset)
 
             #[inline]
-            private fun property$${i}(target: ${typeName}, value: ${parameterType}): void =
-              ${parameterType}.store(target, value, ${typeName}.^property$${i}_offset)
+            private fun property$${i}(self: ${typeName}, value: ${parameterType}): void =
+              ${parameterType}.store(self, value, ${typeName}.^property$${i}_offset)
           `;
         }
       })
@@ -232,7 +238,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
               fun apply(${args}): ${typeName} = {
                 var $ref = fromPointer(
-                  system::memory::calloc(1, ${typeName}.^byteSize)
+                  system::memory::calloc(1, ${typeName}.^allocationSize)
                 )
 
                 ${callRefs}

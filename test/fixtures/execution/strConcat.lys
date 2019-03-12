@@ -1,0 +1,9 @@
+fun concat(lhs: bytes, rhs: bytes): bytes = {
+  var $ret = system::memory::allocBytes(lhs.length + rhs.length)
+  system::memory::memcpy($ret.ptr, lhs.ptr, lhs.length)
+  system::memory::memcpy($ret.ptr + lhs.length as i32, rhs.ptr, rhs.length)
+  $ret
+}
+
+#[export]
+fun main(): u32 = concat("asd", "dsa").length

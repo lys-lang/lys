@@ -1,18 +1,10 @@
 (module
   (memory $mem 1)
   (export "memory" (memory $mem))
-  (func $system::core::assert (param $x i32)
-    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
-      (then
-        (call $system::core::panic_1)
-      )
-      (else)
-    )
-  )
   (func $system::core::addressFromRef (param $pointer i64) (result i32)
     (i32.wrap/i64 (get_local $pointer))
   )
-  (func $system::core::panic_1
+  (func $system::core::panic
     (unreachable)
   )
   (func $system::core::u8.as (param $lhs i32) (result i32)
@@ -276,6 +268,9 @@
   (func $system::core::i32.as_7 (param $lhs i32) (result i32)
     (i32.and (i32.const 0xFFFF) (get_local $lhs))
   )
+  (func $system::core::i32.as_8 (param $lhs i32) (result i32)
+    (i32.shr_s (i32.shl (get_local $lhs) (i32.const 16)) (i32.const 16))
+  )
   (func $system::core::i32.== (param $lhs i32) (param $rhs i32) (result i32)
     (i32.eq (get_local $lhs) (get_local $rhs))
   )
@@ -371,6 +366,9 @@
   )
   (func $system::core::u32.as_4 (param $lhs i32) (result i32)
     (get_local $lhs)
+  )
+  (func $system::core::u32.as_5 (param $lhs i32) (result i32)
+    (i32.shr_s (i32.shl (get_local $lhs) (i32.const 16)) (i32.const 16))
   )
   (func $system::core::u32.== (param $lhs i32) (param $rhs i32) (result i32)
     (i32.eq (get_local $lhs) (get_local $rhs))
@@ -821,7 +819,7 @@
       (if $IF2 (call $system::core::u32.> (get_local $at) (call $system::core::bytes.property_length (get_local $data)))
           (then
             (block $B3
-                (call $system::core::panic_1)
+                (call $system::core::panic)
               )
           )
           (else)
@@ -834,7 +832,7 @@
       (if $IF2 (call $system::core::u32.> (call $system::core::u32.+ (get_local $at) (call $system::core::i32.as_3 (i32.const 1))) (call $system::core::bytes.property_length (get_local $data)))
           (then
             (block $B3
-                (call $system::core::panic_1)
+                (call $system::core::panic)
               )
           )
           (else)
@@ -847,7 +845,7 @@
       (if $IF2 (call $system::core::u32.> (get_local $at) (call $system::core::bytes.property_length (get_local $data)))
           (then
             (block $B3
-                (call $system::core::panic_1)
+                (call $system::core::panic)
               )
           )
           (else)
@@ -924,6 +922,14 @@
     )
   )
   (export "test" (func $test/fixtures/compiler/panic-match.lys::test))
+  (func $test/fixtures/compiler/panic-match.lys::assert (param $x i32)
+    (if $IF1 (call $system::core::boolean.== (get_local $x) (i32.const 0))
+      (then
+        (call $system::core::panic)
+      )
+      (else)
+    )
+  )
   (func $test/fixtures/compiler/panic-match.lys::test (param $x i32)
     (local $var$1 i32)
     (block $B1
@@ -933,10 +939,10 @@
               (block $B2_1
                   (br_if $B2_0 (call $system::core::i32.== (i32.const 1) (get_local $var$1)))
                 )
-              (call $system::core::panic_1)
+              (call $system::core::panic)
               (br $B2)
             )
-          (call $system::core::assert (i32.const 1))
+          (call $test/fixtures/compiler/panic-match.lys::assert (i32.const 1))
           (br $B2)
         )
     )

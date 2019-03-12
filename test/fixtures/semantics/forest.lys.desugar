@@ -80,7 +80,7 @@ impl Node {
   }
   
   fun apply(a: ((Tree | Forest))): Node = {
-    var $ref = fromPointer(system::memory::calloc(1, Node.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Node.^allocationSize))
     property$0($ref, a)
     $ref
   }
@@ -89,22 +89,30 @@ impl Node {
     (i64.or (call Node$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_a(target: Node): ((Tree | Forest)) = property$0(target)
-  fun property_a(target: Node, value: ((Tree | Forest))): void = property$0(target, value)
+  fun ==(a: Node, b: Node): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Node, b: Node): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_a(self: Node): ((Tree | Forest)) = property$0(self)
+  fun property_a(self: Node, value: ((Tree | Forest))): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Node, value: ((Tree | Forest))): void = storePropertyWithOffset$0(target, value, Node.^property$0_offset)
+  private fun property$0(self: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Node.^property$0_offset)
   #[inline]
-  private fun property$0(target: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(target, Node.^property$0_offset)
+  private fun property$0(self: Node, value: ((Tree | Forest))): void = storePropertyWithOffset$0(self, value, Node.^property$0_offset)
   
   #[inline]
-  private fun loadPropertyWithOffset$0(target: Node, offset: i32): ((Tree | Forest)) = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $target))))
+  private fun loadPropertyWithOffset$0(self: Node, offset: i32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $self))))
   }
   
   #[inline]
-  private fun storePropertyWithOffset$0(target: Node, value: ((Tree | Forest)), offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $target))) (get_local $value))
+  private fun storePropertyWithOffset$0(self: Node, value: ((Tree | Forest)), offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $self))) (get_local $value))
   }
   
   fun is(a: Node): boolean = %wasm {
@@ -202,7 +210,7 @@ impl Cons {
   }
   
   fun apply(tree: ((Tree | Forest))): Cons = {
-    var $ref = fromPointer(system::memory::calloc(1, Cons.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Cons.^allocationSize))
     property$0($ref, tree)
     $ref
   }
@@ -211,22 +219,30 @@ impl Cons {
     (i64.or (call Cons$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_tree(target: Cons): ((Tree | Forest)) = property$0(target)
-  fun property_tree(target: Cons, value: ((Tree | Forest))): void = property$0(target, value)
+  fun ==(a: Cons, b: Cons): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Cons, b: Cons): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_tree(self: Cons): ((Tree | Forest)) = property$0(self)
+  fun property_tree(self: Cons, value: ((Tree | Forest))): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Cons, value: ((Tree | Forest))): void = storePropertyWithOffset$0(target, value, Cons.^property$0_offset)
+  private fun property$0(self: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Cons.^property$0_offset)
   #[inline]
-  private fun property$0(target: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(target, Cons.^property$0_offset)
+  private fun property$0(self: Cons, value: ((Tree | Forest))): void = storePropertyWithOffset$0(self, value, Cons.^property$0_offset)
   
   #[inline]
-  private fun loadPropertyWithOffset$0(target: Cons, offset: i32): ((Tree | Forest)) = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $target))))
+  private fun loadPropertyWithOffset$0(self: Cons, offset: i32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $self))))
   }
   
   #[inline]
-  private fun storePropertyWithOffset$0(target: Cons, value: ((Tree | Forest)), offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $target))) (get_local $value))
+  private fun storePropertyWithOffset$0(self: Cons, value: ((Tree | Forest)), offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $self))) (get_local $value))
   }
   
   fun is(a: Cons): boolean = %wasm {

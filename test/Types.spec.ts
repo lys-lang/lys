@@ -298,7 +298,6 @@ describe('Types', function() {
         Cannot convert type u16 into i16
         This cast is useless
         Cannot convert type i32 into u8
-        Cannot convert type i32 into i16
         This cast is useless
         Cannot convert type u32 into u8
         Cannot convert type u32 into i16
@@ -752,7 +751,6 @@ describe('Types', function() {
           Cannot convert type u16 into i16
           This cast is useless
           Cannot convert type i32 into u8
-          Cannot convert type i32 into i16
           This cast is useless
           Cannot convert type u32 into u8
           Cannot convert type u32 into i16
@@ -1738,6 +1736,7 @@ describe('Types', function() {
           }
         }
         ---
+        fun(x: boolean) -> void
         fun(x: i32) -> void
       `;
       checkMainType`

@@ -460,10 +460,15 @@ export class CodeGenerationPhaseResult extends PhaseResult {
   }
 
   emitText() {
-    const module = binaryen.readBinary(this.buffer);
-    const ret = module.emitText();
-    module.dispose();
-    return ret;
+    if (this.buffer) {
+      const module = binaryen.readBinary(this.buffer);
+      const ret = module.emitText();
+      module.dispose();
+      return ret;
+    } else if (this.programAST) {
+      return print(this.programAST);
+    }
+    throw new Error('Impossible to emitText');
   }
 
   optimize() {}

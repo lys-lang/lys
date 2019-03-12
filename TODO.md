@@ -192,6 +192,8 @@ grammar changes:
 
 ""
 
+.^
+
 as <type>
 ```
 

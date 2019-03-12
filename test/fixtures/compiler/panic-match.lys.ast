@@ -4,6 +4,30 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+  |-OverloadedFunctionNode type=(fun "assert" ((alias boolean)) (alias void)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "assert" ((alias boolean)) (alias void)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:boolean#0)
+          |-NameIdentifierNode="x" type=(alias boolean (native boolean))
+          |-ReferenceNode type=(type (alias boolean (native boolean)))
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+        |-NameIdentifierNode="assert"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-IfNode type=(native void)
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-NameIdentifierNode="=="
+            |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(x:boolean#0)
+              |-QNameNode=x
+                |-NameIdentifierNode="x"
+            |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias never (never))
+            |-ReferenceNode type=(fun "panic" () (alias never))
+              |-QNameNode=panic
+                |-NameIdentifierNode="panic"
+    |-NameIdentifierNode="assert" type=(fun "assert" ((alias boolean)) (alias void))
   |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias void)) annotations=Injected
     |-FunDirectiveNode annotations=Export
       |-DecoratorNode

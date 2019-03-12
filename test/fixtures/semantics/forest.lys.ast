@@ -511,7 +511,7 @@
                     |-ReferenceNode
                       |-QNameNode=Node
                         |-NameIdentifierNode="Node"
-                    |-NameIdentifierNode="byteSize"
+                    |-NameIdentifierNode="allocationSize"
             |-FunctionCallNode
               |-ReferenceNode
                 |-QNameNode=property$0
@@ -552,8 +552,60 @@
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(a:<no-type>#0)
+            |-NameIdentifierNode="a"
+            |-ReferenceNode
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-ParameterNode annotations=Local(b:<no-type>#1)
+            |-NameIdentifierNode="b"
+            |-ReferenceNode
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-NameIdentifierNode="=="
+          |-ReferenceNode
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="=="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(a:<no-type>#0)
+            |-NameIdentifierNode="a"
+            |-ReferenceNode
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-ParameterNode annotations=Local(b:<no-type>#1)
+            |-NameIdentifierNode="b"
+            |-ReferenceNode
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-NameIdentifierNode="!="
+          |-ReferenceNode
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="!="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
@@ -570,12 +622,12 @@
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
             |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
       |-FunDirectiveNode
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
@@ -597,8 +649,8 @@
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
             |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
@@ -608,8 +660,37 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
+            |-ReferenceNode
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-NameIdentifierNode="property$0"
+          |-UnionTypeNode
+            |-ReferenceNode
+              |-QNameNode=Tree
+                |-NameIdentifierNode="Tree"
+            |-ReferenceNode
+              |-QNameNode=Forest
+                |-NameIdentifierNode="Forest"
+          |-FunctionCallNode annotations=IsValueNode
+            |-ReferenceNode
+              |-QNameNode=loadPropertyWithOffset$0
+                |-NameIdentifierNode="loadPropertyWithOffset$0"
+            |-ReferenceNode annotations=IsValueNode
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
+            |-MemberNode annotations=IsValueNode
+              |-ReferenceNode
+                |-QNameNode=Node
+                  |-NameIdentifierNode="Node"
+              |-NameIdentifierNode="property$0_offset"
+      |-FunDirectiveNode annotations=Inline
+        |-DecoratorNode
+          |-NameIdentifierNode="inline"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
@@ -631,40 +712,11 @@
               |-QNameNode=storePropertyWithOffset$0
                 |-NameIdentifierNode="storePropertyWithOffset$0"
             |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
-            |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
-                |-QNameNode=Node
-                  |-NameIdentifierNode="Node"
-              |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
-        |-DecoratorNode
-          |-NameIdentifierNode="inline"
-        |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
-            |-ReferenceNode
-              |-QNameNode=Node
-                |-NameIdentifierNode="Node"
-          |-NameIdentifierNode="property$0"
-          |-UnionTypeNode
-            |-ReferenceNode
-              |-QNameNode=Tree
-                |-NameIdentifierNode="Tree"
-            |-ReferenceNode
-              |-QNameNode=Forest
-                |-NameIdentifierNode="Forest"
-          |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
-              |-QNameNode=loadPropertyWithOffset$0
-                |-NameIdentifierNode="loadPropertyWithOffset$0"
-            |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
             |-MemberNode annotations=IsValueNode
               |-ReferenceNode
                 |-QNameNode=Node
@@ -676,8 +728,8 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
@@ -705,16 +757,16 @@
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
-                    |-QNameNode=$target
-                      |-NameIdentifierNode="$target"
+                    |-QNameNode=$self
+                      |-NameIdentifierNode="$self"
       |-NameIdentifierNode="loadPropertyWithOffset$0"
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode annotations=Inline
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
@@ -747,8 +799,8 @@
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
-                    |-QNameNode=$target
-                      |-NameIdentifierNode="$target"
+                    |-QNameNode=$self
+                      |-NameIdentifierNode="$self"
               |-WasmAtomNode
                 |-QNameNode=$value
                   |-NameIdentifierNode="$value"
@@ -1355,7 +1407,7 @@
                     |-ReferenceNode
                       |-QNameNode=Cons
                         |-NameIdentifierNode="Cons"
-                    |-NameIdentifierNode="byteSize"
+                    |-NameIdentifierNode="allocationSize"
             |-FunctionCallNode
               |-ReferenceNode
                 |-QNameNode=property$0
@@ -1396,8 +1448,60 @@
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(a:<no-type>#0)
+            |-NameIdentifierNode="a"
+            |-ReferenceNode
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-ParameterNode annotations=Local(b:<no-type>#1)
+            |-NameIdentifierNode="b"
+            |-ReferenceNode
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-NameIdentifierNode="=="
+          |-ReferenceNode
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="=="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(a:<no-type>#0)
+            |-NameIdentifierNode="a"
+            |-ReferenceNode
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-ParameterNode annotations=Local(b:<no-type>#1)
+            |-NameIdentifierNode="b"
+            |-ReferenceNode
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-NameIdentifierNode="!="
+          |-ReferenceNode
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="!="
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
@@ -1414,12 +1518,12 @@
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
             |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
       |-FunDirectiveNode
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
@@ -1441,8 +1545,8 @@
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
             |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
@@ -1452,8 +1556,37 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
+            |-ReferenceNode
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-NameIdentifierNode="property$0"
+          |-UnionTypeNode
+            |-ReferenceNode
+              |-QNameNode=Tree
+                |-NameIdentifierNode="Tree"
+            |-ReferenceNode
+              |-QNameNode=Forest
+                |-NameIdentifierNode="Forest"
+          |-FunctionCallNode annotations=IsValueNode
+            |-ReferenceNode
+              |-QNameNode=loadPropertyWithOffset$0
+                |-NameIdentifierNode="loadPropertyWithOffset$0"
+            |-ReferenceNode annotations=IsValueNode
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
+            |-MemberNode annotations=IsValueNode
+              |-ReferenceNode
+                |-QNameNode=Cons
+                  |-NameIdentifierNode="Cons"
+              |-NameIdentifierNode="property$0_offset"
+      |-FunDirectiveNode annotations=Inline
+        |-DecoratorNode
+          |-NameIdentifierNode="inline"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
@@ -1475,40 +1608,11 @@
               |-QNameNode=storePropertyWithOffset$0
                 |-NameIdentifierNode="storePropertyWithOffset$0"
             |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
-            |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
-                |-QNameNode=Cons
-                  |-NameIdentifierNode="Cons"
-              |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
-        |-DecoratorNode
-          |-NameIdentifierNode="inline"
-        |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
-            |-ReferenceNode
-              |-QNameNode=Cons
-                |-NameIdentifierNode="Cons"
-          |-NameIdentifierNode="property$0"
-          |-UnionTypeNode
-            |-ReferenceNode
-              |-QNameNode=Tree
-                |-NameIdentifierNode="Tree"
-            |-ReferenceNode
-              |-QNameNode=Forest
-                |-NameIdentifierNode="Forest"
-          |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
-              |-QNameNode=loadPropertyWithOffset$0
-                |-NameIdentifierNode="loadPropertyWithOffset$0"
-            |-ReferenceNode annotations=IsValueNode
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
             |-MemberNode annotations=IsValueNode
               |-ReferenceNode
                 |-QNameNode=Cons
@@ -1520,8 +1624,8 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
@@ -1549,16 +1653,16 @@
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
-                    |-QNameNode=$target
-                      |-NameIdentifierNode="$target"
+                    |-QNameNode=$self
+                      |-NameIdentifierNode="$self"
       |-NameIdentifierNode="loadPropertyWithOffset$0"
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode annotations=Inline
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-ParameterNode annotations=Local(target:<no-type>#0)
-            |-NameIdentifierNode="target"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
@@ -1591,8 +1695,8 @@
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
-                    |-QNameNode=$target
-                      |-NameIdentifierNode="$target"
+                    |-QNameNode=$self
+                      |-NameIdentifierNode="$self"
               |-WasmAtomNode
                 |-QNameNode=$value
                   |-NameIdentifierNode="$value"

@@ -264,35 +264,6 @@ describe('Execution tests', () => {
     );
 
     test(
-      'String.stringify',
-      `
-        import system::string
-
-        fun assertEquals(numberToSerialize: u64, expected: bytes): void = {
-          val res = String.stringify(numberToSerialize)
-          support::test::assert(res == expected, String("Given: '") + String(res) + String("' Expected: '") + String(expected) + String("'"))
-        }
-
-        fun assertEquals(numberToSerialize: i64, expected: bytes): void = {
-          val res = String.stringify(numberToSerialize)
-          support::test::assert(res == expected, String("Given: '") + String(res) + String("' Expected: '") + String(expected) + String("'"))
-        }
-
-        fun assertEquals(numberToSerialize: i32, expected: bytes): void = assertEquals(numberToSerialize as i64, expected)
-        fun assertEquals(numberToSerialize: u32, expected: bytes): void = assertEquals(numberToSerialize as u64, expected)
-
-        #[export] fun main(): void = {
-          assertEquals(1, "1")
-          assertEquals(-1, "-1")
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        x.exports.main();
-      }
-    );
-
-    test(
       'String concat',
       `
           import system::string

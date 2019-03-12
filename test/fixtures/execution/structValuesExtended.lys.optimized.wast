@@ -7,7 +7,7 @@
  (type $5 (func (result i32)))
  (type $6 (func (param i32) (result i32)))
  (type $7 (func (param i32 i64)))
- (type $8 (func (result i32)))
+ (type $8 (func (param i32) (result i32)))
  (type $9 (func (param i32 i32)))
  (type $10 (func (param i64 f64 i64 i64) (result i64)))
  (import "test" "printNumber" (func $fimport$0 (param f32)))
@@ -63,20 +63,19 @@
  (func $0 (; 7 ;) (type $5) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 8 ;) (type $8) (result i32)
-  (local $0 i32)
+ (func $1 (; 8 ;) (type $8) (param $0 i32) (result i32)
   (local $1 i32)
   (call $3
-   (local.tee $1
+   (local.tee $0
     (call $2
-     (local.tee $0
-      (i32.const 8)
+     (local.tee $1
+      (local.get $0)
      )
     )
    )
-   (i32.const 8)
+   (local.get $1)
   )
-  (local.get $1)
+  (local.get $0)
  )
  (func $2 (; 9 ;) (type $6) (param $0 i32) (result i32)
   (local $1 i32)
@@ -316,7 +315,9 @@
     (local.tee $4
      (i64.or
       (i64.extend_i32_u
-       (call $1)
+       (call $1
+        (i32.const 41)
+       )
       )
       (i64.const 30064771072)
      )
@@ -588,7 +589,9 @@
     (local.tee $1
      (i64.or
       (i64.extend_i32_u
-       (call $1)
+       (call $1
+        (i32.const 4)
+       )
       )
       (i64.const 25769803776)
      )

@@ -133,7 +133,7 @@ impl String {
   }
   
   fun apply(data: bytes): String = {
-    var $ref = fromPointer(system::memory::calloc(1, String.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, String.^allocationSize))
     property$0($ref, data)
     $ref
   }
@@ -142,13 +142,21 @@ impl String {
     (i64.or (call String$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_data(target: String): bytes = property$0(target)
-  fun property_data(target: String, value: bytes): void = property$0(target, value)
+  fun ==(a: String, b: String): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: String, b: String): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_data(self: String): bytes = property$0(self)
+  fun property_data(self: String, value: bytes): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: String): bytes = bytes.load(target, String.^property$0_offset)
+  private fun property$0(self: String): bytes = bytes.load(self, String.^property$0_offset)
   #[inline]
-  private fun property$0(target: String, value: bytes): void = bytes.store(target, value, String.^property$0_offset)
+  private fun property$0(self: String, value: bytes): void = bytes.store(self, value, String.^property$0_offset)
   
   fun is(a: String): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call String$discriminant))
@@ -403,7 +411,7 @@ impl Node {
   }
   
   fun apply(a: ((Tree | Forest))): Node = {
-    var $ref = fromPointer(system::memory::calloc(1, Node.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Node.^allocationSize))
     property$0($ref, a)
     $ref
   }
@@ -412,22 +420,30 @@ impl Node {
     (i64.or (call Node$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_a(target: Node): ((Tree | Forest)) = property$0(target)
-  fun property_a(target: Node, value: ((Tree | Forest))): void = property$0(target, value)
+  fun ==(a: Node, b: Node): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Node, b: Node): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_a(self: Node): ((Tree | Forest)) = property$0(self)
+  fun property_a(self: Node, value: ((Tree | Forest))): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Node, value: ((Tree | Forest))): void = storePropertyWithOffset$0(target, value, Node.^property$0_offset)
+  private fun property$0(self: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Node.^property$0_offset)
   #[inline]
-  private fun property$0(target: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(target, Node.^property$0_offset)
+  private fun property$0(self: Node, value: ((Tree | Forest))): void = storePropertyWithOffset$0(self, value, Node.^property$0_offset)
   
   #[inline]
-  private fun loadPropertyWithOffset$0(target: Node, offset: i32): ((Tree | Forest)) = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $target))))
+  private fun loadPropertyWithOffset$0(self: Node, offset: i32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $self))))
   }
   
   #[inline]
-  private fun storePropertyWithOffset$0(target: Node, value: ((Tree | Forest)), offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $target))) (get_local $value))
+  private fun storePropertyWithOffset$0(self: Node, value: ((Tree | Forest)), offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $self))) (get_local $value))
   }
   
   fun is(a: Node): boolean = %wasm {
@@ -525,7 +541,7 @@ impl Cons {
   }
   
   fun apply(tree: ((Tree | Forest))): Cons = {
-    var $ref = fromPointer(system::memory::calloc(1, Cons.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Cons.^allocationSize))
     property$0($ref, tree)
     $ref
   }
@@ -534,22 +550,30 @@ impl Cons {
     (i64.or (call Cons$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_tree(target: Cons): ((Tree | Forest)) = property$0(target)
-  fun property_tree(target: Cons, value: ((Tree | Forest))): void = property$0(target, value)
+  fun ==(a: Cons, b: Cons): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Cons, b: Cons): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_tree(self: Cons): ((Tree | Forest)) = property$0(self)
+  fun property_tree(self: Cons, value: ((Tree | Forest))): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Cons, value: ((Tree | Forest))): void = storePropertyWithOffset$0(target, value, Cons.^property$0_offset)
+  private fun property$0(self: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Cons.^property$0_offset)
   #[inline]
-  private fun property$0(target: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(target, Cons.^property$0_offset)
+  private fun property$0(self: Cons, value: ((Tree | Forest))): void = storePropertyWithOffset$0(self, value, Cons.^property$0_offset)
   
   #[inline]
-  private fun loadPropertyWithOffset$0(target: Cons, offset: i32): ((Tree | Forest)) = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $target))))
+  private fun loadPropertyWithOffset$0(self: Cons, offset: i32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $self))))
   }
   
   #[inline]
-  private fun storePropertyWithOffset$0(target: Cons, value: ((Tree | Forest)), offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $target))) (get_local $value))
+  private fun storePropertyWithOffset$0(self: Cons, value: ((Tree | Forest)), offset: i32): void = %wasm {
+    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $self))) (get_local $value))
   }
   
   fun is(a: Cons): boolean = %wasm {
@@ -607,7 +631,7 @@ impl Color {
   }
   
   fun apply(r: i32, g: i32, b: i32): Color = {
-    var $ref = fromPointer(system::memory::calloc(1, Color.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Color.^allocationSize))
     property$0($ref, r)
     property$1($ref, g)
     property$2($ref, b)
@@ -618,29 +642,37 @@ impl Color {
     (i64.or (call Color$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_r(target: Color): i32 = property$0(target)
-  fun property_r(target: Color, value: i32): void = property$0(target, value)
+  fun ==(a: Color, b: Color): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Color, b: Color): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_r(self: Color): i32 = property$0(self)
+  fun property_r(self: Color, value: i32): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Color): i32 = i32.load(target, Color.^property$0_offset)
+  private fun property$0(self: Color): i32 = i32.load(self, Color.^property$0_offset)
   #[inline]
-  private fun property$0(target: Color, value: i32): void = i32.store(target, value, Color.^property$0_offset)
+  private fun property$0(self: Color, value: i32): void = i32.store(self, value, Color.^property$0_offset)
   
-  fun property_g(target: Color): i32 = property$1(target)
-  fun property_g(target: Color, value: i32): void = property$1(target, value)
-  
-  #[inline]
-  private fun property$1(target: Color): i32 = i32.load(target, Color.^property$1_offset)
-  #[inline]
-  private fun property$1(target: Color, value: i32): void = i32.store(target, value, Color.^property$1_offset)
-  
-  fun property_b(target: Color): i32 = property$2(target)
-  fun property_b(target: Color, value: i32): void = property$2(target, value)
+  fun property_g(self: Color): i32 = property$1(self)
+  fun property_g(self: Color, value: i32): void = property$1(self, value)
   
   #[inline]
-  private fun property$2(target: Color): i32 = i32.load(target, Color.^property$2_offset)
+  private fun property$1(self: Color): i32 = i32.load(self, Color.^property$1_offset)
   #[inline]
-  private fun property$2(target: Color, value: i32): void = i32.store(target, value, Color.^property$2_offset)
+  private fun property$1(self: Color, value: i32): void = i32.store(self, value, Color.^property$1_offset)
+  
+  fun property_b(self: Color): i32 = property$2(self)
+  fun property_b(self: Color, value: i32): void = property$2(self, value)
+  
+  #[inline]
+  private fun property$2(self: Color): i32 = i32.load(self, Color.^property$2_offset)
+  #[inline]
+  private fun property$2(self: Color, value: i32): void = i32.store(self, value, Color.^property$2_offset)
   
   fun is(a: Color): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Color$discriminant))
@@ -784,7 +816,7 @@ impl Iterator {
   }
   
   fun apply(current: i32, target: i32): Iterator = {
-    var $ref = fromPointer(system::memory::calloc(1, Iterator.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Iterator.^allocationSize))
     property$0($ref, current)
     property$1($ref, target)
     $ref
@@ -794,21 +826,29 @@ impl Iterator {
     (i64.or (call Iterator$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_current(target: Iterator): i32 = property$0(target)
-  fun property_current(target: Iterator, value: i32): void = property$0(target, value)
+  fun ==(a: Iterator, b: Iterator): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Iterator, b: Iterator): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_current(self: Iterator): i32 = property$0(self)
+  fun property_current(self: Iterator, value: i32): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Iterator): i32 = i32.load(target, Iterator.^property$0_offset)
+  private fun property$0(self: Iterator): i32 = i32.load(self, Iterator.^property$0_offset)
   #[inline]
-  private fun property$0(target: Iterator, value: i32): void = i32.store(target, value, Iterator.^property$0_offset)
+  private fun property$0(self: Iterator, value: i32): void = i32.store(self, value, Iterator.^property$0_offset)
   
-  fun property_target(target: Iterator): i32 = property$1(target)
-  fun property_target(target: Iterator, value: i32): void = property$1(target, value)
+  fun property_target(self: Iterator): i32 = property$1(self)
+  fun property_target(self: Iterator, value: i32): void = property$1(self, value)
   
   #[inline]
-  private fun property$1(target: Iterator): i32 = i32.load(target, Iterator.^property$1_offset)
+  private fun property$1(self: Iterator): i32 = i32.load(self, Iterator.^property$1_offset)
   #[inline]
-  private fun property$1(target: Iterator, value: i32): void = i32.store(target, value, Iterator.^property$1_offset)
+  private fun property$1(self: Iterator, value: i32): void = i32.store(self, value, Iterator.^property$1_offset)
   
   fun is(a: Iterator): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Iterator$discriminant))
@@ -905,7 +945,7 @@ impl Some {
   }
   
   fun apply(value: i32): Some = {
-    var $ref = fromPointer(system::memory::calloc(1, Some.^byteSize))
+    var $ref = fromPointer(system::memory::calloc(1, Some.^allocationSize))
     property$0($ref, value)
     $ref
   }
@@ -914,13 +954,21 @@ impl Some {
     (i64.or (call Some$discriminant) (i64.extend_u/i32 (get_local $ptr)))
   }
   
-  fun property_value(target: Some): i32 = property$0(target)
-  fun property_value(target: Some, value: i32): void = property$0(target, value)
+  fun ==(a: Some, b: Some): boolean = %wasm {
+    (i64.eq (get_local $a) (get_local $b))
+  }
+  
+  fun !=(a: Some, b: Some): boolean = %wasm {
+    (i64.ne (get_local $a) (get_local $b))
+  }
+  
+  fun property_value(self: Some): i32 = property$0(self)
+  fun property_value(self: Some, value: i32): void = property$0(self, value)
   
   #[inline]
-  private fun property$0(target: Some): i32 = i32.load(target, Some.^property$0_offset)
+  private fun property$0(self: Some): i32 = i32.load(self, Some.^property$0_offset)
   #[inline]
-  private fun property$0(target: Some, value: i32): void = i32.store(target, value, Some.^property$0_offset)
+  private fun property$0(self: Some, value: i32): void = i32.store(self, value, Some.^property$0_offset)
   
   fun is(a: Some): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call Some$discriminant))

@@ -1820,7 +1820,7 @@
                     |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
                       |-QNameNode=Custom
                         |-NameIdentifierNode="Custom"
-                    |-NameIdentifierNode="byteSize"
+                    |-NameIdentifierNode="allocationSize"
             |-FunctionCallNode type=(alias void (native void))
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
                 |-QNameNode=property$0
@@ -1858,11 +1858,63 @@
                   |-QNameNode=$ptr
                     |-NameIdentifierNode="$ptr"
       |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((alias i32)) (alias Custom))
+    |-OverloadedFunctionNode type=(fun "==" ((alias Custom) (alias Custom)) (alias boolean)) annotations=Injected
+      |-FunDirectiveNode
+        |-FunctionNode type=(fun "==" ((alias Custom) (alias Custom)) (alias boolean)) annotations=IsOverloaded
+          |-ParameterNode annotations=Local(a:Custom#0)
+            |-NameIdentifierNode="a" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
+            |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
+              |-QNameNode=Custom
+                |-NameIdentifierNode="Custom"
+          |-ParameterNode annotations=Local(b:Custom#1)
+            |-NameIdentifierNode="b" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
+            |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
+              |-QNameNode=Custom
+                |-NameIdentifierNode="Custom"
+          |-NameIdentifierNode="=="
+          |-ReferenceNode type=(type (alias boolean (native boolean)))
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="==" type=(fun "==" ((alias Custom) (alias Custom)) (alias boolean))
+    |-OverloadedFunctionNode type=(fun "!=" ((alias Custom) (alias Custom)) (alias boolean)) annotations=Injected
+      |-FunDirectiveNode
+        |-FunctionNode type=(fun "!=" ((alias Custom) (alias Custom)) (alias boolean)) annotations=IsOverloaded
+          |-ParameterNode annotations=Local(a:Custom#0)
+            |-NameIdentifierNode="a" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
+            |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
+              |-QNameNode=Custom
+                |-NameIdentifierNode="Custom"
+          |-ParameterNode annotations=Local(b:Custom#1)
+            |-NameIdentifierNode="b" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
+            |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
+              |-QNameNode=Custom
+                |-NameIdentifierNode="Custom"
+          |-NameIdentifierNode="!="
+          |-ReferenceNode type=(type (alias boolean (native boolean)))
+            |-QNameNode=boolean
+              |-NameIdentifierNode="boolean"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-WasmAtomNode
+                |-QNameNode=$a
+                  |-NameIdentifierNode="$a"
+              |-WasmAtomNode
+                |-QNameNode=$b
+                  |-NameIdentifierNode="$b"
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias Custom) (alias Custom)) (alias boolean))
     |-OverloadedFunctionNode type=(intersection (fun "property_a" ((alias Custom)) (alias i32)) (fun "property_a" ((alias Custom) (alias i32)) (alias void))) annotations=Injected
       |-FunDirectiveNode
         |-FunctionNode type=(fun "property_a" ((alias Custom)) (alias i32)) annotations=IsOverloaded
-          |-ParameterNode annotations=Local(target:Custom#0)
-            |-NameIdentifierNode="target" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
+          |-ParameterNode annotations=Local(self:Custom#0)
+            |-NameIdentifierNode="self" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
             |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
               |-QNameNode=Custom
                 |-NameIdentifierNode="Custom"
@@ -1874,13 +1926,13 @@
             |-ReferenceNode type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(target:Custom#0)
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(self:Custom#0)
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
       |-FunDirectiveNode
         |-FunctionNode type=(fun "property_a" ((alias Custom) (alias i32)) (alias void)) annotations=IsOverloaded
-          |-ParameterNode annotations=Local(target:Custom#0)
-            |-NameIdentifierNode="target" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
+          |-ParameterNode annotations=Local(self:Custom#0)
+            |-NameIdentifierNode="self" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
             |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
               |-QNameNode=Custom
                 |-NameIdentifierNode="Custom"
@@ -1897,9 +1949,9 @@
             |-ReferenceNode type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(target:Custom#0)
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(self:Custom#0)
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
               |-QNameNode=value
                 |-NameIdentifierNode="value"
@@ -1909,8 +1961,8 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$0" ((alias Custom)) (alias i32)) annotations=IsOverloaded
-          |-ParameterNode annotations=Local(target:Custom#0)
-            |-NameIdentifierNode="target" type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
+          |-ParameterNode annotations=Local(self:Custom#0)
+            |-NameIdentifierNode="self" type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
             |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
               |-QNameNode=Custom
                 |-NameIdentifierNode="Custom"
@@ -1924,9 +1976,9 @@
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="load"
-            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(target:Custom#0)
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(self:Custom#0)
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-MemberNode type=(native i32) annotations=IsValueNode
               |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
                 |-QNameNode=Custom
@@ -1936,8 +1988,8 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$0" ((alias Custom) (alias i32)) (alias void)) annotations=IsOverloaded
-          |-ParameterNode annotations=Local(target:Custom#0)
-            |-NameIdentifierNode="target" type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
+          |-ParameterNode annotations=Local(self:Custom#0)
+            |-NameIdentifierNode="self" type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
             |-ReferenceNode type=(type (alias Custom (struct a:(type (alias i32 (native i32))))))
               |-QNameNode=Custom
                 |-NameIdentifierNode="Custom"
@@ -1956,9 +2008,9 @@
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(target:Custom#0)
-              |-QNameNode=target
-                |-NameIdentifierNode="target"
+            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(self:Custom#0)
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
               |-QNameNode=value
                 |-NameIdentifierNode="value"
@@ -2273,7 +2325,7 @@
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2289,7 +2341,7 @@
                     |-NameIdentifierNode="A"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2305,7 +2357,7 @@
                     |-NameIdentifierNode="A"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2321,7 +2373,7 @@
                     |-NameIdentifierNode="B"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2337,7 +2389,7 @@
                     |-NameIdentifierNode="B"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2353,7 +2405,7 @@
                     |-NameIdentifierNode="B"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2369,7 +2421,7 @@
                     |-NameIdentifierNode="B"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2385,7 +2437,7 @@
                     |-NameIdentifierNode="C"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2401,7 +2453,7 @@
                     |-NameIdentifierNode="C"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2417,7 +2469,7 @@
                     |-NameIdentifierNode="C"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2433,7 +2485,7 @@
                     |-NameIdentifierNode="value1"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2449,7 +2501,7 @@
                     |-NameIdentifierNode="value1"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2465,7 +2517,7 @@
                     |-NameIdentifierNode="value1"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2481,7 +2533,7 @@
                     |-NameIdentifierNode="value2"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2497,7 +2549,7 @@
                     |-NameIdentifierNode="value2"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2513,7 +2565,7 @@
                     |-NameIdentifierNode="value2"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2529,7 +2581,7 @@
                     |-NameIdentifierNode="value3"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2545,7 +2597,7 @@
                     |-NameIdentifierNode="value3"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2561,7 +2613,7 @@
                     |-NameIdentifierNode="value3"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2577,7 +2629,7 @@
                     |-NameIdentifierNode="value3"
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2593,7 +2645,7 @@
                     |-NameIdentifierNode="Red"
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2613,7 +2665,7 @@
                   |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2633,7 +2685,7 @@
                   |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -2653,7 +2705,7 @@
                   |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias String)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
+            |-ReferenceNode type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=support::test::assert
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"

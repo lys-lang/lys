@@ -62,6 +62,18 @@ describe('Semantic', function() {
       },
       '.desugar'
     );
+
+    describe('Compilation-execution-tests-desugar', () => {
+      folderBasedTest(
+        '**/execution/*.lys',
+        phases1,
+        async (result, err) => {
+          if (err) throw err;
+          return printNode(result.document);
+        },
+        '.desugar'
+      );
+    });
   });
 
   let semanticTestCount = 0;

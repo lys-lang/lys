@@ -1,140 +1,29 @@
 (module
- (type $0 (func (param i64) (result i32)))
- (type $1 (func))
- (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i64) (result i64)))
- (type $4 (func (param i64) (result i64)))
- (type $5 (func (param i64)))
+ (type $0 (func))
+ (type $1 (func (param i64) (result i64)))
  (memory $0 1)
  (global $global$0 (mut i64) (i64.const 0))
  (global $global$1 (mut i64) (i64.const 0))
  (global $global$2 (mut i64) (i64.const 0))
  (export "memory" (memory $0))
- (export "identity" (func $5))
- (export "test" (func $6))
- (start $7)
- (func $0 (; 0 ;) (type $4) (param $0 i64) (result i64)
-  (i64.shl
-   (local.get $0)
-   (i64.const 32)
-  )
- )
- (func $1 (; 1 ;) (type $2) (param $0 i32) (param $1 i32) (result i32)
-  (i32.or
-   (i32.ne
-    (local.get $0)
-    (i32.const 0)
-   )
-   (i32.ne
-    (local.get $1)
-    (i32.const 0)
-   )
-  )
- )
- (func $2 (; 2 ;) (type $5) (param $0 i64)
-  (drop
-   (call $1
-    (call $1
-     (call $3
-      (local.get $0)
-     )
-     (call $4
-      (local.get $0)
-     )
-    )
-    (i64.eq
-     (call $0
-      (i64.const 4)
-     )
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
-     )
-    )
-   )
-  )
- )
- (func $3 (; 3 ;) (type $0) (param $0 i64) (result i32)
-  (i64.eq
-   (call $0
-    (i64.const 2)
-   )
-   (i64.and
-    (local.get $0)
-    (i64.const -4294967296)
-   )
-  )
- )
- (func $4 (; 4 ;) (type $0) (param $0 i64) (result i32)
-  (i64.eq
-   (call $0
-    (i64.const 3)
-   )
-   (i64.and
-    (local.get $0)
-    (i64.const -4294967296)
-   )
-  )
- )
- (func $5 (; 5 ;) (type $3) (param $0 i64) (result i64)
+ (export "identity" (func $0))
+ (export "test" (func $1))
+ (start $2)
+ (func $0 (; 0 ;) (type $1) (param $0 i64) (result i64)
   (local.get $0)
  )
- (func $6 (; 6 ;) (type $1)
-  (drop
-   (call $3
-    (global.get $global$0)
-   )
-  )
-  (call $2
-   (global.get $global$0)
-  )
-  (drop
-   (call $4
-    (global.get $global$0)
-   )
-  )
-  (drop
-   (call $3
-    (global.get $global$1)
-   )
-  )
-  (call $2
-   (global.get $global$1)
-  )
-  (drop
-   (call $4
-    (global.get $global$1)
-   )
-  )
-  (drop
-   (call $3
-    (global.get $global$2)
-   )
-  )
-  (call $2
-   (global.get $global$2)
-  )
-  (drop
-   (call $4
-    (global.get $global$2)
-   )
-  )
+ (func $1 (; 1 ;) (type $0)
+  (nop)
  )
- (func $7 (; 7 ;) (type $1)
+ (func $2 (; 2 ;) (type $0)
   (global.set $global$0
-   (call $0
-    (i64.const 2)
-   )
+   (i64.const 8589934592)
   )
   (global.set $global$1
-   (call $0
-    (i64.const 2)
-   )
+   (i64.const 8589934592)
   )
   (global.set $global$2
-   (call $0
-    (i64.const 2)
-   )
+   (i64.const 8589934592)
   )
  )
 )

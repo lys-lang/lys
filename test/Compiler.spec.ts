@@ -54,8 +54,7 @@ describe('Compiler', function() {
   describe('Compilation', () => {
     folderBasedTest('**/compiler/*.lys', phases, async (result, e) => {
       if (e) throw e;
-      await result.validate(false);
-      return print(result.programAST);
+      return result.emitText();
     });
   });
   describe('Compilation-optimized', () => {
@@ -74,10 +73,10 @@ describe('Compiler', function() {
   describe('Compilation-execution-tests', () => {
     folderBasedTest('**/execution/*.lys', phases, async (result, e) => {
       if (e) throw e;
-      await result.validate(false);
-      return print(result.programAST);
+      return result.emitText();
     });
   });
+
   describe('Compilation-execution-tests-optimized', () => {
     folderBasedTest(
       '**/execution/*.lys',
