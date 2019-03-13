@@ -155,6 +155,8 @@ const createClosures = walkPreOrder(
         }
 
         node.processParameters();
+      } else if (node instanceof Nodes.BlockNode) {
+        node.closure = node.closure.newChildClosure('Block');
       }
     }
   },

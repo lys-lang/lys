@@ -288,35 +288,20 @@ describe('Types', function() {
         fun(x: f32) -> u8 & fun(x: f32) -> i16 & fun(x: f32) -> u16 & fun(x: f32) -> i32 & fun(x: f32) -> u32 & fun(x: f32) -> i64 & fun(x: f32) -> u64 & fun(x: f32) -> f32 & fun(x: f32) -> f64
         fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64
         ---
-        This cast is useless
-        Cannot convert type i16 into u8
-        This cast is useless
         Cannot convert type i16 into u16
         Cannot convert type i16 into u32
         Cannot convert type i16 into u64
-        Cannot convert type u16 into u8
         Cannot convert type u16 into i16
-        This cast is useless
-        Cannot convert type i32 into u8
-        This cast is useless
         Cannot convert type u32 into u8
-        Cannot convert type u32 into i16
         Cannot convert type u32 into u16
-        This cast is useless
         Cannot convert type i64 into u8
         Cannot convert type i64 into i16
         Cannot convert type i64 into u16
         Cannot convert type i64 into u32
-        This cast is useless
         Cannot convert type u64 into i16
-        Cannot convert type u64 into u16
-        Cannot convert type u64 into i32
-        Cannot convert type u64 into i64
-        This cast is useless
         Cannot convert type f32 into u8
         Cannot convert type f32 into i16
         Cannot convert type f32 into u16
-        This cast is useless
         Cannot convert type f64 into u8
         Cannot convert type f64 into i16
         Cannot convert type f64 into u16
@@ -742,18 +727,13 @@ describe('Types', function() {
           fun(x: f32) -> u8 & fun(x: f32) -> i16 & fun(x: f32) -> u16 & fun(x: f32) -> i32 & fun(x: f32) -> u32 & fun(x: f32) -> i64 & fun(x: f32) -> u64 & fun(x: f32) -> f32 & fun(x: f32) -> f64
           fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64          ---
           This cast is useless
-          Cannot convert type i16 into u8
-          This cast is useless
           Cannot convert type i16 into u16
           Cannot convert type i16 into u32
           Cannot convert type i16 into u64
-          Cannot convert type u16 into u8
           Cannot convert type u16 into i16
           This cast is useless
-          Cannot convert type i32 into u8
           This cast is useless
           Cannot convert type u32 into u8
-          Cannot convert type u32 into i16
           Cannot convert type u32 into u16
           This cast is useless
           Cannot convert type i64 into u8
@@ -762,9 +742,6 @@ describe('Types', function() {
           Cannot convert type i64 into u32
           This cast is useless
           Cannot convert type u64 into i16
-          Cannot convert type u64 into u16
-          Cannot convert type u64 into i32
-          Cannot convert type u64 into i64
           This cast is useless
           Cannot convert type f32 into u8
           Cannot convert type f32 into i16
@@ -1698,11 +1675,11 @@ describe('Types', function() {
 
       checkMainType`
         struct X(value: i32)
-        var a: i32 = X.^byteSize
-        var b: i32 = X.^discriminant
+        var a: u32 = X.^byteSize
+        var b: u32 = X.^discriminant
         ---
-        a := (alias i32 (native i32))
-        b := (alias i32 (native i32))
+        a := (alias u32 (native u32))
+        b := (alias u32 (native u32))
       `;
 
       checkMainType`
@@ -1720,7 +1697,7 @@ describe('Types', function() {
         ---
         a := (alias boolean (native boolean))
         ---
-        Type "i32" is not assignable to "boolean"
+        Type "u32" is not assignable to "boolean"
       `;
     });
     describe('match is not exhaustive', () => {
@@ -2996,7 +2973,7 @@ describe('Types', function() {
         private var lastPtr: i32 = 0
 
         private fun growMemory(pages: i32): i32 = %wasm {
-          (grow_memory (get_local $pages))
+          (grow_memory (local.get $pages))
         }
 
         private fun currentMemory(): i32 = %wasm {
@@ -3173,7 +3150,7 @@ describe('Types', function() {
 
       checkMainType`
         fun malloc(size: i32): i32 = %wasm {
-          (get_local $size)
+          (local.get $size)
         }
 
         fun main(): i32 = malloc(1)

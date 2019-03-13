@@ -114,7 +114,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
 
   const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
-  const lhs = t.instruction('set_local', [t.identifier(local.name), emit(match.lhs, document)]);
+  const lhs = t.instruction('local.set', [t.identifier(local.name), emit(match.lhs, document)]);
 
   if (ixDefaultBranch !== -1) {
     // the default branch must be the last element
@@ -135,7 +135,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           emit(node.literal, document),
-          t.instruction('get_local', [t.identifier(local.name)])
+          t.instruction('local.get', [t.identifier(local.name)])
         ]);
 
         const body = emit(node.rhs, document);
@@ -148,7 +148,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
-          t.instruction('get_local', [t.identifier(local.name)])
+          t.instruction('local.get', [t.identifier(local.name)])
         ]);
 
         const body = emit(node.rhs, document);
@@ -269,14 +269,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return emitLoop(node, document);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
-      return t.instruction('set_local', [t.identifier(local.name), emit(node.value, document)]);
+      return t.instruction('local.set', [t.identifier(local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
       if (node.lhs instanceof Nodes.ReferenceNode) {
         const isLocal = node.lhs.isLocal;
         const isValueNode = node.hasAnnotation(annotations.IsValueNode);
 
         if (isLocal) {
-          const instr = isValueNode ? 'tee_local' : 'set_local';
+          const instr = isValueNode ? 'local.tee' : 'local.set';
           const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
           return t.instruction(instr, [t.identifier(local.name), emit(node.rhs, document)]);
         } else {
@@ -285,14 +285,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
             return t.blockInstruction(
               t.identifier('tee_global_' + getFunctionSeqId(node)),
               [
-                t.instruction('set_global', [t.identifier(local.name), emit(node.rhs, document)]),
-                t.instruction('get_global', [t.identifier(local.name)])
+                t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]),
+                t.instruction('global.get', [t.identifier(local.name)])
               ],
               node.rhs.ofType.binaryenType
             );
           } else {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
-            return t.instruction('set_global', [t.identifier(local.name), emit(node.rhs, document)]);
+            return t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]);
           }
         }
       } else {
@@ -306,7 +306,18 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       node.statements.forEach($ => {
         // TODO: Drop here things
-        instr = instr.concat(emit($, document));
+        let emited = emit($, document);
+
+        if ($.ofType && $.ofType.binaryenType !== undefined && !$.hasAnnotation(annotations.IsValueNode)) {
+          if (emited instanceof Array) {
+            // console.log(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`);
+            throw new AstNodeError(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`, $);
+          } else {
+            emited = t.instruction('drop', [emited]);
+          }
+        }
+
+        instr = instr.concat(emited);
       });
 
       if (instr.length == 0) {
@@ -342,7 +353,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
-      const instr = node.isLocal ? 'get_local' : 'get_global';
+      const instr = node.isLocal ? 'local.get' : 'global.get';
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
       return t.instruction(instr, [t.identifier(local.name)]);
     } else if (node instanceof Nodes.MemberNode) {
@@ -546,7 +557,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
       const identifier = t.identifier(local.name);
 
-      starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
+      starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 
       // if ($.isExported) {
       //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));

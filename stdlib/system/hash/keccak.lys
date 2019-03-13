@@ -24,7 +24,7 @@
 // gets implemented: https://github.com/WebAssembly/sexpr-wasm-prototype/issues/92
 //
 
-private fun keccak_theta(context_offset: i32): void = %wasm {
+private fun keccak_theta(context_offset: u32): void = %wasm {
   (local $C0 i64)
   (local $C1 i64)
   (local $C2 i64)
@@ -359,7 +359,7 @@ private fun keccak_theta(context_offset: i32): void = %wasm {
   )
 }
 
-private fun keccak_rho(context_offset: i32, rotation_consts: i32): void = %wasm {
+private fun keccak_rho(context_offset: u32, rotation_consts: u32): void = %wasm {
   //(local $tmp i32)
 
   // state[ 1] = ROTL64(state[ 1],  1);
@@ -389,7 +389,7 @@ private fun keccak_rho(context_offset: i32, rotation_consts: i32): void = %wasm 
   ))
 }
 
-private fun keccak_pi(context_offset: i32): void = %wasm {
+private fun keccak_pi(context_offset: u32): void = %wasm {
   (local $A1 i64)
   (set_local $A1 (i64.load (i32.add (get_local $context_offset) (i32.const 8))))
 
@@ -423,7 +423,7 @@ private fun keccak_pi(context_offset: i32): void = %wasm {
   (i64.store (i32.add (get_local $context_offset) (i32.const 80)) (get_local $A1))
 }
 
-private fun keccak_chi(context_offset: i32): void = %wasm {
+private fun keccak_chi(context_offset: u32): void = %wasm {
   (local $A0 i64)
   (local $A1 i64)
   (local $i i32)
@@ -499,7 +499,7 @@ private fun keccak_chi(context_offset: i32): void = %wasm {
   ))
 }
 
-private fun keccak_permute(context_offset: i32): void = %wasm {
+private fun keccak_permute(context_offset: u32): void = %wasm {
   (local $rotation_consts i32)
   (local $round_consts i32)
   (local $round i32)
@@ -541,7 +541,7 @@ private fun keccak_permute(context_offset: i32): void = %wasm {
   )  )
 }
 
-private fun keccak_block(input_offset: i32, input_length: i32, context_offset: i32): void = %wasm {
+private fun keccak_block(input_offset: u32, input_length: u32, context_offset: u32): void = %wasm {
 
   // read blocks in little-endian order and XOR against context_offset
 
@@ -687,7 +687,7 @@ private fun keccak_block(input_offset: i32, input_length: i32, context_offset: i
 //
 // Initialise the context
 //
-private fun keccak_init(context_offset: i32): void = %wasm {
+private fun keccak_init(context_offset: u32): void = %wasm {
   (local $round_consts i32)
   (local $rotation_consts i32)
 
@@ -750,15 +750,15 @@ private fun keccak_init(context_offset: i32): void = %wasm {
 
 // Reset the context
 //
-private fun keccak_reset(context_offset: i32): void = {
+private fun keccak_reset(context_offset: u32): void = {
   // clear out the context memory
-  system::memory::memset(context_offset, 0, 400)
+  system::memory::memset(context_offset, 0 as u8, 400 as u32)
 }
 
 //
 // Push input to the context
 //
-private fun keccak_update(context_offset: i32, input_offset: i32, input_length: u32): void = %wasm {
+private fun keccak_update(context_offset: u32, input_offset: u32, input_length: u32): void = %wasm {
   (local $residue_offset i32)
   (local $residue_buffer i32)
   (local $residue_index i32)
@@ -783,10 +783,12 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
       )
 
       // fill up the residue buffer
-      (call $system::memory::memcpy
-        (i32.add (get_local $residue_buffer) (get_local $residue_index))
-        (get_local $input_offset)
-        (get_local $tmp)
+      (drop
+        (call $system::memory::memcpy
+          (i32.add (get_local $residue_buffer) (get_local $residue_index))
+          (get_local $input_offset)
+          (get_local $tmp)
+        )
       )
 
       (set_local $residue_index (i32.add (get_local $residue_index) (get_local $tmp)))
@@ -822,10 +824,12 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
   // copy to the residue buffer
   (if (i32.gt_u (get_local $input_length) (i32.const 0))
     (then
-      (call $system::memory::memcpy
-        (i32.add (get_local $residue_buffer) (get_local $residue_index))
-        (get_local $input_offset)
-        (get_local $input_length)
+      (drop
+        (call $system::memory::memcpy
+          (i32.add (get_local $residue_buffer) (get_local $residue_index))
+          (get_local $input_offset)
+          (get_local $input_length)
+        )
       )
 
       (set_local $residue_index (i32.add (get_local $residue_index) (get_local $input_length)))
@@ -839,7 +843,7 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
 //
 // The 256 bit hash is returned at the output offset.
 //
-private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm {
+private fun keccak_finish(context_offset: u32, output_offset: u32): void = %wasm {
   (local $residue_offset i32)
   (local $residue_buffer i32)
   (local $residue_index i32)
@@ -877,15 +881,13 @@ private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm
 // Calculate the hash. Helper method incorporating the above three.
 //
 fun keccak(input: bytes): bytes = {
-  val context = system::memory::calloc(616, 1)
+  val context = system::memory::allocBytes(616 as u32)
 
   val ret = system::memory::allocBytes(32 as u32)
 
-  keccak_init(context)
-  keccak_update(context, input.ptr, input.length)
-  keccak_finish(context, ret.ptr)
-
-  system::memory::free(context)
+  keccak_init(context.ptr)
+  keccak_update(context.ptr, input.ptr, input.length)
+  keccak_finish(context.ptr, ret.ptr)
 
   ret
 }

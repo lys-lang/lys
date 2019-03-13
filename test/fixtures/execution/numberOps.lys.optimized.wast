@@ -8,7 +8,6 @@
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
  (memory $0 1)
- (data (i32.const 353) "4\00\00\00t\00r\00y\00i\00n\00g\00 \00t\00o\00 \00a\00l\00l\00o\00c\00a\00t\00e\00 \000\00 \00b\00y\00t\00e\00s")
  (data (i32.const 311) "\08\00\00\00t\00r\00u\00e")
  (data (i32.const 324) "\n\00\00\00f\00a\00l\00s\00e")
  (data (i32.const 339) "\02\00\00\000")

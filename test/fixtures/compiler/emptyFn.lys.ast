@@ -4,9 +4,6 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-TypeDirectiveNode
-    |-NameIdentifierNode="void" type=(type (alias void (native void)))
-    |-InjectedTypeNode
   |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
     |-FunDirectiveNode annotations=Export
       |-DecoratorNode
@@ -18,3 +15,15 @@
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
     |-NameIdentifierNode="main" type=(fun "main" () (alias void))
+  |-OverloadedFunctionNode type=(fun "returningValueFn" () (alias void)) annotations=Injected
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "returningValueFn" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="returningValueFn"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
+          |-IntegerLiteral=1 type=(alias i32 (native i32))
+    |-NameIdentifierNode="returningValueFn" type=(fun "returningValueFn" () (alias void))

@@ -183,7 +183,7 @@
                 |-QNameNode=size
                   |-NameIdentifierNode="size"
               |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BlockNode type=(never) annotations=IsValueNode
               |-IfNode type=(native void)
                 |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
                   |-NameIdentifierNode=">"
@@ -199,8 +199,8 @@
                     |-QNameNode=panic
                       |-NameIdentifierNode="panic"
               |-ValDeclarationNode type=(native void)
-                |-NameIdentifierNode="ptr" type=(alias i32 (native i32))
-                |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-NameIdentifierNode="ptr" type=(never)
+                |-BinaryExpressionNode type=(never) annotations=IsValueNode
                   |-NameIdentifierNode="-"
                   |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
                     |-NameIdentifierNode="*"
@@ -212,8 +212,8 @@
                       |-ReferenceNode type=(fun "currentMemory" () (alias i32))
                         |-QNameNode=currentMemory
                           |-NameIdentifierNode="currentMemory"
-                  |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
-                    |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+                  |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode
+                    |-ReferenceNode type=(fun "malloc" ((alias u32)) (alias u32))
                       |-QNameNode=system::memory::malloc
                         |-NameIdentifierNode="system"
                         |-NameIdentifierNode="memory"
@@ -241,9 +241,9 @@
                       |-ReferenceNode type=(fun "AL_MASK" () (alias i32))
                         |-QNameNode=AL_MASK
                           |-NameIdentifierNode="AL_MASK"
-                  |-UnaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
-                    |-FunctionCallNode type=(alias i32 (native i32))
-                      |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+                  |-UnaryExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode
+                    |-FunctionCallNode type=(alias u32 (native u32))
+                      |-ReferenceNode type=(fun "malloc" ((alias u32)) (alias u32))
                         |-QNameNode=system::memory::malloc
                           |-NameIdentifierNode="system"
                           |-NameIdentifierNode="memory"
@@ -251,14 +251,14 @@
                       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-NameIdentifierNode="~"
               |-ValDeclarationNode type=(native void)
-                |-NameIdentifierNode="newPtr" type=(alias i32 (native i32))
-                |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-NameIdentifierNode="newPtr" type=(never)
+                |-BinaryExpressionNode type=(never) annotations=IsValueNode
                   |-NameIdentifierNode="&"
-                  |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-BinaryExpressionNode type=(never) annotations=IsValueNode
                     |-NameIdentifierNode="+"
-                    |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-BinaryExpressionNode type=(never) annotations=IsValueNode
                       |-NameIdentifierNode="+"
-                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-ReferenceNode type=(never) annotations=IsValueNode
                         |-QNameNode=ptr
                           |-NameIdentifierNode="ptr"
                       |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
@@ -281,9 +281,9 @@
                     |-QNameNode=currentMemory
                       |-NameIdentifierNode="currentMemory"
               |-IfNode type=(native void)
-                |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+                |-BinaryExpressionNode type=(never) annotations=IsValueNode
                   |-NameIdentifierNode=">"
-                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-ReferenceNode type=(never) annotations=IsValueNode
                     |-QNameNode=newPtr
                       |-NameIdentifierNode="newPtr"
                   |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
@@ -294,12 +294,12 @@
                     |-IntegerLiteral=16 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-BlockNode type=(native void)
                   |-ValDeclarationNode type=(native void)
-                    |-NameIdentifierNode="ptrx" type=(alias i32 (native i32))
-                    |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-NameIdentifierNode="ptrx" type=(never)
+                    |-BinaryExpressionNode type=(never) annotations=IsValueNode
                       |-NameIdentifierNode="&"
-                      |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-BinaryExpressionNode type=(never) annotations=IsValueNode
                         |-NameIdentifierNode="+"
-                        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                        |-ReferenceNode type=(never) annotations=IsValueNode
                           |-QNameNode=ptr
                             |-NameIdentifierNode="ptr"
                         |-HexLiteral=65535 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -314,9 +314,9 @@
                               |-UnaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
                                 |-HexLiteral=65535 type=(alias i32 (native i32))
                                 |-NameIdentifierNode="-"
-                              |-UnaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
-                                |-UnaryExpressionNode type=(alias i32 (native i32))
-                                  |-ReferenceNode type=(alias i32 (native i32))
+                              |-UnaryExpressionNode type=(never) annotations=IsValueNode
+                                |-UnaryExpressionNode type=(never)
+                                  |-ReferenceNode type=(never)
                                     |-QNameNode=ptr
                                       |-NameIdentifierNode="ptr"
                                   |-NameIdentifierNode="~"
@@ -324,18 +324,18 @@
                           |-NameIdentifierNode="~"
                         |-IntegerLiteral=16 type=(alias i32 (native i32)) annotations=IsValueNode
                   |-ValDeclarationNode type=(native void)
-                    |-NameIdentifierNode="pagesNeeded" type=(alias i32 (native i32))
-                    |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-NameIdentifierNode="pagesNeeded" type=(never)
+                    |-BinaryExpressionNode type=(never) annotations=IsValueNode
                       |-NameIdentifierNode=">>>"
-                      |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-BinaryExpressionNode type=(never) annotations=IsValueNode
                         |-NameIdentifierNode="&"
-                        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                        |-BinaryExpressionNode type=(never) annotations=IsValueNode
                           |-NameIdentifierNode="-"
-                          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                          |-ReferenceNode type=(never) annotations=IsValueNode
                             |-QNameNode=newPtr
                               |-NameIdentifierNode="newPtr"
-                          |-UnaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
-                            |-ReferenceNode type=(alias i32 (native i32))
+                          |-UnaryExpressionNode type=(never) annotations=IsValueNode
+                            |-ReferenceNode type=(never)
                               |-QNameNode=ptrx
                                 |-NameIdentifierNode="ptrx"
                             |-NameIdentifierNode="~"
@@ -348,9 +348,9 @@
                               |-UnaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
                                 |-HexLiteral=65535 type=(alias i32 (native i32))
                                 |-NameIdentifierNode="-"
-                              |-UnaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
-                                |-UnaryExpressionNode type=(alias i32 (native i32))
-                                  |-ReferenceNode type=(alias i32 (native i32))
+                              |-UnaryExpressionNode type=(never) annotations=IsValueNode
+                                |-UnaryExpressionNode type=(never)
+                                  |-ReferenceNode type=(never)
                                     |-QNameNode=ptrx
                                       |-NameIdentifierNode="ptrx"
                                   |-NameIdentifierNode="~"
@@ -366,7 +366,7 @@
                       |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                         |-QNameNode=pagesBefore
                           |-NameIdentifierNode="pagesBefore"
-                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                      |-ReferenceNode type=(never) annotations=IsValueNode
                         |-QNameNode=pagesNeeded
                           |-NameIdentifierNode="pagesNeeded"
                   |-IfNode type=(native void)
@@ -388,7 +388,7 @@
                             |-ReferenceNode type=(fun "growMemory" ((alias i32)) (alias i32))
                               |-QNameNode=growMemory
                                 |-NameIdentifierNode="growMemory"
-                            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                            |-ReferenceNode type=(never) annotations=IsValueNode
                               |-QNameNode=pagesNeeded
                                 |-NameIdentifierNode="pagesNeeded"
                           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -397,19 +397,19 @@
                             |-ReferenceNode type=(fun "panic" () (alias never))
                               |-QNameNode=panic
                                 |-NameIdentifierNode="panic"
-              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-BinaryExpressionNode type=(never) annotations=IsValueNode
                 |-NameIdentifierNode="+"
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-ReferenceNode type=(never) annotations=IsValueNode
                   |-QNameNode=newPtr
                     |-NameIdentifierNode="newPtr"
-                |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+                |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-ReferenceNode type=(fun "malloc" ((alias u32)) (alias u32))
                     |-QNameNode=system::memory::malloc
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="malloc"
-                  |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
-                    |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+                  |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode
+                    |-ReferenceNode type=(fun "malloc" ((alias u32)) (alias u32))
                       |-QNameNode=system::memory::malloc
                         |-NameIdentifierNode="system"
                         |-NameIdentifierNode="memory"

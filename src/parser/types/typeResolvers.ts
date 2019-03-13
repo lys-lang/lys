@@ -361,7 +361,11 @@ class AssignmentNodeTypeResolver extends TypeResolver {
       );
     }
 
-    return rhs.incomingType();
+    if (assignmentNode.hasAnnotation(annotations.IsValueNode)) {
+      return rhs.incomingType();
+    } else {
+      return InjectableTypes.void;
+    }
   }
 }
 

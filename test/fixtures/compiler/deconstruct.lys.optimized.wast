@@ -3,7 +3,6 @@
  (type $1 (func (result i32)))
  (type $2 (func (param i64) (result i32)))
  (memory $0 1)
- (data (i32.const 16) "4\00\00\00t\00r\00y\00i\00n\00g\00 \00t\00o\00 \00a\00l\00l\00o\00c\00a\00t\00e\00 \000\00 \00b\00y\00t\00e\00s")
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))

@@ -372,7 +372,7 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.WasmExpressionNode) {
       node.atoms.forEach($ => this.traverseNode($, target));
     } else if (node instanceof Nodes.WasmAtomNode) {
-      if (node.symbol === 'call' || node.symbol === 'get_global' || node.symbol === 'set_global') {
+      if (node.symbol === 'call' || node.symbol === 'global.get' || node.symbol === 'global.set') {
         if (node.arguments[0] instanceof Nodes.ReferenceNode) {
           this.traverse(node.arguments[0]);
         }

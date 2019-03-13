@@ -4,29 +4,29 @@ impl AA {
   fun is(a: AA): boolean = {
     a is BB
   }
-  
+
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
-  
+
   fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
-  
-  fun store(lhs: ref, rhs: AA, offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
+
+  fun store(lhs: ref, rhs: AA, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
-  
-  fun load(lhs: ref, offset: i32): AA = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))))
+
+  fun load(lhs: ref, offset: u32): AA = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 }
 
 impl AA {
   fun as(a: AA): ref = %wasm {
-    (get_local $a)
+    (local.get $a)
   }
 }
 
 impl BB {
   fun as(a: BB): AA = %wasm {
-    (get_local $a)
+    (local.get $a)
   }
 }
 
@@ -35,32 +35,32 @@ type BB = %struct {  }
 impl BB {
   #[inline]
   private fun BB$discriminant(): i64 = {
-    val discriminant: i32 = BB.^discriminant
+    val discriminant: u32 = BB.^discriminant
     discriminant as i64 << 32
   }
-  
+
   fun apply(): BB = %wasm {
     (call BB$discriminant)
   }
-  
+
   fun is(a: BB): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call BB$discriminant))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call BB$discriminant))
   }
-  
+
   fun ==(a: BB, b: ref): boolean = %wasm {
-    (i64.eq (get_local $a) (get_local $b))
+    (i64.eq (local.get $a) (local.get $b))
   }
-  
+
   fun !=(a: BB, b: ref): boolean = %wasm {
-    (i64.ne (get_local $a) (get_local $b))
+    (i64.ne (local.get $a) (local.get $b))
   }
-  
-  fun store(lhs: ref, rhs: BB, offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
+
+  fun store(lhs: ref, rhs: BB, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
-  
-  fun load(lhs: ref, offset: i32): BB = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))))
+
+  fun load(lhs: ref, offset: u32): BB = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 }
 
@@ -69,32 +69,32 @@ type TT = %struct {  }
 impl TT {
   #[inline]
   private fun TT$discriminant(): i64 = {
-    val discriminant: i32 = TT.^discriminant
+    val discriminant: u32 = TT.^discriminant
     discriminant as i64 << 32
   }
-  
+
   fun apply(): TT = %wasm {
     (call TT$discriminant)
   }
-  
+
   fun is(a: TT): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (get_local $a)) (call TT$discriminant))
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call TT$discriminant))
   }
-  
+
   fun ==(a: TT, b: ref): boolean = %wasm {
-    (i64.eq (get_local $a) (get_local $b))
+    (i64.eq (local.get $a) (local.get $b))
   }
-  
+
   fun !=(a: TT, b: ref): boolean = %wasm {
-    (i64.ne (get_local $a) (get_local $b))
+    (i64.ne (local.get $a) (local.get $b))
   }
-  
-  fun store(lhs: ref, rhs: TT, offset: i32): void = %wasm {
-    (i64.store (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))) (get_local $rhs))
+
+  fun store(lhs: ref, rhs: TT, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
-  
-  fun load(lhs: ref, offset: i32): TT = %wasm {
-    (i64.load (i32.add (get_local $offset) (call addressFromRef (get_local $lhs))))
+
+  fun load(lhs: ref, offset: u32): TT = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 }
 

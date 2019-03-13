@@ -519,7 +519,13 @@ const visitor = {
     const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
     ret.arguments = ret.arguments.concat(newChildren);
 
-    if (ret.symbol == 'call' || ret.symbol == 'get_global' || ret.symbol == 'set_global') {
+    if (
+      ret.symbol == 'call' ||
+      ret.symbol == 'global.get' ||
+      ret.symbol == 'global.set' ||
+      ret.symbol == 'get_global' ||
+      ret.symbol == 'set_global'
+    ) {
       if (ret.arguments[0] instanceof Nodes.QNameNode) {
         const varRef = new Nodes.ReferenceNode(children[0]);
         varRef.variable = ret.arguments[0] as Nodes.QNameNode;

@@ -4,12 +4,9 @@ import { PhaseResult } from './PhaseResult';
 import { printErrors } from '../../utils/errorPrinter';
 import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
+import { indent } from '../../utils/astPrinter';
 
 declare var console;
-
-function indent(str: string, indentation: string = '  ') {
-  return str.replace(/^(.*)$/gm, indentation + '$1');
-}
 
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {

@@ -179,7 +179,7 @@ export class StructType extends Type {
 
   schema() {
     return {
-      byteSize: StackType.of('i32', NativeTypes.i32, 4)
+      byteSize: StackType.of('u32', NativeTypes.i32, 4)
     };
   }
 
@@ -228,8 +228,8 @@ export class StackType extends Type {
 
   schema() {
     return {
-      byteSize: StackType.of('i32', NativeTypes.i32, 4),
-      allocationSize: StackType.of('i32', NativeTypes.i32, 4)
+      byteSize: StackType.of('u32', NativeTypes.i32, 4),
+      allocationSize: StackType.of('u32', NativeTypes.i32, 4)
     };
   }
 
@@ -243,7 +243,7 @@ export class StackType extends Type {
   }
 }
 
-const i32 = StackType.of('i32', NativeTypes.i32, 4);
+const u32 = StackType.of('u32', NativeTypes.i32, 4);
 const voidType = StackType.of('void', NativeTypes.void, 0);
 
 export class RefType extends Type {
@@ -297,8 +297,8 @@ export class RefType extends Type {
 
   schema() {
     return {
-      byteSize: StackType.of('i32', NativeTypes.i32, 4),
-      allocationSize: StackType.of('i32', NativeTypes.i32, 4)
+      byteSize: StackType.of('u32', NativeTypes.i32, 4),
+      allocationSize: StackType.of('u32', NativeTypes.i32, 4)
     };
   }
 
@@ -666,7 +666,7 @@ export class UnionType extends Type {
 
   schema() {
     return {
-      byteSize: i32
+      byteSize: u32
     };
   }
 
@@ -729,19 +729,19 @@ export class TypeAlias extends Type {
   schema() {
     const result = {
       ...this.of.schema(),
-      discriminant: i32
+      discriminant: u32
     };
 
     const baseType = getUnderlyingTypeFromAlias(this);
 
     if (baseType instanceof StructType) {
-      result['allocationSize'] = i32;
+      result['allocationSize'] = u32;
 
       const properties = this.getOrderedProperties();
 
       properties.forEach(prop => {
-        result[`property$${prop.index}_offset`] = i32;
-        result[`property$${prop.index}_allocationSize`] = i32;
+        result[`property$${prop.index}_offset`] = u32;
+        result[`property$${prop.index}_allocationSize`] = u32;
       });
     }
 

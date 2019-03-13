@@ -257,10 +257,12 @@ export namespace Nodes {
 
       var local = new Local(localIndex, name ? name : 'var$' + localIndex.toString(10), declaration);
       local.type = type;
+
       if (name) {
         if (this.localsByName.has(name)) throw new Error('duplicate local name');
         this.localsByName.set(name, local);
       }
+
       this.localsByIndex[local.index] = local;
       this.additionalLocals.push(local);
       return local;

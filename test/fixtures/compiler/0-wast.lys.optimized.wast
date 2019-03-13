@@ -3,7 +3,6 @@
  (type $1 (func (result i32)))
  (type $2 (func))
  (memory $0 1)
- (data (i32.const 16) "4\00\00\00t\00r\00y\00i\00n\00g\00 \00t\00o\00 \00a\00l\00l\00o\00c\00a\00t\00e\00 \000\00 \00b\00y\00t\00e\00s")
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -24,14 +23,14 @@
   (local $2 i32)
   (local $3 i32)
   (if
-   (i32.gt_s
+   (i32.gt_u
     (i32.const 1)
     (global.get $global$3)
    )
    (unreachable)
   )
   (if
-   (i32.gt_s
+   (i32.gt_u
     (local.tee $2
      (i32.and
       (i32.add
@@ -40,7 +39,7 @@
         (local.tee $0
          (global.get $global$6)
         )
-        (i32.const 1)
+        (i32.const 8)
        )
       )
       (i32.xor
@@ -57,7 +56,7 @@
     )
    )
    (if
-    (i32.lt_s
+    (i32.lt_u
      (grow_memory
       (select
        (local.tee $3
@@ -65,7 +64,7 @@
        )
        (local.tee $0
         (local.tee $1
-         (i32.shr_u
+         (i32.shr_s
           (i32.and
            (i32.add
             (i32.sub
@@ -80,7 +79,7 @@
          )
         )
        )
-       (i32.gt_s
+       (i32.gt_u
         (local.get $3)
         (local.get $0)
        )
@@ -89,7 +88,7 @@
      (i32.const 0)
     )
     (if
-     (i32.lt_s
+     (i32.lt_u
       (grow_memory
        (local.get $1)
       )

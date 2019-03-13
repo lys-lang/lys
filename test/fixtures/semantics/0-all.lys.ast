@@ -69,8 +69,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=asd
@@ -193,8 +193,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -227,8 +227,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=asd
@@ -820,14 +820,14 @@
         |-FunctionNode
           |-NameIdentifierNode="String$discriminant"
           |-ReferenceNode
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
+            |-QNameNode=u64
+              |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=String
@@ -840,8 +840,8 @@
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode
-                  |-QNameNode=i64
-                    |-NameIdentifierNode="i64"
+                  |-QNameNode=u64
+                    |-NameIdentifierNode="u64"
               |-IntegerLiteral=32 annotations=IsValueNode
       |-NameIdentifierNode="String$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -869,7 +869,11 @@
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-IntegerLiteral=1 annotations=IsValueNode
+                  |-AsExpressionNode annotations=IsValueNode
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                    |-ReferenceNode
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
                     |-ReferenceNode
                       |-QNameNode=String
@@ -895,8 +899,8 @@
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="fromPointer"
           |-ReferenceNode
             |-QNameNode=String
@@ -1115,8 +1119,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -1149,8 +1153,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=String
@@ -1470,8 +1474,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -1504,8 +1508,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=AA
@@ -1586,8 +1590,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=BB
@@ -1710,8 +1714,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -1744,8 +1748,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=BB
@@ -1784,8 +1788,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=TT
@@ -1908,8 +1912,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -1942,8 +1946,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=TT
@@ -2296,8 +2300,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -2330,8 +2334,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Tree
@@ -2445,8 +2449,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Empty
@@ -2569,8 +2573,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -2603,8 +2607,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Empty
@@ -2634,14 +2638,14 @@
         |-FunctionNode
           |-NameIdentifierNode="Node$discriminant"
           |-ReferenceNode
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
+            |-QNameNode=u64
+              |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Node
@@ -2654,8 +2658,8 @@
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode
-                  |-QNameNode=i64
-                    |-NameIdentifierNode="i64"
+                  |-QNameNode=u64
+                    |-NameIdentifierNode="u64"
               |-IntegerLiteral=32 annotations=IsValueNode
       |-NameIdentifierNode="Node$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -2687,7 +2691,11 @@
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-IntegerLiteral=1 annotations=IsValueNode
+                  |-AsExpressionNode annotations=IsValueNode
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                    |-ReferenceNode
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
                     |-ReferenceNode
                       |-QNameNode=Node
@@ -2713,8 +2721,8 @@
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="fromPointer"
           |-ReferenceNode
             |-QNameNode=Node
@@ -2917,8 +2925,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="loadPropertyWithOffset$0"
           |-UnionTypeNode
             |-ReferenceNode
@@ -2963,8 +2971,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="storePropertyWithOffset$0"
           |-ReferenceNode
             |-QNameNode=void
@@ -3027,8 +3035,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -3061,8 +3069,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Node
@@ -3192,8 +3200,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -3226,8 +3234,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Forest
@@ -3341,8 +3349,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Nil
@@ -3465,8 +3473,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -3499,8 +3507,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Nil
@@ -3530,14 +3538,14 @@
         |-FunctionNode
           |-NameIdentifierNode="Cons$discriminant"
           |-ReferenceNode
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
+            |-QNameNode=u64
+              |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Cons
@@ -3550,8 +3558,8 @@
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode
-                  |-QNameNode=i64
-                    |-NameIdentifierNode="i64"
+                  |-QNameNode=u64
+                    |-NameIdentifierNode="u64"
               |-IntegerLiteral=32 annotations=IsValueNode
       |-NameIdentifierNode="Cons$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -3583,7 +3591,11 @@
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-IntegerLiteral=1 annotations=IsValueNode
+                  |-AsExpressionNode annotations=IsValueNode
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                    |-ReferenceNode
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
                     |-ReferenceNode
                       |-QNameNode=Cons
@@ -3609,8 +3621,8 @@
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="fromPointer"
           |-ReferenceNode
             |-QNameNode=Cons
@@ -3813,8 +3825,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="loadPropertyWithOffset$0"
           |-UnionTypeNode
             |-ReferenceNode
@@ -3859,8 +3871,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="storePropertyWithOffset$0"
           |-ReferenceNode
             |-QNameNode=void
@@ -3923,8 +3935,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -3957,8 +3969,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Cons
@@ -4223,14 +4235,14 @@
         |-FunctionNode
           |-NameIdentifierNode="Color$discriminant"
           |-ReferenceNode
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
+            |-QNameNode=u64
+              |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Color
@@ -4243,8 +4255,8 @@
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode
-                  |-QNameNode=i64
-                    |-NameIdentifierNode="i64"
+                  |-QNameNode=u64
+                    |-NameIdentifierNode="u64"
               |-IntegerLiteral=32 annotations=IsValueNode
       |-NameIdentifierNode="Color$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -4282,7 +4294,11 @@
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-IntegerLiteral=1 annotations=IsValueNode
+                  |-AsExpressionNode annotations=IsValueNode
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                    |-ReferenceNode
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
                     |-ReferenceNode
                       |-QNameNode=Color
@@ -4328,8 +4344,8 @@
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="fromPointer"
           |-ReferenceNode
             |-QNameNode=Color
@@ -4768,8 +4784,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -4802,8 +4818,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Color
@@ -4842,8 +4858,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=True
@@ -4966,8 +4982,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -5000,8 +5016,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=True
@@ -5040,8 +5056,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=False
@@ -5164,8 +5180,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -5198,8 +5214,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=False
@@ -5329,8 +5345,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -5363,8 +5379,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Boolean
@@ -5527,14 +5543,14 @@
         |-FunctionNode
           |-NameIdentifierNode="Iterator$discriminant"
           |-ReferenceNode
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
+            |-QNameNode=u64
+              |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Iterator
@@ -5547,8 +5563,8 @@
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode
-                  |-QNameNode=i64
-                    |-NameIdentifierNode="i64"
+                  |-QNameNode=u64
+                    |-NameIdentifierNode="u64"
               |-IntegerLiteral=32 annotations=IsValueNode
       |-NameIdentifierNode="Iterator$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -5581,7 +5597,11 @@
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-IntegerLiteral=1 annotations=IsValueNode
+                  |-AsExpressionNode annotations=IsValueNode
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                    |-ReferenceNode
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
                     |-ReferenceNode
                       |-QNameNode=Iterator
@@ -5617,8 +5637,8 @@
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="fromPointer"
           |-ReferenceNode
             |-QNameNode=Iterator
@@ -5947,8 +5967,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -5981,8 +6001,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Iterator
@@ -6112,8 +6132,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -6146,8 +6166,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Maybe
@@ -6257,8 +6277,8 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=None
@@ -6381,8 +6401,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -6415,8 +6435,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=None
@@ -6446,14 +6466,14 @@
         |-FunctionNode
           |-NameIdentifierNode="Some$discriminant"
           |-ReferenceNode
-            |-QNameNode=i64
-              |-NameIdentifierNode="i64"
+            |-QNameNode=u64
+              |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode
-                |-QNameNode=i32
-                  |-NameIdentifierNode="i32"
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode
                   |-QNameNode=Some
@@ -6466,8 +6486,8 @@
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode
-                  |-QNameNode=i64
-                    |-NameIdentifierNode="i64"
+                  |-QNameNode=u64
+                    |-NameIdentifierNode="u64"
               |-IntegerLiteral=32 annotations=IsValueNode
       |-NameIdentifierNode="Some$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -6495,7 +6515,11 @@
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-IntegerLiteral=1 annotations=IsValueNode
+                  |-AsExpressionNode annotations=IsValueNode
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                    |-ReferenceNode
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
                     |-ReferenceNode
                       |-QNameNode=Some
@@ -6521,8 +6545,8 @@
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="fromPointer"
           |-ReferenceNode
             |-QNameNode=Some
@@ -6741,8 +6765,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="store"
           |-ReferenceNode
             |-QNameNode=void
@@ -6775,8 +6799,8 @@
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
             |-ReferenceNode
-              |-QNameNode=i32
-                |-NameIdentifierNode="i32"
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
           |-NameIdentifierNode="load"
           |-ReferenceNode
             |-QNameNode=Some

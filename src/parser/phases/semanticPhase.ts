@@ -180,23 +180,23 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               )
 
             #[inline]
-            private fun loadPropertyWithOffset$${i}(self: ${typeName}, offset: i32): ${parameterType} = %wasm {
+            private fun loadPropertyWithOffset$${i}(self: ${typeName}, offset: u32): ${parameterType} = %wasm {
               (i64.load
                 (i32.add
-                  (get_local $offset)
-                  (call $addressFromRef (get_local $self))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $self))
                 )
               )
             }
 
             #[inline]
-            private fun storePropertyWithOffset$${i}(self: ${typeName}, value: ${parameterType}, offset: i32): void = %wasm {
+            private fun storePropertyWithOffset$${i}(self: ${typeName}, value: ${parameterType}, offset: u32): void = %wasm {
               (i64.store
                 (i32.add
-                  (get_local $offset)
-                  (call $addressFromRef (get_local $self))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $self))
                 )
-                (get_local $value)
+                (local.get $value)
               )
             }
           `;
@@ -231,14 +231,14 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         `
             impl ${typeName} {
               #[inline]
-              private fun ${typeName}$discriminant(): i64 = {
-                val discriminant: i32 = ${typeName}.^discriminant
-                discriminant as i64 << 32
+              private fun ${typeName}$discriminant(): u64 = {
+                val discriminant: u32 = ${typeName}.^discriminant
+                discriminant as u64 << 32
               }
 
               fun apply(${args}): ${typeName} = {
                 var $ref = fromPointer(
-                  system::memory::calloc(1, ${typeName}.^allocationSize)
+                  system::memory::calloc(1 as u32, ${typeName}.^allocationSize)
                 )
 
                 ${callRefs}
@@ -246,24 +246,24 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                 $ref
               }
 
-              private fun fromPointer(ptr: i32): ${typeName} = %wasm {
+              private fun fromPointer(ptr: u32): ${typeName} = %wasm {
                 (i64.or
                   (call $${typeName}$discriminant)
-                  (i64.extend_u/i32 (get_local $ptr))
+                  (i64.extend_u/i32 (local.get $ptr))
                 )
               }
 
               fun ==(a: ${typeName}, b: ${typeName}): boolean = %wasm {
                 (i64.eq
-                  (get_local $a)
-                  (get_local $b)
+                  (local.get $a)
+                  (local.get $b)
                 )
               }
 
               fun !=(a: ${typeName}, b: ${typeName}): boolean = %wasm {
                 (i64.ne
-                  (get_local $a)
-                  (get_local $b)
+                  (local.get $a)
+                  (local.get $b)
                 )
               }
 
@@ -274,27 +274,27 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                 (i64.eq
                   (i64.and
                     (i64.const 0xffffffff00000000)
-                    (get_local $a)
+                    (local.get $a)
                   )
                   (call $${typeName}$discriminant)
                 )
               }
 
-              fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+              fun store(lhs: ref, rhs: ${typeName}, offset: u32): void = %wasm {
                 (i64.store
                   (i32.add
-                    (get_local $offset)
-                    (call $addressFromRef (get_local $lhs))
+                    (local.get $offset)
+                    (call $addressFromRef (local.get $lhs))
                   )
-                  (get_local $rhs)
+                  (local.get $rhs)
                 )
               }
 
-              fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+              fun load(lhs: ref, offset: u32): ${typeName} = %wasm {
                 (i64.load
                   (i32.add
-                    (get_local $offset)
-                    (call $addressFromRef (get_local $lhs))
+                    (local.get $offset)
+                    (call $addressFromRef (local.get $lhs))
                   )
                 )
               }
@@ -312,7 +312,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
           impl ${typeName} {
             #[inline]
             private fun ${typeName}$discriminant(): i64 = {
-              val discriminant: i32 = ${typeName}.^discriminant
+              val discriminant: u32 = ${typeName}.^discriminant
               discriminant as i64 << 32
             }
 
@@ -324,7 +324,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               (i64.eq
                 (i64.and
                   (i64.const 0xffffffff00000000)
-                  (get_local $a)
+                  (local.get $a)
                 )
                 (call $${typeName}$discriminant)
               )
@@ -332,33 +332,33 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
             fun ==(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.eq
-                (get_local $a)
-                (get_local $b)
+                (local.get $a)
+                (local.get $b)
               )
             }
 
             fun !=(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.ne
-                (get_local $a)
-                (get_local $b)
+                (local.get $a)
+                (local.get $b)
               )
             }
 
-            fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+            fun store(lhs: ref, rhs: ${typeName}, offset: u32): void = %wasm {
               (i64.store
                 (i32.add
-                  (get_local $offset)
-                  (call $addressFromRef (get_local $lhs))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $lhs))
                 )
-                (get_local $rhs)
+                (local.get $rhs)
               )
             }
 
-            fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+            fun load(lhs: ref, offset: u32): ${typeName} = %wasm {
               (i64.load
                 (i32.add
-                  (get_local $offset)
-                  (call $addressFromRef (get_local $lhs))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $lhs))
                 )
               )
             }
@@ -428,14 +428,14 @@ const processUnions = function(
         if (referenceTypes.length) {
           injectedDirectives.push(`
             impl ${node.variableName.name} {
-              fun as(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
+              fun as(a: ${node.variableName.name}): ref = %wasm { (local.get $a) }
             }
           `);
 
           referenceTypes.forEach($ => {
             injectedDirectives.push(`
               impl ${$.variable.text} {
-                fun as(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
+                fun as(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (local.get $a) }
               }
             `);
           });
@@ -454,21 +454,21 @@ const processUnions = function(
                 fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
                 fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
 
-                fun store(lhs: ref, rhs: ${variableName.name}, offset: i32): void = %wasm {
+                fun store(lhs: ref, rhs: ${variableName.name}, offset: u32): void = %wasm {
                   (i64.store
                     (i32.add
-                      (get_local $offset)
-                      (call $addressFromRef (get_local $lhs))
+                      (local.get $offset)
+                      (call $addressFromRef (local.get $lhs))
                     )
-                    (get_local $rhs)
+                    (local.get $rhs)
                   )
                 }
 
-                fun load(lhs: ref, offset: i32): ${variableName.name} = %wasm {
+                fun load(lhs: ref, offset: u32): ${variableName.name} = %wasm {
                   (i64.load
                     (i32.add
-                      (get_local $offset)
-                      (call $addressFromRef (get_local $lhs))
+                      (local.get $offset)
+                      (call $addressFromRef (local.get $lhs))
                     )
                   )
                 }
@@ -515,7 +515,7 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseRes
 
 const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
   if (node instanceof Nodes.WasmAtomNode) {
-    if (node.symbol == 'call' || node.symbol == 'get_global' || node.symbol == 'set_global') {
+    if (node.symbol == 'call' || node.symbol == 'global.get' || node.symbol == 'global.set') {
       if (!node.arguments[0]) {
         throw new AstNodeError(`Missing name`, node);
       }

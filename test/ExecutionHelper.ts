@@ -218,11 +218,15 @@ async function generateInstance(compilationPhaseResult: CodeGenerationPhaseResul
   return instance;
 }
 
-async function testSrc(content: string, customTest?: (document: any, error?: Error) => Promise<any>) {
+async function testSrc(
+  content: string,
+  customTest?: (document: any, error?: Error) => Promise<any>,
+  fileName?: string
+) {
   let compilationPhaseResult: CodeGenerationPhaseResult;
 
   try {
-    compilationPhaseResult = phases(content);
+    compilationPhaseResult = phases(content, fileName);
 
     if (!compilationPhaseResult.isSuccess()) {
       console.log(printErrors(compilationPhaseResult.parsingContext));
@@ -301,10 +305,14 @@ export function testFolder() {
     it(fileName.replace(parsingContext.cwd, ''), async function() {
       this.timeout(10000);
 
-      await testSrc(content, async (x, err) => {
-        if (err) throw err;
-        x.exports.main();
-      });
+      await testSrc(
+        content,
+        async (x, err) => {
+          if (err) throw err;
+          x.exports.main();
+        },
+        fileName
+      );
     });
   }
   glob.sync(parsingContext.cwd + '/**/*.lys').map(testFile);

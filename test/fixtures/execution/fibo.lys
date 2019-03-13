@@ -1,0 +1,46 @@
+import support::test
+
+private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
+  if (n > 0) {
+    fibo(n - 1, x2, x1 + x2)
+  } else {
+    x1
+  }
+}
+
+private fun fiboPatternMatching(n: i32, a: i32, b: i32): i32 =
+  match n {
+    case 0 -> a
+    case 1 -> b
+    else   -> fibo(n - 1, b, a + b)
+  }
+
+
+fun fib(n: i32): i32 = fibo(n, 0, 1)
+fun fibPatternMatching(n: i32): i32 = fiboPatternMatching(n, 0, 1)
+
+fun factorial(n: i32): i32 =
+  if (n >= 1)
+    n * factorial(n - 1)
+  else
+    1
+
+
+
+
+
+
+#[export] fun main(): void = {
+  START("fibonacci")
+
+  mustEqual(fib(46), 1836311903, "fib(46) must be 1836311903")
+  mustEqual(fibPatternMatching(46), 1836311903, "fibPatternMatching(46) must be 1836311903")
+
+  END()
+
+  START("factorial")
+
+  mustEqual(factorial(10), 3628800, "factorial(10) must be 3628800")
+
+  END()
+}

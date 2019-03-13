@@ -350,15 +350,15 @@ describe('Parser', () => {
       test`
         fun malloc(size: i32): i32 = %wasm {
           (local $address i32)
-          (set_local $address (get_global freeblock))
-          (set_global
+          (local.set $address (global.get freeblock))
+          (global.set
             $freeblock
             (i32.add
-              (get_local $address)
-              (get_local $size)
+              (local.get $address)
+              (local.get $size)
             )
           )
-          (get_local $address)
+          (local.get $address)
         }
       `;
       test`
@@ -372,40 +372,40 @@ describe('Parser', () => {
         (local $aSize i32)
         (local $newStr i32)
         (return
-          (set_local $aSize (i32.load8_u a))
-          (set_local $sum
+          (local.set $aSize (i32.load8_u a))
+          (local.set $sum
             (i32.sub
               (i32.add
-                (get_local $aSize)
+                (local.get $aSize)
                 (i32.load8_u b)
               )
               (i32.const 1)
             )
           )
-          (set_local $newStr
+          (local.set $newStr
             (call malloc
               (i32.add
-                (get_local $sum)
+                (local.get $sum)
                 (i32.const 1)
               )
             )
           )
           (i32.store8
-            (get_local $newStr)
-            (get_local $sum)
+            (local.get $newStr)
+            (local.get $sum)
           )
-          (call string_copy (get_local $a) (get_local $newStr))
+          (call string_copy (local.get $a) (local.get $newStr))
           (call string_copy
-            (get_local $b)
+            (local.get $b)
             (i32.sub
               (i32.add
-                (get_local $newStr)
-                (get_local $aSize)
+                (local.get $newStr)
+                (local.get $aSize)
               )
               (i32.const 1)
             )
           )
-          (get_local $newStr)
+          (local.get $newStr)
         )
       }
       `;
@@ -421,15 +421,15 @@ describe('Parser', () => {
 
         fun malloc(size: i32): i32 = %wasm {
           (local $address i32)
-          (set_local $address (get_global freeblock))
-          (set_global
+          (local.set $address (global.get freeblock))
+          (global.set
             $freeblock
             (i32.add
-              (get_local $address)
-              (get_local $size)
+              (local.get $address)
+              (local.get $size)
             )
           )
-          (get_local $address)
+          (local.get $address)
         }
 
         fun strAdd(a: i32, b: i32): i32 = %wasm {
@@ -437,40 +437,40 @@ describe('Parser', () => {
           (local $aSize i32)
           (local $newStr i32)
           (return
-            (set_local $aSize (i32.load8_u a))
-            (set_local $sum
+            (local.set $aSize (i32.load8_u a))
+            (local.set $sum
               (i32.sub
                 (i32.add
-                  (get_local $aSize)
+                  (local.get $aSize)
                   (i32.load8_u b)
                 )
                 (i32.const 1)
               )
             )
-            (set_local $newStr
+            (local.set $newStr
               (call malloc
                 (i32.add
-                  (get_local $sum)
+                  (local.get $sum)
                   (i32.const 1)
                 )
               )
             )
             (i32.store8
-              (get_local $newStr)
-              (get_local $sum)
+              (local.get $newStr)
+              (local.get $sum)
             )
-            (call string_copy (get_local $a) (get_local $newStr))
+            (call string_copy (local.get $a) (local.get $newStr))
             (call string_copy
-              (get_local $b)
+              (local.get $b)
               (i32.sub
                 (i32.add
-                  (get_local $newStr)
-                  (get_local $aSize)
+                  (local.get $newStr)
+                  (local.get $aSize)
                 )
                 (i32.const 1)
               )
             )
-            (get_local $newStr)
+            (local.get $newStr)
           )
         }
 
