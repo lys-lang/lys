@@ -1,8 +1,13 @@
+- automatically coerce based on implicit `as`
+  - remove hardcoded ref type
 - val variables should not be reassignable
 - parameters should be immutable
 - private names are no private
 - reuse string literals in memory
 - let constructs (scope)
+- methods
+- type alias
+- emit text should be parsed and emited again correctly, final result must be the same as the begin
 - OR binary op should stop evaluation after the first non-zero result is yielded
 - AND binary op should stop evaluation after the first zero result is yielded
 
