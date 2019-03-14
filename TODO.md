@@ -1,4 +1,8 @@
 - val variables should not be reassignable
+- parameters should be immutable
+- private names are no private
+- reuse string literals in memory
+- let constructs (scope)
 - OR binary op should stop evaluation after the first non-zero result is yielded
 - AND binary op should stop evaluation after the first zero result is yielded
 

@@ -28,7 +28,6 @@ import {
   CannotInferReturnType
 } from '../NodeError';
 import { MessageCollector } from '../MessageCollector';
-import { emitKeypressEvents } from 'readline';
 
 declare var console;
 
@@ -528,7 +527,7 @@ class MemberTypeResolver extends TypeResolver {
           } else {
             const keys = Object.keys(allowedTypeSchemas);
 
-            if (emitKeypressEvents.length) {
+            if (keys.length) {
               throw new AstNodeError(
                 `Invalid schema property. Available options: ${keys.join(', ')}`,
                 opNode.memberName
