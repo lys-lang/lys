@@ -8,10 +8,13 @@
     |-NameIdentifierNode="void" type=(type (alias void (native void)))
     |-InjectedTypeNode
   |-OverloadedFunctionNode type=(fun "x" () (alias void)) annotations=Injected
-    |-FunctionNode type=(fun "x" () (alias void))
-      |-NameIdentifierNode="x"
-      |-ReferenceNode type=(type (alias void (native void)))
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode type=(native void)
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "x" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="x"
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
     |-NameIdentifierNode="x" type=(fun "x" () (alias void))

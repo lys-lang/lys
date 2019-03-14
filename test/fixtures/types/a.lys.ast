@@ -5,131 +5,138 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" () (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "test" () (alias i32))
-      |-NameIdentifierNode="test"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "test" () (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="test"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
     |-NameIdentifierNode="test" type=(fun "test" () (alias i32))
   |-OverloadedFunctionNode type=(fun "test0" () (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "test0" () (alias i32))
-      |-NameIdentifierNode="test0"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "test0" () (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="test0"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
     |-NameIdentifierNode="test0" type=(fun "test0" () (alias i32))
   |-OverloadedFunctionNode type=(fun "testa" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "testa" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(a:i32#0)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "testa" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(a:i32#0)
+          |-NameIdentifierNode="a" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="testa"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="testa"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-QNameNode=a
-          |-NameIdentifierNode="a"
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
     |-NameIdentifierNode="testa" type=(fun "testa" ((alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "floatingPoints" ((alias f32) (alias f64)) (alias f32)) annotations=Injected
-    |-FunctionNode type=(fun "floatingPoints" ((alias f32) (alias f64)) (alias f32))
-      |-ParameterNode annotations=Local(a:f32#0)
-        |-NameIdentifierNode="a" type=(alias f32 (native f32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "floatingPoints" ((alias f32) (alias f64)) (alias f32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(a:f32#0)
+          |-NameIdentifierNode="a" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-ParameterNode annotations=Local(b:f64#1)
+          |-NameIdentifierNode="b" type=(alias f64 (native f64))
+          |-ReferenceNode type=(type (alias f64 (native f64)))
+            |-QNameNode=f64
+              |-NameIdentifierNode="f64"
+        |-NameIdentifierNode="floatingPoints"
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-      |-ParameterNode annotations=Local(b:f64#1)
-        |-NameIdentifierNode="b" type=(alias f64 (native f64))
-        |-ReferenceNode type=(type (alias f64 (native f64)))
-          |-QNameNode=f64
-            |-NameIdentifierNode="f64"
-      |-NameIdentifierNode="floatingPoints"
-      |-ReferenceNode type=(type (alias f32 (native f32)))
-        |-QNameNode=f32
-          |-NameIdentifierNode="f32"
-      |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
-        |-QNameNode=a
-          |-NameIdentifierNode="a"
+        |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
+          |-QNameNode=a
+            |-NameIdentifierNode="a"
     |-NameIdentifierNode="floatingPoints" type=(fun "floatingPoints" ((alias f32) (alias f64)) (alias f32))
   |-OverloadedFunctionNode type=(fun "addFloat" ((alias f32) (alias f32)) (alias f32)) annotations=Injected
-    |-FunctionNode type=(fun "addFloat" ((alias f32) (alias f32)) (alias f32))
-      |-ParameterNode annotations=Local(a:f32#0)
-        |-NameIdentifierNode="a" type=(alias f32 (native f32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "addFloat" ((alias f32) (alias f32)) (alias f32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(a:f32#0)
+          |-NameIdentifierNode="a" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-ParameterNode annotations=Local(b:f32#1)
+          |-NameIdentifierNode="b" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="addFloat"
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-      |-ParameterNode annotations=Local(b:f32#1)
-        |-NameIdentifierNode="b" type=(alias f32 (native f32))
-        |-ReferenceNode type=(type (alias f32 (native f32)))
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-      |-NameIdentifierNode="addFloat"
-      |-ReferenceNode type=(type (alias f32 (native f32)))
-        |-QNameNode=f32
-          |-NameIdentifierNode="f32"
-      |-BinaryExpressionNode="+" type=(alias f32 (native f32)) annotations=IsValueNode
-        |-NameIdentifierNode="+"
-        |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-        |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
-          |-QNameNode=b
-            |-NameIdentifierNode="b"
-    |-NameIdentifierNode="addFloat" type=(fun "addFloat" ((alias f32) (alias f32)) (alias f32))
-  |-OverloadedFunctionNode type=(fun "addInts" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "addInts" ((alias i32) (alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(a:i32#0)
-        |-NameIdentifierNode="a" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-ParameterNode annotations=Local(b:i32#1)
-        |-NameIdentifierNode="b" type=(alias i32 (native i32))
-        |-ReferenceNode type=(type (alias i32 (native i32)))
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="addInts"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-        |-NameIdentifierNode="+"
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-QNameNode=a
-            |-NameIdentifierNode="a"
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-QNameNode=b
-            |-NameIdentifierNode="b"
-    |-NameIdentifierNode="addInts" type=(fun "addInts" ((alias i32) (alias i32)) (alias i32))
-  |-OverloadedFunctionNode type=(fun "x" ((alias f32) (alias f32)) (alias f32)) annotations=Injected
-    |-FunctionNode type=(fun "x" ((alias f32) (alias f32)) (alias f32))
-      |-ParameterNode annotations=Local(width:f32#0)
-        |-NameIdentifierNode="width" type=(alias f32 (native f32))
-        |-ReferenceNode type=(type (alias f32 (native f32)))
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-      |-ParameterNode annotations=Local(height:f32#1)
-        |-NameIdentifierNode="height" type=(alias f32 (native f32))
-        |-ReferenceNode type=(type (alias f32 (native f32)))
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-      |-NameIdentifierNode="x"
-      |-ReferenceNode type=(type (alias f32 (native f32)))
-        |-QNameNode=f32
-          |-NameIdentifierNode="f32"
-      |-BinaryExpressionNode="*" type=(alias f32 (native f32)) annotations=IsValueNode
-        |-NameIdentifierNode="*"
-        |-BinaryExpressionNode="+" type=(alias f32 (native f32)) annotations=IsValueNode
+        |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode
           |-NameIdentifierNode="+"
           |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
-            |-QNameNode=width
-              |-NameIdentifierNode="width"
-          |-FloatLiteral=1 type=(alias f32 (native f32)) annotations=IsValueNode
-        |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
-          |-QNameNode=height
-            |-NameIdentifierNode="height"
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
+          |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
+            |-QNameNode=b
+              |-NameIdentifierNode="b"
+    |-NameIdentifierNode="addFloat" type=(fun "addFloat" ((alias f32) (alias f32)) (alias f32))
+  |-OverloadedFunctionNode type=(fun "addInts" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "addInts" ((alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(a:i32#0)
+          |-NameIdentifierNode="a" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-ParameterNode annotations=Local(b:i32#1)
+          |-NameIdentifierNode="b" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="addInts"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-NameIdentifierNode="+"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-QNameNode=a
+              |-NameIdentifierNode="a"
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-QNameNode=b
+              |-NameIdentifierNode="b"
+    |-NameIdentifierNode="addInts" type=(fun "addInts" ((alias i32) (alias i32)) (alias i32))
+  |-OverloadedFunctionNode type=(fun "x" ((alias f32) (alias f32)) (alias f32)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "x" ((alias f32) (alias f32)) (alias f32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(width:f32#0)
+          |-NameIdentifierNode="width" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-ParameterNode annotations=Local(height:f32#1)
+          |-NameIdentifierNode="height" type=(alias f32 (native f32))
+          |-ReferenceNode type=(type (alias f32 (native f32)))
+            |-QNameNode=f32
+              |-NameIdentifierNode="f32"
+        |-NameIdentifierNode="x"
+        |-ReferenceNode type=(type (alias f32 (native f32)))
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+        |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode
+          |-NameIdentifierNode="*"
+          |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode
+            |-NameIdentifierNode="+"
+            |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
+              |-QNameNode=width
+                |-NameIdentifierNode="width"
+            |-FloatLiteral=1 type=(alias f32 (native f32)) annotations=IsValueNode
+          |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
+            |-QNameNode=height
+              |-NameIdentifierNode="height"
     |-NameIdentifierNode="x" type=(fun "x" ((alias f32) (alias f32)) (alias f32))

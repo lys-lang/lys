@@ -1,74 +1,88 @@
 /** Number of alignment bits. */
-val AL_BITS: i32 = 3
+val AL_BITS = 3
 
 /** Number of possible alignment values. */
-val AL_SIZE: i32 = 1 << AL_BITS
+val AL_SIZE: u32 = 1 as u32 << AL_BITS
 
 /** Mask to obtain just the alignment bits. */
-val AL_MASK: i32 = AL_SIZE - 1
+val AL_MASK: u32 = AL_SIZE - 1  as u32
 
 /** Maximum 32-bit allocation size. */
-val MAX_SIZE_32: i32 = 1 << 30 // 1G
+val MAX_SIZE_32: u32 = (1 << 30) as u32 // 1G
 
-val HEAP_BASE = 0
+val HEAP_BASE: u32 = (64 * 1024) as u32 // TODO: this must be dynamic
 
-private var startOffset: i32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
-private var offset: i32 = startOffset
+private var startOffset: u32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
+private var offset: u32 = startOffset
 
-private var lastPtr: i32 = 0
+#[extern "env" "segfault"]
+fun segfault(): void = panic()
 
-private fun growMemory(pages: i32): i32 = %wasm {
+#[export "test_getMaxMemory"]
+fun getMaxMemory(): u32 = offset
+
+private fun growMemory(pages: u32): u32 = %wasm {
   (grow_memory (get_local $pages))
 }
 
-private fun currentMemory(): i32 = %wasm {
+private fun currentMemory(): u32 = %wasm {
   (current_memory)
 }
 
-private fun max(a: i32, b: i32): i32 = if (a > b) a else b
+private fun max(a: u32, b: u32): u32 = if (a > b) a else b
 
-fun allocBytes(size: i32): bytes = %wasm {
+fun allocBytes(size: u32): bytes = %wasm {
   (local $allocation i32)
-  (set_local $allocation (call $malloc (get_local $size)))
+  (local $allocationSize i32)
+  // allocate header + size
+  (local.set $allocationSize (i32.add (get_local $size) (i32.const 4)))
+
+  // allocate the memory and save the pointer
+  (local.set $allocation
+    (call $malloc (local.get $allocationSize))
+  )
+
+  (call $memset (get_local $allocation) (i32.const 0) (local.get $allocationSize))
+
+  // store the size in the first int
   (i32.store (get_local $allocation) (get_local $size))
   (i64.or
-    (i64.extend_s/i32 (get_local $allocation))
+    (i64.extend_u/i32 (get_local $allocation))
     (i64.shl
-      (i64.extend_s/i32 (i32.const 0))
+      (i64.extend_u/i32 (i32.const 0))
       (i64.const 32)
     )
   )
 }
 
-fun calloc(itemCount: i32, itemSize: i32): i32 = {
+fun calloc(itemCount: u32, itemSize: u32): u32 = {
   val size = itemCount * itemSize
   val $ret = malloc(size)
-  memset($ret, size, 0)
+  memset($ret, 0 as u8, size)
   $ret
 }
 
-fun malloc(size: i32): i32 = {
-  if (size > 0) {
-    if (size > MAX_SIZE_32) {
-      panic()
-    }
-    val ptr = offset
-    val newPtr = (ptr + size + AL_MASK) & ~AL_MASK
-    val pagesBefore = currentMemory()
-    if (newPtr > pagesBefore << 16) {
-      val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >>> 16
-      val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
-      if (growMemory(pagesWanted) < 0) {
-        if (growMemory(pagesNeeded) < 0) {
-          panic() // out of memory
-        }
+fun malloc(size: u32): u32 = {
+  if (size == 0 as u32)
+    panic()
+
+  if (size > MAX_SIZE_32)
+    panic()
+
+  val ptr = offset
+  val newPtr = (ptr + max(size, 8  as u32) + AL_MASK) & ~AL_MASK
+  val pagesBefore = currentMemory()
+  if (newPtr > pagesBefore << 16) {
+    val pagesNeeded = ((newPtr - ptr + 0xffff as u32) & ~(0xffff as u32)) >> 16
+    val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
+    if (growMemory(pagesWanted) < 0 as u32) {
+      if (growMemory(pagesNeeded) < 0 as u32) {
+        panic() // out of memory
       }
     }
-    offset = newPtr
-    ptr
-  } else {
-    0
   }
+  offset = newPtr
+  ptr
 }
 
 fun free(ptr: i32): void = {
@@ -82,21 +96,25 @@ fun discriminant(v: ref): u64 = %wasm {
   )
 }
 
-fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
-  (local $end i32)
-  (set_local $end (i32.add (get_local $from) (get_local $len)))
-  (block $exit
-    (loop $cont
-      (br_if $exit (i32.eq (get_local $from) (get_local $end)))
-      (i32.store8 (get_local $to) (i32.load8_u (get_local $from)))
-      (set_local $from (i32.add (get_local $from) (i32.const 1)))
-      (set_local $to (i32.add (get_local $to) (i32.const 1)))
-      (br $cont)
-    )
-  )
+fun memcpy(src: u32, dst: u32, length: u32): u32 = {
+  var i: u32 = 0 as u32
+
+  val SRC = src as ref
+  val DST = dst as ref
+
+  loop {
+    if (i >= length) {
+      break
+    }
+    u8.store(DST, u8.load(SRC, i), i)
+    i = i + 1 as u32
+    continue
+  }
+
+  dst + length
 }
 
-fun memset(ptr: i32, content: i32, len: i32): void = %wasm {
+fun memset(ptr: u32, content: u8, len: u32): void = %wasm {
   (local $end i32)
   (set_local $end (i32.add (get_local $ptr) (get_local $len)))
   (block $exit

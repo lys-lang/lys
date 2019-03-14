@@ -1,0 +1,54 @@
+import support::test
+
+enum Enum {
+  A
+  B
+  C
+}
+
+enum Color {
+  Red
+  Green
+  Blue
+  Custom(a: i32)
+}
+
+var value1: Enum = A
+var value2: A | B = A
+var value3: A = A
+
+fun identity(a: ref): ref = a
+
+#[export]
+fun main(): void = {
+  START("<expr> is <type>")
+
+  assert( identity(A) is A              == true  )
+  assert( identity(A) is Enum           == true  )
+  assert( identity(B) is B              == true  )
+  assert( identity(B) is A              == false )
+  assert( identity(B) is Enum           == true  )
+  assert( identity(B) is B              == true  )
+  assert( identity(C) is A              == false )
+  assert( identity(C) is Enum           == true  )
+  assert( identity(C) is B              == false )
+
+  assert( identity(value1) is A         == true  )
+  assert( identity(value1) is B         == false )
+  assert( identity(value1) is Enum      == true  )
+  assert( identity(value2) is A         == true  )
+  assert( identity(value2) is B         == false )
+  assert( identity(value2) is Enum      == true  )
+  assert( identity(value3) is A         == true  )
+  assert( identity(value3) is B         == false )
+  assert( identity(value3) is Enum      == true  )
+
+  assert( identity(value3) is Red       == false )
+  assert( identity(Red) is Red          == true  )
+  assert( identity(Custom(1)) is Color  == true  )
+  assert( identity(Custom(1)) is Custom == true  )
+  assert( identity(Custom(1)) is Red    == false )
+  assert( identity(Custom(1)) is B      == false )
+
+  END()
+}

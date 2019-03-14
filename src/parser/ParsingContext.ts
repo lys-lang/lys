@@ -1,7 +1,5 @@
-import { assert } from 'console';
 import { resolve } from 'path';
 import { MessageCollector } from './MessageCollector';
-import { Nodes } from './nodes';
 import { ScopePhaseResult } from './phases/scopePhase';
 import { TypePhaseResult } from './phases/typePhase';
 import { CompilationPhaseResult } from './phases/compilationPhase';
@@ -14,12 +12,14 @@ import { SemanticPhaseResult } from './phases/semanticPhase';
 export class ParsingContext {
   messageCollector = new MessageCollector();
 
-  private typeNumbers = new Set<Nodes.TypeDirectiveNode>();
+  private typeNumbers = new Map<string, number>();
   private programTakenNames = new Set<string>();
   private modulesInContext: string[] = [];
   private moduleScopes = new Map<string, ScopePhaseResult>();
   private moduleTypes = new Map<string, TypePhaseResult>();
   private moduleCompilation = new Map<string, CompilationPhaseResult>();
+
+  public cwd = process.cwd();
   public registeredParsingPhase = new Map<string, ParsingPhaseResult>();
 
   public typeGraph = new TypeGraph([], null);
@@ -40,7 +40,7 @@ export class ParsingContext {
   private resolveModule(moduleName: string) {
     const relative = moduleName.replace(/::/g, '/') + '.lys';
 
-    let x = resolve(process.cwd(), relative);
+    let x = resolve(this.cwd, relative);
 
     if (existsSync(x)) {
       return x;
@@ -67,14 +67,17 @@ export class ParsingContext {
     }
   }
 
-  registerType(struct: Nodes.TypeDirectiveNode) {
-    if (this.typeNumbers.has(struct)) return;
-    assert(!struct.typeDiscriminant, `type ${struct.variableName.name} already had a number`);
-    struct.typeDiscriminant = this.typeNumbers.size + 1;
-    if (!struct.variableName.internalIdentifier) {
-      struct.variableName.internalIdentifier = this.getUnusedName(struct.variableName.name + 'Type');
+  getTypeDiscriminant(module: string, typeName: string): number {
+    const fqn = module + '::' + typeName;
+    let number = this.typeNumbers.get(fqn);
+
+    if (!number) {
+      number = this.typeNumbers.size + 1;
+
+      this.typeNumbers.set(fqn, number);
     }
-    this.typeNumbers.add(struct);
+
+    return number;
   }
 
   parseModule(moduleName: string) {

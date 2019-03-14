@@ -8,9 +8,9 @@ var value1: Enum = A
 var value2: A | B = A
 var value3: A = A
 
-fun identity(a: ref): ref = a
+#[export] fun identity(a: ref): ref = a
 
-fun test(): void = {
+#[export] fun test(): void = {
   var x1 = value1 is A
   var y1 = value1 is Enum
   var z1 = value1 is B

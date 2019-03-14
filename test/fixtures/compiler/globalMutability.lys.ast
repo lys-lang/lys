@@ -5,48 +5,51 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-VarDirectiveNode
-    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/globalMutability.lys::x_4:<no-type>)
+    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/globalMutability.lys::x:<no-type>)
       |-NameIdentifierNode="x" type=(alias i32 (native i32))
       |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
   |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test/fixtures/compiler/globalMutability.lys::bc_2:<no-type>)
+    |-ValDeclarationNode annotations=Global(test/fixtures/compiler/globalMutability.lys::bc:<no-type>)
       |-NameIdentifierNode="bc" type=(alias i32 (native i32))
       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
   |-VarDirectiveNode
-    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/globalMutability.lys::a_2:<no-type>)
+    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/globalMutability.lys::a:<no-type>)
       |-NameIdentifierNode="a" type=(alias i32 (native i32))
       |-ReferenceNode type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-BinaryExpressionNode="-" type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
           |-NameIdentifierNode="-"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::bc_2:<no-type>)
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::bc:<no-type>)
             |-QNameNode=bc
               |-NameIdentifierNode="bc"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::x_4:<no-type>)
+          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::x:<no-type>)
             |-QNameNode=x
               |-NameIdentifierNode="x"
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "main" () (alias i32))
-      |-NameIdentifierNode="main"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=Global(test/fixtures/compiler/globalMutability.lys::x_4:<no-type>)
-            |-QNameNode=x
-              |-NameIdentifierNode="x"
-          |-BinaryExpressionNode="-" type=(alias i32 (native i32)) annotations=IsValueNode
-            |-NameIdentifierNode="-"
-            |-BinaryExpressionNode="+" type=(alias i32 (native i32)) annotations=IsValueNode
-              |-NameIdentifierNode="+"
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::x_4:<no-type>)
-                |-QNameNode=x
-                  |-NameIdentifierNode="x"
-              |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::a_2:<no-type>)
-              |-QNameNode=a
-                |-NameIdentifierNode="a"
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="main"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=Global(test/fixtures/compiler/globalMutability.lys::x:<no-type>)
+              |-QNameNode=x
+                |-NameIdentifierNode="x"
+            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-NameIdentifierNode="-"
+              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+                |-NameIdentifierNode="+"
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::x:<no-type>)
+                  |-QNameNode=x
+                    |-NameIdentifierNode="x"
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::a:<no-type>)
+                |-QNameNode=a
+                  |-NameIdentifierNode="a"
     |-NameIdentifierNode="main" type=(fun "main" () (alias i32))

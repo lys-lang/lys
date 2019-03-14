@@ -1,0 +1,94 @@
+import support::test
+
+enum Enum {
+  A
+  B
+  C
+}
+
+enum Color {
+  Red
+  Green
+  Blue
+  Custom(a: i32)
+}
+
+var value1: Enum = A
+var value2: A | B = A
+var value3: A = A
+
+fun isA(x: ref): boolean = {
+  match x {
+    case is A -> true
+    else -> false
+  }
+}
+
+fun isB(x: ref): boolean = {
+  match x {
+    case is B -> true
+    else -> false
+  }
+}
+
+fun isEnum(x: ref): boolean = {
+  match x {
+    case is Enum -> true
+    else -> false
+  }
+}
+
+fun isRed(x: ref): boolean = {
+  match x {
+    case is Red -> true
+    else -> false
+  }
+}
+
+fun isColor(x: ref): boolean = {
+  match x {
+    case is Color -> true
+    else -> false
+  }
+}
+
+fun isCustom(x: ref): boolean = {
+  match x {
+    case is Custom -> true
+    else -> false
+  }
+}
+
+#[export]
+fun main(): void = {
+  START("is with pattern matchin")
+
+  assert( isA(A)              == true  )
+  assert( isEnum(A)           == true  )
+  assert( isB(B)              == true  )
+  assert( isA(B)              == false )
+  assert( isEnum(B)           == true  )
+  assert( isB(B)              == true  )
+  assert( isA(C)              == false )
+  assert( isEnum(C)           == true  )
+  assert( isB(C)              == false )
+
+  assert( isA(value1)         == true  )
+  assert( isB(value1)         == false )
+  assert( isEnum(value1)      == true  )
+  assert( isA(value2)         == true  )
+  assert( isB(value2)         == false )
+  assert( isEnum(value2)      == true  )
+  assert( isA(value3)         == true  )
+  assert( isB(value3)         == false )
+  assert( isEnum(value3)      == true  )
+
+  assert( isRed(value3)       == false )
+  assert( isRed(Red)          == true  )
+  assert( isColor(Custom(1))  == true  )
+  assert( isCustom(Custom(1)) == true  )
+  assert( isRed(Custom(1))    == false )
+  assert( isB(Custom(1))      == false )
+
+  END()
+}

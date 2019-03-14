@@ -13,6 +13,7 @@ import { AstNodeError } from '../NodeError';
 import { Reference } from '../Reference';
 import { ParsingContext } from '../ParsingContext';
 import { MessageCollector } from '../MessageCollector';
+import { annotations } from '../annotations';
 
 export class TypeGraphBuilder {
   _nodeMap = new Map<Nodes.Node, TypeNode>();
@@ -91,7 +92,7 @@ export class TypeGraphBuilder {
     this._referenceNode.forEach(({ result, reference, edgeName: name }) => {
       const referencedType: TypeNode = this.resolveReferenceNode(reference);
       if (referencedType) {
-        new Edge(referencedType, result, name || EdgeLabels.NAME);
+        Edge.addEdge(this.parsingContext, referencedType, result, name || EdgeLabels.NAME);
       } else {
         // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
         throw new Error(
@@ -163,70 +164,76 @@ export class TypeGraphBuilder {
           const expectedType = this.traverse(arg.parameterType); // TODO validate assign
 
           const argumentNode: TypeNode = this.createNode(arg.parameterName, new PassThroughTypeResolver());
-          new Edge(expectedType, argumentNode, EdgeLabels.EXPECTED_TYPE);
+          Edge.addEdge(this.parsingContext, expectedType, argumentNode, EdgeLabels.EXPECTED_TYPE);
 
           if (defaultValue) {
-            new Edge(this.traverse(defaultValue), argumentNode, EdgeLabels.DEFAULT_VALUE); // TODO validate default value type
+            Edge.addEdge(this.parsingContext, this.traverse(defaultValue), argumentNode, EdgeLabels.DEFAULT_VALUE); // TODO validate default value type
           }
 
-          new Edge(argumentNode, target, arg.parameterName.name);
+          Edge.addEdge(this.parsingContext, argumentNode, target, arg.parameterName.name);
         } else {
           this.messageCollector.error(`Parameter ${arg.parameterName.name} has no defined type`, node);
         }
       });
 
       if (node.functionReturnType) {
-        new Edge(this.traverse(node.functionReturnType), target, EdgeLabels.RETURN_TYPE);
+        Edge.addEdge(this.parsingContext, this.traverse(node.functionReturnType), target, EdgeLabels.RETURN_TYPE);
       }
 
-      if (!(node.parent instanceof Nodes.OverloadedFunctionNode)) {
-        new Edge(target, this.traverse(node.functionName));
+      if (!node.hasAnnotation(annotations.IsOverloaded)) {
+        Edge.addEdge(this.parsingContext, target, this.traverse(node.functionName));
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       node.functions.forEach(fun => {
-        new Edge(this.traverse(fun), target, EdgeLabels.FUNCTION);
+        fun.functionNode.annotate(new annotations.IsOverloaded());
+        Edge.addEdge(this.parsingContext, this.traverse(fun.functionNode), target, EdgeLabels.FUNCTION);
       });
-      new Edge(target, this.traverse(node.functionName));
+      Edge.addEdge(this.parsingContext, target, this.traverse(node.functionName));
+    } else if (node instanceof Nodes.StructTypeNode) {
+      node.parameters.forEach($ => {
+        const name = this.createNode($.parameterName, new PassThroughTypeResolver());
+        Edge.addEdge(this.parsingContext, this.traverse($.parameterType), name);
+      });
     } else if (node instanceof Nodes.ReferenceNode) {
       this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.AssignmentNode) {
-      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.lhs), target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.IfNode) {
-      new Edge(this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
-      new Edge(this.traverse(node.condition), target, EdgeLabels.CONDITION);
+      Edge.addEdge(this.parsingContext, this.traverse(node.truePart), target, EdgeLabels.TRUE_PART);
+      Edge.addEdge(this.parsingContext, this.traverse(node.condition), target, EdgeLabels.CONDITION);
       this.resolveVariableByName(node, 'boolean', target, EdgeLabels.BOOLEAN);
 
       if (node.falsePart) {
-        new Edge(this.traverse(node.falsePart), target, EdgeLabels.FALSE_PART);
+        Edge.addEdge(this.parsingContext, this.traverse(node.falsePart), target, EdgeLabels.FALSE_PART);
       }
     } else if (node instanceof Nodes.BinaryExpressionNode) {
-      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.lhs), target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MemberNode) {
-      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.lhs), target, EdgeLabels.LHS);
     } else if (node instanceof Nodes.AsExpressionNode) {
-      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.lhs), target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.IsExpressionNode) {
       this.resolveVariableByName(node, 'boolean', target, EdgeLabels.BOOLEAN);
-      new Edge(this.traverse(node.lhs), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.lhs), target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.UnaryExpressionNode) {
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.BlockNode) {
       node.statements.forEach($ => {
-        new Edge(this.traverse($), target, EdgeLabels.STATEMENTS);
+        Edge.addEdge(this.parsingContext, this.traverse($), target, EdgeLabels.STATEMENTS);
       });
     } else if (node instanceof Nodes.FunctionCallNode) {
-      new Edge(this.traverse(node.functionNode), target);
+      Edge.addEdge(this.parsingContext, this.traverse(node.functionNode), target);
 
       node.argumentsNode.forEach(child => {
-        new Edge(this.traverse(child), target, EdgeLabels.PARAMETER);
+        Edge.addEdge(this.parsingContext, this.traverse(child), target, EdgeLabels.PARAMETER);
       });
     } else if (node instanceof Nodes.PatternMatcherNode) {
       const valueToMatch = this.traverse(node.lhs);
-      new Edge(valueToMatch, target, EdgeLabels.PATTERN_EXPRESSION);
+      Edge.addEdge(this.parsingContext, valueToMatch, target, EdgeLabels.PATTERN_EXPRESSION);
 
       type Carry = {
         bearerOfTypes: TypeNode;
@@ -242,7 +249,7 @@ export class TypeGraphBuilder {
             typeToRemoveNext: null
           };
 
-          new Edge(matchExpression, target, EdgeLabels.MATCH_EXPRESSION);
+          Edge.addEdge(this.parsingContext, matchExpression, target, EdgeLabels.MATCH_EXPRESSION);
 
           /**
            * This reductor will take the carried type and remove the type from the
@@ -254,7 +261,7 @@ export class TypeGraphBuilder {
            * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
            */
           if (carry.typeToRemoveNext) {
-            new Edge(carry.typeToRemoveNext, newResult.bearerOfTypes, EdgeLabels.REMOVED_TYPE);
+            Edge.addEdge(this.parsingContext, carry.typeToRemoveNext, newResult.bearerOfTypes, EdgeLabels.REMOVED_TYPE);
           }
 
           /**
@@ -272,12 +279,22 @@ export class TypeGraphBuilder {
            * In the first iteration, it is the valueToMatch directly, subsequent
            * nodes uses the previous typeReductor
            */
-          new Edge(carry.bearerOfTypes, newResult.bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
+          Edge.addEdge(
+            this.parsingContext,
+            carry.bearerOfTypes,
+            newResult.bearerOfTypes,
+            EdgeLabels.PATTERN_MATCHING_VALUE
+          );
 
           /**
            * The typeReductor is the input type of the matcher.
            */
-          new Edge(newResult.bearerOfTypes, matchExpression, EdgeLabels.PATTERN_MATCHING_VALUE);
+          Edge.addEdge(
+            this.parsingContext,
+            newResult.bearerOfTypes,
+            matchExpression,
+            EdgeLabels.PATTERN_MATCHING_VALUE
+          );
 
           /**
            * Matchers require to know the boolean type to work
@@ -314,7 +331,7 @@ export class TypeGraphBuilder {
          * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
          */
         if (carry.typeToRemoveNext) {
-          new Edge(carry.typeToRemoveNext, bearerOfTypes, EdgeLabels.REMOVED_TYPE);
+          Edge.addEdge(this.parsingContext, carry.typeToRemoveNext, bearerOfTypes, EdgeLabels.REMOVED_TYPE);
         }
 
         /**
@@ -322,11 +339,11 @@ export class TypeGraphBuilder {
          * In the first iteration, it is the valueToMatch directly, subsequent
          * nodes uses the previous typeReductor
          */
-        new Edge(carry.bearerOfTypes, bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
+        Edge.addEdge(this.parsingContext, carry.bearerOfTypes, bearerOfTypes, EdgeLabels.PATTERN_MATCHING_VALUE);
 
-        new Edge(bearerOfTypes, target, EdgeLabels.REST_TYPE);
+        Edge.addEdge(this.parsingContext, bearerOfTypes, target, EdgeLabels.REST_TYPE);
       } else if (carry.bearerOfTypes) {
-        new Edge(carry.bearerOfTypes, target, EdgeLabels.REST_TYPE);
+        Edge.addEdge(this.parsingContext, carry.bearerOfTypes, target, EdgeLabels.REST_TYPE);
       }
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
@@ -339,23 +356,23 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.StringLiteral) {
       this.resolveVariableByName(node, 'bytes', target);
     } else if (node instanceof Nodes.MatchLiteralNode) {
-      new Edge(this.traverse(node.literal), target, EdgeLabels.LHS);
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.literal), target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else if (node instanceof Nodes.MatchCaseIsNode) {
       const typeRef = this.traverse(node.typeReference);
 
-      new Edge(typeRef, target, EdgeLabels.LHS);
+      Edge.addEdge(this.parsingContext, typeRef, target, EdgeLabels.LHS);
 
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
 
       if (node.declaredName) {
         const nameTarget = this.createNode(node.declaredName, new TypeFromTypeResolver());
-        new Edge(typeRef, nameTarget, EdgeLabels.LHS);
+        Edge.addEdge(this.parsingContext, typeRef, nameTarget, EdgeLabels.LHS);
       }
     } else if (node instanceof Nodes.WasmExpressionNode) {
       node.atoms.forEach($ => this.traverseNode($, target));
     } else if (node instanceof Nodes.WasmAtomNode) {
-      if (node.symbol === 'call' || node.symbol === 'get_global' || node.symbol === 'set_global') {
+      if (node.symbol === 'call' || node.symbol === 'global.get' || node.symbol === 'global.set') {
         if (node.arguments[0] instanceof Nodes.ReferenceNode) {
           this.traverse(node.arguments[0]);
         }
@@ -367,7 +384,7 @@ export class TypeGraphBuilder {
         });
       }
     } else if (node instanceof Nodes.MatchDefaultNode) {
-      new Edge(this.traverse(node.rhs), target, EdgeLabels.RHS);
+      Edge.addEdge(this.parsingContext, this.traverse(node.rhs), target, EdgeLabels.RHS);
     } else this.traverseChildren(node, target);
 
     return target;
@@ -380,10 +397,10 @@ export class TypeGraphBuilder {
     );
 
     if (decl.variableType) {
-      new Edge(this.traverse(decl.variableType), variableNode, EdgeLabels.EXPECTED_TYPE);
+      Edge.addEdge(this.parsingContext, this.traverse(decl.variableType), variableNode, EdgeLabels.EXPECTED_TYPE);
     }
 
-    new Edge(this.traverse(decl.value), variableNode, EdgeLabels.DEFAULT_VALUE);
+    Edge.addEdge(this.parsingContext, this.traverse(decl.value), variableNode, EdgeLabels.DEFAULT_VALUE);
 
     return variableNode;
   }
@@ -397,12 +414,11 @@ export class TypeGraphBuilder {
 
       const shouldNotTraverse =
         !directive.valueType ||
-        directive.valueType instanceof Nodes.StructTypeNode ||
         directive.valueType instanceof Nodes.StackTypeNode ||
         directive.valueType instanceof Nodes.InjectedTypeNode;
 
       if (!shouldNotTraverse) {
-        new Edge(this.traverse(directive.valueType), typeDirective);
+        Edge.addEdge(this.parsingContext, this.traverse(directive.valueType), typeDirective);
       }
 
       return typeDirective;
@@ -422,6 +438,6 @@ export class TypeGraphBuilder {
 
   traverseChildren(node: Nodes.Node, result: TypeNode) {
     const children = node.children;
-    return children.map(child => new Edge(this.traverse(child), result));
+    return children.map(child => Edge.addEdge(this.parsingContext, this.traverse(child), result));
   }
 }

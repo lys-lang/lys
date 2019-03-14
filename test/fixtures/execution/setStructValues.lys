@@ -1,0 +1,71 @@
+import support::test
+import support::env
+
+enum Color {
+  None
+  Red
+  Custom(hex: i32)
+}
+
+struct CatBag(f: Color, g: Red | None)
+
+#[export]
+fun main(): void = {
+  START("set values in struct")
+
+  var a = CatBag(Red, None)
+
+  printMemory(addressFromRef(a), CatBag.^allocationSize)
+
+  {
+    START("getters of the constructor")
+
+    verify( a is CatBag, "a is CatBag" )
+    verify( a.f is Color, "a.f is Color" )
+    verify( a.g is Color, "a.g is Color" )
+    verify( a.f is Red, "a.f is Red" )
+    verify( a.g is None, "a.g is Red" )
+
+    END()
+  }
+
+  {
+    START("setters")
+
+    val y = Custom(0xAABBCCDD)
+    verify( y.hex == 0xAABBCCDD, "y.hex == 0xAABBCCDD" )
+    a.f = y
+    verify( y == y, "y == y" )
+
+    var tmp = a.f
+    verify( tmp == y, "tmp == y" )
+
+    verify( a.f == y, "a.f == y" )
+    verify( a.f == tmp, "a.f == tmp" )
+
+    a.g = Red
+    verify( a.g is Red, "a.g is Red" )
+
+    END()
+  }
+
+  {
+    START("validate setters")
+
+    verify( a.f is Custom, "a.f is Custom" )
+    verify( a.g is Red, "a.g is Red" )
+    verify( a.f is Color, "a.f is Color" )
+    verify( a.g is Color, "a.g is Color" )
+
+    match a.f {
+      case x is Custom(hex) -> {
+        verify( x.hex == 0xAABBCCDD, "x.hex == 0xAABBCCDD" )
+        verify( hex == 0xAABBCCDD, "hex == 0xAABBCCDD" )
+      }
+      else -> verify( false, "a.f is not Custom in pattern matching" )
+    }
+
+    END()
+  }
+  END()
+}

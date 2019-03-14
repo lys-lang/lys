@@ -9,6 +9,97 @@ import { annotations } from '../annotations';
 import { ParsingContext } from '../ParsingContext';
 import { printNode } from '../../utils/nodePrinter';
 
+function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.DirectiveNode) {
+  if (decorator.arguments.length != 2) {
+    phase.parsingContext.messageCollector.error(
+      '"extern" requires two arguments, module and function name',
+      decorator.decoratorName
+    );
+  }
+
+  let moduleName: string = null;
+  let functionName: string = null;
+
+  if (decorator.arguments[0]) {
+    if (decorator.arguments[0] instanceof Nodes.StringLiteral && decorator.arguments[0].value.length) {
+      moduleName = decorator.arguments[0].value;
+    } else {
+      phase.parsingContext.messageCollector.error('module must be a string', decorator.arguments[0]);
+    }
+  }
+
+  if (decorator.arguments[1]) {
+    if (decorator.arguments[1] instanceof Nodes.StringLiteral && decorator.arguments[1].value.length) {
+      functionName = decorator.arguments[1].value;
+    } else {
+      phase.parsingContext.messageCollector.error('functionName must be a string', decorator.arguments[1]);
+    }
+  }
+
+  if (moduleName && functionName) {
+    target.annotate(new annotations.Extern(moduleName, functionName));
+  }
+}
+function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
+  if (decorator.arguments.length > 1) {
+    phase.parsingContext.messageCollector.error(
+      '"export" accepts one argument, the name of the exported element',
+      decorator.decoratorName
+    );
+  }
+
+  let exportedName: string = null;
+
+  if (decorator.arguments[0]) {
+    if (decorator.arguments[0] instanceof Nodes.StringLiteral && decorator.arguments[0].value.length) {
+      exportedName = decorator.arguments[0].value;
+    } else {
+      phase.parsingContext.messageCollector.error('exportedName must be a string', decorator.arguments[0]);
+    }
+  } else {
+    exportedName = target.functionNode.functionName.name;
+  }
+
+  if (exportedName) {
+    target.annotate(new annotations.Export(exportedName));
+  }
+}
+
+function inlineDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.DirectiveNode) {
+  if (decorator.arguments.length != 0) {
+    phase.parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName);
+  }
+
+  target.annotate(new annotations.Inline());
+}
+
+function explicitDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.DirectiveNode) {
+  if (decorator.arguments.length != 0) {
+    phase.parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName);
+  }
+
+  target.annotate(new annotations.Explicit());
+}
+
+function processDecorations(node: Nodes.FunDirectiveNode, phase: SemanticPhaseResult) {
+  if (node.decorators && node.decorators.length) {
+    node.decorators.forEach($ => {
+      switch ($.decoratorName.name) {
+        case 'extern':
+          return externDecorator($, phase, node);
+        case 'inline':
+          return inlineDecorator($, phase, node);
+        case 'explicit':
+          return explicitDecorator($, phase, node);
+        case 'export':
+          return exportDecorator($, phase, node);
+        default:
+          phase.parsingContext.messageCollector.error(`Unknown decorator "${$.decoratorName.name}"`, $.decoratorName);
+      }
+    });
+  }
+}
+
 const overloadFunctions = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
   phase: SemanticPhaseResult
@@ -17,18 +108,19 @@ const overloadFunctions = function(
 
   document.directives.slice().forEach((node: Nodes.Node, ix: number) => {
     if (node instanceof Nodes.FunDirectiveNode) {
+      processDecorations(node, phase);
       const functionName = node.functionNode.functionName.name;
       const x = overloadedFunctions.get(functionName);
       if (x && x instanceof Nodes.OverloadedFunctionNode) {
-        x.functions.push(node.functionNode);
+        x.functions.push(node);
         node.functionNode.parent = x;
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(node.astNode);
-        overloaded.isExported = node.isExported;
+        overloaded.isPublic = node.isPublic;
         overloaded.annotate(new annotations.Injected());
         overloaded.functionName = Nodes.NameIdentifierNode.fromString(functionName);
         overloaded.functionName.astNode = node.functionNode.functionName.astNode;
-        overloaded.functions = [node.functionNode];
+        overloaded.functions = [node];
         node.functionNode.parent = overloaded;
         overloadedFunctions.set(functionName, overloaded);
         document.directives[ix] = overloaded;
@@ -54,80 +146,99 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
   typeDirective.annotate(new annotations.Injected());
 
-  phase.parsingContext.registerType(typeDirective);
-
   if (node.parameters.length) {
     const accessors = node.parameters
-      .map(({ parameterName, parameterType }, i) => {
-        const offset = i * 8;
+      .map((param, i) => {
+        signature.parameters.push(param);
 
-        signature.names.push(parameterName.name);
+        const parameterName = param.parameterName.name;
+        const parameterType = printNode(param.parameterType);
 
-        const parameter = printNode(parameterType);
-
-        if (parameterType instanceof Nodes.UnionTypeNode) {
+        if (param.parameterType instanceof Nodes.UnionTypeNode) {
           return `
             // #[getter]
-            fun property_${parameterName.name}(target: ${typeName}): ${parameter} = %wasm {
+            fun property_${parameterName}(self: ${typeName}): ${parameterType} =
+              property$${i}(self)
+
+            // #[setter]
+            fun property_${parameterName}(self: ${typeName}, value: ${parameterType}): void =
+              property$${i}(self, value)
+
+            #[inline]
+            private fun property$${i}(self: ${typeName}): ${parameterType} =
+              loadPropertyWithOffset$${i}(
+                self,
+                ${typeName}.^property$${i}_offset
+              )
+
+            #[inline]
+            private fun property$${i}(self: ${typeName}, value: ${parameterType}): void =
+              storePropertyWithOffset$${i}(
+                self,
+                value,
+                ${typeName}.^property$${i}_offset
+              )
+
+            #[inline]
+            private fun loadPropertyWithOffset$${i}(self: ${typeName}, offset: u32): ${parameterType} = %wasm {
               (i64.load
                 (i32.add
-                  (i32.const ${offset})
-                  (call $addressFromRef (get_local $target))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $self))
                 )
               )
             }
 
-            // #[setter]
-            fun property_${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
-              set$${parameterName.name}(target, value)
-
-            private fun set$${parameterName.name}(target: ${typeName}, value: ${parameter}): void = %wasm {
+            #[inline]
+            private fun storePropertyWithOffset$${i}(self: ${typeName}, value: ${parameterType}, offset: u32): void = %wasm {
               (i64.store
                 (i32.add
-                  (i32.const ${offset})
-                  (call $addressFromRef (get_local $target))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $self))
                 )
-                (get_local $value)
+                (local.get $value)
               )
             }
           `;
         } else {
           return `
             // #[getter]
-            fun property_${parameterName.name}(target: ${typeName}): ${parameter} =
-              ${parameter}.load(target, ${offset})
+            fun property_${parameterName}(self: ${typeName}): ${parameterType} =
+              property$${i}(self)
 
             // #[setter]
-            fun property_${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
-              set$${parameterName.name}(target, value)
+            fun property_${parameterName}(self: ${typeName}, value: ${parameterType}): void =
+              property$${i}(self, value)
 
-            private fun set$${parameterName.name}(target: ${typeName}, value: ${parameter}): void =
-              ${parameter}.store(target, value, ${offset})
+            /* ${param.parameterType.nodeName} */
+            #[inline]
+            private fun property$${i}(self: ${typeName}): ${parameterType} =
+              ${parameterType}.load(self, ${typeName}.^property$${i}_offset)
+
+            #[inline]
+            private fun property$${i}(self: ${typeName}, value: ${parameterType}): void =
+              ${parameterType}.store(self, value, ${typeName}.^property$${i}_offset)
           `;
         }
       })
       .join('\n');
 
-    const sizes = node.parameters.map(_ => `/* ${printNode(_.parameterType)}.allocationSize() */ 8`).join(' + ');
-    const callRefs = node.parameters
-      .map(_ => `set$${printNode(_.parameterName)}($ref, ${printNode(_.parameterName)})`)
-      .join('\n');
+    const callRefs = node.parameters.map((_, i) => `property$${i}($ref, ${printNode(_.parameterName)})`).join('\n');
 
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(
         phase.moduleName + '#' + typeName,
         `
             impl ${typeName} {
-              fun discriminant(): u64 = %wasm {
-                (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
+              #[inline]
+              private fun ${typeName}$discriminant(): u64 = {
+                val discriminant: u32 = ${typeName}.^discriminant
+                discriminant as u64 << 32
               }
-
-              fun sizeOf(): i32 = (${sizes})
-              fun allocationSize(): u32 = ref.allocationSize()
 
               fun apply(${args}): ${typeName} = {
                 var $ref = fromPointer(
-                  system::memory::calloc(1, sizeOf())
+                  system::memory::calloc(1 as u32, ${typeName}.^allocationSize)
                 )
 
                 ${callRefs}
@@ -135,12 +246,27 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                 $ref
               }
 
-              private fun fromPointer(ptr: i32 | u32): ${typeName} = %wasm {
+              private fun fromPointer(ptr: u32): ${typeName} = %wasm {
                 (i64.or
-                  (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
-                  (i64.extend_u/i32 (get_local $ptr))
+                  (call $${typeName}$discriminant)
+                  (i64.extend_u/i32 (local.get $ptr))
                 )
               }
+
+              fun ==(a: ${typeName}, b: ${typeName}): boolean = %wasm {
+                (i64.eq
+                  (local.get $a)
+                  (local.get $b)
+                )
+              }
+
+              fun !=(a: ${typeName}, b: ${typeName}): boolean = %wasm {
+                (i64.ne
+                  (local.get $a)
+                  (local.get $b)
+                )
+              }
+
 
               ${accessors}
 
@@ -148,27 +274,27 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                 (i64.eq
                   (i64.and
                     (i64.const 0xffffffff00000000)
-                    (get_local $a)
+                    (local.get $a)
                   )
-                  (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
+                  (call $${typeName}$discriminant)
                 )
               }
 
-              fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+              fun store(lhs: ref, rhs: ${typeName}, offset: u32): void = %wasm {
                 (i64.store
                   (i32.add
-                    (get_local $offset)
-                    (call $addressFromRef (get_local $lhs))
+                    (local.get $offset)
+                    (call $addressFromRef (local.get $lhs))
                   )
-                  (get_local $rhs)
+                  (local.get $rhs)
                 )
               }
 
-              fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+              fun load(lhs: ref, offset: u32): ${typeName} = %wasm {
                 (i64.load
                   (i32.add
-                    (get_local $offset)
-                    (call $addressFromRef (get_local $lhs))
+                    (local.get $offset)
+                    (call $addressFromRef (local.get $lhs))
                   )
                 )
               }
@@ -184,49 +310,55 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
         phase.moduleName + '#' + typeName,
         `
           impl ${typeName} {
+            #[inline]
+            private fun ${typeName}$discriminant(): i64 = {
+              val discriminant: u32 = ${typeName}.^discriminant
+              discriminant as i64 << 32
+            }
+
             fun apply(): ${typeName} = %wasm {
-              (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
+              (call $${typeName}$discriminant)
             }
 
             fun is(a: ${typeName}): boolean = %wasm {
               (i64.eq
                 (i64.and
                   (i64.const 0xffffffff00000000)
-                  (get_local $a)
+                  (local.get $a)
                 )
-                (i64.const 0x${typeDirective.typeDiscriminant.toString(16)}00000000)
+                (call $${typeName}$discriminant)
               )
             }
 
             fun ==(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.eq
-                (get_local $a)
-                (get_local $b)
+                (local.get $a)
+                (local.get $b)
               )
             }
 
             fun !=(a: ${typeName}, b: ref): boolean = %wasm {
               (i64.ne
-                (get_local $a)
-                (get_local $b)
+                (local.get $a)
+                (local.get $b)
               )
             }
 
-            fun store(lhs: ref, rhs: ${typeName}, offset: i32): void = %wasm {
+            fun store(lhs: ref, rhs: ${typeName}, offset: u32): void = %wasm {
               (i64.store
                 (i32.add
-                  (get_local $offset)
-                  (call $addressFromRef (get_local $lhs))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $lhs))
                 )
-                (get_local $rhs)
+                (local.get $rhs)
               )
             }
 
-            fun load(lhs: ref, offset: i32): ${typeName} = %wasm {
+            fun load(lhs: ref, offset: u32): ${typeName} = %wasm {
               (i64.load
                 (i32.add
-                  (get_local $offset)
-                  (call $addressFromRef (get_local $lhs))
+                  (local.get $offset)
+                  (call $addressFromRef (local.get $lhs))
                 )
               )
             }
@@ -249,18 +381,20 @@ const preprocessStructs = function(
       newTypeNode.variableName = node.variableName;
       const union = (newTypeNode.valueType = new Nodes.UnionTypeNode());
       union.of = [];
-      phase.parsingContext.registerType(newTypeNode);
 
       const newDirectives: Nodes.DirectiveNode[] = [newTypeNode];
+      const implDirectives: Nodes.DirectiveNode[] = [];
 
       node.declarations.forEach($ => {
-        newDirectives.push(...processStruct($, phase));
+        const [decl, ...impl] = processStruct($, phase);
+        newDirectives.push(decl);
+        implDirectives.push(...impl);
         const refNode = new Nodes.ReferenceNode();
         refNode.variable = Nodes.QNameNode.fromString($.declaredName.name);
         union.of.push(refNode);
       });
 
-      document.directives.splice(document.directives.indexOf(node), 1, ...newDirectives);
+      document.directives.splice(document.directives.indexOf(node), 1, ...newDirectives, ...implDirectives);
     } else if (node instanceof Nodes.StructDeclarationNode) {
       const newDirectives = processStruct(node, phase);
       document.directives.splice(document.directives.indexOf(node as any), 1, ...newDirectives);
@@ -283,8 +417,6 @@ const processUnions = function(
         return;
       }
 
-      phase.parsingContext.registerType(node);
-
       if (valueType instanceof Nodes.UnionTypeNode) {
         const referenceTypes = valueType.of.filter($ => $ instanceof Nodes.ReferenceNode) as Nodes.ReferenceNode[];
 
@@ -294,22 +426,19 @@ const processUnions = function(
 
         let injectedDirectives: string[] = [];
         if (referenceTypes.length) {
-          const unionType = referenceTypes.map($ => $.variable.text).join(' | ');
+          injectedDirectives.push(`
+            impl ${node.variableName.name} {
+              fun as(a: ${node.variableName.name}): ref = %wasm { (local.get $a) }
+            }
+          `);
 
           referenceTypes.forEach($ => {
             injectedDirectives.push(`
               impl ${$.variable.text} {
-                fun as(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (get_local $a) }
+                fun as(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (local.get $a) }
               }
             `);
           });
-
-          injectedDirectives.push(`
-            impl ${node.variableName.name} {
-              fun as(a: ${unionType}): ${node.variableName.name}  = %wasm { (get_local $a) }
-              fun as(a: ${node.variableName.name}): ref = %wasm { (get_local $a) }
-            }
-          `);
         }
 
         const canonical = new CanonicalPhaseResult(
@@ -325,21 +454,21 @@ const processUnions = function(
                 fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
                 fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
 
-                fun store(lhs: ref, rhs: ${variableName.name}, offset: i32): void = %wasm {
+                fun store(lhs: ref, rhs: ${variableName.name}, offset: u32): void = %wasm {
                   (i64.store
                     (i32.add
-                      (get_local $offset)
-                      (call $addressFromRef (get_local $lhs))
+                      (local.get $offset)
+                      (call $addressFromRef (local.get $lhs))
                     )
-                    (get_local $rhs)
+                    (local.get $rhs)
                   )
                 }
 
-                fun load(lhs: ref, offset: i32): ${variableName.name} = %wasm {
+                fun load(lhs: ref, offset: u32): ${variableName.name} = %wasm {
                   (i64.load
                     (i32.add
-                      (get_local $offset)
-                      (call $addressFromRef (get_local $lhs))
+                      (local.get $offset)
+                      (call $addressFromRef (local.get $lhs))
                     )
                   )
                 }
@@ -386,7 +515,7 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseRes
 
 const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node) => {
   if (node instanceof Nodes.WasmAtomNode) {
-    if (node.symbol == 'call' || node.symbol == 'get_global' || node.symbol == 'set_global') {
+    if (node.symbol == 'call' || node.symbol == 'global.get' || node.symbol == 'global.set') {
       if (!node.arguments[0]) {
         throw new AstNodeError(`Missing name`, node);
       }

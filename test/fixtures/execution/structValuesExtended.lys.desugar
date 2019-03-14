@@ -1,0 +1,401 @@
+import support::test
+
+type Color = (None | Red | Green | Blue | Custom)
+
+impl Color {
+  fun is(a: Color): boolean = {
+    a is None || a is Red || a is Green || a is Blue || a is Custom
+  }
+
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+  fun store(lhs: ref, rhs: Color, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Color = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Color {
+  fun as(a: Color): ref = %wasm {
+    (local.get $a)
+  }
+}
+
+impl None {
+  fun as(a: None): Color = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Red {
+  fun as(a: Red): Color = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Green {
+  fun as(a: Green): Color = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Blue {
+  fun as(a: Blue): Color = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Custom {
+  fun as(a: Custom): Color = %wasm {
+    (local.get $a)
+  }
+}
+
+type None = %struct {  }
+
+type Red = %struct {  }
+
+type Green = %struct {  }
+
+type Blue = %struct {  }
+
+type Custom = %struct { hex: i32 }
+
+impl None {
+  #[inline]
+  private fun None$discriminant(): i64 = {
+    val discriminant: u32 = None.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): None = %wasm {
+    (call None$discriminant)
+  }
+
+  fun is(a: None): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call None$discriminant))
+  }
+
+  fun ==(a: None, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: None, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: None, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): None = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Red {
+  #[inline]
+  private fun Red$discriminant(): i64 = {
+    val discriminant: u32 = Red.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): Red = %wasm {
+    (call Red$discriminant)
+  }
+
+  fun is(a: Red): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Red$discriminant))
+  }
+
+  fun ==(a: Red, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Red, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: Red, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Red = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Green {
+  #[inline]
+  private fun Green$discriminant(): i64 = {
+    val discriminant: u32 = Green.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): Green = %wasm {
+    (call Green$discriminant)
+  }
+
+  fun is(a: Green): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Green$discriminant))
+  }
+
+  fun ==(a: Green, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Green, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: Green, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Green = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Blue {
+  #[inline]
+  private fun Blue$discriminant(): i64 = {
+    val discriminant: u32 = Blue.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): Blue = %wasm {
+    (call Blue$discriminant)
+  }
+
+  fun is(a: Blue): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Blue$discriminant))
+  }
+
+  fun ==(a: Blue, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Blue, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: Blue, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Blue = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Custom {
+  #[inline]
+  private fun Custom$discriminant(): u64 = {
+    val discriminant: u32 = Custom.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(hex: i32): Custom = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom.^allocationSize))
+    property$0($ref, hex)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Custom = %wasm {
+    (i64.or (call Custom$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Custom, b: Custom): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Custom, b: Custom): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_hex(self: Custom): i32 = property$0(self)
+  fun property_hex(self: Custom, value: i32): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Custom): i32 = i32.load(self, Custom.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Custom, value: i32): void = i32.store(self, value, Custom.^property$0_offset)
+
+  fun is(a: Custom): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Custom, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Custom = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type CatBag = %struct { a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: (Red | None) }
+
+impl CatBag {
+  #[inline]
+  private fun CatBag$discriminant(): u64 = {
+    val discriminant: u32 = CatBag.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: ((Red | None))): CatBag = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, CatBag.^allocationSize))
+    property$0($ref, a)
+    property$1($ref, b)
+    property$2($ref, c)
+    property$3($ref, d)
+    property$4($ref, e)
+    property$5($ref, f)
+    property$6($ref, g)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): CatBag = %wasm {
+    (i64.or (call CatBag$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: CatBag, b: CatBag): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: CatBag, b: CatBag): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_a(self: CatBag): i32 = property$0(self)
+  fun property_a(self: CatBag, value: i32): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: CatBag): i32 = i32.load(self, CatBag.^property$0_offset)
+  #[inline]
+  private fun property$0(self: CatBag, value: i32): void = i32.store(self, value, CatBag.^property$0_offset)
+
+  fun property_b(self: CatBag): boolean = property$1(self)
+  fun property_b(self: CatBag, value: boolean): void = property$1(self, value)
+
+  #[inline]
+  private fun property$1(self: CatBag): boolean = boolean.load(self, CatBag.^property$1_offset)
+  #[inline]
+  private fun property$1(self: CatBag, value: boolean): void = boolean.store(self, value, CatBag.^property$1_offset)
+
+  fun property_c(self: CatBag): f32 = property$2(self)
+  fun property_c(self: CatBag, value: f32): void = property$2(self, value)
+
+  #[inline]
+  private fun property$2(self: CatBag): f32 = f32.load(self, CatBag.^property$2_offset)
+  #[inline]
+  private fun property$2(self: CatBag, value: f32): void = f32.store(self, value, CatBag.^property$2_offset)
+
+  fun property_d(self: CatBag): i64 = property$3(self)
+  fun property_d(self: CatBag, value: i64): void = property$3(self, value)
+
+  #[inline]
+  private fun property$3(self: CatBag): i64 = i64.load(self, CatBag.^property$3_offset)
+  #[inline]
+  private fun property$3(self: CatBag, value: i64): void = i64.store(self, value, CatBag.^property$3_offset)
+
+  fun property_e(self: CatBag): f64 = property$4(self)
+  fun property_e(self: CatBag, value: f64): void = property$4(self, value)
+
+  #[inline]
+  private fun property$4(self: CatBag): f64 = f64.load(self, CatBag.^property$4_offset)
+  #[inline]
+  private fun property$4(self: CatBag, value: f64): void = f64.store(self, value, CatBag.^property$4_offset)
+
+  fun property_f(self: CatBag): Color = property$5(self)
+  fun property_f(self: CatBag, value: Color): void = property$5(self, value)
+
+  #[inline]
+  private fun property$5(self: CatBag): Color = Color.load(self, CatBag.^property$5_offset)
+  #[inline]
+  private fun property$5(self: CatBag, value: Color): void = Color.store(self, value, CatBag.^property$5_offset)
+
+  fun property_g(self: CatBag): ((Red | None)) = property$6(self)
+  fun property_g(self: CatBag, value: ((Red | None))): void = property$6(self, value)
+
+  #[inline]
+  private fun property$6(self: CatBag): ((Red | None)) = loadPropertyWithOffset$6(self, CatBag.^property$6_offset)
+  #[inline]
+  private fun property$6(self: CatBag, value: ((Red | None))): void = storePropertyWithOffset$6(self, value, CatBag.^property$6_offset)
+
+  #[inline]
+  private fun loadPropertyWithOffset$6(self: CatBag, offset: u32): ((Red | None)) = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $self))))
+  }
+
+  #[inline]
+  private fun storePropertyWithOffset$6(self: CatBag, value: ((Red | None)), offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $self))) (local.get $value))
+  }
+
+  fun is(a: CatBag): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call CatBag$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: CatBag, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): CatBag = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+#[export]
+fun main(): void = {
+  START("struct values extended")
+  var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
+  verify(a is CatBag, "A")
+  verify(a.a == 1, "B")
+  verify(a.b == true, "C")
+  verify(a.c == 3.0, "D")
+  verify(a.d == 0x8, "E")
+  verify(a.e == 0.4 as f64, "F")
+  verify(a.f is Red, "G")
+  verify(a.g is Red, "H")
+  verify(a.f is Color, "I")
+  verify(a.g is Color, "J")
+  a.a = 5
+  a.b = false
+  a.c = -999.0
+  a.d = 0xdeadbeef as i64
+  a.e = 6.08e23 as f64
+  printNumber(a.c)
+  a.f = Custom(333)
+  printNumber(a.c)
+  a.g = None
+  printNumber(0)
+  printNumber(a.a)
+  verify(a.a == 5, "K")
+  printNumber(if (a.b)
+    1
+  else
+    0
+  )
+  verify(a.b == false, "L")
+  printNumber(a.c)
+  verify(a.c == -999.0, "M")
+  verify(a.d == 0xdeadbeef as i64, "N")
+  verify(a.e == 6.08e23 as f64, "Ñ")
+  verify(a.f is Custom, "O")
+  verify(a.g is None, "P")
+  verify(a.f is Color, "Q")
+  verify(a.g is Color, "V")
+  verify(a.f is Custom, "W")
+  match a.f {
+    case x is Custom -> verify(x.hex == 333, "X")
+    else -> verify(false, "Y")
+  }
+  END()
+}

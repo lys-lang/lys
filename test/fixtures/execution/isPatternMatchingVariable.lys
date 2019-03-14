@@ -1,0 +1,44 @@
+import support::test
+
+enum Enum {
+  A
+  B
+  C
+}
+
+enum Color {
+  Red
+  Green
+  Blue
+  Custom(a: i32)
+}
+
+struct J()
+
+var value1: Enum = A
+var value2: A | B = A
+var value3: A = A
+
+fun transform(col: ref): Color =
+  match col {
+    case x is Red -> x
+    case x is Enum ->
+      match x {
+        case is A -> Red
+        else -> Green
+      }
+    else -> Red
+  }
+
+#[export]
+fun main(): void = {
+  START("pattern matching with 'case X is <type>' setting X")
+
+  assert( transform(Red)  is Red )
+  assert( transform(Blue) is Red )
+  assert( transform(A)    is Red )
+  assert( transform(B)    is Green )
+  assert( transform(J())  is Red )
+
+  END()
+}

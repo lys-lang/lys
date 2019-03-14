@@ -3,34 +3,57 @@ import { Parser, Grammars, IRule } from 'ebnf';
 export const grammar = `
 {ws=explicit}
 
-Document          ::= Directives WS* EOF? {ws=implicit}
-Directives        ::= Directive Directives? {pin=1,ws=implicit,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
+Document          ::= WS* Directives WS* EOF? {ws=implicit}
+Directives        ::= Directive WS* Directives? WS* {pin=1,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
 
-Directive         ::= ( FunctionDirective
-                      | ValDirective
-                      | VarDirective
-                      | StructDirective
-                      | TypeDirective
-                      | EnumDirective
-                      | ImportDirective
-                      | EffectDirective
-                      | ImplDirective
-                      ) {fragment=true}
+Directive         ::= FunctionDirective
+                    | ValDirective
+                    | VarDirective
+                    | StructDirective
+                    | TypeDirective
+                    | EnumDirective
+                    | ImportDirective
+                    | EffectDirective
+                    | ImplDirective {fragment=true}
+
+ImplInnerDirective::= FunctionDirective
+                    | ValDirective
+                    | VarDirective {fragment=true}
 
 ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
-FunctionDirective ::= PrivateModifier? InlineModifier? FunDeclaration {pin=3}
+FunctionDirective ::= (&'#[' Decorators)? PrivateModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TYPE_KEYWORD NameIdentifier WS* (&('=') ValueType)? {pin=2}
-EnumDirective     ::= PrivateModifier? ENUM_KEYWORD NameIdentifier WS* '{' TypeDeclElements? WS* '}' {pin=2}
+EnumDirective     ::= PrivateModifier? ENUM_KEYWORD NameIdentifier WS* OPEN_BRACKET TypeDeclElements? WS* CLOSE_BRACKET {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
-ImplDirective     ::= PrivateModifier? IMPL_KEYWORD ImplDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+ImplDirective     ::= PrivateModifier? IMPL_KEYWORD Reference WS* NamespaceElementList {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+
+Decorators        ::= Decorator+ {pin=1}
+Decorator         ::= OPEN_DECORATION WS* NameIdentifier (WS+ Literal)* WS* CLOSE_ARRAY WS* {pin=1}
 
 PrivateModifier   ::= PRIVATE_KEYWORD
-InlineModifier    ::= INLINE_KEYWORD
+LoopExpression    ::= LOOP_KEYWORD WS* Expression {pin=1}
+ContinueStatement ::= CONTINUE_KEYWORD {pin=1}
+BreakStatement    ::= BREAK_KEYWORD {pin=1}
+ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
+VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+MatchExpression   ::= MATCH_KEYWORD WS* AssignExpression WS* MatchBody {pin=1}
+CaseCondition     ::= CASE_KEYWORD NameIdentifier WS+ IF_KEYWORD WS* Expression WS* THIN_ARROW WS* Expression {pin=5}
+CaseLiteral       ::= CASE_KEYWORD Literal WS* THIN_ARROW WS* Expression {pin=3}
+CaseIs            ::= CASE_KEYWORD (NameIdentifier WS+)? 'is' WS+ Reference WS* DeconstructStruct? THIN_ARROW WS* Expression {pin=4}
+CaseElse          ::= ELSE_KEYWORD WS* (NameIdentifier WS+)? THIN_ARROW WS* Expression {pin=1}
+IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression (WS* ElseExpression)? {pin=1}
+ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
+WasmExpression    ::= WASM_KEYWORD WS* OPEN_BRACKET WS* SAtom* WS* CLOSE_BRACKET WS* EOF?  {pin=1}
+StructLiteral     ::= STRUCT_LITERAL_KEYWORD WS* StructParamsList {pin=2}
+StackLiteral      ::= STACK_LITERAL_KEYWORD WS* OPEN_BRACKET WS* (NameLiteralPair WS*)* CLOSE_BRACKET WS* {pin=2}
+InjectedLiteral   ::= INJECTED_LITERAL_KEYWORD {pin=1}
 
-TypeKind          ::= TYPE_KEYWORD
+IfBody            ::= OPEN_PAREN WS* Expression WS* CLOSE_PAREN {pin=3,recoverUntil=CLOSE_PAREN,fragment=true}
+MatchElements     ::= (CaseCondition | CaseIs | CaseLiteral | CaseElse) WS*  {fragment=true}
 
 UnknownExpression ::= '???'
 ValueType         ::= '=' WS* (Type | StructLiteral | StackLiteral | InjectedLiteral) {fragment=true}
@@ -41,23 +64,20 @@ TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
 TypeParameters    ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
 Assign            ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
-FunAssignExpression ::= '=' WS* (Expression | UnknownExpression | WasmExpression) {pin=1,fragment=true}
+FunAssignExpression ::= '=' WS* (Expression | WasmExpression | UnknownExpression) {pin=1,fragment=true}
 OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
+StructParamsList  ::= OPEN_BRACKET WS* (!'}' ParameterList)? WS* CLOSE_BRACKET {pin=1,recoverUntil=BRACKET_RECOVERY}
 FunctionParamsList::= OPEN_PAREN WS* ParameterList? WS* CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
-ParameterList     ::= Parameter NthParameter* {fragment=true}
+ParameterList     ::= Parameter (&',' NthParameter)* {fragment=true}
 NthParameter      ::= ',' WS* Parameter WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
-Parameter         ::= NameIdentifier WS* OfType? {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
+Parameter         ::= NameIdentifier WS* (&':' OfType)? WS* {pin=1,recoverUntil=NEXT_ARG_RECOVERY}
 
-StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? (WS* &'{' NamespaceElementList)? {pin=1}
+StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
 EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType {pin=1}
 TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
-
-ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
-VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
 FunctionName      ::= NameIdentifier | FunOperator
 
 FunOperator       ::= ( BitNotPreOperator
@@ -77,21 +97,20 @@ FunOperator       ::= ( BitNotPreOperator
                       | NotPreOperator
                       )
 
-ImplDeclaration ::= Reference WS* NamespaceElementList {pin=1}
-NamespaceElementList ::= '{' (WS* Directive)* WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+NamespaceElementList ::= OPEN_BRACKET (WS* ImplInnerDirective)* WS* CLOSE_BRACKET {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 EffectDeclaration ::= NameIdentifier WS* TypeParameters? EffectElementList {pin=1}
-EffectElementList ::= '{' EffectElements? WS* '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+EffectElementList ::= OPEN_BRACKET EffectElements? WS* CLOSE_BRACKET {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 FunctionEffect    ::= '<' WS* (Type WS*)? '>' {pin=1}
 Type              ::= UnionType
 UnionType         ::= IntersectionType (WS* '|' WS* IntersectionType)* {simplifyWhenOneChildren=true}
 IntersectionType  ::= AtomType (WS* '&' WS* AtomType)* {simplifyWhenOneChildren=true}
 AtomType          ::= TypeParen | FunctionTypeLiteral | Reference {fragment=true}
-TypeParen         ::= '(' WS* Type WS* ')' {pin=1}
+TypeParen         ::= OPEN_PAREN WS* Type WS* CLOSE_PAREN {pin=1}
 
-FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* '->' WS* Type {pin=1}
-FunctionTypeParameters::= '(' WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? ')' {pin=1,recoverUntil=PAREN_RECOVERY}
+FunctionTypeLiteral   ::= 'fun' WS* TypeParameters? FunctionTypeParameters WS* THIN_ARROW WS* Type {pin=1}
+FunctionTypeParameters::= OPEN_PAREN WS* (FunctionTypeParameter (WS* ',' WS* FunctionTypeParameter)* WS*)? CLOSE_PAREN {pin=1,recoverUntil=PAREN_RECOVERY}
 FunctionTypeParameter ::= (NameIdentifier WS* ':')? WS* Type
 
 Expression        ::= &('if') IfExpression
@@ -106,15 +125,7 @@ Statement         ::= ValDeclaration
                     | FunDeclaration
                     | Expression {fragment=true}
 
-MatchExpression   ::= MatchKeyword WS* AssignExpression WS* MatchBody {pin=1}
 
-LoopExpression    ::= LOOP_KEYWORD WS* Expression {pin=1}
-ContinueStatement ::= CONTINUE_KEYWORD {pin=1}
-BreakStatement    ::= BREAK_KEYWORD {pin=1}
-
-BinMemberOperator ::= '.' | '#'
-
-BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? {pin=1,fragment=true}
 
 AssignExpression  ::= OrExpression (WS* AssignmentKeyword WS* OrExpression)* {simplifyWhenOneChildren=true}
 OrExpression      ::= AndExpression (WS* OrKeyword WS* AndExpression)* {simplifyWhenOneChildren=true}
@@ -134,10 +145,12 @@ AtomicExpression  ::= FunctionCallExpression (WS* BinaryExpression)* {simplifyWh
 FunctionCallExpression
                   ::= Value (WS* &'(' CallArguments)? {simplifyWhenOneChildren=true}
 
+BinMemberOperator ::= '.^' | '.'
+BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? {pin=1,fragment=true}
+
 NegExpression     ::= '!' AtomicExpression {pin=1}
 BinNegExpression  ::= '~' AtomicExpression {pin=1}
 UnaryMinus        ::= !NumberLiteral '-' AtomicExpression {pin=2}
-
 
 Value             ::= ( Literal
                       | Reference
@@ -145,25 +158,14 @@ Value             ::= ( Literal
                       | &'{' CodeBlock
                       ) {fragment=true}
 
-ParenExpression   ::= '(' WS* Expression WS* ')' {pin=1,recoverUntil=CLOSE_PAREN}
+ParenExpression   ::= OPEN_PAREN WS* Expression WS* CLOSE_PAREN {pin=1,recoverUntil=CLOSE_PAREN}
 
-IfExpression      ::= IF_KEYWORD WS* IfBody WS* Expression (WS* ElseExpression)? {pin=1}
-IfBody            ::= '(' WS* Expression WS* ')' {pin=3,recoverUntil=CLOSE_PAREN,fragment=true}
-ElseExpression    ::= ELSE_KEYWORD WS* Expression {pin=1,fragment=true}
-
-CodeBlock         ::= '{' WS* (Statement (NEW_LINE WS* Statement)* WS*)? '}' {pin=1,recoverUntil=BLOCK_RECOVERY}
+CodeBlock         ::= OPEN_BRACKET WS* (Statement (NEW_LINE WS* Statement)* WS*)? CLOSE_BRACKET {pin=1,recoverUntil=BLOCK_RECOVERY}
 
 /* Pattern matching */
-MatchBody         ::= '{' WS* MatchElements* '}' {pin=1,recoverUntil=MATCH_RECOVERY}
+MatchBody         ::= OPEN_BRACKET WS* MatchElements* CLOSE_BRACKET {pin=1,recoverUntil=MATCH_RECOVERY}
 
-MatchElements     ::= (CaseCondition | CaseIs | CaseLiteral | CaseElse) WS*  {fragment=true}
-
-CaseCondition     ::= CASE_KEYWORD WS+ NameIdentifier WS+ IF_KEYWORD WS* Expression WS* '->' WS* Expression {pin=5}
-CaseLiteral       ::= CASE_KEYWORD WS+ Literal WS* '->' WS* Expression {pin=3}
-CaseIs            ::= CASE_KEYWORD WS+ (NameIdentifier WS+)? 'is' WS+ Reference WS* DeconstructStruct? '->' WS* Expression {pin=4}
-CaseElse          ::= ELSE_KEYWORD WS* (NameIdentifier WS+)? '->' WS* Expression {pin=4}
-
-DeconstructStruct ::= '(' WS* (NameIdentifier WS* NthNameIdentifier*)? ')' WS* {pin=1}
+DeconstructStruct ::= OPEN_PAREN WS* (NameIdentifier WS* NthNameIdentifier*)? CLOSE_PAREN WS* {pin=1}
 NthNameIdentifier ::= ',' WS* NameIdentifier WS* {fragment=true}
 
 /* Function call */
@@ -177,25 +179,24 @@ BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
 NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
 StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
-Literal           ::= ( StringLiteral
-                      | HexLiteral
-                      | NumberLiteral
-                      | BooleanLiteral
-                      ) {fragment=true}
+Literal           ::= StringLiteral
+                    | HexLiteral
+                    | NumberLiteral
+                    | BooleanLiteral {fragment=true}
 
-NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])*
-QName             ::= NameIdentifier ('::' NameIdentifier)*
-
-WasmExpression    ::= WASM_KEYWORD WS* '{' WS* SAtom* WS* '}' WS* EOF?  {pin=2}
-StructLiteral     ::= STRUCT_LITERAL_KEYWORD WS* '{' (NameIdentifier WS* NthNameIdentifier*)? '}' WS* {pin=2}
-StackLiteral      ::= STACK_LITERAL_KEYWORD WS* '{' WS* (NameLiteralPair WS*)* '}' WS* {pin=2}
-InjectedLiteral   ::= INJECTED_LITERAL_KEYWORD {pin=1}
+NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])* {pin=3}
+QName             ::= NameIdentifier ('::' NameIdentifier)* {pin=1}
 
 NameLiteralPair   ::= NameIdentifier WS* '=' WS* Literal {pin=1}
 
-SExpression       ::= '(' WS* SSymbol SAtom* WS* ')' {pin=1}
-SAtom             ::= WS* (QName |  StringLiteral | HexLiteral | NumberLiteral | SExpression) {fragment=true}
-SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]*
+SExpression       ::= OPEN_PAREN WS* SSymbol WS* SAtom* WS* CLOSE_PAREN WS* {pin=1}
+
+SAtom             ::= ( QName
+                      | SExpression
+                      | NumberLiteral
+                      | HexLiteral) WS* {fragment=true}
+
+SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]* {pin=1}
 
 /* Keywords */
 
@@ -214,14 +215,13 @@ KEYWORD           ::= TRUE_KEYWORD
                     | FUN_KEYWORD
                     | STRUCT_KEYWORD
                     | PRIVATE_KEYWORD
-                    | MatchKeyword
+                    | MATCH_KEYWORD
                     | AndKeyword
                     | OrKeyword
                     | LOOP_KEYWORD
                     | CONTINUE_KEYWORD
                     | BREAK_KEYWORD
                     | RESERVED_WORDS
-                    | INLINE_KEYWORD
 
 /* Tokens */
 
@@ -238,9 +238,9 @@ IMPL_KEYWORD      ::= 'impl'      WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
 STRUCT_KEYWORD    ::= 'struct'    WS+
 PRIVATE_KEYWORD   ::= 'private'   WS+
-INLINE_KEYWORD    ::= 'inline'    WS+
 TYPE_KEYWORD      ::= 'type'      WS+
 ENUM_KEYWORD      ::= 'enum'      WS+
+CASE_KEYWORD      ::= 'case'      WS+
 
 LOOP_KEYWORD      ::= 'loop'      ![A-Za-z0-9_$]
 CONTINUE_KEYWORD  ::= 'continue'  ![a-zA-Z0-9_$]
@@ -249,8 +249,7 @@ TRUE_KEYWORD      ::= 'true'      ![A-Za-z0-9_$]
 FALSE_KEYWORD     ::= 'false'     ![A-Za-z0-9_$]
 IF_KEYWORD        ::= 'if'        ![A-Za-z0-9_$]
 ELSE_KEYWORD      ::= 'else'      ![A-Za-z0-9_$]
-CASE_KEYWORD      ::= 'case'      ![A-Za-z0-9_$]
-MatchKeyword      ::= 'match'     ![A-Za-z0-9_$]
+MATCH_KEYWORD     ::= 'match'     ![A-Za-z0-9_$]
 
 
 
@@ -263,13 +262,12 @@ RESERVED_WORDS    ::= ( 'abstract'
                       | 'defer'
                       | 'delete'
                       | 'do'
-                      | 'enum'
-                      | 'export'
                       | 'extends'
                       | 'finally'
                       | 'for'
                       | 'import'
                       | 'is'
+                      | 'in'
                       | 'let'
                       | 'native'
                       | 'new'
@@ -277,7 +275,6 @@ RESERVED_WORDS    ::= ( 'abstract'
                       | 'protected'
                       | 'public'
                       | 'try'
-                      | 'type'
                       | 'using'
                       | 'while'
                       | 'yield'
@@ -306,10 +303,17 @@ OrKeyword         ::= '||'      ![A-Za-z0-9_]
 DIRECTIVE_RECOVERY::= &(FUN_KEYWORD | VAL_KEYWORD | VAR_KEYWORD | STRUCT_KEYWORD | PRIVATE_KEYWORD | EFFECT_KEYWORD | IMPL_KEYWORD | ENUM_KEYWORD | RESERVED_WORDS)
 NEXT_ARG_RECOVERY ::= &(',' | ')')
 PAREN_RECOVERY    ::= &(')')
+BRACKET_RECOVERY  ::= &('}')
 MATCH_RECOVERY    ::= &('}' | 'case' | 'else')
 BLOCK_RECOVERY    ::= &('}' | NEW_LINE)
 OPEN_PAREN        ::= '('
 CLOSE_PAREN       ::= ')'
+OPEN_ARRAY        ::= '['
+OPEN_DECORATION   ::= '#[' {pin=1}
+CLOSE_ARRAY       ::= ']' {pin=1}
+OPEN_BRACKET      ::= '{'
+CLOSE_BRACKET     ::= '}'
+THIN_ARROW        ::= '->'
 COLON             ::= ':'
 OPEN_DOC_COMMENT  ::= '/*'
 CLOSE_DOC_COMMENT ::= '*/'

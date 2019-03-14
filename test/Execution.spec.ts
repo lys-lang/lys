@@ -1,15 +1,16 @@
 declare var describe;
 
-import { test } from './ExecutionHelper';
+import { test, readBytes, testFolder } from './ExecutionHelper';
 import { expect } from 'chai';
-import { assert } from 'expect';
 
-describe('execution tests', () => {
+describe('Execution tests', () => {
   describe('numbers', () => {
     test(
       'casts',
       `
-        fun i32f32(i: i32): f32 = i as f32
+        import support::test
+
+        #[export] fun i32f32(i: i32): f32 = i as f32
       `,
       async (x, err) => {
         if (err) throw err;
@@ -17,11 +18,109 @@ describe('execution tests', () => {
       }
     );
   });
+  describe('schemas', () => {
+    test(
+      'discriminant',
+      `
+        import support::test
+        #[export] fun test1(): u32 = never.^discriminant
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.test1()).to.be.gt(0);
+      }
+    );
+    test(
+      'sizes',
+      `
+        struct Struct1()
+        struct Struct2(a: u8)
+        struct Struct3(a: u8, b: Struct2)
+
+        enum List {
+          Nil
+          Cons(a: i64, b: List)
+        }
+
+        enum Color {
+          None
+          Red
+          Green
+          Blue
+          Custom(hex: i32)
+        }
+
+        struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
+
+
+        #[export] fun int(): u32 = i32.^byteSize
+        #[export] fun intAlloc(): u32 = i32.^allocationSize
+        #[export] fun byte(): u32 = u8.^byteSize
+        #[export] fun byteAlloc(): u32 = u8.^allocationSize
+        #[export] fun struct1(): u32 = Struct1.^byteSize
+        #[export] fun struct1Alloc(): u32 = Struct1.^allocationSize
+        #[export] fun struct2(): u32 = Struct2.^byteSize
+        #[export] fun struct2Alloc(): u32 = Struct2.^allocationSize
+        #[export] fun struct3(): u32 = Struct3.^byteSize
+        #[export] fun struct3Alloc(): u32 = Struct3.^allocationSize
+
+        #[export] fun list(): u32 = List.^byteSize
+        #[export] fun nil(): u32 = Nil.^byteSize
+        #[export] fun nilAlloc(): u32 = Nil.^allocationSize
+        #[export] fun cons(): u32 = Cons.^byteSize
+        #[export] fun consAlloc(): u32 = Cons.^allocationSize
+
+        #[export] fun catBagAlloc(): u32 = CatBag.^allocationSize
+        #[export] fun catBagOffsets(i: i32): u32 = match i {
+          case 0 -> CatBag.^property$0_offset
+          case 1 -> CatBag.^property$1_offset
+          case 2 -> CatBag.^property$2_offset
+          case 3 -> CatBag.^property$3_offset
+          case 4 -> CatBag.^property$4_offset
+          case 5 -> CatBag.^property$5_offset
+          case 6 -> CatBag.^property$6_offset
+          else -> -1 as u32
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+
+        const results = [
+          [x.exports.int(), 4],
+          [x.exports.intAlloc(), 4],
+          [x.exports.byte(), 1],
+          [x.exports.byteAlloc(), 1],
+          [x.exports.struct1(), 8],
+          [x.exports.struct1Alloc(), 0],
+          [x.exports.struct2(), 8],
+          [x.exports.struct2Alloc(), 1],
+          [x.exports.struct3(), 8],
+          [x.exports.struct3Alloc(), 9],
+          [x.exports.list(), 8],
+          [x.exports.nil(), 8],
+          [x.exports.nilAlloc(), 0],
+          [x.exports.cons(), 8],
+          [x.exports.consAlloc(), 16],
+          [x.exports.catBagAlloc(), 41],
+          [x.exports.catBagOffsets(0), 0],
+          [x.exports.catBagOffsets(1), 4],
+          [x.exports.catBagOffsets(2), 5],
+          [x.exports.catBagOffsets(3), 9],
+          [x.exports.catBagOffsets(4), 17],
+          [x.exports.catBagOffsets(5), 25],
+          [x.exports.catBagOffsets(6), 33]
+        ];
+
+        expect(JSON.stringify(results.map($ => $[0]))).to.eq(JSON.stringify(results.map($ => $[1])));
+      }
+    );
+  });
   describe('loops', () => {
     test(
       'loop one',
       `
-        fun sumTimes(i: i32): i32 = {
+        #[export "sumTimes"]
+        fun main(i: i32): i32 = {
           var current = i
           var ret = 0
           loop {
@@ -40,76 +139,22 @@ describe('execution tests', () => {
         expect(x.exports.sumTimes(10)).to.eq(10);
       }
     );
-
-    test(
-      'iterator one',
-      `
-        struct Iterator(current: i32, target: i32)
-
-        enum Maybe {
-          None
-          Some(value: i32)
-        }
-
-        impl Iterator {
-          fun next(iter: Iterator): Maybe = {
-            if (iter.current <= iter.target) {
-              var r = Some(iter.current)
-              iter.current = iter.current + 1
-              r
-            } else {
-              None
-            }
-          }
-        }
-
-        fun test(from: i32, to: i32): i32 = {
-          /**
-            * This is a candidate sugar syntax for
-            *
-            * var ret = 0
-            * for (value in Iterator(from, to)) {
-            *   ret = ret + value
-            * }
-            */
-          var ret = 0
-
-          val $iter$ = Iterator(from, to)
-          loop {
-            match Iterator.next($iter$) {
-              case is Some(value) -> {
-                ret = ret + value
-
-                continue
-              }
-              case is None -> break
-            }
-          }
-
-          ret
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        expect(x.exports.test(1, 10)).to.eq(55);
-      }
-    );
   });
 
   describe('strings', () => {
     test(
       'str len',
       `
-          fun len(): i32 = "asd".length
+          #[export] fun len(): u32 = "asd".length
 
-          fun b(x: i32): i32 = match x {
+          #[export] fun b(x: i32): u32 = match x {
             case 0 -> "".length
             case 1 -> "1".length
             case 2 -> "11".length
             case 3 -> "⨔⨔⨔".length
             else -> {
               panic()
-              0
+              0 as u32
             }
           }
       `,
@@ -123,48 +168,16 @@ describe('execution tests', () => {
         expect(() => x.exports.b(92)).to.throw();
       }
     );
-    test(
-      'str concat',
-      `
-          fun concat(lhs: bytes, rhs: bytes): bytes = {
-            var $ret = system::memory::allocBytes(lhs.length + rhs.length)
-            system::memory::memcpy($ret.ptr, lhs.ptr, lhs.length)
-            system::memory::memcpy($ret.ptr + lhs.length, rhs.ptr, rhs.length)
-            $ret
-          }
 
-          fun main(): i32 = concat("asd", "dsa").length
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        expect(x.exports.main()).to.eq(12);
-      }
-    );
     test(
-      'String concat',
-      `
-          import system::string
-
-          fun strLen(): i32 = String("asd").length
-          fun byteLen(): i32 = String("dsa").data.length
-          fun concatStrLen(): i32 = (String("ds") + String("sa")).length
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        expect(x.exports.strLen()).to.eq(3);
-        expect(x.exports.byteLen()).to.eq(6);
-        expect(x.exports.concatStrLen()).to.eq(4);
-      }
-    );
-    test(
-      'charAt',
+      'String.charAt',
       `
           import system::string
 
           val str = String("asd❮𝐑")
 
-          fun charAt(at: i32): u16 = String.charAt(str, at)
-          fun len(): i32 = str.length
+          #[export] fun charAt(at: u32): u16 = String.charAt(str, at)
+          #[export] fun len(): u32 = str.length
       `,
       async (x, err) => {
         if (err) throw err;
@@ -178,53 +191,13 @@ describe('execution tests', () => {
       }
     );
 
-    function readString(memory: ArrayBuffer, offset: number) {
-      const dv = new DataView(memory);
-      let len = dv.getUint32(offset);
-      if (len == 0) return '';
-
-      let currentOffset = offset + 4;
-
-      const sb: string[] = [];
-
-      while (len > 1) {
-        sb.push(String.fromCharCode(dv.getUint16(currentOffset)));
-        currentOffset += 2;
-        len -= 2;
-      }
-
-      if (len == 1) assert(dv.getInt8(currentOffset) == 0, 'string must end in 0');
-
-      return sb.join('');
-    }
-
-    function readBytes(memory: ArrayBuffer, offset: number) {
-      const dv = new DataView(memory, offset);
-      let len = dv.getUint32(0, true);
-
-      if (len == 0) return [];
-
-      let currentOffset = 4;
-      len += 4;
-
-      const sb: number[] = [];
-      while (currentOffset < len) {
-        const r = dv.getUint8(currentOffset);
-
-        sb.push(r);
-        currentOffset += 1;
-      }
-
-      return sb;
-    }
-
     test(
       'keccak',
       `
         import system::string
         import system::hash::keccak
 
-        fun someTests(ix: i32): i32 = keccak("").ptr - 4
+        #[export] fun someTests(ix: i32): u32 = keccak("").ptr - 4 as u32
       `,
       async (x, err) => {
         if (err) throw err;
@@ -249,8 +222,8 @@ describe('execution tests', () => {
       `
         type int = i32
         type Integer = int
-        fun add(a: i32, b: int): int = a + b
-        fun add2(a: i32, b: int): Integer = a + b
+        #[export] fun add(a: i32, b: int): int = a + b
+        #[export] fun add2(a: i32, b: int): Integer = a + b
       `,
       async (x, err) => {
         if (err) throw err;
@@ -262,45 +235,11 @@ describe('execution tests', () => {
 
   describe('struct', () => {
     test(
-      'recursive types forest',
-      `
-        enum Tree {
-          Empty
-          Node(a: Tree | Forest)
-        }
-
-        enum Forest {
-          Nil
-          Cons(tree: Tree | Forest)
-        }
-
-        fun testPassing(): void = {
-          var a = Nil
-          var b = Cons(Empty)
-          var c = Cons(Nil)
-          var d = Cons(Node(Empty))
-          var e = Node(Nil)
-
-          support::test::assert( a is Nil            == true )
-          support::test::assert( a is Forest         == true )
-          support::test::assert( b is Forest         == true )
-          support::test::assert( c is Cons           == true )
-          support::test::assert( e is Node           == true )
-          support::test::assert( e is Tree           == true )
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        x.exports.testPassing();
-      }
-    );
-
-    test(
       'get struct values',
       `
         struct Vector3(x: i32, y: i32, z: i32)
 
-        fun testPassing(): void = {
+        #[export] fun testPassing(): void = {
           var a = Vector3(1, 2, 3)
 
           support::test::assert( a is Vector3 )
@@ -309,7 +248,7 @@ describe('execution tests', () => {
           support::test::assert( Vector3.property_z(a)    == 3 )
         }
 
-        fun testFailing(): void = {
+        #[export] fun testFailing(): void = {
           var a = Vector3(1, 2, 3)
           support::test::assert( Vector3.property_x(a)    == 999 )
         }
@@ -335,7 +274,7 @@ describe('execution tests', () => {
 
         struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
 
-        fun testPassing(): void = {
+        #[export] fun testPassing(): void = {
           var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
 
           support::test::assert( a is CatBag )
@@ -391,7 +330,7 @@ describe('execution tests', () => {
           Branch(left: Leaf)
         }
 
-        fun testPassing(): void = {
+        #[export] fun testPassing(): void = {
           var a = Branch(Leaf(1))
 
           support::test::assert( a      is Branch )
@@ -402,7 +341,7 @@ describe('execution tests', () => {
         }
 
 
-        fun testFailing(): void = {
+        #[export] fun testFailing(): void = {
           var a = Branch(Leaf(1))
           a.left.value = 2
           support::test::assert( a.left.value == 1 )
@@ -428,43 +367,51 @@ describe('execution tests', () => {
 
         struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
 
-        fun testPassing(): void = {
+        #[export] fun testPassing(): void = {
           var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
 
-          support::test::assert( a   is CatBag )
-          support::test::assert( a.a == 1 )
-          support::test::assert( a.b == true )
-          support::test::assert( a.c == 3.0 )
-          support::test::assert( a.d == 0x8 )
-          support::test::assert( a.e == 0.4 as f64 )
-          support::test::assert( a.f is Red )
-          support::test::assert( a.g is Red )
-          support::test::assert( a.f is Color )
-          support::test::assert( a.g is Color )
+          support::test::assert( a   is CatBag, "A" )
+          support::test::assert( a.a == 1, "B" )
+          support::test::assert( a.b == true, "C" )
+          support::test::assert( a.c == 3.0, "D" )
+          support::test::assert( a.d == 0x8, "E" )
+          support::test::assert( a.e == 0.4 as f64, "F" )
+          support::test::assert( a.f is Red, "G" )
+          support::test::assert( a.g is Red, "H" )
+          support::test::assert( a.f is Color, "I" )
+          support::test::assert( a.g is Color, "J" )
 
           a.a = 5
           a.b = false
           a.c = -999.0
           a.d = 0xdeadbeef as i64
           a.e = 6.08e23 as f64
+          support::test::printNumber(a.c)
           a.f = Custom(333)
+          support::test::printNumber(a.c)
           a.g = None
 
-          support::test::assert( a.a == 5 )
-          support::test::assert( a.b == false )
-          support::test::assert( a.c == -999.0 )
-          support::test::assert( a.d == 0xdeadbeef as i64 )
-          support::test::assert( a.e == 6.08e23 as f64 )
-          support::test::assert( a.f is Custom )
-          support::test::assert( a.g is None )
-          support::test::assert( a.f is Color )
-          support::test::assert( a.g is Color )
 
-          support::test::assert( a.f is Custom )
+          support::test::printNumber(0)
+
+          support::test::printNumber(a.a)
+          support::test::assert( a.a == 5, "K" )
+          support::test::printNumber( if(a.b) 1 else 0 )
+          support::test::assert( a.b == false, "L" )
+          support::test::printNumber(a.c)
+          support::test::assert( a.c == -999.0, "M" )
+          support::test::assert( a.d == 0xdeadbeef as i64, "N" )
+          support::test::assert( a.e == 6.08e23 as f64, "Ñ" )
+          support::test::assert( a.f is Custom, "O" )
+          support::test::assert( a.g is None, "P" )
+          support::test::assert( a.f is Color, "Q" )
+          support::test::assert( a.g is Color, "V" )
+
+          support::test::assert( a.f is Custom, "W" )
 
           match a.f {
-            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
-            else -> panic()
+            case x is Custom -> support::test::assert( x.hex == 333, "X" )
+            else -> support::test::assert( false, "Y" )
           }
         }
       `,
@@ -482,16 +429,16 @@ describe('execution tests', () => {
           Custom(hex: i32)
         }
 
-        fun testPassing(): void = {
+        #[export] fun testPassing(): void = {
           var custom: Enum = Custom(333)
 
           match custom {
-            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            case x is Custom -> support::test::assert( x.hex == 333 )
             else -> panic()
           }
         }
 
-        fun testFailing(): void = {
+        #[export] fun testFailing(): void = {
           var custom: Enum = None
 
           match custom {
@@ -507,238 +454,6 @@ describe('execution tests', () => {
     );
 
     test(
-      'is with pattern matchin',
-      `
-        enum Enum {
-          A
-          B
-          C
-        }
-
-        enum Color {
-          Red
-          Green
-          Blue
-          Custom(a: i32)
-        }
-
-        var value1: Enum = A
-        var value2: A | B = A
-        var value3: A = A
-
-        fun isA(x: ref): boolean = {
-          match x {
-            case is A -> true
-            else -> false
-          }
-        }
-
-        fun isB(x: ref): boolean = {
-          match x {
-            case is B -> true
-            else -> false
-          }
-        }
-
-        fun isEnum(x: ref): boolean = {
-          match x {
-            case is Enum -> true
-            else -> false
-          }
-        }
-
-        fun isRed(x: ref): boolean = {
-          match x {
-            case is Red -> true
-            else -> false
-          }
-        }
-
-        fun isColor(x: ref): boolean = {
-          match x {
-            case is Color -> true
-            else -> false
-          }
-        }
-
-        fun isCustom(x: ref): boolean = {
-          match x {
-            case is Custom -> true
-            else -> false
-          }
-        }
-
-        fun testPassing(): void = {
-          support::test::assert( isA(A)              == true  )
-          support::test::assert( isEnum(A)           == true  )
-          support::test::assert( isB(B)              == true  )
-          support::test::assert( isA(B)              == false )
-          support::test::assert( isEnum(B)           == true  )
-          support::test::assert( isB(B)              == true  )
-          support::test::assert( isA(C)              == false )
-          support::test::assert( isEnum(C)           == true  )
-          support::test::assert( isB(C)              == false )
-
-          support::test::assert( isA(value1)         == true  )
-          support::test::assert( isB(value1)         == false )
-          support::test::assert( isEnum(value1)      == true  )
-          support::test::assert( isA(value2)         == true  )
-          support::test::assert( isB(value2)         == false )
-          support::test::assert( isEnum(value2)      == true  )
-          support::test::assert( isA(value3)         == true  )
-          support::test::assert( isB(value3)         == false )
-          support::test::assert( isEnum(value3)      == true  )
-
-          support::test::assert( isRed(value3)       == false )
-          support::test::assert( isRed(Red)          == true  )
-          support::test::assert( isColor(Custom(1))  == true  )
-          support::test::assert( isCustom(Custom(1)) == true  )
-          support::test::assert( isRed(Custom(1))    == false )
-          support::test::assert( isB(Custom(1))      == false )
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        x.exports.testPassing();
-      }
-    );
-
-    test(
-      'is',
-      `
-        enum Enum {
-          A
-          B
-          C
-        }
-
-        enum Color {
-          Red
-          Green
-          Blue
-          Custom(a: i32)
-        }
-
-        var value1: Enum = A
-        var value2: A | B = A
-        var value3: A = A
-
-        fun identity(a: ref): ref = a
-
-        fun testPassing(): void = {
-          support::test::assert( identity(A) is A              == true  )
-          support::test::assert( identity(A) is Enum           == true  )
-          support::test::assert( identity(B) is B              == true  )
-          support::test::assert( identity(B) is A              == false )
-          support::test::assert( identity(B) is Enum           == true  )
-          support::test::assert( identity(B) is B              == true  )
-          support::test::assert( identity(C) is A              == false )
-          support::test::assert( identity(C) is Enum           == true  )
-          support::test::assert( identity(C) is B              == false )
-
-          support::test::assert( identity(value1) is A         == true  )
-          support::test::assert( identity(value1) is B         == false )
-          support::test::assert( identity(value1) is Enum      == true  )
-          support::test::assert( identity(value2) is A         == true  )
-          support::test::assert( identity(value2) is B         == false )
-          support::test::assert( identity(value2) is Enum      == true  )
-          support::test::assert( identity(value3) is A         == true  )
-          support::test::assert( identity(value3) is B         == false )
-          support::test::assert( identity(value3) is Enum      == true  )
-
-          support::test::assert( identity(value3) is Red       == false )
-          support::test::assert( identity(Red) is Red          == true  )
-          support::test::assert( identity(Custom(1)) is Color  == true  )
-          support::test::assert( identity(Custom(1)) is Custom == true  )
-          support::test::assert( identity(Custom(1)) is Red    == false )
-          support::test::assert( identity(Custom(1)) is B      == false )
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        x.exports.testPassing();
-      }
-    );
-
-    test(
-      'is, pattern matching variable',
-      `
-        enum Enum {
-          A
-          B
-          C
-        }
-
-        enum Color {
-          Red
-          Green
-          Blue
-          Custom(a: i32)
-        }
-
-        struct J()
-
-        var value1: Enum = A
-        var value2: A | B = A
-        var value3: A = A
-
-        fun toRed(col: ref): Color =
-          match col {
-            case x is Red -> x
-            case x is Enum ->
-              match x {
-                case is A -> Red
-                else -> Green
-              }
-            else -> Red
-          }
-
-        fun testPassing(): void = {
-          support::test::assert( toRed(Red)  is Red )
-          support::test::assert( toRed(Blue) is Red )
-          support::test::assert( toRed(A) is Red )
-          support::test::assert( toRed(B) is Green )
-          support::test::assert( toRed(J()) is Red )
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        x.exports.testPassing();
-      }
-    );
-
-    test(
-      'type alloc and basic pattern match, deconstruct',
-      `
-        enum Color {
-          Red
-          Green
-          Blue
-          Custom(r: i32, g: i32, b: i32)
-        }
-
-        fun isRed(color: Color): boolean = {
-          match color {
-            case is Red -> true
-            case is Custom(r, g, b) -> r == 255 && g == 0 && b == 0
-            else -> false
-          }
-        }
-
-        fun testColors(): void = {
-          support::test::assert(isRed(Red) == true)
-          support::test::assert(isRed(Green) == false)
-          support::test::assert(isRed(Blue) == false)
-          support::test::assert(isRed(Custom(255,0,0)) == true)
-        }
-      `,
-      async (x, err) => {
-        if (err) throw err;
-        x.exports.testColors();
-      }
-    );
-
-    test(
       'store values',
       `
         struct Custom(r: i32, g: i32)
@@ -749,22 +464,22 @@ describe('execution tests', () => {
         fun getX(): u32 = addressFromRef(x)
         fun getY(): u32 = addressFromRef(y)
 
-        fun testLoad(): void = {
+        #[export] fun testLoad(): void = {
           support::test::assert(i32.load(x) == 0)
           support::test::assert(i32.load(y) == 0)
         }
 
-        fun testStore(): void = {
+        #[export] fun testStore(): void = {
           i32.store(x, 3)
           i32.store(y, 2882400001) // 0xabcdef01
-          i32.store(y, 5, 5)
+          i32.store(y, 5, 5 as u32)
         }
 
-        fun assert(): void = {
+        #[export] fun assert(): void = {
           support::test::assert(i32.load(x) == 3)
           support::test::assert(i32.load(y) == 0xABCDEF01)
           support::test::assert(u8.load(y) as i32 == 0x01)
-          support::test::assert(u8.load(y, 5) as i32 == 5)
+          support::test::assert(u8.load(y, 5 as u32) as i32 == 5)
         }
       `,
       async (x, err) => {
@@ -782,7 +497,7 @@ describe('execution tests', () => {
           Custom(r: i32, g: i32)
         }
 
-        fun testColors(): void = {
+        #[export] fun testColors(): void = {
           val x = Custom(0,0)
           val y = Custom(0,0)
 
@@ -791,15 +506,15 @@ describe('execution tests', () => {
 
           i32.store(x, 3)
           i32.store(y, 2882400001) // 0xabcdef01
-          i32.store(y, 5, 5)
+          i32.store(y, 5, 5 as u32)
 
           support::test::assert(i32.load(x) == 3)
           support::test::assert(i32.load(y) == 0xABCDEF01)
           support::test::assert(u8.load(y) as i32 == 0x01)
-          support::test::assert(u8.load(y, 5) as i32 == 5)
+          support::test::assert(u8.load(y, 5 as u32) as i32 == 5)
         }
 
-        fun retRef(): u32 = addressFromRef(Custom(0, 0))
+        #[export] fun retRef(): u32 = addressFromRef(Custom(0, 0))
       `,
       async (x, err) => {
         if (err) throw err;
@@ -807,8 +522,8 @@ describe('execution tests', () => {
         const a = x.exports.retRef();
         const b = x.exports.retRef();
         const c = x.exports.retRef();
-        expect(b).to.eq(a + 16, 'a + 16 = b');
-        expect(c).to.eq(b + 16, 'b + 16 = c');
+        expect(b).to.gt(a);
+        expect(c).to.gt(b);
       }
     );
   });
@@ -816,8 +531,8 @@ describe('execution tests', () => {
     test(
       'single addition, overrides core',
       `
-        type i32 = %stack { lowLevelType="i32" }
-        type f32 = %stack { lowLevelType="f32" }
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
+        type f32 = %stack { lowLevelType="f32" byteSize=4 }
 
         impl f32 {
           fun +(a: f32, b: i32): i32 = 0
@@ -828,15 +543,15 @@ describe('execution tests', () => {
           fun +(a: i32, b: f32): i32 = 4
         }
 
-        fun main1(a: i32, b: f32): i32 = {
+        #[export] fun main1(a: i32, b: f32): i32 = {
           a + b
         }
 
-        fun main2(a: i32, b: f32): i32 = {
+        #[export] fun main2(a: i32, b: f32): i32 = {
           b + a
         }
 
-        fun main3(a: i32, b: i32): i32 = {
+        #[export] fun main3(a: i32, b: i32): i32 = {
           b + a
         }
       `,
@@ -850,7 +565,7 @@ describe('execution tests', () => {
     test(
       'operators',
       `
-        fun main(a: i32, b: i32): i32 = {
+        #[export] fun main(a: i32, b: i32): i32 = {
           a + b
         }
       `,
@@ -865,7 +580,7 @@ describe('execution tests', () => {
       'void return',
       `
         type void = %injected
-        fun main(): void = {
+        #[export] fun main(): void = {
           // stub
         }
       `,
@@ -877,7 +592,7 @@ describe('execution tests', () => {
       'void return 2',
       `
         type void = %injected
-        fun main(): void = {}
+        #[export] fun main(): void = {}
       `,
       async x => {
         expect(x.exports.main()).to.eq(undefined);
@@ -889,7 +604,7 @@ describe('execution tests', () => {
     test(
       'x + 44',
       `
-        fun main(x: i32): i32 = %wasm { (i32.add (get_local $x) (i32.const 44)) }
+        #[export] fun main(x: i32): i32 = %wasm { (i32.add (local.get $x) (i32.const 44)) }
       `,
       async x => {
         expect(x.exports.main(1)).to.eq(45);
@@ -902,7 +617,7 @@ describe('execution tests', () => {
     test(
       'panic',
       `
-        fun test(): void = {
+        #[export] fun test(): void = {
           support::test::assert((1 > 0)  == true)
           support::test::assert((0 > 0)  == false)
           support::test::assert((0 > 1)  == false)
@@ -913,7 +628,7 @@ describe('execution tests', () => {
           support::test::assert((0 <= 1) == true)
         }
 
-        fun testBool(i: i32): boolean = match i {
+        #[export] fun testBool(i: i32): boolean = match i {
           case 0 -> testBool0()
           case 1 -> testBool1()
           case 2 -> testBool2()
@@ -930,26 +645,26 @@ describe('execution tests', () => {
           else ->    testBool99()
         }
 
-        fun testBool0():  boolean = 1 > 0  // true
-        fun testBool1():  boolean = 0 > 0  // false
-        fun testBool2():  boolean = 0 > 1  // false
-        fun testBool3():  boolean = 1 >= 0 // true
-        fun testBool4():  boolean = 0 >= 0 // true
-        fun testBool5():  boolean = 0 >= 1 // false
-        fun testBool6():  boolean = 1 < 0  // false
-        fun testBool7():  boolean = 0 < 0  // false
-        fun testBool8():  boolean = 0 < 1  // true
-        fun testBool9():  boolean = 1 <= 0 // false
-        fun testBool10(): boolean = 0 <= 0  // true
-        fun testBool11(): boolean = 0 <= 1  // true
-        fun testBool12(): boolean = false   // false
-        fun testBool99(): boolean = true    // true
+        #[export] fun testBool0():  boolean = 1 > 0  // true
+        #[export] fun testBool1():  boolean = 0 > 0  // false
+        #[export] fun testBool2():  boolean = 0 > 1  // false
+        #[export] fun testBool3():  boolean = 1 >= 0 // true
+        #[export] fun testBool4():  boolean = 0 >= 0 // true
+        #[export] fun testBool5():  boolean = 0 >= 1 // false
+        #[export] fun testBool6():  boolean = 1 < 0  // false
+        #[export] fun testBool7():  boolean = 0 < 0  // false
+        #[export] fun testBool8():  boolean = 0 < 1  // true
+        #[export] fun testBool9():  boolean = 1 <= 0 // false
+        #[export] fun testBool10(): boolean = 0 <= 0  // true
+        #[export] fun testBool11(): boolean = 0 <= 1  // true
+        #[export] fun testBool12(): boolean = false   // false
+        #[export] fun testBool99(): boolean = true    // true
 
-        fun testPanic1(): void = {
+        #[export] fun testPanic1(): void = {
           support::test::assert((0 > 0) == true)
         }
 
-        fun testPanic2(): void = {
+        #[export] fun testPanic2(): void = {
           support::test::assert(0 > 0)
         }
       `,
@@ -1018,9 +733,9 @@ describe('execution tests', () => {
           bc - 2
         }
 
-        fun retMinusOne(): i32 = 0 - 1
+        #[export] fun retMinusOne(): i32 = 0 - 1
 
-        fun main(x: i32): void = {
+        #[export] fun main(x: i32): void = {
           if (x < 0) {
             a = 0
           } else {
@@ -1028,7 +743,7 @@ describe('execution tests', () => {
           }
         }
 
-        fun getValue(): i32 = a
+        #[export] fun getValue(): i32 = a
       `,
       async x => {
         expect(x.exports.getValue()).to.eq(-1);
@@ -1047,7 +762,7 @@ describe('execution tests', () => {
     test(
       'void return',
       `
-        fun main(x: i32): i32 = {
+      #[export] fun main(x: i32): i32 = {
           var a: i32 = 1
 
           if (x == 1) {
@@ -1066,7 +781,7 @@ describe('execution tests', () => {
     test(
       'void return, if w/o else',
       `
-        fun main(x: i32): i32 = {
+        #[export] fun main(x: i32): i32 = {
           var a: i32 = 1
 
           if (x == 1) {
@@ -1085,7 +800,7 @@ describe('execution tests', () => {
     test(
       'void return, if w/o else w/o types',
       `
-        fun main(x: i32): i32 = {
+        #[export] fun main(x: i32): i32 = {
           var a = 1
 
           if (x == 1) {
@@ -1107,9 +822,9 @@ describe('execution tests', () => {
       'sum',
       `
 
-        fun add(a: i32, b: i32): i32 = a + b
+        #[export] fun add(a: i32, b: i32): i32 = a + b
 
-        fun add2(a: f32, b: f32): f32 = {
+        #[export] fun add2(a: f32, b: f32): f32 = {
           a + b
         }
       `,
@@ -1126,9 +841,9 @@ describe('execution tests', () => {
       'sum 2',
       `
 
-        fun add(a: i32, b: i32): i32 = {{{a}} + {{{b}}}}
+        #[export] fun add(a: i32, b: i32): i32 = {{{a}} + {{{b}}}}
 
-        fun add2(a: f32, b: f32): f32 = {{
+        #[export] fun add2(a: f32, b: f32): f32 = {{
           {a} + {b}
         }}
       `,
@@ -1142,136 +857,6 @@ describe('execution tests', () => {
     );
 
     test(
-      'fibo',
-      `
-
-        private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
-          if (n > 0) {
-            fibo(n - 1, x2, x1 + x2)
-          } else {
-            x1
-          }
-        }
-
-        fun fib(n: i32): i32 = {
-          fibo(n, 0, 1)
-        }
-
-        fun test(): i32 = {
-          fib(46) // must be 1836311903
-        }
-      `,
-      async x => {
-        expect(x.exports.fib(46)).to.eq(1836311903);
-        expect(x.exports.test()).to.eq(1836311903);
-      }
-    );
-
-    test(
-      'factorial',
-      `
-        fun factorial(n: i32): i32 =
-          if (n >= 1)
-            n * factorial(n - 1)
-          else
-            1
-      `,
-      async x => {
-        expect(x.exports.factorial(10)).to.eq(3628800);
-      }
-    );
-
-    test(
-      'fibo pattern matchin',
-      `
-
-        private fun fibo(n: i32, a: i32, b: i32): i32 =
-          match n {
-            case 0 -> a
-            case 1 -> b
-            else   -> fibo(n - 1, b, a + b)
-          }
-
-        fun fib(n: i32): i32 = fibo(n, 0, 1)
-
-        fun test(): i32 = {
-          fib(46) // must be 1836311903
-        }
-      `,
-      async x => {
-        expect(x.exports.fib(46)).to.eq(1836311903);
-        expect(x.exports.test()).to.eq(1836311903);
-      }
-    );
-
-    test(
-      'fibo w/o types',
-      `
-
-        private fun fibo(n: i32, x1: i32, x2: i32): i32 = {
-          if (n > 0) {
-            fibo(n - 1, x2, x1 + x2)
-          } else {
-            x1
-          }
-        }
-
-        fun fib(n: i32): i32 = {
-          fibo(n, 0, 1)
-        }
-
-        fun test(): i32 = {
-          fib(46) // must be 1836311903
-        }
-      `,
-      async x => {
-        expect(x.exports.fib(46)).to.eq(1836311903);
-        expect(x.exports.test()).to.eq(1836311903);
-      }
-    );
-
-    test(
-      'fibo 2',
-      `
-
-        private fun fibo(n: i32, x1: i32, x2: i32): i32 =
-          if (n > 0)
-            fibo(n - 1, x2, x1 + x2)
-          else
-            x1
-
-        fun fib(n: i32): i32 = fibo(n, 0, 1)
-
-        fun test(): i32 = fib(46) // must be 1836311903
-      `,
-      async x => {
-        expect(x.exports.fib(46)).to.eq(1836311903);
-        expect(x.exports.test()).to.eq(1836311903);
-      }
-    );
-
-    test(
-      'fibo 3',
-      `
-
-        private fun fibo(n: i32, a: i32, b: i32): i32 =
-          match n {
-            case 0 -> a
-            case 1 -> b
-            else   -> fibo(n - 1, b, a + b)
-          }
-
-        fun fib(n: i32): i32 = fibo(n, 0, 1)
-
-        fun test(): i32 = fib(46) // must be 1836311903
-      `,
-      async x => {
-        expect(x.exports.fib(46)).to.eq(1836311903);
-        expect(x.exports.test()).to.eq(1836311903);
-      }
-    );
-
-    test(
       'overload infix',
       `
 
@@ -1280,11 +865,11 @@ describe('execution tests', () => {
         private fun sum(a: i32): i32 = a + 100
         private fun sum(a: f32): f32 = a + 100.0
 
-        fun testInt(a: i32, b: i32): i32 = sum(a,b)
-        fun testFloat(a: f32, b: f32): f32 = sum(a,b)
+        #[export] fun testInt(a: i32, b: i32): i32 = sum(a,b)
+        #[export] fun testFloat(a: f32, b: f32): f32 = sum(a,b)
 
-        fun testInt2(a: i32): i32 = sum(a)
-        fun testFloat2(a: f32): f32 = sum(a)
+        #[export] fun testInt2(a: i32): i32 = sum(a)
+        #[export] fun testFloat2(a: f32): f32 = sum(a)
       `,
       async x => {
         expect(x.exports.testInt(46, 3)).to.eq(49);
@@ -1299,13 +884,13 @@ describe('execution tests', () => {
       'pattern matching 1',
       `
 
-        fun test1(a: i32): boolean =
+        #[export] fun test1(a: i32): boolean =
           match a {
             case 1 -> true
             else -> false
           }
 
-        fun test2(a: i32): i32 =
+        #[export] fun test2(a: i32): i32 =
           match a {
             case 10 -> 1
             case 20 -> 2
@@ -1319,7 +904,7 @@ describe('execution tests', () => {
             else -> 0
           }
 
-        fun test3(a: i32): boolean =
+        #[export] fun test3(a: i32): boolean =
           match (a + 1) {
             case 1 -> true
             else -> false
@@ -1345,5 +930,9 @@ describe('execution tests', () => {
         expect(x.exports.test3(-1)).to.eq(0);
       }
     );
+  });
+
+  describe('fixtures/execution', () => {
+    testFolder();
   });
 });

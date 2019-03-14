@@ -1,6 +1,6 @@
 private fun xx(): void = {}
 
-private fun add(a: i32, b: i32): i32 = %wasm {
+fun add(a: i32, b: i32): i32 = %wasm {
   (local $t i32)
   (set_local $t (i32.const 3))
   (call $xx)
@@ -8,5 +8,5 @@ private fun add(a: i32, b: i32): i32 = %wasm {
   (i32.mul (i32.add (get_local $a) (get_local $b)) (get_local $t))
 }
 
-
+#[export]
 fun main(): i32 = add(1, 2)

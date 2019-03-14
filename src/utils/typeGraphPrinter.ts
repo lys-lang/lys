@@ -2,45 +2,131 @@ import { StringCodeWriter } from './StringCodeWriter';
 import { TypeGraph, Edge, TypeNode } from '../parser/types/TypeGraph';
 import { Nodes } from '../parser/nodes';
 
-export function print(graph: TypeGraph, code: string = '', name: string = 'Document'): string {
-  const writer: StringCodeWriter = new StringCodeWriter();
-  writer.println(`digraph ${name.replace(/"/g, "'")} {`);
-  writer.indent();
-  writer.println('  node [shape=box,fontsize=10]; rankdir=LR;');
-  printNodes(writer, graph);
+export function print(rootGraph: TypeGraph): string {
+  const documents = new Set<string>();
 
-  let i = 0;
-  graph.subGraphs.forEach((str, graph) => {
-    writer.printIndent();
-    writer.println(`subgraph cluster${i.toString().replace(/"/g, "'")} { rankdir=TB;`);
-    i++;
-    writer.indent();
-    writer.printIndent();
-    writer.println('node [style=filled, fillcolor=grey];');
-    printNodes(writer, graph);
-    printEdges(writer, graph);
-    writer.dedent();
-    writer.printIndent();
-    writer.println('label="' + str.replace(/"/g, "'") + '";');
-    writer.println('}');
+  function findDocuments(graph: TypeGraph) {
+    graph.nodes.forEach(node => {
+      const document = (node.astNode.astNode && node.astNode.astNode.document) || void 0;
+      documents.add(document);
+    });
+    graph.subGraphs.forEach((_, graph) => {
+      findDocuments(graph);
+    });
+  }
+
+  findDocuments(rootGraph);
+
+  const writer: StringCodeWriter = new StringCodeWriter();
+
+  writer.println(`digraph LYS {`);
+  writer.indent();
+  writer.println('  node [shape=box,fontsize=10];');
+
+  const printedNodes = getPrintedNodes(rootGraph);
+
+  documents.forEach(document => {
+    printDocument(writer, rootGraph, document, printedNodes, rootGraph);
   });
 
-  printEdges(writer, graph);
+  function printGraphEdges(graph: TypeGraph) {
+    printEdges(writer, graph, printedNodes, rootGraph);
+    graph.subGraphs.forEach((_, graph) => {
+      printGraphEdges(graph);
+    });
+  }
+
+  printGraphEdges(rootGraph);
+
   writer.printIndent();
-  writer.println('label="' + code.replace(/"/g, "'") + '";');
+  writer.println('label="LYS";');
   writer.dedent();
   writer.println('}');
 
-  resetPrint(graph);
+  resetPrint(rootGraph);
 
   return writer.codeContent();
 }
 
-export function printEdges(writer: StringCodeWriter, graph: TypeGraph): void {
+function printDocument(
+  writer: StringCodeWriter,
+  graph: TypeGraph,
+  document: string,
+  printedNodes: Set<TypeNode>,
+  rootGraph: TypeGraph
+) {
+  const cluster = JSON.stringify('cluster_' + (document || '<no-document>'));
+  const label = JSON.stringify(document || '<no-document>');
+  writer.printIndent();
+  writer.println(`subgraph ${cluster} {`);
+  writer.indent();
+
+  const nodesToPrint = graph.nodes.filter(
+    $ => (!$.astNode.astNode && !document) || ($.astNode.astNode && $.astNode.astNode.document === document)
+  );
+
+  nodesToPrint.forEach(node => {
+    printNode(writer, node, printedNodes, rootGraph);
+  });
+
+  let i = 0;
+
+  function printSubGraph(str: string, graph: TypeGraph) {
+    const nodesToPrint = graph.nodes.filter(
+      $ => (!$.astNode.astNode && !document) || ($.astNode.astNode && $.astNode.astNode.document === document)
+    );
+
+    if (nodesToPrint.length == 0 && graph.subGraphs.size == 0) return;
+
+    writer.printIndent();
+    writer.println(`subgraph ${JSON.stringify('cluster_' + (document || '<no-document>') + '_' + i)} { rankdir=TB;`);
+    i++;
+    writer.indent();
+    writer.printIndent();
+    writer.println('node [style=filled, fillcolor=grey];');
+    nodesToPrint.forEach(node => {
+      printNode(writer, node, printedNodes, rootGraph);
+    });
+    writer.printIndent();
+    writer.println('label="' + str.replace(/"/g, "'") + '";');
+    writer.dedent();
+    writer.printIndent();
+    writer.println('}');
+
+    graph.subGraphs.forEach(printSubGraph);
+  }
+
+  graph.subGraphs.forEach(printSubGraph);
+
+  writer.printIndent();
+  writer.println(`label=${label};`);
+  writer.dedent();
+  writer.printIndent();
+  writer.println('}');
+}
+
+function printEdges(
+  writer: StringCodeWriter,
+  graph: TypeGraph,
+  printedNodes: Set<TypeNode>,
+  rootGraph: TypeGraph
+): void {
   graph.nodes.forEach(node => {
+    if (!printedNodes.has(node)) {
+      printNode(writer, node, printedNodes, rootGraph);
+    }
+
     node.outgoingEdges().forEach(edge => {
+      if (!printedNodes.has(edge.source)) {
+        printNode(writer, edge.source, printedNodes, rootGraph);
+      }
+
+      if (!printedNodes.has(edge.target)) {
+        printNode(writer, edge.target, printedNodes, rootGraph);
+      }
+
       writer.printIndent();
-      writer.print(`${id(edge.source, graph)} -> ${id(edge.target, graph)}`);
+      writer.print(`${id(edge.source, rootGraph)} -> ${id(edge.target, rootGraph)}`);
       const color = edge.error() == null ? 'blue' : edge.error() == true ? 'red' : 'black';
 
       writer.println(
@@ -48,7 +134,7 @@ export function printEdges(writer: StringCodeWriter, graph: TypeGraph): void {
           '"' +
           edgeLabel(edge).replace(/"/g, "'") +
           '"' +
-          ' fontname="times" fontsize = 7 color="' +
+          ' fontsize=7 fontname="times" color="' +
           color +
           '" ];'
       );
@@ -56,28 +142,25 @@ export function printEdges(writer: StringCodeWriter, graph: TypeGraph): void {
   });
 }
 
-export function printNodes(writer: StringCodeWriter, graph: TypeGraph) {
-  const printedNodes = getPrintedNodes(graph);
-  graph.nodes.forEach(node => {
-    if (!printedNodes.has(node)) {
-      writer.printIndent();
-      let label = nodeLabel(node) + (node.resultType() ? '\\n' + node.resultType().inspect(100) : '');
+function printNode(writer: StringCodeWriter, node: TypeNode, printedNodes: Set<TypeNode>, rootGraph: TypeGraph) {
+  if (!printedNodes.has(node)) {
+    writer.printIndent();
+    let label = nodeLabel(node) + (node.resultType() ? '\\n' + node.resultType().inspect(100) : '');
 
-      let color = 'grey';
+    let color = 'grey';
 
-      if (node.amount > node.MAX_ATTEMPTS / 10) {
-        label = label + '\nAmount: ' + node.amount.toString();
-        color = 'magenta';
-      }
-
-      writer.println(
-        `${id(node, graph)} [label="${label.replace(/"/g, "'")}", fillcolor=${color}${
-          !node.resultType() ? ', color=red' : ''
-        }];`
-      );
-      printedNodes.add(node);
+    if (node.amount > node.MAX_ATTEMPTS / 10) {
+      label = label + '\nAmount: ' + node.amount.toString();
+      color = 'magenta';
     }
-  });
+
+    writer.println(
+      `${id(node, rootGraph)} [label="${label.replace(/"/g, "'")}", fillcolor=${color}${
+        !node.resultType() ? ', color=red' : ''
+      }];`
+    );
+    printedNodes.add(node);
+  }
 }
 
 export function edgeLabel(edge: Edge): string {
@@ -92,15 +175,15 @@ export function edgeLabel(edge: Edge): string {
   }
 }
 
-export function nodeLabel(node: TypeNode): string {
+function nodeLabel(node: TypeNode): string {
   if (node.astNode instanceof Nodes.ReferenceNode) {
     return `Ref: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
     return `Name: ${node.astNode.name}`;
   } else if (node.astNode instanceof Nodes.BinaryExpressionNode) {
-    return `BinOp: ${node.astNode.operator.text}`;
+    return `BinOp: ${node.astNode.operator.name}`;
   } else if (node.astNode instanceof Nodes.UnaryExpressionNode) {
-    return `Unary: ${node.astNode.operator.text}`;
+    return `Unary: ${node.astNode.operator.name}`;
   } else if (node.astNode instanceof Nodes.IntegerLiteral) {
     return `Int: ${node.astNode.value}`;
   } else if (node.astNode instanceof Nodes.FloatLiteral) {
@@ -118,7 +201,7 @@ export function nodeLabel(node: TypeNode): string {
   } else if (node.astNode instanceof Nodes.FunDirectiveNode) {
     return `!!! FunDirective: ${node.astNode.functionNode.functionName.name}`;
   }
-  return node.astNode ? node.astNode.nodeName + node.astNode.text : '<no node>';
+  return node.astNode ? node.astNode.nodeName : '<no node>';
 }
 
 const idSymbol = Symbol('id');

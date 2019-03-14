@@ -1,0 +1,24 @@
+
+// ╒═══════════════ Managed object layout (32-bit) ════════════════╕
+//    3                   2                   1
+//  1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 
+// ├─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┤
+// │                              next                             │
+// ├───────────────────────────────────────────────────────────────┤
+// │                              prev                             │
+// ╞═══════════════════════════════════════════════════════════════╡
+// │                          ... data ...                         │
+// └───────────────────────────────────────────────────────────────┘
+
+type Object = %struct { }
+
+impl Object {
+  fun apply(size: i32): Object = %wasm {
+    (call $system::memory::calloc (i32.add (i32.const 16) (get_local $size)))
+  }
+
+  fun link(parent: ref, child: ref): void = {}
+
+  /** Unlinks this object from its list. */
+  fun unlink(self: ref): void = {}
+}

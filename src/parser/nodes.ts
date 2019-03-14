@@ -41,10 +41,6 @@ export namespace Nodes {
       return accumulator;
     }
 
-    get text() {
-      return '';
-    }
-
     hasAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
       if (!this.annotations) return false;
 
@@ -113,10 +109,6 @@ export namespace Nodes {
     name: string;
 
     namespaceNames: Map<string, NameIdentifierNode>;
-
-    get text() {
-      return JSON.stringify(this.name);
-    }
 
     static fromString(name: string) {
       const r = new NameIdentifierNode();
@@ -195,8 +187,14 @@ export namespace Nodes {
     operator: string;
   }
 
+  export class DecoratorNode extends Node {
+    decoratorName: NameIdentifierNode;
+    arguments: LiteralNode<any>[];
+  }
+
   export abstract class DirectiveNode extends Node {
-    isExported: boolean = false;
+    decorators: DecoratorNode[];
+    isPublic: boolean = false;
   }
 
   export class DocumentNode extends Node {
@@ -219,22 +217,11 @@ export namespace Nodes {
     parameters: ParameterNode[] = [];
     body: ExpressionNode;
 
-    localsByName: Map<string, Local> = new Map();
-
     /** Array of locals by index. */
     localsByIndex: Local[] = [];
 
     /** List of additional non-parameter locals. */
     additionalLocals: Local[] = [];
-
-    /** Current break context label. */
-    breakContext: string | null = null;
-
-    /** Contextual type arguments. */
-    contextualTypeArguments: Map<string, Type> | null;
-
-    private nextBreakId: number = 0;
-    private breakStack: number[] | null = null;
 
     private tempI32s: Local[] | null = null;
     private tempI64s: Local[] | null = null;
@@ -246,23 +233,24 @@ export namespace Nodes {
 
       this.parameters.forEach(parameter => {
         let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
-        this.localsByName.set(local.name, local);
         this.localsByIndex[local.index] = local;
         parameter.annotate(new annotations.LocalIdentifier(local));
       });
     }
 
-    /** Adds a local of the specified type, with an optional name. */
-    addLocal(type: Type, name: string | null = null, declaration: NameIdentifierNode | null = null): Local {
+    /** Adds a local of the specified type. */
+    addLocal(type: Type, declaration: NameIdentifierNode | null = null): Local {
       // if it has a name, check previously as this method will throw otherwise
       var localIndex = this.parameters.length + this.additionalLocals.length;
 
-      var local = new Local(localIndex, name ? name : 'var$' + localIndex.toString(10), declaration);
+      var local = new Local(
+        localIndex,
+        declaration ? declaration.internalIdentifier : 'var$' + localIndex.toString(10),
+        declaration
+      );
+
       local.type = type;
-      if (name) {
-        if (this.localsByName.has(name)) throw new Error('duplicate local name');
-        this.localsByName.set(name, local);
-      }
+
       this.localsByIndex[local.index] = local;
       this.additionalLocals.push(local);
       return local;
@@ -371,36 +359,6 @@ export namespace Nodes {
 
       return local;
     }
-
-    /** Enters a(nother) break context. */
-    enterBreakContext(): string {
-      var id = this.nextBreakId++;
-      if (!this.breakStack) this.breakStack = [id];
-      else this.breakStack.push(id);
-      return (this.breakContext = id.toString(10));
-    }
-
-    /** Leaves the current break context. */
-    leaveBreakContext(): void {
-      if (!this.breakStack) throw new Error('there was no breakStack');
-      var length = this.breakStack.length;
-      if (length == 0) throw new Error('the breakStack is empty');
-      this.breakStack.pop();
-      if (length > 1) {
-        this.breakContext = this.breakStack[length - 2].toString(10);
-      } else {
-        this.breakContext = null;
-        this.breakStack = null;
-      }
-    }
-
-    /** Finalizes the function once compiled, releasing no longer needed resources. */
-    finalize(): void {
-      if (this.breakStack && this.breakStack.length) throw new Error('break stack');
-      this.breakStack = null;
-      this.breakContext = null;
-      this.tempI32s = this.tempI64s = this.tempF32s = this.tempF64s = null;
-    }
   }
 
   export class ImplDirective extends DirectiveNode {
@@ -424,7 +382,7 @@ export namespace Nodes {
 
   export class OverloadedFunctionNode extends DirectiveNode {
     functionName: NameIdentifierNode;
-    functions: FunctionNode[] = [];
+    functions: FunDirectiveNode[] = [];
   }
 
   export class VarDeclarationNode extends Node {
@@ -454,7 +412,6 @@ export namespace Nodes {
   export class TypeDirectiveNode extends DirectiveNode {
     variableName: NameIdentifierNode;
     valueType: TypeNode;
-    typeDiscriminant: number | null = null;
   }
 
   export class EnumDirectiveNode extends DirectiveNode {
@@ -464,9 +421,6 @@ export namespace Nodes {
 
   export abstract class LiteralNode<T> extends ExpressionNode {
     value: T;
-    get text() {
-      return JSON.stringify(this.value);
-    }
   }
 
   export class FloatLiteral extends LiteralNode<number> {
@@ -490,7 +444,7 @@ export namespace Nodes {
   export class UnknownExpressionNode extends ExpressionNode {}
 
   export class StructTypeNode extends TypeNode {
-    names: string[] = [];
+    parameters: ParameterNode[] = [];
 
     constructor(astNode?: ASTNode) {
       super(astNode);
@@ -519,10 +473,6 @@ export namespace Nodes {
     }
     set value(value: number) {
       this.astNode.text = value.toString(16);
-    }
-
-    get text() {
-      return this.astNode.text;
     }
   }
 
@@ -554,11 +504,6 @@ export namespace Nodes {
     operator: NameIdentifierNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      if (!this.operator) throw new Error('BinaryExpressionNode w/o operator');
-      return this.operator.text;
-    }
   }
 
   export class AsExpressionNode extends ExpressionNode {
@@ -566,10 +511,6 @@ export namespace Nodes {
     rhs: TypeNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      return 'as';
-    }
   }
 
   export class IsExpressionNode extends ExpressionNode {
@@ -577,10 +518,6 @@ export namespace Nodes {
     rhs: TypeNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      return 'is';
-    }
   }
 
   export class UnaryExpressionNode extends ExpressionNode {
@@ -588,19 +525,11 @@ export namespace Nodes {
     operator: NameIdentifierNode;
 
     resolvedFunctionType: FunctionType;
-
-    get text() {
-      return this.operator.text;
-    }
   }
 
   export class WasmAtomNode extends ExpressionNode {
     arguments: ExpressionNode[] = [];
     symbol: string;
-
-    get text() {
-      return this.symbol;
-    }
   }
 
   export class WasmExpressionNode extends ExpressionNode {
@@ -683,7 +612,10 @@ export interface LocalGlobalHeapReference {
 
 export class Global implements LocalGlobalHeapReference {
   type: Type;
-  constructor(public name: string, public declarationNode: Nodes.Node) {}
+  name: string;
+  constructor(public declarationNode: Nodes.NameIdentifierNode) {
+    this.name = declarationNode.internalIdentifier;
+  }
 }
 
 export class Local implements LocalGlobalHeapReference {

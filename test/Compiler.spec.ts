@@ -1,6 +1,6 @@
 declare var describe;
 
-import { folderBasedTest, printAST } from './TestHelpers';
+import { folderBasedTest } from './TestHelpers';
 
 import { print } from '@webassemblyjs/wast-printer';
 
@@ -11,6 +11,7 @@ import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
 import { ParsingContext } from '../dist/parser/ParsingContext';
+import { printAST } from '../dist/utils/astPrinter';
 
 const compilerTestParsingContext = new ParsingContext();
 
@@ -53,13 +54,32 @@ describe('Compiler', function() {
   describe('Compilation', () => {
     folderBasedTest('**/compiler/*.lys', phases, async (result, e) => {
       if (e) throw e;
-      await result.validate(false);
-      return print(result.programAST);
+      return result.emitText();
     });
   });
   describe('Compilation-optimized', () => {
     folderBasedTest(
       '**/compiler/*.lys',
+      phases,
+      async (result, e) => {
+        if (e) throw e;
+        await result.validate(true);
+        return result.emitText();
+      },
+      '.optimized.wast'
+    );
+  });
+
+  describe('Compilation-execution-tests', () => {
+    folderBasedTest('**/execution/*.lys', phases, async (result, e) => {
+      if (e) throw e;
+      return result.emitText();
+    });
+  });
+
+  describe('Compilation-execution-tests-optimized', () => {
+    folderBasedTest(
+      '**/execution/*.lys',
       phases,
       async (result, e) => {
         if (e) throw e;

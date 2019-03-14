@@ -5,7 +5,7 @@ enum Color {
   Custom(a: i32)
 }
 
-fun isRed(x: Color): boolean = {
+#[export] fun isRed(x: Color): boolean = {
   match x {
     case is Red -> true
     case is Custom(a) -> a == 0xFF0000

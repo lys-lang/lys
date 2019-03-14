@@ -56,7 +56,7 @@ export class NotAValidType extends AstNodeError {
 
 export class UnexpectedType extends AstNodeError {
   constructor(public type: Type, node: Nodes.Node) {
-    super(`${type} is not a value, constructor or function.`, node);
+    super(`${type} ${type.inspect(100)} is not a value, constructor or function.`, node);
   }
 }
 

@@ -1,0 +1,64 @@
+import support::test
+
+enum Color {
+  None
+  Red
+  Green
+  Blue
+  Custom(hex: i32)
+}
+
+struct CatBag(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: Red | None)
+
+#[export]
+fun main(): void = {
+  START("struct values extended")
+
+  var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
+
+  verify( a   is CatBag, "A" )
+  verify( a.a == 1, "B" )
+  verify( a.b == true, "C" )
+  verify( a.c == 3.0, "D" )
+  verify( a.d == 0x8, "E" )
+  verify( a.e == 0.4 as f64, "F" )
+  verify( a.f is Red, "G" )
+  verify( a.g is Red, "H" )
+  verify( a.f is Color, "I" )
+  verify( a.g is Color, "J" )
+
+  a.a = 5
+  a.b = false
+  a.c = -999.0
+  a.d = 0xdeadbeef as i64
+  a.e = 6.08e23 as f64
+  printNumber(a.c)
+  a.f = Custom(333)
+  printNumber(a.c)
+  a.g = None
+
+
+  printNumber(0)
+
+  printNumber(a.a)
+  verify( a.a == 5, "K" )
+  printNumber( if(a.b) 1 else 0 )
+  verify( a.b == false, "L" )
+  printNumber(a.c)
+  verify( a.c == -999.0, "M" )
+  verify( a.d == 0xdeadbeef as i64, "N" )
+  verify( a.e == 6.08e23 as f64, "Ñ" )
+  verify( a.f is Custom, "O" )
+  verify( a.g is None, "P" )
+  verify( a.f is Color, "Q" )
+  verify( a.g is Color, "V" )
+
+  verify( a.f is Custom, "W" )
+
+  match a.f {
+    case x is Custom -> verify( x.hex == 333, "X" )
+    else -> verify( false, "Y" )
+  }
+
+  END()
+}

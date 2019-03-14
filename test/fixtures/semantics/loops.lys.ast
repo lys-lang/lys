@@ -5,55 +5,57 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode annotations=Injected
-    |-FunctionNode
-      |-NameIdentifierNode="test"
-      |-ReferenceNode
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode
-        |-VarDeclarationNode
-          |-NameIdentifierNode="x"
-          |-IntegerLiteral=1 annotations=IsValueNode
-        |-LoopNode
-          |-BlockNode
-            |-AssignmentNode
-              |-ReferenceNode
-                |-QNameNode=x
-                  |-NameIdentifierNode="x"
-              |-BinaryExpressionNode="+" annotations=IsValueNode
-                |-NameIdentifierNode="+"
-                |-ReferenceNode annotations=IsValueNode
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="test"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode
+          |-VarDeclarationNode
+            |-NameIdentifierNode="x"
+            |-IntegerLiteral=1 annotations=IsValueNode
+          |-LoopNode
+            |-BlockNode
+              |-AssignmentNode
+                |-ReferenceNode
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
-                |-IntegerLiteral=1 annotations=IsValueNode
-            |-IfNode
-              |-BinaryExpressionNode=">" annotations=IsValueNode
-                |-NameIdentifierNode=">"
-                |-ReferenceNode annotations=IsValueNode
+                |-BinaryExpressionNode annotations=IsValueNode
+                  |-NameIdentifierNode="+"
+                  |-ReferenceNode annotations=IsValueNode
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-IntegerLiteral=1 annotations=IsValueNode
+              |-IfNode
+                |-BinaryExpressionNode annotations=IsValueNode
+                  |-NameIdentifierNode=">"
+                  |-ReferenceNode annotations=IsValueNode
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-IntegerLiteral=10 annotations=IsValueNode
+                |-BreakNode annotations=CurrentLoop
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="test"
+        |-ReferenceNode
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode
+          |-VarDeclarationNode
+            |-NameIdentifierNode="x"
+            |-IntegerLiteral=1 annotations=IsValueNode
+          |-LoopNode
+            |-BlockNode
+              |-AssignmentNode
+                |-ReferenceNode
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
-                |-IntegerLiteral=10 annotations=IsValueNode
-              |-BreakNode annotations=CurrentLoop
-    |-FunctionNode
-      |-NameIdentifierNode="test"
-      |-ReferenceNode
-        |-QNameNode=void
-          |-NameIdentifierNode="void"
-      |-BlockNode
-        |-VarDeclarationNode
-          |-NameIdentifierNode="x"
-          |-IntegerLiteral=1 annotations=IsValueNode
-        |-LoopNode
-          |-BlockNode
-            |-AssignmentNode
-              |-ReferenceNode
-                |-QNameNode=x
-                  |-NameIdentifierNode="x"
-              |-BinaryExpressionNode="+" annotations=IsValueNode
-                |-NameIdentifierNode="+"
-                |-ReferenceNode annotations=IsValueNode
-                  |-QNameNode=x
-                    |-NameIdentifierNode="x"
-                |-IntegerLiteral=1 annotations=IsValueNode
-            |-ContinueNode annotations=CurrentLoop
+                |-BinaryExpressionNode annotations=IsValueNode
+                  |-NameIdentifierNode="+"
+                  |-ReferenceNode annotations=IsValueNode
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-IntegerLiteral=1 annotations=IsValueNode
+              |-ContinueNode annotations=CurrentLoop
     |-NameIdentifierNode="test"

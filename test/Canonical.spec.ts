@@ -1,7 +1,8 @@
-declare var describe;
+declare var describe, it;
 
-import { testParseToken, printAST, folderBasedTest } from './TestHelpers';
+import { testParseToken, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { printAST } from '../dist/utils/astPrinter';
 import { ParsingContext } from '../dist/parser/ParsingContext';
 
 const phases = function(txt: string): CanonicalPhaseResult {
@@ -10,6 +11,10 @@ const phases = function(txt: string): CanonicalPhaseResult {
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
 };
+
+describe('FileBasedCanonical', () => {
+  folderBasedTest('test/fixtures/canonical/*.lys', phases, result => printAST(result.document), '.ast');
+});
 
 describe('FileBasedCanonical', () => {
   folderBasedTest('test/fixtures/canonical/*.lys', phases, result => printAST(result.document), '.ast');
@@ -132,4 +137,53 @@ describe('Canonical', function() {
       else -> 1
     }
   `;
+});
+
+describe.skip('Canonical perf', () => {
+  it('summarizes the data', () => {
+    const perf: { rule: string; start: number; end: number; success: boolean }[] = (global as any).ebnfPerfMetrics;
+
+    type X = { rule: string; callCount: number; totalTime: number; avg: number; success: number };
+    const proc: Record<string, X> = {};
+
+    perf.forEach($ => {
+      if (!$.end) return;
+
+      if (false === $.rule in proc) {
+        proc[$.rule] = {
+          rule: $.rule,
+          callCount: 1,
+          totalTime: $.end - $.start,
+          avg: 0,
+          success: $.success ? 1 : 0
+        };
+      } else {
+        proc[$.rule].callCount += 1;
+        proc[$.rule].totalTime += $.end - $.start;
+        proc[$.rule].success += $.success ? 1 : 0;
+      }
+    });
+
+    const table: X[] = [];
+
+    for (let rule in proc) {
+      proc[rule].success = (((100 * proc[rule].success) / proc[rule].callCount).toFixed(2).toString() + '%') as any;
+      proc[rule].avg = proc[rule].totalTime / proc[rule].callCount;
+      table.push(proc[rule]);
+    }
+
+    table.sort((a, b) => {
+      if (a.avg < b.avg) return 1;
+      return -1;
+    });
+
+    console.table(table.slice(0, 100));
+
+    table.sort((a, b) => {
+      if (a.totalTime < b.totalTime) return 1;
+      return -1;
+    });
+
+    console.table(table.slice(0, 100));
+  });
 });

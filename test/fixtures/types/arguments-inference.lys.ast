@@ -5,17 +5,18 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "getX" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunctionNode type=(fun "getX" ((alias i32)) (alias i32))
-      |-ParameterNode annotations=Local(x:i32#0)
-        |-NameIdentifierNode="x" type=(alias i32 (native i32))
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "getX" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:i32#0)
+          |-NameIdentifierNode="x" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="getX"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="getX"
-      |-ReferenceNode type=(type (alias i32 (native i32)))
-        |-QNameNode=i32
-          |-NameIdentifierNode="i32"
-      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-QNameNode=x
-          |-NameIdentifierNode="x"
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=x
+            |-NameIdentifierNode="x"
     |-NameIdentifierNode="getX" type=(fun "getX" ((alias i32)) (alias i32))

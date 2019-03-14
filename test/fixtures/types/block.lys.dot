@@ -1,43 +1,46 @@
-digraph Document {
-  node [shape=box,fontsize=10]; rankdir=LR;
-  1 [label="FunOverload: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
-  2 [label="FunNode: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
-  3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  4 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
-  5 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-  6 [label="Name: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
-  subgraph cluster0 { rankdir=TB;
-    node [style=filled, fillcolor=grey];
-    7 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
-    8 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
-    9 [label="VarDecl: ttt\n(native void)", fillcolor=grey];
-    10 [label="Name: ttt\n(alias i32 (native i32))", fillcolor=grey];
-    11 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
-    12 [label="AssignmentNode\n(alias i32 (native i32))", fillcolor=grey];
-    13 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
-    14 [label="BinOp: '+'\n(alias i32 (native i32))", fillcolor=grey];
-    15 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
-    16 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-    17 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
-    18 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    7 -> 16[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-    9 -> 8[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
-    10 -> 13[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-    10 -> 15[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-    10 -> 17[taillabel="[NAME]" fontname="times" fontsize = 7 color="black" ];
-    11 -> 10[taillabel="[DEFAULT_VALUE]" fontname="times" fontsize = 7 color="black" ];
-    12 -> 8[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
-    13 -> 12[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
-    14 -> 12[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
-    15 -> 14[taillabel="[LHS]" fontname="times" fontsize = 7 color="black" ];
-    16 -> 14[taillabel="[RHS]" fontname="times" fontsize = 7 color="black" ];
-    17 -> 8[taillabel="[STATEMENTS]" fontname="times" fontsize = 7 color="black" ];
-  label="test/fixtures/types/block.lys::gte(i32)";
-}
-  1 -> 6[taillabel="[]" fontname="times" fontsize = 7 color="black" ];
-  2 -> 1[taillabel="[FUNCTION]" fontname="times" fontsize = 7 color="black" ];
-  3 -> 4[taillabel="[EXPECTED_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  4 -> 2[taillabel="[x]" fontname="times" fontsize = 7 color="black" ];
-  5 -> 2[taillabel="[#RETURN_TYPE]" fontname="times" fontsize = 7 color="black" ];
-  label="";
+digraph LYS {
+  node [shape=box,fontsize=10];
+  subgraph "cluster_test/fixtures/types/block.lys" {
+    1 [label="FunOverload: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
+    2 [label="FunNode: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
+    3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+    4 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
+    5 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+    6 [label="Name: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
+    subgraph "cluster_test/fixtures/types/block.lys_0" { rankdir=TB;
+      node [style=filled, fillcolor=grey];
+      7 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
+      8 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
+      9 [label="VarDecl: ttt\n(native void)", fillcolor=grey];
+      10 [label="Name: ttt\n(alias i32 (native i32))", fillcolor=grey];
+      11 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
+      12 [label="AssignmentNode\n(native void)", fillcolor=grey];
+      13 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
+      14 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
+      15 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
+      16 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
+      17 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
+      18 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      label="test/fixtures/types/block.lys::gte(i32)";
+    }
+    label="test/fixtures/types/block.lys";
+  }
+  1 -> 6[taillabel="[]" fontsize=7 fontname="times" color="black" ];
+  2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
+  3 -> 4[taillabel="[EXPECTED_TYPE]" fontsize=7 fontname="times" color="black" ];
+  4 -> 2[taillabel="[x]" fontsize=7 fontname="times" color="black" ];
+  5 -> 2[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
+  7 -> 16[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  9 -> 8[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  10 -> 13[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  10 -> 15[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  10 -> 17[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  11 -> 10[taillabel="[DEFAULT_VALUE]" fontsize=7 fontname="times" color="black" ];
+  12 -> 8[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  13 -> 12[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
+  14 -> 12[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
+  15 -> 14[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
+  16 -> 14[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
+  17 -> 8[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  label="LYS";
 }

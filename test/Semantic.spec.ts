@@ -5,11 +5,12 @@ import { findNodesByType, Nodes } from '../dist/parser/nodes';
 import { walkPreOrder } from '../dist/parser/walker';
 import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
 import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
-import { folderBasedTest, printAST, testParseToken, testParseTokenFailsafe } from './TestHelpers';
+import { folderBasedTest, testParseToken, testParseTokenFailsafe } from './TestHelpers';
 import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
 import { ParsingContext } from '../dist/parser/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
+import { printAST } from '../dist/utils/astPrinter';
 
 const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
   node.parent = parent;
@@ -61,6 +62,18 @@ describe('Semantic', function() {
       },
       '.desugar'
     );
+
+    describe('Compilation-execution-tests-desugar', () => {
+      folderBasedTest(
+        '**/execution/*.lys',
+        phases1,
+        async (result, err) => {
+          if (err) throw err;
+          return printNode(result.document);
+        },
+        '.desugar'
+      );
+    });
   });
 
   let semanticTestCount = 0;
@@ -228,7 +241,7 @@ describe('Semantic', function() {
         fun gta(): i32 = 1
       }
 
-      fun test(a: i32): boolean = BB#gta()
+      fun test(a: i32): boolean = BB.gta()
     `;
 
     testToFail`
@@ -269,7 +282,7 @@ describe('Semantic', function() {
         fun gtax(): i32 = 1
       }
 
-      fun test(a: i32): i32 = ExistentType#gtax()
+      fun test(a: i32): i32 = ExistentType.gtax()
     `;
   });
 
@@ -435,14 +448,14 @@ describe('Semantic', function() {
     `;
 
     test`
-      type i32 = %stack { lowLevelType="i32" }
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
       var a: i32 = 1
     `;
 
     testToFail`var a: i32a = 1`;
 
     testToFail`
-      type i32 = %stack { lowLevelType="i32" }
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
       var i32 = 1
     `;
 

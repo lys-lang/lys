@@ -24,6 +24,7 @@ type CompilationModuleResult = {
   moduleParts: any[];
   starters: any[];
   endMemory: number;
+  imports: any[];
 };
 
 const wabt: typeof _wabt = (_wabt as any)();
@@ -31,8 +32,8 @@ const wabt: typeof _wabt = (_wabt as any)();
 const starterName = t.identifier('%%START%%');
 declare var WebAssembly, console;
 
-(binaryen as any).setOptimizeLevel(5);
-(binaryen as any).setShrinkLevel(5);
+(binaryen as any).setOptimizeLevel(3);
+(binaryen as any).setShrinkLevel(0);
 
 const secSymbol = Symbol('secuentialId');
 
@@ -113,7 +114,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
 
   const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
-  const lhs = t.instruction('set_local', [t.identifier(local.name), emit(match.lhs, document)]);
+  const lhs = t.instruction('local.set', [t.identifier(local.name), emit(match.lhs, document)]);
 
   if (ixDefaultBranch !== -1) {
     // the default branch must be the last element
@@ -134,7 +135,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           emit(node.literal, document),
-          t.instruction('get_local', [t.identifier(local.name)])
+          t.instruction('local.get', [t.identifier(local.name)])
         ]);
 
         const body = emit(node.rhs, document);
@@ -147,7 +148,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
-          t.instruction('get_local', [t.identifier(local.name)])
+          t.instruction('local.get', [t.identifier(local.name)])
         ]);
 
         const body = emit(node.rhs, document);
@@ -268,14 +269,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return emitLoop(node, document);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
-      return t.instruction('set_local', [t.identifier(local.name), emit(node.value, document)]);
+      return t.instruction('local.set', [t.identifier(local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
       if (node.lhs instanceof Nodes.ReferenceNode) {
         const isLocal = node.lhs.isLocal;
         const isValueNode = node.hasAnnotation(annotations.IsValueNode);
 
         if (isLocal) {
-          const instr = isValueNode ? 'tee_local' : 'set_local';
+          const instr = isValueNode ? 'local.tee' : 'local.set';
           const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
           return t.instruction(instr, [t.identifier(local.name), emit(node.rhs, document)]);
         } else {
@@ -284,14 +285,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
             return t.blockInstruction(
               t.identifier('tee_global_' + getFunctionSeqId(node)),
               [
-                t.instruction('set_global', [t.identifier(local.name), emit(node.rhs, document)]),
-                t.instruction('get_global', [t.identifier(local.name)])
+                t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]),
+                t.instruction('global.get', [t.identifier(local.name)])
               ],
               node.rhs.ofType.binaryenType
             );
           } else {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
-            return t.instruction('set_global', [t.identifier(local.name), emit(node.rhs, document)]);
+            return t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]);
           }
         }
       } else {
@@ -304,7 +305,19 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       let instr = [];
 
       node.statements.forEach($ => {
-        instr = instr.concat(emit($, document));
+        // TODO: Drop here things
+        let emited = emit($, document);
+
+        if ($.ofType && $.ofType.binaryenType !== undefined && !$.hasAnnotation(annotations.IsValueNode)) {
+          if (emited instanceof Array) {
+            // console.log(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`);
+            throw new AstNodeError(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`, $);
+          } else {
+            emited = t.instruction('drop', [emited]);
+          }
+        }
+
+        instr = instr.concat(emited);
       });
 
       if (instr.length == 0) {
@@ -340,9 +353,24 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
-      const instr = node.isLocal ? 'get_local' : 'get_global';
+      const instr = node.isLocal ? 'local.get' : 'global.get';
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
       return t.instruction(instr, [t.identifier(local.name)]);
+    } else if (node instanceof Nodes.MemberNode) {
+      if (node.operator == '.^') {
+        const schemaType = node.lhs.ofType;
+        const type = schemaType.schema()[node.memberName.name];
+        try {
+          const value = schemaType.getSchemaValue(node.memberName.name);
+          if (value === null || isNaN(value)) {
+            throw new AstNodeError(`Value was undefined`, node.memberName);
+          }
+          return t.objectInstruction('const', type.binaryenType, [t.numberLiteralFromRaw(value)]);
+        } catch (e) {
+          if (e instanceof AstNodeError) throw e;
+          throw new AstNodeError(e.message, node.memberName);
+        }
+      }
     }
 
     throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
@@ -369,10 +397,23 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
   constructor(public compilationPhaseResult: CompilationPhaseResult) {
     super();
-    this.execute();
+    try {
+      this.execute();
+    } catch (e) {
+      if (e instanceof AstNodeError) {
+        this.parsingContext.messageCollector.error(e);
+      } else {
+        throw e;
+      }
+    }
   }
 
-  async validate(optimize: boolean = true) {
+  async validate(
+    optimize: boolean = true,
+    debug = false
+  ): Promise<{
+    callGraph?: string;
+  }> {
     let text = print(this.programAST);
 
     const wabtModule = wabt.parseWat(
@@ -390,25 +431,39 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       throw e;
     }
 
-    const binary = wabtModule.toBinary({ log: false });
-    this.buffer = binary.buffer;
-
+    const binary = wabtModule.toBinary({ log: false, write_debug_names: debug });
     wabtModule.destroy();
 
     try {
-      const module = binaryen.readBinary(this.buffer);
+      const module = binaryen.readBinary(binary.buffer);
+
+      module.runPasses(['duplicate-function-elimination']);
+      module.runPasses(['remove-unused-module-elements']);
 
       if (module.validate() == 0) {
         this.parsingContext.messageCollector.error(new AstNodeError('binaryen validation failed', this.document));
       }
 
-      if (optimize) {
-        module.optimize();
+      let callGraph: string = void 0;
 
-        this.buffer = module.emitBinary();
+      if (debug) {
+        //   const old = (binaryen as any).print;
+        //   (binaryen as any).print = (x: string) => {
+        //     callGraph += x + '\n';
+        //   };
+        //   module.runPasses(['print-call-graph']);
+        //   (binaryen as any).print = old;
       }
 
+      if (optimize) {
+        module.optimize();
+      }
+
+      this.buffer = module.emitBinary();
+
       module.dispose();
+
+      return { callGraph };
     } catch (e) {
       if (e instanceof Error) throw e;
       throw new Error(e);
@@ -416,20 +471,25 @@ export class CodeGenerationPhaseResult extends PhaseResult {
   }
 
   emitText() {
-    const module = binaryen.readBinary(this.buffer);
-    const ret = module.emitText();
-    module.dispose();
-    return ret;
+    if (this.buffer) {
+      const module = binaryen.readBinary(this.buffer);
+      const ret = module.emitText();
+      module.dispose();
+      return ret;
+    } else if (this.programAST) {
+      return print(this.programAST);
+    }
+    throw new Error('Impossible to emitText');
   }
 
   optimize() {}
 
   /** This method only exists for test porpuses */
-  async toInstance() {
+  async toInstance(extra: Record<string, Record<string, any>> = {}) {
     if (!this.buffer) throw new Error("You didn't generate a binary yet");
     // Create the imports for the module, including the
     // standard dynamic library imports
-    const imports = {
+    const imports = extra || {
       env: {
         memoryBase: 0,
         tableBase: 0,
@@ -444,48 +504,49 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return new WebAssembly.Instance(compiled, imports);
   }
 
-  generatePhase(
-    compilationPhase: CompilationPhaseResult,
-    exports: boolean,
-    startMemory: number
-  ): CompilationModuleResult {
+  generatePhase(compilationPhase: CompilationPhaseResult, startMemory: number): CompilationModuleResult {
     const globals = findNodesByType(compilationPhase.document, Nodes.VarDirectiveNode);
     const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
     const bytesLiterals = findNodesByType(compilationPhase.document, Nodes.StringLiteral);
 
     const starters = [];
+    const imports = [];
     const exportedElements = [];
     const createdFunctions = [];
     const dataSection = [];
 
     const endMemory = bytesLiterals.reduce<number>((offset, literal) => {
-      const str = literal.value;
-      const bytes: number[] = [];
-      const byteSize = str.length * 2;
+      if (literal.parent instanceof Nodes.DecoratorNode) {
+        return offset;
+      } else {
+        const str = literal.value;
+        const bytes: number[] = [];
+        const byteSize = str.length * 2;
 
-      bytes.push(byteSize & 0xff);
-      bytes.push((byteSize >> 8) & 0xff);
-      bytes.push((byteSize >> 16) & 0xff);
-      bytes.push((byteSize >> 24) & 0xff);
+        bytes.push(byteSize & 0xff);
+        bytes.push((byteSize >> 8) & 0xff);
+        bytes.push((byteSize >> 16) & 0xff);
+        bytes.push((byteSize >> 24) & 0xff);
 
-      for (let index = 0; index < str.length; index++) {
-        const char = str.charCodeAt(index);
-        bytes.push(char & 0xff);
-        bytes.push(char >> 8);
+        for (let index = 0; index < str.length; index++) {
+          const char = str.charCodeAt(index);
+          bytes.push(char & 0xff);
+          bytes.push(char >> 8);
+        }
+
+        bytes.push(0);
+
+        const size = bytes.length;
+        literal.offset = offset;
+        literal.length = size;
+
+        const numberLiteral = t.numberLiteralFromRaw(offset, 'i32');
+        const offsetToken = t.objectInstruction('const', 'i32', [numberLiteral]);
+
+        dataSection.push(t.data(t.memIndexLiteral(0), offsetToken, t.byteArray(bytes)));
+
+        return offset + size;
       }
-
-      bytes.push(0);
-
-      const size = bytes.length;
-      literal.offset = offset;
-      literal.length = size;
-
-      const numberLiteral = t.numberLiteralFromRaw(offset, 'i32');
-      const offsetToken = t.objectInstruction('const', 'i32', [numberLiteral]);
-
-      dataSection.push(t.data(t.memIndexLiteral(0), offsetToken, t.byteArray(bytes)));
-
-      return offset + size;
     }, startMemory);
 
     const createdGlobals = globals.map($ => {
@@ -496,7 +557,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
       const identifier = t.identifier(local.name);
 
-      starters.push(t.instruction('set_global', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
+      starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 
       // if ($.isExported) {
       //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));
@@ -510,26 +571,31 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     });
 
     functions.forEach($ => {
-      const canBeExported = $.functions.length === 1;
-      const candidateToExport = $.parent == compilationPhase.document;
-
       $.functions.forEach(fun => {
-        createdFunctions.push(emitFunction(fun, compilationPhase.document));
-        // TODO: decorate exported functions
-        if ($.isExported && exports && !fun.hasAnnotation(annotations.Injected) && candidateToExport) {
-          if (canBeExported) {
-            exportedElements.push(
-              t.moduleExport(
-                fun.functionName.name,
-                t.moduleExportDescr('Func', t.identifier(fun.functionName.internalIdentifier))
-              )
-            );
-          } else {
-            throw new AstNodeError(
-              `You cannot export overloaded functions (${fun.functionName.text})`,
-              fun.functionName
-            );
-          }
+        if (fun.hasAnnotation(annotations.Extern)) {
+          const extern = fun.getAnnotation(annotations.Extern);
+          const fnType = getTypeForFunction(fun.functionNode);
+
+          imports.push(
+            t.moduleImport(
+              extern.module,
+              extern.fn,
+              t.funcImportDescr(t.identifier(fun.functionNode.functionName.internalIdentifier), fnType)
+            )
+          );
+        } else {
+          createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
+        }
+
+        const exportedAnnotation = fun.getAnnotation(annotations.Export);
+        // TODO: verify we are not exporting two things with the same name
+        if (exportedAnnotation) {
+          exportedElements.push(
+            t.moduleExport(
+              exportedAnnotation.exportedName,
+              t.moduleExportDescr('Func', t.identifier(fun.functionNode.functionName.internalIdentifier))
+            )
+          );
         }
       });
     });
@@ -538,7 +604,8 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       compilationPhase,
       moduleParts: [...dataSection, ...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
       starters,
-      endMemory
+      endMemory,
+      imports
     };
   }
 
@@ -573,14 +640,16 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     let currentMemory = 16;
 
-    const generatedModules = exportList.map(($, ix) => {
-      const ret = this.generatePhase($, ix == 0, currentMemory);
+    const moduleParts = [];
+
+    const generatedModules = exportList.map($ => {
+      const ret = this.generatePhase($, currentMemory);
       currentMemory = ret.endMemory;
+      moduleParts.push(...ret.imports);
       return ret;
     });
 
     const starters = [];
-    const moduleParts = [];
 
     const memory = t.memory(t.limit(1), t.identifier('mem'));
 

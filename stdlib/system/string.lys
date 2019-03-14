@@ -2,27 +2,172 @@
 struct String(data: bytes)
 
 impl String {
-  fun property_length(str: String): i32 = str.data.length / 2
+  fun property_length(str: String): u32 = str.data.length / 2 as u32
 
-  fun +(lhs: String, rhs: String): String = {
-    val lhsData = lhs.data
-    val rhsData = rhs.data
+  fun +(lhs: String, rhs: String): String = String(concatBytes(lhs.data, rhs.data))
 
-    val lhsLen = lhsData.length
-    val rhsLen = rhsData.length
-
-    var newData = system::memory::allocBytes(lhsLen + rhsLen)
-
-    system::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
-    system::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
-
-    String(newData)
-  }
-
-  fun charAt(str: String, at: i32): u16 = {
+  fun charAt(str: String, at: u32): u16 = {
     if (at > str.length) {
       panic()
     }
-    u16.load(str.data.ptr as ref, at * 2)
+    u16.load(str.data.ptr as ref, at * 2 as u32)
   }
+
+  fun charAt(str: bytes, at: u32): u16 = {
+    if (at > str.length / 2 as u32) {
+      panic()
+    }
+    u16.load(str.ptr as ref, at * 2 as u32)
+  }
+
+  fun charLength(value: i64): u32 = {
+    if (value == 0 as i64) {
+      1 as u32
+    } else {
+      var len = 0 // Math.log10(value)
+      val i64_10 = 10 as i64
+      var current = value
+
+      if (value < 0 as i64) {
+        len = len + 1
+        current = -current
+      }
+
+      loop {
+        current = current / i64_10
+        len = len + 1
+
+        if (current > 0 as i64) {
+          continue
+        } else {
+          break
+        }
+      }
+
+      len as u32
+    }
+  }
+
+  fun charLength(value: u64): u32 = {
+    if (value == 0 as u64) {
+      1 as u32
+    } else {
+      var len = 0 // Math.log10(value)
+      val u64_10 = 10 as u64
+      var current = value
+
+      loop {
+        current = current / u64_10
+        len = len + 1
+
+        if (current > 0 as u64) {
+          continue
+        } else {
+          break
+        }
+      }
+
+      len as u32
+    }
+  }
+
+  fun printToBytes(dst: bytes, value: u64, endChar: u32): void = {
+    val ZERO_CHAR = 48 as u16
+    var num = value
+    var offset = endChar as i32
+    val u64_10 = 10 as u64
+
+    loop {
+      val t = num / u64_10
+      val r = (num % u64_10) as u16
+      num = t
+      offset = offset - 1
+      bytes.set(dst, (offset << 1) as u32, ZERO_CHAR + r)
+
+      if (num == 0 as u64) {
+        break
+      } else {
+        continue
+      }
+    }
+  }
+
+  fun stringify(value: boolean): bytes = {
+    if (value) {
+      "true"
+    } else {
+      "false"
+    }
+  }
+
+  fun stringify(value: u8): bytes = {
+    stringify(value as u64)
+  }
+
+  fun stringify(value: u16): bytes = {
+    stringify(value as u64)
+  }
+
+  fun stringify(value: i16): bytes = {
+    stringify(value as i64)
+  }
+
+  fun stringify(value: i32): bytes = {
+    stringify(value as i64)
+  }
+
+  fun stringify(value: u32): bytes = {
+    stringify(value as u64)
+  }
+
+  fun stringify(value: i64): bytes = {
+    if (value == 0 as i64) {
+      "0"
+    } else {
+      var len = charLength(value)
+
+      val ret = system::memory::allocBytes(len << 1)
+
+      if (value > 0 as i64)
+        printToBytes(ret, value as u64, len)
+      else
+        printToBytes(ret, (-value) as u64, len)
+
+      if (value < 0 as i64) {
+        // 45 == '-'
+        u16.store(ret.ptr as ref, 45 as u16, 0 as u32)
+      }
+
+      ret
+    }
+  }
+
+  fun stringify(value: u64): bytes = {
+    if (value == 0 as u64) {
+      "0"
+    } else {
+      var len = charLength(value)
+
+      val ret = system::memory::allocBytes(len << 1)
+
+      printToBytes(ret, value, len)
+
+      ret
+    }
+  }
+}
+
+fun concatBytes(lhs: bytes, rhs: bytes): bytes = {
+  val lhsLen = lhs.length
+  val rhsLen = rhs.length
+
+  val $ret = system::memory::allocBytes(lhsLen + rhsLen)
+
+  system::memory::memcpy(
+    rhs.ptr,
+    system::memory::memcpy(lhs.ptr, $ret.ptr, lhsLen),
+    rhsLen
+  )
+
+  $ret
 }

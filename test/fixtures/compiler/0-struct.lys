@@ -5,6 +5,7 @@ enum Color {
   Custom(r: i32, g: i32, b: i32)
 }
 
+#[export]
 fun isRed(color: Color): boolean = {
   match color {
     case is Red -> true
@@ -13,6 +14,7 @@ fun isRed(color: Color): boolean = {
   }
 }
 
+#[export]
 fun testColors(): void = {
   support::test::assert(isRed(Red) == true)
   support::test::assert(isRed(Green) == false)

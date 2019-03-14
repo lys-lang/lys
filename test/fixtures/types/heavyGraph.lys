@@ -1,36 +1,36 @@
-fun AL_BITS(): i32 = 3
-fun AL_SIZE(): i32 = 1 << AL_BITS()
-fun AL_MASK(): i32 = AL_SIZE() - 1
-fun MAX_SIZE_32(): i32 = 1 << 30 // 1G
-fun HEAP_BASE(): i32 = 0
-fun startOffset(): i32 = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
-fun offset(): i32 = startOffset()
-fun max(a: i32, b: i32): i32 = if (a>b) a else b
-fun currentMemory(): i32 = %wasm {(current_memory)}
+fun AL_BITS(): u32 = 3 as u32
+fun AL_SIZE(): u32 = 1 as u32 << AL_BITS() as i32
+fun AL_MASK(): u32 = AL_SIZE() - 1 as u32
+fun MAX_SIZE_32(): u32 = 1 as u32 << 30 // 1G
+fun HEAP_BASE(): u32 = 0 as u32
+fun startOffset(): u32 = (HEAP_BASE() + AL_MASK()) & ~(AL_MASK())
+fun offset(): u32 = startOffset()
+fun max(a: u32, b: u32): u32 = if (a>b) a else b
+fun currentMemory(): u32 = %wasm {(current_memory)}
 
-fun growMemory(pages: i32): i32 = %wasm {
+fun growMemory(pages: u32): u32 = %wasm {
   (grow_memory (get_local $pages))
 }
 
-fun malloc(size: i32): i32 = {
-  if (size > 0) {
+fun malloc(size: u32): u32 = {
+  if (size > 0 as u32) {
     if (size > MAX_SIZE_32()) panic()
     val ptr = offset() * currentMemory() - system::memory::malloc(currentMemory())
-    val newPtr1 = (currentMemory() + size + AL_MASK()) & ~system::memory::malloc(1)
+    val newPtr1 = (currentMemory() + size + AL_MASK()) & ~system::memory::malloc(1 as u32)
     val newPtr = (ptr + newPtr1 + AL_MASK()) & ~AL_MASK()
     val pagesBefore = currentMemory()
     if (newPtr > pagesBefore << 16) {
-      val ptrx = ptr + 0xffff & ~(3 ^ -0xffff + ~(~ptr)) >>> 16
-      val pagesNeeded = ((newPtr - ~ptrx) & ~(3 ^ -0xffff + ~(~ptrx))) >>> 16
+      val ptrx = ptr + 0xffff as u32 & ~(3 as u32 ^ -0xffff as u32 + ~(~ptr)) >>> 16
+      val pagesNeeded = ((newPtr - ~ptrx) & ~(3 as u32 ^ -0xffff as u32 + ~(~ptrx))) >>> 16
       val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
-      if (growMemory(pagesWanted) < 0) {
-        if (growMemory(pagesNeeded) < 0) {
+      if (growMemory(pagesWanted) < 0 as u32) {
+        if (growMemory(pagesNeeded) < 0 as u32) {
           panic() // out of memory
         }
       }
     }
     newPtr + system::memory::malloc(system::memory::malloc(size))
   } else {
-    0
+    0 as u32
   }
 }

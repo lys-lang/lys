@@ -1,4 +1,13 @@
+- automatically coerce based on implicit `as`
+  - remove hardcoded ref type
 - val variables should not be reassignable
+- parameters should be immutable
+- private names are no private
+- reuse string literals in memory
+- let constructs (scope)
+- methods
+- type alias
+- emit text should be parsed and emited again correctly, final result must be the same as the begin
 - OR binary op should stop evaluation after the first non-zero result is yielded
 - AND binary op should stop evaluation after the first zero result is yielded
 
@@ -10,6 +19,20 @@ closure functions
 fun sizeOf(x: Type<A> | A): usize
 
 test parsing `enum test {}`
+
+test parsing
+
+```lys
+fun malloc(size: i32): i32 = {
+  if (size > 0) {
+    val sizeToAlloc = size + 8 /* asd */
+    if (sizeToAlloc > MAX_SIZE_32) {
+      panic()
+    }
+  }
+}
+
+```
 
 MESSAGE TO FUTURE AGUS:
 
@@ -170,3 +193,19 @@ impl Kelvin {
   }
 }
 ```
+
+grammar changes:
+
+```
+#[...]
+
+""
+
+.^
+
+as <type>
+```
+
+porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
+
+immutable parameters, immutable `val`

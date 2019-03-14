@@ -5,25 +5,29 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=Injected
-    |-FunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes))
-      |-ParameterNode annotations=Local(input:bytes#0)
-        |-NameIdentifierNode="input" type=(alias bytes (native bytes))
+    |-FunDirectiveNode annotations=Export
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+        |-StringLiteral="keccak"
+      |-FunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(input:bytes#0)
+          |-NameIdentifierNode="input" type=(alias bytes (native bytes))
+          |-ReferenceNode type=(type (alias bytes (native bytes)))
+            |-QNameNode=bytes
+              |-NameIdentifierNode="bytes"
+        |-NameIdentifierNode="keccak"
         |-ReferenceNode type=(type (alias bytes (native bytes)))
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
-      |-NameIdentifierNode="keccak"
-      |-ReferenceNode type=(type (alias bytes (native bytes)))
-        |-QNameNode=bytes
-          |-NameIdentifierNode="bytes"
-      |-BlockNode type=(alias bytes (native bytes)) annotations=IsValueNode
-        |-FunctionCallNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
-          |-ReferenceNode type=(fun "keccak" ((alias bytes)) (alias bytes))
-            |-QNameNode=system::hash::keccak::keccak
-              |-NameIdentifierNode="system"
-              |-NameIdentifierNode="hash"
-              |-NameIdentifierNode="keccak"
-              |-NameIdentifierNode="keccak"
-          |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(input:bytes#0)
-            |-QNameNode=input
-              |-NameIdentifierNode="input"
+        |-BlockNode type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
+            |-ReferenceNode type=(fun "keccak" ((alias bytes)) (alias bytes))
+              |-QNameNode=system::hash::keccak::keccak
+                |-NameIdentifierNode="system"
+                |-NameIdentifierNode="hash"
+                |-NameIdentifierNode="keccak"
+                |-NameIdentifierNode="keccak"
+            |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(input:bytes#0)
+              |-QNameNode=input
+                |-NameIdentifierNode="input"
     |-NameIdentifierNode="keccak" type=(fun "keccak" ((alias bytes)) (alias bytes))

@@ -45,7 +45,7 @@ const visitor = {
   VarDirective(astNode: Nodes.ASTNode) {
     const ret = new Nodes.VarDirectiveNode(astNode);
 
-    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+    ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
 
     ret.decl = visit(findChildrenType(astNode, 'VarDeclaration'));
 
@@ -54,7 +54,7 @@ const visitor = {
   ValDirective(astNode: Nodes.ASTNode) {
     const ret = new Nodes.ValDirectiveNode(astNode);
 
-    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+    ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
     ret.decl = visit(findChildrenType(astNode, 'ValDeclaration'));
 
     return ret;
@@ -62,7 +62,7 @@ const visitor = {
   EffectDirective(astNode: Nodes.ASTNode) {
     const ret = new Nodes.EffectDirectiveNode(astNode);
 
-    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+    ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
     ret.effect = visit(findChildrenType(astNode, 'EffectDeclaration'));
 
     return ret;
@@ -70,10 +70,9 @@ const visitor = {
   ImplDirective(astNode: Nodes.ASTNode) {
     const ret = new Nodes.ImplDirective(astNode);
 
-    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
-    const declNode = findChildrenType(astNode, 'ImplDeclaration');
-    ret.reference = visit(findChildrenType(declNode, 'Reference'));
-    const directivesNode = findChildrenType(declNode, 'NamespaceElementList');
+    ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
+    ret.reference = visit(findChildrenType(astNode, 'Reference'));
+    const directivesNode = findChildrenType(astNode, 'NamespaceElementList');
     ret.directives = directivesNode.children.map(visit) as Nodes.DirectiveNode[];
 
     return ret;
@@ -129,10 +128,10 @@ const visitor = {
     let child = children.shift();
 
     if (child.type === 'PrivateModifier') {
-      ret.isExported = false;
+      ret.isPublic = false;
       child = children.shift();
     } else {
-      ret.isExported = true;
+      ret.isPublic = true;
     }
 
     ret.variableName = visit(child);
@@ -152,10 +151,10 @@ const visitor = {
     let child = children.shift();
 
     if (child.type === 'PrivateModifier') {
-      ret.isExported = false;
+      ret.isPublic = false;
       child = children.shift();
     } else {
-      ret.isExported = true;
+      ret.isPublic = true;
     }
 
     ret.variableName = visit(child);
@@ -187,10 +186,29 @@ const visitor = {
 
     return fun;
   },
+  Decorator(astNode: Nodes.ASTNode) {
+    const ret = new Nodes.DecoratorNode(astNode);
+
+    const name = astNode.children.shift();
+
+    ret.decoratorName = visit(name);
+
+    ret.arguments = astNode.children.map(visit) as Nodes.LiteralNode<any>[];
+
+    return ret;
+  },
   FunctionDirective(astNode: Nodes.ASTNode) {
     const ret = new Nodes.FunDirectiveNode(astNode);
 
-    ret.isExported = !findChildrenType(astNode, 'PrivateModifier');
+    const decorators = findChildrenType(astNode, 'Decorators');
+
+    if (decorators) {
+      ret.decorators = decorators.children.map(visit) as Nodes.DecoratorNode[];
+    } else {
+      ret.decorators = [];
+    }
+
+    ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
 
     ret.functionNode = visit(findChildrenType(astNode, 'FunDeclaration')) as Nodes.FunctionNode;
 
@@ -267,10 +285,10 @@ const visitor = {
     return ret;
   },
   MatchExpression(astNode: Nodes.ASTNode) {
-    const match = new Nodes.PatternMatcherNode(astNode.children[0]);
+    const match = new Nodes.PatternMatcherNode(astNode);
 
-    match.lhs = visit(astNode.children[1]);
-    match.matchingSet = astNode.children[2].children.map($ => visit($));
+    match.lhs = visit(astNode.children[0]);
+    match.matchingSet = astNode.children[1].children.map($ => visit($));
 
     return match;
   },
@@ -282,7 +300,6 @@ const visitor = {
   FunOperator(astNode: Nodes.ASTNode) {
     const ret = new Nodes.NameIdentifierNode(astNode);
     ret.name = astNode.text.trim();
-    ret.hasParentheses = true;
     return ret;
   },
   NameIdentifier(astNode: Nodes.ASTNode) {
@@ -439,7 +456,9 @@ const visitor = {
   },
   StructLiteral(astNode: Nodes.ASTNode) {
     const ret = new Nodes.StructTypeNode(astNode);
-    ret.names = astNode.children.map($ => $.text);
+    const parameters = findChildrenType(astNode, 'StructParamsList');
+
+    ret.parameters = parameters.children.filter($ => $.type == 'Parameter').map($ => visit($));
     return ret;
   },
   StackLiteral(astNode: Nodes.ASTNode) {
@@ -500,7 +519,13 @@ const visitor = {
     const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
     ret.arguments = ret.arguments.concat(newChildren);
 
-    if (ret.symbol == 'call' || ret.symbol == 'get_global' || ret.symbol == 'set_global') {
+    if (
+      ret.symbol == 'call' ||
+      ret.symbol == 'global.get' ||
+      ret.symbol == 'global.set' ||
+      ret.symbol == 'get_global' ||
+      ret.symbol == 'set_global'
+    ) {
       if (ret.arguments[0] instanceof Nodes.QNameNode) {
         const varRef = new Nodes.ReferenceNode(children[0]);
         varRef.variable = ret.arguments[0] as Nodes.QNameNode;

@@ -1,0 +1,1012 @@
+val AL_BITS: i32 = 3
+
+val AL_SIZE: i32 = 1 << AL_BITS
+
+val AL_MASK: i32 = AL_SIZE - 1
+
+val MAX_SIZE_32: i32 = 1 << 30
+
+val HEAP_BASE = 0
+
+type asd = %struct {  }
+
+impl asd {
+  #[inline]
+  private fun asd$discriminant(): i64 = {
+    val discriminant: u32 = asd.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): asd = %wasm {
+    (call asd$discriminant)
+  }
+
+  fun is(a: asd): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call asd$discriminant))
+  }
+
+  fun ==(a: asd, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: asd, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: asd, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): asd = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+private var startOffset: i32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
+
+private var offset: i32 = startOffset
+
+private var lastPtr: i32 = 0
+
+private fun growMemory(pages: i32): i32 = %wasm {
+  (grow_memory (get_local $pages))
+}
+
+private fun currentMemory(): i32 = %wasm {
+  (current_memory)
+}
+
+private fun max(a: i32, b: i32): i32 =
+  if (a > b)
+    a
+  else
+    b
+
+
+#[inline]
+fun allocBytes(size: i32): bytes = %wasm {
+  (local $allocation i32)
+  (set_local $allocation (call malloc (get_local $size)))
+  (i32.store (get_local $allocation) (get_local $size))
+  (i64.or (i64.extend_s/i32 (get_local $allocation)) (i64.shl (i64.extend_s/i32 (i32.const 0)) (i64.const 32)))
+}
+
+#[inline]
+#[export "calloc"]
+#[explicit]
+fun calloc(itemCount: i32, itemSize: i32): i32 = {
+  val size = itemCount * itemSize
+  val $ret = malloc(size)
+  memset($ret, size, 0)
+  $ret
+}
+
+fun malloc(size: i32): i32 = {
+  if (size > 0) {
+    if (size > MAX_SIZE_32) {
+      panic()
+    }
+    val ptr = offset
+    val newPtr = (ptr + size + AL_MASK) & ~AL_MASK
+    val pagesBefore = currentMemory()
+    if (newPtr > pagesBefore << 16) {
+      val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >>> 16
+      val pagesWanted = max(pagesBefore, pagesNeeded)
+      if (growMemory(pagesWanted) < 0) {
+        if (growMemory(pagesNeeded) < 0) {
+          panic()
+        }
+      }
+    }
+    offset = newPtr
+    ptr
+  } else {
+    0
+  }
+}
+
+fun free(ptr: i32): void = {}
+
+fun discriminant(v: ref): u64 = %wasm {
+  (i64.and (i64.const 0xffffffff00000000) (get_local $v))
+}
+
+fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
+  (local $end i32)
+  (set_local $end (i32.add (get_local $from) (get_local $len)))
+  (block $exit (loop $cont (br_if $exit (i32.eq (get_local $from) (get_local $end))) (i32.store8 (get_local $to) (i32.load8_u (get_local $from))) (set_local $from (i32.add (get_local $from) (i32.const 1))) (set_local $to (i32.add (get_local $to) (i32.const 1))) (br $cont)))
+}
+
+fun memset(ptr: i32, content: i32, len: i32): void = %wasm {
+  (local $end i32)
+  (set_local $end (i32.add (get_local $ptr) (get_local $len)))
+  (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
+}
+
+type String = %struct { data: bytes }
+
+impl String {
+  #[inline]
+  private fun String$discriminant(): u64 = {
+    val discriminant: u32 = String.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(data: bytes): String = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, String.^allocationSize))
+    property$0($ref, data)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): String = %wasm {
+    (i64.or (call String$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: String, b: String): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: String, b: String): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_data(self: String): bytes = property$0(self)
+  fun property_data(self: String, value: bytes): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: String): bytes = bytes.load(self, String.^property$0_offset)
+  #[inline]
+  private fun property$0(self: String, value: bytes): void = bytes.store(self, value, String.^property$0_offset)
+
+  fun is(a: String): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call String$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: String, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): String = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl String {
+  fun property_length(str: String): i32 = str.data.length / 2
+
+  fun +(lhs: String, rhs: String): String = {
+    val lhsData = lhs.data
+    val rhsData = rhs.data
+    val lhsLen = lhsData.length
+    val rhsLen = rhsData.length
+    var newData = system::memory::allocBytes(lhsLen + rhsLen)
+    system::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
+    system::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
+    String(newData)
+  }
+
+  fun charAt(str: String, at: i32): u16 = {
+    if (at > str.length) {
+      panic()
+    }
+    u16.load(str.data.ptr as ref, at * 2)
+  }
+}
+
+type AA = BB
+
+impl AA {
+  fun is(a: AA): boolean = {
+    a is BB
+  }
+
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+  fun store(lhs: ref, rhs: AA, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): AA = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl AA {
+  fun as(a: AA): ref = %wasm {
+    (local.get $a)
+  }
+}
+
+impl BB {
+  fun as(a: BB): AA = %wasm {
+    (local.get $a)
+  }
+}
+
+type BB = %struct {  }
+
+impl BB {
+  #[inline]
+  private fun BB$discriminant(): i64 = {
+    val discriminant: u32 = BB.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): BB = %wasm {
+    (call BB$discriminant)
+  }
+
+  fun is(a: BB): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call BB$discriminant))
+  }
+
+  fun ==(a: BB, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: BB, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: BB, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): BB = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type TT = %struct {  }
+
+impl TT {
+  #[inline]
+  private fun TT$discriminant(): i64 = {
+    val discriminant: u32 = TT.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): TT = %wasm {
+    (call TT$discriminant)
+  }
+
+  fun is(a: TT): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call TT$discriminant))
+  }
+
+  fun ==(a: TT, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: TT, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: TT, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): TT = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl BB {
+  fun a(): i32 = 1
+}
+
+fun main(): i32 = BB.a()
+fun main(color: Color): i32 = color.r * 0x10000 | asd | color.g * 0x100 | color.b
+
+type test = %struct {  }
+
+impl test {
+  fun x(): i32 = 1
+}
+
+fun x(a): i32 = 1
+
+fun x1(): i32 = 1 + 2 / 3 * 4 - -5
+fun x1(): f32 = {
+  fun Y(): f32 = 1.0
+  Y()
+}
+
+fun x2(x): i32 = ~x
+fun x2(): i32 = {
+  var n = 1
+  fun Y(): i32 = n
+  Y()
+}
+
+fun x3(x): i32 = -x
+
+fun x4(): i32 = ~99
+
+fun x5(): i32 = ~test.x()
+
+fun x6(): boolean = !true
+
+type Tree = (Empty | Node)
+
+impl Tree {
+  fun is(a: Tree): boolean = {
+    a is Empty || a is Node
+  }
+
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+  fun store(lhs: ref, rhs: Tree, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Tree = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Tree {
+  fun as(a: Tree): ref = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Empty {
+  fun as(a: Empty): Tree = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Node {
+  fun as(a: Node): Tree = %wasm {
+    (local.get $a)
+  }
+}
+
+type Empty = %struct {  }
+
+type Node = %struct { a: (Tree | Forest) }
+
+impl Empty {
+  #[inline]
+  private fun Empty$discriminant(): i64 = {
+    val discriminant: u32 = Empty.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): Empty = %wasm {
+    (call Empty$discriminant)
+  }
+
+  fun is(a: Empty): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Empty$discriminant))
+  }
+
+  fun ==(a: Empty, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Empty, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: Empty, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Empty = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Node {
+  #[inline]
+  private fun Node$discriminant(): u64 = {
+    val discriminant: u32 = Node.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(a: ((Tree | Forest))): Node = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Node.^allocationSize))
+    property$0($ref, a)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Node = %wasm {
+    (i64.or (call Node$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Node, b: Node): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Node, b: Node): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_a(self: Node): ((Tree | Forest)) = property$0(self)
+  fun property_a(self: Node, value: ((Tree | Forest))): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Node.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Node, value: ((Tree | Forest))): void = storePropertyWithOffset$0(self, value, Node.^property$0_offset)
+
+  #[inline]
+  private fun loadPropertyWithOffset$0(self: Node, offset: u32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $self))))
+  }
+
+  #[inline]
+  private fun storePropertyWithOffset$0(self: Node, value: ((Tree | Forest)), offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $self))) (local.get $value))
+  }
+
+  fun is(a: Node): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Node$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Node, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Node = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type Forest = (Nil | Cons)
+
+impl Forest {
+  fun is(a: Forest): boolean = {
+    a is Nil || a is Cons
+  }
+
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+  fun store(lhs: ref, rhs: Forest, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Forest = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Forest {
+  fun as(a: Forest): ref = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Nil {
+  fun as(a: Nil): Forest = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Cons {
+  fun as(a: Cons): Forest = %wasm {
+    (local.get $a)
+  }
+}
+
+type Nil = %struct {  }
+
+type Cons = %struct { tree: (Tree | Forest) }
+
+impl Nil {
+  #[inline]
+  private fun Nil$discriminant(): i64 = {
+    val discriminant: u32 = Nil.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): Nil = %wasm {
+    (call Nil$discriminant)
+  }
+
+  fun is(a: Nil): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Nil$discriminant))
+  }
+
+  fun ==(a: Nil, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Nil, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: Nil, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Nil = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Cons {
+  #[inline]
+  private fun Cons$discriminant(): u64 = {
+    val discriminant: u32 = Cons.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(tree: ((Tree | Forest))): Cons = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Cons.^allocationSize))
+    property$0($ref, tree)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Cons = %wasm {
+    (i64.or (call Cons$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Cons, b: Cons): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Cons, b: Cons): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_tree(self: Cons): ((Tree | Forest)) = property$0(self)
+  fun property_tree(self: Cons, value: ((Tree | Forest))): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Cons.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Cons, value: ((Tree | Forest))): void = storePropertyWithOffset$0(self, value, Cons.^property$0_offset)
+
+  #[inline]
+  private fun loadPropertyWithOffset$0(self: Cons, offset: u32): ((Tree | Forest)) = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $self))))
+  }
+
+  #[inline]
+  private fun storePropertyWithOffset$0(self: Cons, value: ((Tree | Forest)), offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $self))) (local.get $value))
+  }
+
+  fun is(a: Cons): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Cons$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Cons, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Cons = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+fun testPassing(): void = {
+  var a = Nil
+  var b = Cons(Empty)
+  var c = Cons(Nil)
+  var d = Cons(Node(Empty))
+  var e = Node(Nil)
+  support::test::assert(a is Nil == true)
+  support::test::assert(a is Forest == true)
+  support::test::assert(b is Forest == true)
+  support::test::assert(c is Cons == true)
+  support::test::assert(e is Node == true)
+  support::test::assert(e is Tree == true)
+}
+
+fun testFn(): void = {
+  var x = 1
+  loop {
+    x = x + 1
+    if (x > 10)
+      break
+
+  }
+}
+
+fun testFn2(): void = {
+  var x = 1
+  loop {
+    x = x + 1
+    continue
+  }
+}
+
+type Color = %struct { r: i32, g: i32, b: i32 }
+
+impl Color {
+  #[inline]
+  private fun Color$discriminant(): u64 = {
+    val discriminant: u32 = Color.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(r: i32, g: i32, b: i32): Color = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Color.^allocationSize))
+    property$0($ref, r)
+    property$1($ref, g)
+    property$2($ref, b)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Color = %wasm {
+    (i64.or (call Color$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Color, b: Color): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Color, b: Color): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_r(self: Color): i32 = property$0(self)
+  fun property_r(self: Color, value: i32): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Color): i32 = i32.load(self, Color.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Color, value: i32): void = i32.store(self, value, Color.^property$0_offset)
+
+  fun property_g(self: Color): i32 = property$1(self)
+  fun property_g(self: Color, value: i32): void = property$1(self, value)
+
+  #[inline]
+  private fun property$1(self: Color): i32 = i32.load(self, Color.^property$1_offset)
+  #[inline]
+  private fun property$1(self: Color, value: i32): void = i32.store(self, value, Color.^property$1_offset)
+
+  fun property_b(self: Color): i32 = property$2(self)
+  fun property_b(self: Color, value: i32): void = property$2(self, value)
+
+  #[inline]
+  private fun property$2(self: Color): i32 = i32.load(self, Color.^property$2_offset)
+  #[inline]
+  private fun property$2(self: Color, value: i32): void = i32.store(self, value, Color.^property$2_offset)
+
+  fun is(a: Color): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Color$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Color, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Color = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type True = %struct {  }
+
+impl True {
+  #[inline]
+  private fun True$discriminant(): i64 = {
+    val discriminant: u32 = True.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): True = %wasm {
+    (call True$discriminant)
+  }
+
+  fun is(a: True): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call True$discriminant))
+  }
+
+  fun ==(a: True, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: True, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: True, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): True = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type False = %struct {  }
+
+impl False {
+  #[inline]
+  private fun False$discriminant(): i64 = {
+    val discriminant: u32 = False.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): False = %wasm {
+    (call False$discriminant)
+  }
+
+  fun is(a: False): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call False$discriminant))
+  }
+
+  fun ==(a: False, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: False, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: False, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): False = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type Boolean = (True | False)
+
+impl Boolean {
+  fun is(a: Boolean): boolean = {
+    a is True || a is False
+  }
+
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+  fun store(lhs: ref, rhs: Boolean, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Boolean = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Boolean {
+  fun as(a: Boolean): ref = %wasm {
+    (local.get $a)
+  }
+}
+
+impl True {
+  fun as(a: True): Boolean = %wasm {
+    (local.get $a)
+  }
+}
+
+impl False {
+  fun as(a: False): Boolean = %wasm {
+    (local.get $a)
+  }
+}
+
+fun gt0(x: i32): Boolean =
+  if (x > 0)
+    True()
+  else
+    False()
+
+
+fun isTrue(a: Boolean): boolean =
+  match a {
+    case is True -> true
+    else -> false
+  }
+
+type Iterator = %struct { current: i32, target: i32 }
+
+impl Iterator {
+  #[inline]
+  private fun Iterator$discriminant(): u64 = {
+    val discriminant: u32 = Iterator.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(current: i32, target: i32): Iterator = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Iterator.^allocationSize))
+    property$0($ref, current)
+    property$1($ref, target)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Iterator = %wasm {
+    (i64.or (call Iterator$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Iterator, b: Iterator): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Iterator, b: Iterator): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_current(self: Iterator): i32 = property$0(self)
+  fun property_current(self: Iterator, value: i32): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Iterator): i32 = i32.load(self, Iterator.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Iterator, value: i32): void = i32.store(self, value, Iterator.^property$0_offset)
+
+  fun property_target(self: Iterator): i32 = property$1(self)
+  fun property_target(self: Iterator, value: i32): void = property$1(self, value)
+
+  #[inline]
+  private fun property$1(self: Iterator): i32 = i32.load(self, Iterator.^property$1_offset)
+  #[inline]
+  private fun property$1(self: Iterator, value: i32): void = i32.store(self, value, Iterator.^property$1_offset)
+
+  fun is(a: Iterator): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Iterator$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Iterator, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Iterator = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+type Maybe = (None | Some)
+
+impl Maybe {
+  fun is(a: Maybe): boolean = {
+    a is None || a is Some
+  }
+
+  fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
+
+  fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
+
+  fun store(lhs: ref, rhs: Maybe, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Maybe = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Maybe {
+  fun as(a: Maybe): ref = %wasm {
+    (local.get $a)
+  }
+}
+
+impl None {
+  fun as(a: None): Maybe = %wasm {
+    (local.get $a)
+  }
+}
+
+impl Some {
+  fun as(a: Some): Maybe = %wasm {
+    (local.get $a)
+  }
+}
+
+type None = %struct {  }
+
+type Some = %struct { value: i32 }
+
+impl None {
+  #[inline]
+  private fun None$discriminant(): i64 = {
+    val discriminant: u32 = None.^discriminant
+    discriminant as i64 << 32
+  }
+
+  fun apply(): None = %wasm {
+    (call None$discriminant)
+  }
+
+  fun is(a: None): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call None$discriminant))
+  }
+
+  fun ==(a: None, b: ref): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: None, b: ref): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun store(lhs: ref, rhs: None, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): None = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Some {
+  #[inline]
+  private fun Some$discriminant(): u64 = {
+    val discriminant: u32 = Some.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(value: i32): Some = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Some.^allocationSize))
+    property$0($ref, value)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Some = %wasm {
+    (i64.or (call Some$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Some, b: Some): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Some, b: Some): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_value(self: Some): i32 = property$0(self)
+  fun property_value(self: Some, value: i32): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Some): i32 = i32.load(self, Some.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Some, value: i32): void = i32.store(self, value, Some.^property$0_offset)
+
+  fun is(a: Some): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Some$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Some, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Some = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+}
+
+impl Iterator {
+  fun next(iter: Iterator): Maybe = {
+    if (iter.current <= iter.target) {
+      var r = Some(iter.current)
+      iter.current = iter.current + 1
+      r
+    } else {
+      None
+    }
+  }
+}
+
+fun testFn3(from: i32, to: i32): i32 = {
+  var ret = 0
+  val $iter$ = Iterator(from, to)
+  loop {
+    match Iterator.next($iter$) {
+      case is Some -> {
+        val value = $.value
+        ret = ret + value
+        continue
+      }
+      case is None -> break
+    }
+  }
+  ret
+}

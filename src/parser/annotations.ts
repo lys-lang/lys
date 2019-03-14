@@ -14,17 +14,30 @@ export type IAnnotationConstructor<T extends Annotation> = { new (...args): T };
 export namespace annotations {
   export class IsTailRec extends Annotation {}
   export class Injected extends Annotation {}
+  export class IsOverloaded extends Annotation {}
+  export class Inline extends Annotation {}
+  export class Explicit extends Annotation {}
+
+  export class Extern extends Annotation {
+    constructor(public module: string, public fn: string) {
+      super();
+    }
+  }
+
+  export class Export extends Annotation {
+    constructor(public exportedName: string) {
+      super();
+    }
+  }
 
   export class LabelId extends Annotation {
     constructor(public label: string) {
       super();
-      //stub
     }
   }
   export class LocalIdentifier extends Annotation {
     constructor(public local: Local | Global) {
       super();
-      //stub
     }
 
     toString() {

@@ -72,34 +72,6 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
   });
 }
 
-export function printAST(token: IToken | Nodes.Node, level = 0) {
-  if (token instanceof Nodes.Node) {
-    const ofType = token.ofType ? ' type=' + token.ofType.inspect(100) : '';
-    const text = token.text ? '=' + token.text.replace(/\n/g, '\\n') : '';
-    const annotations =
-      token.getAnnotations().length > 0
-        ? ' annotations=' +
-          token
-            .getAnnotations()
-            .map($ => $.toString())
-            .join(',')
-        : '';
-    return (
-      '\n' +
-      '  '.repeat(level) +
-      `|-${token.nodeName}${text}${ofType}${annotations}` +
-      (token.children || []).map(c => printAST(c, level + 1)).join('')
-    );
-  }
-
-  return (
-    '\n' +
-    '  '.repeat(level) +
-    `|-${token.type}${token.text ? '=' + token.text.replace(/\n/g, '\\n') : ''}` +
-    (token.children || []).map(c => printAST(c, level + 1)).join('')
-  );
-}
-
 export function folderBasedTest<T extends PhaseResult>(
   grep: string,
   phases: (txt: string, fileName: string) => T,

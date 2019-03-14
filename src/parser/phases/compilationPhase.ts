@@ -74,18 +74,12 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: Compilati
 const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.VarDeclarationNode) {
     if (node.parent instanceof Nodes.DirectiveNode) {
-      node.annotate(
-        new annotations.LocalIdentifier(
-          new Global(node.closure.getInternalIdentifier(node.variableName), node.variableName)
-        )
-      );
+      node.annotate(new annotations.LocalIdentifier(new Global(node.variableName)));
     } else {
       const fn = findParentType(node, Nodes.FunctionNode);
 
       if (fn) {
-        node.annotate(
-          new annotations.LocalIdentifier(fn.addLocal(node.value.ofType, node.variableName.name, node.variableName))
-        );
+        node.annotate(new annotations.LocalIdentifier(fn.addLocal(node.value.ofType, node.variableName)));
       }
     }
   }
