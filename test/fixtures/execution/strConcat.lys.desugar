@@ -33,9 +33,9 @@ fun main(): void = {
   END()
   START("String concatenation")
   {
-    var x = (String("ds") + String("sa"))
-    mustEqual(x.length as i32, 3, "String.length must be 3")
-    mustEqual(x.data.length as i32, 6, "String.data.length must be 6")
+    val x = (String("ds") + String("sa"))
+    mustEqual(x.length as i32, 4, "String.length must be 3")
+    mustEqual(x.data.length as i32, 8, "String.data.length must be 6")
   }
   END()
   START("String concatenation UTF16")
@@ -44,7 +44,7 @@ fun main(): void = {
     mustEqual(String.charAt(x, 0 as u32) as i32, 0x0061, "a assertion failed")
     mustEqual(String.charAt(x, 1 as u32) as i32, 0x0062, "b assertion failed")
     mustEqual(String.charAt(x, 2 as u32) as i32, 0x00B5, "µ assertion failed")
-    mustEqual(String.charAt(x, 3 as u32) as i32, 0x2700, "0x2700 assertion failed")
+    mustEqual(String.charAt(x, 3 as u32) as i32, 0x269C, "0x269C assertion failed")
     mustEqual(String.charAt(x, 4 as u32) as i32, 0xFE0E, "0xFE0E assertion failed")
   }
   END()

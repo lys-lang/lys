@@ -329,7 +329,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/deconstruct.lys::discriminant:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -342,7 +342,7 @@
             |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-NameIdentifierNode="<<"
               |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/deconstruct.lys::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -524,7 +524,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/deconstruct.lys::discriminant_3:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -537,7 +537,7 @@
             |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-NameIdentifierNode="<<"
               |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/deconstruct.lys::discriminant_3:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -719,7 +719,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/deconstruct.lys::discriminant_6:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -732,7 +732,7 @@
             |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-NameIdentifierNode="<<"
               |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/deconstruct.lys::discriminant_6:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -914,7 +914,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/deconstruct.lys::discriminant_9:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -927,7 +927,7 @@
             |-BinaryExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-NameIdentifierNode="<<"
               |-AsExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/deconstruct.lys::discriminant_9:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -948,7 +948,7 @@
             |-QNameNode=Custom
               |-NameIdentifierNode="Custom"
           |-BlockNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local($ref:Custom#1)
+            |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/deconstruct.lys::$ref:Custom#1)
               |-NameIdentifierNode="$ref" type=(alias Custom (struct a:(type (alias i32 (native i32)))))
               |-FunctionCallNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias Custom))
@@ -974,13 +974,13 @@
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local($ref:Custom#1)
+              |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,Local(test/fixtures/compiler/deconstruct.lys::$ref:Custom#1)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
-            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,IsReturnExpression,Local($ref:Custom#1)
+            |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/compiler/deconstruct.lys::$ref:Custom#1)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
       |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32)) (alias Custom))
@@ -1295,7 +1295,7 @@
                 |-QNameNode=Custom
                   |-NameIdentifierNode="Custom"
               |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-ValDeclarationNode type=(native void) annotations=Local(a:i32#1)
+                |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/deconstruct.lys::a_6:i32#1)
                   |-NameIdentifierNode="a" type=(alias i32 (native i32))
                   |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall
                     |-ReferenceNode type=(alias Custom (struct a:(type (alias i32 (native i32))))) annotations=Local(var$2:Color#2)
@@ -1304,7 +1304,7 @@
                     |-NameIdentifierNode="a"
                 |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
                   |-NameIdentifierNode="=="
-                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#1)
+                  |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/deconstruct.lys::a_6:i32#1)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-HexLiteral=16711680 type=(alias i32 (native i32)) annotations=IsValueNode

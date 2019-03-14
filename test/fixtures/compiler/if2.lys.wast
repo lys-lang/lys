@@ -890,8 +890,8 @@
     (call $system::core::boolean.! (call $system::core::bytes.== (local.get $lhs) (local.get $rhs)))
   )
   (func $system::core::bytes.== (param $lhs i64) (param $rhs i64) (result i32)
-    (local $len i32)
-    (local $equals i32)
+    (local $system::core::len i32)
+    (local $system::core::equals i32)
     (block $B1 (result i32)
       (if $IF2 (result i32) (call $system::core::u32.== (call $system::core::bytes.property_length (local.get $lhs)) (call $system::core::bytes.property_length (local.get $rhs)))
           (then
@@ -904,22 +904,22 @@
                     )
                     (else
                       (block $B6 (result i32)
-                          (local.set $len (call $system::core::bytes.property_length (local.get $lhs)))
-                          (local.set $equals (i32.const 1))
+                          (local.set $system::core::len (call $system::core::bytes.property_length (local.get $lhs)))
+                          (local.set $system::core::equals (i32.const 1))
                           (block $Break7
                               (loop $Loop7
                                   (block $B8
-                                      (local.set $len (call $system::core::u32.- (local.get $len) (call $system::core::i32.as_3 (i32.const 1))))
-                                      (if $IF9 (call $system::core::u8.!=_2 (call $system::core::bytes.get (local.get $lhs) (local.get $len)) (call $system::core::bytes.get (local.get $rhs) (local.get $len)))
+                                      (local.set $system::core::len (call $system::core::u32.- (local.get $system::core::len) (call $system::core::i32.as_3 (i32.const 1))))
+                                      (if $IF9 (call $system::core::u8.!=_2 (call $system::core::bytes.get (local.get $lhs) (local.get $system::core::len)) (call $system::core::bytes.get (local.get $rhs) (local.get $system::core::len)))
                                           (then
                                             (block $B10
-                                                (local.set $equals (i32.const 0))
+                                                (local.set $system::core::equals (i32.const 0))
                                                 (br $Break7)
                                               )
                                           )
                                           (else)
                                         )
-                                      (if $IF11 (call $system::core::u32.> (local.get $len) (call $system::core::i32.as_3 (i32.const 0)))
+                                      (if $IF11 (call $system::core::u32.> (local.get $system::core::len) (call $system::core::i32.as_3 (i32.const 0)))
                                           (then
                                             (br $Loop7)
                                           )
@@ -928,7 +928,7 @@
                                     )
                                 )
                             )
-                          (local.get $equals)
+                          (local.get $system::core::equals)
                         )
                     )
                   )

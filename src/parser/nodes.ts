@@ -217,22 +217,11 @@ export namespace Nodes {
     parameters: ParameterNode[] = [];
     body: ExpressionNode;
 
-    localsByName: Map<string, Local> = new Map();
-
     /** Array of locals by index. */
     localsByIndex: Local[] = [];
 
     /** List of additional non-parameter locals. */
     additionalLocals: Local[] = [];
-
-    /** Current break context label. */
-    breakContext: string | null = null;
-
-    /** Contextual type arguments. */
-    contextualTypeArguments: Map<string, Type> | null;
-
-    private nextBreakId: number = 0;
-    private breakStack: number[] | null = null;
 
     private tempI32s: Local[] | null = null;
     private tempI64s: Local[] | null = null;
@@ -244,24 +233,23 @@ export namespace Nodes {
 
       this.parameters.forEach(parameter => {
         let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
-        this.localsByName.set(local.name, local);
         this.localsByIndex[local.index] = local;
         parameter.annotate(new annotations.LocalIdentifier(local));
       });
     }
 
-    /** Adds a local of the specified type, with an optional name. */
-    addLocal(type: Type, name: string | null = null, declaration: NameIdentifierNode | null = null): Local {
+    /** Adds a local of the specified type. */
+    addLocal(type: Type, declaration: NameIdentifierNode | null = null): Local {
       // if it has a name, check previously as this method will throw otherwise
       var localIndex = this.parameters.length + this.additionalLocals.length;
 
-      var local = new Local(localIndex, name ? name : 'var$' + localIndex.toString(10), declaration);
-      local.type = type;
+      var local = new Local(
+        localIndex,
+        declaration ? declaration.internalIdentifier : 'var$' + localIndex.toString(10),
+        declaration
+      );
 
-      if (name) {
-        if (this.localsByName.has(name)) throw new Error('duplicate local name');
-        this.localsByName.set(name, local);
-      }
+      local.type = type;
 
       this.localsByIndex[local.index] = local;
       this.additionalLocals.push(local);
@@ -370,36 +358,6 @@ export namespace Nodes {
       }
 
       return local;
-    }
-
-    /** Enters a(nother) break context. */
-    enterBreakContext(): string {
-      var id = this.nextBreakId++;
-      if (!this.breakStack) this.breakStack = [id];
-      else this.breakStack.push(id);
-      return (this.breakContext = id.toString(10));
-    }
-
-    /** Leaves the current break context. */
-    leaveBreakContext(): void {
-      if (!this.breakStack) throw new Error('there was no breakStack');
-      var length = this.breakStack.length;
-      if (length == 0) throw new Error('the breakStack is empty');
-      this.breakStack.pop();
-      if (length > 1) {
-        this.breakContext = this.breakStack[length - 2].toString(10);
-      } else {
-        this.breakContext = null;
-        this.breakStack = null;
-      }
-    }
-
-    /** Finalizes the function once compiled, releasing no longer needed resources. */
-    finalize(): void {
-      if (this.breakStack && this.breakStack.length) throw new Error('break stack');
-      this.breakStack = null;
-      this.breakContext = null;
-      this.tempI32s = this.tempI64s = this.tempF32s = this.tempF64s = null;
     }
   }
 
@@ -654,7 +612,10 @@ export interface LocalGlobalHeapReference {
 
 export class Global implements LocalGlobalHeapReference {
   type: Type;
-  constructor(public name: string, public declarationNode: Nodes.Node) {}
+  name: string;
+  constructor(public declarationNode: Nodes.NameIdentifierNode) {
+    this.name = declarationNode.internalIdentifier;
+  }
 }
 
 export class Local implements LocalGlobalHeapReference {

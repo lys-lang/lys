@@ -348,23 +348,23 @@ class AssignmentNodeTypeResolver extends TypeResolver {
       } else {
         return INVALID_TYPE;
       }
-    }
-
-    if (!rhs.incomingType().canBeAssignedTo(lhsType)) {
-      ctx.parsingContext.messageCollector.error(new TypeMismatch(rhs.incomingType(), lhsType, assignmentNode.rhs));
-    }
-
-    if (rhs.incomingType().nativeType == NativeTypes.void) {
-      ctx.parsingContext.messageCollector.error(
-        'The expression returns a void value, which cannot be assigned to any value',
-        assignmentNode.rhs
-      );
-    }
-
-    if (assignmentNode.hasAnnotation(annotations.IsValueNode)) {
-      return rhs.incomingType();
     } else {
-      return InjectableTypes.void;
+      if (!rhs.incomingType().canBeAssignedTo(lhsType)) {
+        ctx.parsingContext.messageCollector.error(new TypeMismatch(rhs.incomingType(), lhsType, assignmentNode.rhs));
+      }
+
+      if (rhs.incomingType().nativeType == NativeTypes.void) {
+        ctx.parsingContext.messageCollector.error(
+          'The expression returns a void value, which cannot be assigned to any value',
+          assignmentNode.rhs
+        );
+      }
+
+      if (assignmentNode.hasAnnotation(annotations.IsValueNode)) {
+        return rhs.incomingType();
+      } else {
+        return InjectableTypes.void;
+      }
     }
   }
 }

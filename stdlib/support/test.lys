@@ -14,28 +14,67 @@ enum ErrorMessage {
 
 var lastErrorMessage: ErrorMessage = EmptyMessage
 
-fun mustEqual(given: f64, expected: f64, message: bytes): void =
+fun mustEqual(given: f64, expected: f64, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: f32, expected: f32, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: f32, expected: f32, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: u64, expected: u64, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: u64, expected: u64, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: i64, expected: i64, message: bytes): void =
+}
+fun mustEqual(given: i64, expected: i64, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: u32, expected: u32, message: bytes): void =
+}
+fun mustEqual(given: u32, expected: u32, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: i32, expected: i32, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: i32, expected: i32, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: u16, expected: u16, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: u16, expected: u16, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: i16, expected: i16, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: i16, expected: i16, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: u8, expected: u8, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: u8, expected: u8, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: boolean, expected: boolean, message: bytes): void =
+  if (given != expected) {
+    support::env::printf("  given: %d", given)
+    support::env::printf("  expected: %d", expected)
+  }
+}
+fun mustEqual(given: boolean, expected: boolean, message: bytes): void = {
   verify(given == expected, message)
-fun mustEqual(given: bytes, expected: bytes, message: bytes): void =
+}
+fun mustEqual(given: bytes, expected: bytes, message: bytes): void = {
   verify(given == expected, message)
+}
 
 #[export "test_getLastErrorMessage"]
 fun getLastErrorMessage(): u32 = {
