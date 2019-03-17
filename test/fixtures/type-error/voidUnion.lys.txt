@@ -4,7 +4,6 @@ test/fixtures/type-error/voidUnion.lys
     3│ }
     4│ 
     5│ fun x(a: i32): i32 = {
-     │                ^^^ Type mismatch: Type "i32 | void" is not assignable to "i32"
     6│   var z = match a {
     7│     case 1 -> 1
     8│     case 2 -> y()
@@ -12,3 +11,4 @@ test/fixtures/type-error/voidUnion.lys
    10│   }
    11│   z
    12│ }
+     │ ^ Type mismatch: Type "i32 | void" is not assignable to "i32"

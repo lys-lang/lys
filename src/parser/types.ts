@@ -1,4 +1,3 @@
-import { flatten } from './helpers';
 import { Nodes } from './nodes';
 
 export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
@@ -86,10 +85,6 @@ export class FunctionType extends Type {
   parameterTypes: Type[];
   parameterNames: string[];
   returnType: Type;
-
-  acceptsTypes(types: Type[], strict: boolean) {
-    return acceptsTypes(this, types, strict);
-  }
 
   equals(type: Type) {
     if (!(type instanceof FunctionType)) return false;
@@ -271,15 +266,7 @@ export class RefType extends Type {
   }
 
   canBeAssignedTo(otherType: Type) {
-    if (super.canBeAssignedTo(otherType)) {
-      return true;
-    }
-
-    if (RefType.isRefTypeStrict(otherType)) {
-      return true;
-    }
-
-    return false;
+    return RefType.isRefTypeStrict(otherType);
   }
 
   typeSimilarity(to: Type, depth: number = 1): number {
@@ -310,77 +297,6 @@ export class RefType extends Type {
     }
     throw new Error(`Cannot read schema property ${name} of ${this.inspect()}`);
   }
-}
-
-function acceptsTypes(type: FunctionType, types: Type[], strict: boolean): number {
-  if (type.parameterTypes.length !== types.length) {
-    return 0;
-  }
-
-  let score = 1;
-
-  if (type.parameterTypes.length == 0) {
-    return 1;
-  }
-
-  for (let index = 0; index < types.length; index++) {
-    const argumentType = types[index];
-    const parameterType = type.parameterTypes[index];
-
-    const equals = argumentType.equals(parameterType);
-
-    if (equals) {
-      score += 1;
-    } else if (!strict) {
-      const canBeAssignedTo = argumentType.canBeAssignedTo(parameterType);
-
-      if (!canBeAssignedTo) {
-        return 0;
-      }
-
-      score += getTypeSimilarity(argumentType, parameterType);
-    } else {
-      return 0;
-    }
-  }
-
-  return score;
-}
-
-function downToRefTypes(type: Type): (RefType | StructType)[] {
-  let argType = type;
-
-  while (true) {
-    if (argType instanceof StructType) {
-      return [argType];
-    } else if (argType instanceof RefType) {
-      return [argType];
-    } else if (argType instanceof TypeAlias) {
-      argType = argType.of;
-    } else if (argType instanceof UnionType) {
-      return flatten((argType as UnionType).of.map($ => downToRefTypes($)));
-    } else {
-      return [];
-    }
-  }
-}
-
-export function getTypeSimilarity(lhs: Type, rhs: Type) {
-  if (rhs.equals(lhs) && lhs.equals(rhs)) {
-    return 1;
-  }
-
-  const lhsTypes = downToRefTypes(lhs);
-  if (lhsTypes.length == 0) return 0;
-
-  const rhsTypes = downToRefTypes(rhs);
-  if (rhsTypes.length == 0) return 0;
-
-  let results: number[] = [];
-
-  lhsTypes.forEach(lhs => rhsTypes.forEach(rhs => results.push(lhs.typeSimilarity(rhs))));
-
-  return Math.max.apply(Math, results);
 }
 
 export class IntersectionType extends Type {

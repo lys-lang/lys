@@ -135,6 +135,29 @@ const overloadFunctions = function(
   return document;
 };
 
+const mergeImplementations = function(
+  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
+  _phase: SemanticPhaseResult
+) {
+  const impls: Map<string, Nodes.ImplDirective> = new Map();
+
+  document.directives.forEach((node: Nodes.Node) => {
+    if (node instanceof Nodes.ImplDirective) {
+      const currentImpl = impls.get(node.reference.variable.text);
+      if (currentImpl) {
+        currentImpl.directives.push(...node.directives);
+        node.directives.length = 0;
+      } else {
+        impls.set(node.reference.variable.text, node);
+      }
+    }
+  });
+
+  document.directives = document.directives.filter($ => !($ instanceof Nodes.ImplDirective) || $.directives.length > 0);
+
+  return document;
+};
+
 function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseResult): Nodes.DirectiveNode[] {
   const args = node.parameters.map($ => printNode($)).join(', ');
   const typeName = node.declaredName.name;
@@ -270,7 +293,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
               ${accessors}
 
-              fun is(a: ${typeName}): boolean = %wasm {
+              fun is(a: ${typeName} | ref): boolean = %wasm {
                 (i64.eq
                   (i64.and
                     (i64.const 0xffffffff00000000)
@@ -298,6 +321,9 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                   )
                 )
               }
+
+              #[explicit]
+              fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
             }
           `
       )
@@ -320,7 +346,7 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               (call $${typeName}$discriminant)
             }
 
-            fun is(a: ${typeName}): boolean = %wasm {
+            fun is(a: ${typeName} | ref): boolean = %wasm {
               (i64.eq
                 (i64.and
                   (i64.const 0xffffffff00000000)
@@ -362,6 +388,9 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
                 )
               )
             }
+
+            #[explicit]
+            fun as(lhs: ${typeName}): ref = %wasm { (local.get $lhs) }
           }
         `
       )
@@ -426,16 +455,10 @@ const processUnions = function(
 
         let injectedDirectives: string[] = [];
         if (referenceTypes.length) {
-          injectedDirectives.push(`
-            impl ${node.variableName.name} {
-              fun as(a: ${node.variableName.name}): ref = %wasm { (local.get $a) }
-            }
-          `);
-
           referenceTypes.forEach($ => {
             injectedDirectives.push(`
               impl ${$.variable.text} {
-                fun as(a: ${$.variable.text}): ${node.variableName.name}  = %wasm { (local.get $a) }
+                fun as(lhs: ${$.variable.text}): ${variableName.name}  = %wasm { (local.get $lhs) }
               }
             `);
           });
@@ -443,13 +466,16 @@ const processUnions = function(
 
         const canonical = new CanonicalPhaseResult(
           phase.parsingContext.getParsingPhaseForContent(
-            phase.moduleName + '#' + node.variableName.name,
+            phase.moduleName + '#' + variableName.name,
             `
               // Union type ${variableName.name}
               impl ${variableName.name} {
-                fun is(a: ${node.variableName.name}): boolean = {
+                fun is(a: ${variableName.name} | ref): boolean = {
                   ${referenceTypes.map($ => 'a is ' + printNode($.variable)).join(' || ') || 'false'}
                 }
+
+                #[explicit]
+                fun as(a: ${variableName.name}): ref = %wasm { (local.get $a) }
 
                 fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
                 fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
@@ -606,7 +632,9 @@ export class SemanticPhaseResult extends PhaseResult {
 
     processDeconstruct(this.document, this);
 
+    mergeImplementations(this.document, this);
     overloadFunctions(this.document, this);
+
     validateSignatures(this.document, this);
     validateInjectedWasm(this.document, this);
 

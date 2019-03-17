@@ -1,6 +1,7 @@
 import { Nodes } from '../parser/nodes';
 
 export function printAST(token: Nodes.Node, level = 0) {
+  if (!token) return '<no token was provided>';
   const ofType = token.ofType ? ' type=' + token.ofType.inspect(100) : '';
   let text = '';
 

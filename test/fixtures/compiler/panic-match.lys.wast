@@ -958,7 +958,7 @@
           (local.set $var$1 (local.get $x))
           (block $B2_0
               (block $B2_1
-                  (br_if $B2_0 (call $system::core::i32.== (i32.const 1) (local.get $var$1)))
+                  (br_if $B2_0 (call $system::core::i32.== (local.get $var$1) (i32.const 1)))
                 )
               (call $system::core::panic)
               (br $B2)

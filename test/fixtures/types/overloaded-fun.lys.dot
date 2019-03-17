@@ -3,34 +3,31 @@ digraph LYS {
   subgraph "cluster_test/fixtures/types/overloaded-fun.lys" {
     1 [label="FunOverload: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' () (alias i32)))", fillcolor=grey];
     2 [label="FunNode: x\n(fun 'x' ((alias i32)) (alias i32))", fillcolor=grey];
-    3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-    4 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
+    3 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
+    4 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     5 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     6 [label="FunNode: x\n(fun 'x' () (alias i32))", fillcolor=grey];
     7 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     8 [label="Name: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' () (alias i32)))", fillcolor=grey];
     subgraph "cluster_test/fixtures/types/overloaded-fun.lys_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      9 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
-      10 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
-      11 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      9 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
       label="test/fixtures/types/overloaded-fun.lys::x(i32)";
     }
     subgraph "cluster_test/fixtures/types/overloaded-fun.lys_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      12 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      13 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      10 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       label="test/fixtures/types/overloaded-fun.lys::x_1()";
     }
     label="test/fixtures/types/overloaded-fun.lys";
   }
   1 -> 8[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
-  3 -> 4[taillabel="[EXPECTED_TYPE]" fontsize=7 fontname="times" color="black" ];
-  4 -> 2[taillabel="[a]" fontsize=7 fontname="times" color="black" ];
+  3 -> 2[taillabel="[a]" fontsize=7 fontname="times" color="black" ];
+  3 -> 9[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  4 -> 3[taillabel="[EXPECTED_TYPE]" fontsize=7 fontname="times" color="black" ];
   5 -> 2[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
   6 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
   7 -> 6[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
-  9 -> 10[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   label="LYS";
 }

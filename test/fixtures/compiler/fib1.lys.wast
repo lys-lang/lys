@@ -950,8 +950,8 @@
       (block $B1_0
           (block $B1_1
               (block $B1_2
-                  (br_if $B1_0 (call $system::core::i32.== (i32.const 0) (local.get $var$3)))
-                  (br_if $B1_1 (call $system::core::i32.== (i32.const 1) (local.get $var$3)))
+                  (br_if $B1_0 (call $system::core::i32.== (local.get $var$3) (i32.const 0)))
+                  (br_if $B1_1 (call $system::core::i32.== (local.get $var$3) (i32.const 1)))
                 )
               (call $test/fixtures/compiler/fib1.lys::fibo (call $system::core::i32.- (local.get $n) (i32.const 1)) (local.get $b) (call $system::core::i32.+ (local.get $a) (local.get $b)))
               (br $B1)

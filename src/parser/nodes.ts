@@ -68,7 +68,7 @@ export namespace Nodes {
           if ($ instanceof klass) ret.push($);
         });
       }
-      return ret[0];
+      return ret[ret.length - 1];
     }
 
     removeAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
@@ -97,6 +97,7 @@ export namespace Nodes {
     }
 
     toString(): never {
+      console.trace();
       throw new Error('Cannot print nodes with toString');
     }
   }
@@ -491,40 +492,71 @@ export namespace Nodes {
     length: number;
   }
 
-  export class FunctionCallNode extends ExpressionNode {
+  export abstract class AbstractFunctionCallNode extends ExpressionNode {
+    abstract argumentsNode: ExpressionNode[];
+    resolvedFunctionType: FunctionType;
+  }
+
+  export class InjectedFunctionCallNode extends AbstractFunctionCallNode {
+    argumentsNode: ExpressionNode[] = [];
+  }
+
+  export class FunctionCallNode extends AbstractFunctionCallNode {
     isInfix: boolean = false;
-    functionNode: ExpressionNode;
-    argumentsNode: ExpressionNode[];
-    resolvedFunctionType: FunctionType;
+    functionNode: ExpressionNode = null;
+    argumentsNode: ExpressionNode[] = [];
   }
 
-  export class BinaryExpressionNode extends ExpressionNode {
-    lhs: ExpressionNode;
-    rhs: ExpressionNode;
-    operator: NameIdentifierNode;
+  export class BinaryExpressionNode extends AbstractFunctionCallNode {
+    get lhs() {
+      return this.argumentsNode[0];
+    }
+    set lhs(value: ExpressionNode) {
+      this.argumentsNode[0] = value;
+    }
 
-    resolvedFunctionType: FunctionType;
+    get rhs() {
+      return this.argumentsNode[1];
+    }
+    set rhs(value: ExpressionNode) {
+      this.argumentsNode[1] = value;
+    }
+
+    operator: NameIdentifierNode = null;
+    argumentsNode: ExpressionNode[] = [];
   }
 
-  export class AsExpressionNode extends ExpressionNode {
-    lhs: ExpressionNode;
+  export class AsExpressionNode extends AbstractFunctionCallNode {
+    get lhs() {
+      return this.argumentsNode[0];
+    }
+    set lhs(value: ExpressionNode) {
+      this.argumentsNode[0] = value;
+    }
+    argumentsNode: ExpressionNode[] = [];
     rhs: TypeNode;
-
-    resolvedFunctionType: FunctionType;
   }
 
-  export class IsExpressionNode extends ExpressionNode {
-    lhs: ExpressionNode;
+  export class IsExpressionNode extends AbstractFunctionCallNode {
+    get lhs() {
+      return this.argumentsNode[0];
+    }
+    set lhs(value: ExpressionNode) {
+      this.argumentsNode[0] = value;
+    }
+    argumentsNode: ExpressionNode[] = [];
     rhs: TypeNode;
-
-    resolvedFunctionType: FunctionType;
   }
 
-  export class UnaryExpressionNode extends ExpressionNode {
-    rhs: ExpressionNode;
+  export class UnaryExpressionNode extends AbstractFunctionCallNode {
+    get rhs() {
+      return this.argumentsNode[0];
+    }
+    set rhs(value: ExpressionNode) {
+      this.argumentsNode[0] = value;
+    }
     operator: NameIdentifierNode;
-
-    resolvedFunctionType: FunctionType;
+    argumentsNode: ExpressionNode[] = [];
   }
 
   export class WasmAtomNode extends ExpressionNode {

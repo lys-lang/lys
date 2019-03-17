@@ -130,7 +130,7 @@ export class TypeNode {
   private _incomingEdges: Array<Edge> = [];
   private succeed: boolean;
 
-  amount = 0;
+  amount: number = 0;
 
   parentGraph: TypeGraph | null = null;
 
@@ -138,36 +138,35 @@ export class TypeNode {
     if (this.allDependenciesResolved()) {
       if (this.amount < this.MAX_ATTEMPTS) {
         this.amount = this.amount + 1;
-        let resultType: Type | null = this.typeResolver.execute(this, ctx);
 
-        if (resultType) {
-          if (!this.resultType() || !resultType.equals(this.astNode.ofType)) {
-            this.succeed = true;
+        if (!this.succeed) {
+          let newType: Type | null = this.typeResolver.execute(this, ctx);
+
+          if (!(newType instanceof Type)) {
+            console.log(this.typeResolver.constructor.name + ' did not return a type', newType);
+          }
+
+          if (!this.resultType() || !newType.equals(this.resultType())) {
             if (this.resultType()) {
-              // console.log(
-              //   'Mutating type',
-              //   this.astNode.nodeName,
-              //   this.astNode.toString(),
-              //   this.typeResolver.constructor.name,
-              //   this.resultType().toString(),
-              //   '->',
-              //   resultType.toString(),
-              //   this._incomingEdges.length
-              // );
+              ctx.parsingContext.messageCollector.error(
+                `${this.typeResolver.constructor.name}: Mutating type ${this.resultType().inspect(
+                  10
+                )} -> ${newType.inspect(10)} .equals = ${this.resultType().equals(newType)} .equals2 = ${newType.equals(
+                  this.resultType()
+                )} == = ${this.resultType() == newType}`,
+                this.astNode
+              );
             }
 
+            this.succeed = true;
             // We only add one if the type is new
-            this.astNode.ofType = resultType;
+            this.astNode.ofType = newType;
           }
-          if (!this.astNode.ofType) {
-            debugger;
-          }
-          this._outgoingEdges.forEach(edge => {
-            edge.propagateType(this.astNode.ofType, ctx);
-          });
-        } else {
-          debugger;
         }
+
+        this._outgoingEdges.forEach(edge => {
+          edge.propagateType(this.astNode.ofType, ctx);
+        });
       } else {
         ctx.parsingContext.messageCollector.warning(
           `Unable to infer type as recursion didn't stabilize after ${this.MAX_ATTEMPTS} attempts.`,

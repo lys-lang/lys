@@ -18,6 +18,7 @@ import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { assert } from 'console';
+import { printAST } from '../../utils/astPrinter';
 
 type CompilationModuleResult = {
   compilationPhase: CompilationPhaseResult;
@@ -134,8 +135,8 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
-          emit(node.literal, document),
-          t.instruction('local.get', [t.identifier(local.name)])
+          t.instruction('local.get', [t.identifier(local.name)]),
+          emit(node.literal, document)
         ]);
 
         const body = emit(node.rhs, document);
@@ -219,22 +220,24 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
   return t.instruction(node.symbol, (node.arguments || []).map($ => emitWast($ as any, document)));
 }
 
-function emitImplicitCall(implicitCallData: annotations.ImplicitCall, document: Nodes.DocumentNode) {
-  const ofType = implicitCallData.functionType;
+function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
+  const implicitCallData = node.getAnnotation(annotations.ImplicitCall);
+
+  const ofType = implicitCallData.implicitCall.resolvedFunctionType;
 
   assert(ofType instanceof FunctionType, 'implicit call is not a function');
 
   return t.callInstruction(
     t.identifier(ofType.name.internalIdentifier),
-    implicitCallData.args.map($ => emit($, document))
+    implicitCallData.implicitCall.argumentsNode.map($ => emit($, document))
   );
 }
 
 function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   function _emit() {
     if (node.hasAnnotation(annotations.ImplicitCall)) {
-      return emitImplicitCall(node.getAnnotation(annotations.ImplicitCall), document);
-    } else if (node instanceof Nodes.FunctionCallNode) {
+      return emitImplicitCall(node, document);
+    } else if (node instanceof Nodes.AbstractFunctionCallNode) {
       const ofType = node.resolvedFunctionType;
 
       assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
@@ -371,9 +374,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
           throw new AstNodeError(e.message, node.memberName);
         }
       }
+      console.trace();
     }
 
-    throw new AstNodeError(`This node cannot be emited ${node.nodeName}`, node);
+    throw new AstNodeError(`This node cannot be emited ${node.nodeName}\n${printAST(node)}`, node);
   }
 
   const generatedNode = _emit();
@@ -403,7 +407,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       if (e instanceof AstNodeError) {
         this.parsingContext.messageCollector.error(e);
       } else {
-        throw e;
+        this.parsingContext.messageCollector.error(e, this.document);
       }
     }
   }

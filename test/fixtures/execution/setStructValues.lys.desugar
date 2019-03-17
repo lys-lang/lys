@@ -5,8 +5,13 @@ import support::env
 type Color = (None | Red | Custom)
 
 impl Color {
-  fun is(a: Color): boolean = {
+  fun is(a: (Color | ref)): boolean = {
     a is None || a is Red || a is Custom
+  }
+
+  #[explicit]
+  fun as(a: Color): ref = %wasm {
+    (local.get $a)
   }
 
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
@@ -22,37 +27,15 @@ impl Color {
   }
 }
 
-impl Color {
-  fun as(a: Color): ref = %wasm {
-    (local.get $a)
-  }
-}
-
 impl None {
-  fun as(a: None): Color = %wasm {
-    (local.get $a)
+  fun as(lhs: None): Color = %wasm {
+    (local.get $lhs)
   }
-}
-
-impl Red {
-  fun as(a: Red): Color = %wasm {
-    (local.get $a)
+  #[explicit]
+  fun as(lhs: None): ref = %wasm {
+    (local.get $lhs)
   }
-}
 
-impl Custom {
-  fun as(a: Custom): Color = %wasm {
-    (local.get $a)
-  }
-}
-
-type None = %struct {  }
-
-type Red = %struct {  }
-
-type Custom = %struct { hex: i32 }
-
-impl None {
   #[inline]
   private fun None$discriminant(): i64 = {
     val discriminant: u32 = None.^discriminant
@@ -63,7 +46,7 @@ impl None {
     (call None$discriminant)
   }
 
-  fun is(a: None): boolean = %wasm {
+  fun is(a: (None | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call None$discriminant))
   }
 
@@ -85,6 +68,14 @@ impl None {
 }
 
 impl Red {
+  fun as(lhs: Red): Color = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: Red): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun Red$discriminant(): i64 = {
     val discriminant: u32 = Red.^discriminant
@@ -95,7 +86,7 @@ impl Red {
     (call Red$discriminant)
   }
 
-  fun is(a: Red): boolean = %wasm {
+  fun is(a: (Red | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Red$discriminant))
   }
 
@@ -117,6 +108,14 @@ impl Red {
 }
 
 impl Custom {
+  fun as(lhs: Custom): Color = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: Custom): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun Custom$discriminant(): u64 = {
     val discriminant: u32 = Custom.^discriminant
@@ -149,7 +148,7 @@ impl Custom {
   #[inline]
   private fun property$0(self: Custom, value: i32): void = i32.store(self, value, Custom.^property$0_offset)
 
-  fun is(a: Custom): boolean = %wasm {
+  fun is(a: (Custom | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom$discriminant))
   }
 
@@ -161,6 +160,12 @@ impl Custom {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 }
+
+type None = %struct {  }
+
+type Red = %struct {  }
+
+type Custom = %struct { hex: i32 }
 
 type CatBag = %struct { f: Color, g: (Red | None) }
 
@@ -216,7 +221,7 @@ impl CatBag {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $self))) (local.get $value))
   }
 
-  fun is(a: CatBag): boolean = %wasm {
+  fun is(a: (CatBag | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call CatBag$discriminant))
   }
 
@@ -226,6 +231,11 @@ impl CatBag {
 
   fun load(lhs: ref, offset: u32): CatBag = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+
+  #[explicit]
+  fun as(lhs: CatBag): ref = %wasm {
+    (local.get $lhs)
   }
 }
 

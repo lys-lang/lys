@@ -12,6 +12,7 @@ import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
 import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
 import { ParsingContext } from '../dist/parser/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
+import { failWithErrors } from '../dist/parser/phases/findAllErrors';
 
 const compilerTestParsingContext = new ParsingContext();
 
@@ -25,7 +26,9 @@ const compilationPhases = function(txt: string, fileName: string): CompilationPh
   types.execute(true);
   types.ensureIsValid();
   const compiler = new CompilationPhaseResult(types);
-  compiler.isSuccess();
+  if (!compiler.isSuccess()) {
+    failWithErrors('Compilation phase', compiler.parsingContext);
+  }
   return compiler;
 };
 

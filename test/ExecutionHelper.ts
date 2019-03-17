@@ -13,6 +13,7 @@ import { printAST } from '../dist/utils/astPrinter';
 import glob = require('glob');
 import path = require('path');
 import { readFileSync } from 'fs';
+import { failWithErrors } from '../dist/parser/phases/findAllErrors';
 const colors = require('colors/safe');
 
 declare var it, WebAssembly;
@@ -233,7 +234,7 @@ async function testSrc(
       console.log(printNode(compilationPhaseResult.document));
       console.log(printAST(compilationPhaseResult.document));
       console.log(print(compilationPhaseResult.compilationPhaseResult.typePhaseResult.typeGraph));
-      throw compilationPhaseResult.parsingContext.messageCollector.errors[0];
+      failWithErrors('ExecutionHelpers.testSrc', compilationPhaseResult.parsingContext);
     }
 
     await compilationPhaseResult.validate(false, true);

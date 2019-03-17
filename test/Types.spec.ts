@@ -14,6 +14,9 @@ import { ParsingContext } from '../dist/parser/ParsingContext';
 import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes } from '../dist/parser/types';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
+import { AstNodeError } from '../dist/parser/NodeError';
+
+const REF_TYPE = RefType.instance;
 
 const parsingContext = new ParsingContext();
 
@@ -170,10 +173,9 @@ describe('Types', function() {
       var a: b = 1
       ---
       b := (alias i32 (native i32))
-      a := (never)
+      a := (alias i32 (native i32))
       ---
       This is not a type
-      Type "i32" is not assignable to "never"
     `;
 
     checkMainType`
@@ -1090,7 +1092,6 @@ describe('Types', function() {
             enum BOOLEAN {
               TRUE
               FALSE
-              NONE
             }
 
             fun test1(a: BOOLEAN): void = { test2(a) }
@@ -1100,6 +1101,18 @@ describe('Types', function() {
             fun(a: FALSE) -> void
             ---
             Expecting arguments type (FALSE) but got (BOOLEAN)
+          `;
+
+          checkMainType`
+            struct FALSE()
+
+            fun test1(a: ref): void = { test2(a) }
+            fun test2(a: FALSE): void = ???
+            ---
+            fun(a: ref) -> void
+            fun(a: FALSE) -> void
+            ---
+            Expecting arguments type (FALSE) but got (ref)
           `;
 
           checkMainType`
@@ -2078,6 +2091,80 @@ describe('Types', function() {
         });
       });
 
+      describe('assignation', () => {
+        it('ref is not assignable to A, B and (A | B)', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const AB = union(A, B);
+
+          const refAlias = aliasOf('ref', REF_TYPE);
+
+          expect(REF_TYPE.canBeAssignedTo(REF_TYPE)).to.eq(true, 'ref -> ref == true');
+          expect(REF_TYPE.canBeAssignedTo(AB)).to.eq(false, 'ref -> AB == false');
+          expect(REF_TYPE.canBeAssignedTo(A)).to.eq(false, 'ref -> A == false');
+          expect(REF_TYPE.canBeAssignedTo(B)).to.eq(false, 'ref -> B == false');
+
+          expect(REF_TYPE.canBeAssignedTo(refAlias)).to.eq(true, 'ref -> ref == true');
+          expect(refAlias.canBeAssignedTo(refAlias)).to.eq(true, 'ref -> ref == true');
+          expect(refAlias.canBeAssignedTo(REF_TYPE)).to.eq(true, 'ref -> ref == true');
+          expect(refAlias.canBeAssignedTo(AB)).to.eq(false, 'ref -> AB == false');
+          expect(refAlias.canBeAssignedTo(A)).to.eq(false, 'ref -> A == false');
+          expect(refAlias.canBeAssignedTo(B)).to.eq(false, 'ref -> B == false');
+
+          expect(REF_TYPE.equals(REF_TYPE)).to.eq(true, 'ref == ref == true');
+          expect(REF_TYPE.equals(AB)).to.eq(false, 'ref == AB == false');
+          expect(REF_TYPE.equals(A)).to.eq(false, 'ref == A == false');
+          expect(REF_TYPE.equals(B)).to.eq(false, 'ref == B == false');
+
+          expect(REF_TYPE.equals(refAlias)).to.eq(true, "ref == ref' == true");
+          expect(refAlias.equals(refAlias)).to.eq(true, "ref' == ref' == true");
+          expect(refAlias.equals(REF_TYPE)).to.eq(false, "ref' == ref == false");
+          expect(refAlias.equals(AB)).to.eq(false, 'ref == AB == false');
+          expect(refAlias.equals(A)).to.eq(false, 'ref == A == false');
+          expect(refAlias.equals(B)).to.eq(false, 'ref == B == false');
+        });
+
+        it('A is assignable to (A | B)', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const AB = union(A, B);
+
+          const refAlias = aliasOf('ref', REF_TYPE);
+
+          expect(A.canBeAssignedTo(AB)).to.eq(true, 'A -> AB == true');
+          expect(A.canBeAssignedTo(REF_TYPE)).to.eq(true, 'A -> ref == true');
+          expect(B.canBeAssignedTo(REF_TYPE)).to.eq(true, 'B -> ref == true');
+          expect(AB.canBeAssignedTo(REF_TYPE)).to.eq(true, 'AB -> ref == true');
+
+          expect(A.canBeAssignedTo(refAlias)).to.eq(true, 'A -> ref == true');
+          expect(B.canBeAssignedTo(refAlias)).to.eq(true, 'B -> ref == true');
+          expect(AB.canBeAssignedTo(refAlias)).to.eq(true, 'AB -> ref == true');
+
+          expect(A.equals(AB)).to.eq(false, 'A == AB == false');
+          expect(A.equals(REF_TYPE)).to.eq(false, 'A == ref == false');
+          expect(B.equals(REF_TYPE)).to.eq(false, 'B == ref == false');
+          expect(AB.equals(REF_TYPE)).to.eq(false, 'AB == ref == false');
+
+          expect(A.equals(refAlias)).to.eq(false, 'A == ref == false');
+          expect(B.equals(refAlias)).to.eq(false, 'B == ref == false');
+          expect(AB.equals(refAlias)).to.eq(false, 'AB == ref == false');
+          expect(AB.equals(AB)).to.eq(true, 'AB == AB == true');
+        });
+
+        it('(A | B) is NOT assignable to A', () => {
+          const A = structAlias('A');
+          const B = structAlias('B');
+          const AB = union(A, B);
+
+          const refAlias = aliasOf('ref', REF_TYPE);
+
+          expect(AB.canBeAssignedTo(A)).to.eq(false, 'AB -> A == false');
+          expect(AB.canBeAssignedTo(B)).to.eq(false, 'AB -> B == false');
+          expect(AB.canBeAssignedTo(REF_TYPE)).to.eq(true, 'AB -> ref == true');
+          expect(AB.canBeAssignedTo(refAlias)).to.eq(true, 'AB -> ref == true');
+        });
+      });
+
       describe('subtract', () => {
         it('should subtract elements from non-expanded union', () => {
           const A = structAlias('A');
@@ -2112,7 +2199,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(RefType.instance);
+          ).subtract(REF_TYPE);
 
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
@@ -2122,7 +2209,7 @@ describe('Types', function() {
           const B = structAlias('B');
           const C = structAlias('C');
           const D = structAlias('D');
-          const AB = union(A, B, RefType.instance);
+          const AB = union(A, B, REF_TYPE);
           const ABC = union(AB, C);
 
           const newType = union(
@@ -2130,7 +2217,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(RefType.instance);
+          ).subtract(REF_TYPE);
 
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
@@ -2148,7 +2235,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(aliasOf('ref', RefType.instance));
+          ).subtract(aliasOf('ref', REF_TYPE));
 
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
@@ -2330,7 +2417,7 @@ describe('Types', function() {
           const C = struct('C');
           const D = struct('D');
 
-          const union = new UnionType([A, A, A, A, B, C, D, D, RefType.instance]);
+          const union = new UnionType([A, A, A, A, B, C, D, D, REF_TYPE]);
           const simplified = union.simplify();
 
           expect(simplified.inspect(100)).to.eq(
@@ -2362,8 +2449,8 @@ describe('Types', function() {
         });
 
         it('should not simplify aliases to the same type (ref)', () => {
-          const A = aliasOf('A', RefType.instance);
-          const B = aliasOf('B', RefType.instance);
+          const A = aliasOf('A', REF_TYPE);
+          const B = aliasOf('B', REF_TYPE);
 
           const union = new UnionType([A, B, B]);
           const simplified = union.simplify();
@@ -2411,7 +2498,7 @@ describe('Types', function() {
           const C = struct('C');
           const D = struct('D');
 
-          const ref = aliasOf('Ref', RefType.instance);
+          const ref = aliasOf('Ref', REF_TYPE);
 
           const union = new UnionType([A, A, A, A, B, C, D, D, ref]);
           const simplified = union.simplify();
@@ -2844,6 +2931,24 @@ describe('Types', function() {
       `;
     });
 
+    describe('implicit cast', () => {
+      checkMainType`
+        fun test1(x: u8): u8 = x
+
+        fun main(x: i32): void = {
+          test1(x)
+        }
+        ---
+        fun(x: u8) -> u8
+        fun(x: i32) -> void
+      `;
+
+      checkMainType`
+        fun test1(x: u8): i32 = x
+        ---
+        fun(x: u8) -> i32
+      `;
+    });
     describe('operators', () => {
       checkMainType`
         fun AL_BITS(): i32 = 3
@@ -2895,6 +3000,23 @@ describe('Types', function() {
         type boolean = %stack { lowLevelType="i32" byteSize=4 }
 
         impl boolean {
+          fun +(x: boolean, y: i32): i32 = 1
+        }
+        impl i32 {
+          fun as(x: i32): f32 = ???
+        }
+
+        fun main(): f32 = true + 3
+        ---
+        fun() -> f32
+      `;
+
+      checkMainType`
+        type i32 = %stack { lowLevelType="i32" byteSize=4 }
+        type f32 = %stack { lowLevelType="f32" byteSize=4 }
+        type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+        impl boolean {
           fun +(x: boolean, y: i32): f32 = 1.0
         }
 
@@ -2909,7 +3031,7 @@ describe('Types', function() {
         type boolean = %stack { lowLevelType="i32" byteSize=4 }
 
         impl boolean {
-          fun +(x: boolean, y: i32): i32 = 1
+          fun +(x: boolean, y: i32): i32 = 1123
         }
         impl i32 {
           fun +(x: i32, y: f32): f32 = 1.0
@@ -2918,22 +3040,6 @@ describe('Types', function() {
         fun main(): f32 = true + 3 + 1.0
         ---
         fun() -> f32
-      `;
-
-      checkMainType`
-        type i32 = %stack { lowLevelType="i32" byteSize=4 }
-        type f32 = %stack { lowLevelType="f32" byteSize=4 }
-        type boolean = %stack { lowLevelType="i32" byteSize=4 }
-
-        impl boolean {
-          fun +(x: boolean, y: i32): i32 = 1
-        }
-
-        fun main(): f32 = true + 3
-        ---
-        fun() -> f32
-        ---
-        Type "i32" is not assignable to "f32"
       `;
 
       checkMainType`
@@ -2959,8 +3065,6 @@ describe('Types', function() {
           fun main(): f32 = nextInt()
           ---
           fun() -> f32
-          ---
-          Type "i32" is not assignable to "f32"
         `;
 
         checkMainType`
@@ -3001,9 +3105,8 @@ describe('Types', function() {
           fun main(): f32 = system::random::nextInt()
           ---
           fun() -> f32
-          ---
-          Type "i32" is not assignable to "f32"
         `;
+
         checkMainType`
           fun matcher(x: i32): i32 =
             match x {
@@ -3470,7 +3573,9 @@ describe('Types', function() {
             typePhase.execute();
             return printAST(typePhase.document);
           } catch (e) {
-            result.parsingContext.messageCollector.error(e);
+            if (e instanceof AstNodeError) {
+              result.parsingContext.messageCollector.error(e);
+            }
             console.log(printErrors(result.parsingContext));
             throw e;
           }

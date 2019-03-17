@@ -950,7 +950,7 @@
       (local.set $var$1 (call $system::core::i32.+ (local.get $a) (i32.const 1)))
       (block $B1_0
           (block $B1_1
-              (br_if $B1_0 (call $system::core::i32.== (i32.const 1) (local.get $var$1)))
+              (br_if $B1_0 (call $system::core::i32.== (local.get $var$1) (i32.const 1)))
             )
           (i32.const 1)
           (br $B1)
