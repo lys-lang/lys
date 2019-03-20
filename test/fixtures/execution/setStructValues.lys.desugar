@@ -239,6 +239,111 @@ impl CatBag {
   }
 }
 
+type Custom2 = %struct { r: i32, g: i32 }
+
+impl Custom2 {
+  #[inline]
+  private fun Custom2$discriminant(): u64 = {
+    val discriminant: u32 = Custom2.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun apply(r: i32, g: i32): Custom2 = {
+    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom2.^allocationSize))
+    property$0($ref, r)
+    property$1($ref, g)
+    $ref
+  }
+
+  private fun fromPointer(ptr: u32): Custom2 = %wasm {
+    (i64.or (call Custom2$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+  }
+
+  fun ==(a: Custom2, b: Custom2): boolean = %wasm {
+    (i64.eq (local.get $a) (local.get $b))
+  }
+
+  fun !=(a: Custom2, b: Custom2): boolean = %wasm {
+    (i64.ne (local.get $a) (local.get $b))
+  }
+
+  fun property_r(self: Custom2): i32 = property$0(self)
+  fun property_r(self: Custom2, value: i32): void = property$0(self, value)
+
+  #[inline]
+  private fun property$0(self: Custom2): i32 = i32.load(self, Custom2.^property$0_offset)
+  #[inline]
+  private fun property$0(self: Custom2, value: i32): void = i32.store(self, value, Custom2.^property$0_offset)
+
+  fun property_g(self: Custom2): i32 = property$1(self)
+  fun property_g(self: Custom2, value: i32): void = property$1(self, value)
+
+  #[inline]
+  private fun property$1(self: Custom2): i32 = i32.load(self, Custom2.^property$1_offset)
+  #[inline]
+  private fun property$1(self: Custom2, value: i32): void = i32.store(self, value, Custom2.^property$1_offset)
+
+  fun is(a: (Custom2 | ref)): boolean = %wasm {
+    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom2$discriminant))
+  }
+
+  fun store(lhs: ref, rhs: Custom2, offset: u32): void = %wasm {
+    (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
+  }
+
+  fun load(lhs: ref, offset: u32): Custom2 = %wasm {
+    (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+
+  #[explicit]
+  fun as(lhs: Custom2): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+val x = Custom2(0, 0)
+
+val y = Custom2(0, 0)
+
+private fun testLoad(): void = {
+  START("testLoad")
+  support::test::mustEqual(i32.load(x), 0, "i32.load(x) == 0")
+  support::test::mustEqual(i32.load(y), 0, "i32.load(y) == 0")
+  END()
+}
+
+private fun testStore(): void = {
+  START("testStore")
+  i32.store(x, 3)
+  i32.store(y, 2882400001)
+  i32.store(y, 5, 5 as u32)
+  END()
+}
+
+private fun testNumbers(): void = {
+  START("testNumbers")
+  support::test::mustEqual(0xFFFFFFFF, -1, "0xFFFFFFFF == -1")
+  support::test::mustEqual(0xFFFFFFFF as u32, -1 as u32, "0xFFFFFFFF as u32 == -1 as u32")
+  testLoad()
+  testStore()
+  support::env::printf("i32.load(x) %X", i32.load(x))
+  support::env::printf("i32.load(y) %X", i32.load(y))
+  support::test::mustEqual(0xABCDEF01 as i64, 0xABCDEF01 as i64, "0xABCDEF01 as i64 == 0xABCDEF01 as i64")
+  support::test::mustEqual(i32.load(x), 3, "i32.load(x) == 3")
+  support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
+  support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) == 0xABCDEF01 as i32")
+  {
+    val VAR = i32.load(y) as i64
+    val VAR2 = 0xABCDEF01 as i64
+    support::test::mustEqual(VAR, VAR2, "VAR == VAR2")
+  }
+  support::test::mustEqual(i32.load(y) as i64, 0xABCDEF01 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
+  support::test::mustEqual(i32.load(y) as u64, 0xABCDEF01 as u64, "i32.load(y) as u64 == 0xABCDEF01 as u64")
+  support::test::mustEqual(u8.load(y) as i32, 0x01, "u8.load(y) as i32 == 0x01")
+  support::test::mustEqual(u8.load(y, 5 as u32) as i32, 5, "u8.load(y, 5 as u32) as i32 == 5")
+  END()
+}
+
 #[export]
 fun main(): void = {
   START("set values in struct")
@@ -283,5 +388,6 @@ fun main(): void = {
     }
     END()
   }
+  testNumbers()
   END()
 }

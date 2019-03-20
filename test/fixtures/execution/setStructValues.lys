@@ -9,6 +9,58 @@ enum Color {
 
 struct CatBag(f: Color, g: Red | None)
 
+
+struct Custom2(r: i32, g: i32)
+
+val x = Custom2(0,0)
+val y = Custom2(0,0)
+
+private fun testLoad(): void = {
+  START("testLoad")
+    support::test::mustEqual(i32.load(x), 0, "i32.load(x) == 0")
+    support::test::mustEqual(i32.load(y), 0, "i32.load(y) == 0")
+  END()
+}
+
+private fun testStore(): void = {
+  START("testStore")
+    i32.store(x, 3)
+    i32.store(y, 2882400001) // 0xabcdef01
+    i32.store(y, 5, 5 as u32)
+  END()
+}
+
+private fun testNumbers(): void = {
+  START("testNumbers")
+    support::test::mustEqual(0xFFFFFFFF, -1, "0xFFFFFFFF == -1")
+    support::test::mustEqual(0xFFFFFFFF as u32, -1 as u32, "0xFFFFFFFF as u32 == -1 as u32")
+
+    testLoad()
+    testStore()
+
+    support::env::printf("i32.load(x) %X", i32.load(x))
+    support::env::printf("i32.load(y) %X", i32.load(y))
+    support::test::mustEqual(0xABCDEF01 as i64, 0xABCDEF01 as i64, "0xABCDEF01 as i64 == 0xABCDEF01 as i64")
+    support::test::mustEqual(i32.load(x), 3, "i32.load(x) == 3")
+    support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
+    support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) == 0xABCDEF01 as i32")
+
+    {
+      val VAR = i32.load(y) as i64
+      val VAR2 = 0xABCDEF01 as i64
+
+      support::test::mustEqual(VAR, VAR2, "VAR == VAR2")
+    }
+
+    support::test::mustEqual(i32.load(y) as i64, 0xABCDEF01 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
+    support::test::mustEqual(i32.load(y) as u64, 0xABCDEF01 as u64, "i32.load(y) as u64 == 0xABCDEF01 as u64")
+    support::test::mustEqual(u8.load(y) as i32, 0x01, "u8.load(y) as i32 == 0x01")
+    support::test::mustEqual(u8.load(y, 5 as u32) as i32, 5, "u8.load(y, 5 as u32) as i32 == 5")
+  END()
+}
+
+
+
 #[export]
 fun main(): void = {
   START("set values in struct")
@@ -33,6 +85,7 @@ fun main(): void = {
     START("setters")
 
     val y = Custom(0xAABBCCDD)
+
     verify( y.hex == 0xAABBCCDD, "y.hex == 0xAABBCCDD" )
     a.f = y
     verify( y == y, "y == y" )
@@ -67,5 +120,8 @@ fun main(): void = {
 
     END()
   }
+
+  testNumbers()
+
   END()
 }

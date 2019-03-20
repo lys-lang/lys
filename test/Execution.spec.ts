@@ -242,15 +242,15 @@ describe('Execution tests', () => {
         #[export] fun testPassing(): void = {
           var a = Vector3(1, 2, 3)
 
-          support::test::assert( a is Vector3 )
-          support::test::assert( Vector3.property_x(a)    == 1 )
-          support::test::assert( Vector3.property_y(a)    == 2 )
-          support::test::assert( Vector3.property_z(a)    == 3 )
+          support::test::verify( a is Vector3, "a is Vector3" )
+          support::test::mustEqual( Vector3.property_x(a), 1, "x")
+          support::test::mustEqual( Vector3.property_y(a), 2, "y" )
+          support::test::mustEqual( Vector3.property_z(a), 3, "z" )
         }
 
         #[export] fun testFailing(): void = {
           var a = Vector3(1, 2, 3)
-          support::test::assert( Vector3.property_x(a)    == 999 )
+          support::test::assert( Vector3.property_x(a) == 999, "this one must fail" )
         }
       `,
       async (x, err) => {
@@ -344,7 +344,7 @@ describe('Execution tests', () => {
         #[export] fun testFailing(): void = {
           var a = Branch(Leaf(1))
           a.left.value = 2
-          support::test::assert( a.left.value == 1 )
+          support::test::assert( a.left.value == 1, "this one MUST fail" )
         }
       `,
       async (x, err) => {
@@ -465,8 +465,8 @@ describe('Execution tests', () => {
         fun getY(): u32 = addressFromRef(y)
 
         #[export] fun testLoad(): void = {
-          support::test::assert(i32.load(x) == 0)
-          support::test::assert(i32.load(y) == 0)
+          support::test::assert(i32.load(x) == 0, "i32.load(x) == 0")
+          support::test::assert(i32.load(y) == 0, "i32.load(y) == 0")
         }
 
         #[export] fun testStore(): void = {
@@ -476,10 +476,12 @@ describe('Execution tests', () => {
         }
 
         #[export] fun assert(): void = {
-          support::test::assert(i32.load(x) == 3)
-          support::test::assert(i32.load(y) == 0xABCDEF01)
-          support::test::assert(u8.load(y) as i32 == 0x01)
-          support::test::assert(u8.load(y, 5 as u32) as i32 == 5)
+          support::test::assert(i32.load(x) == 3, "i32.load(x) == 3")
+          support::test::assert(i32.load(y) as u32 == 0xABCDEF01 as u32, "i32.load(y) as u32 == 0xABCDEF01")
+          support::test::assert(i32.load(y) == 0xABCDEF01, "i32.load(y) == 0xABCDEF01 as i32")
+          support::test::assert(i32.load(y) as i64 == 0xABCDEF01 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
+          support::test::assert(u8.load(y) as i32 == 0x01, "u8.load(y) as i32 == 0x01")
+          support::test::assert(u8.load(y, 5 as u32) as i32 == 5, "u8.load(y, 5 as u32) as i32 == 5")
         }
       `,
       async (x, err) => {
@@ -618,14 +620,14 @@ describe('Execution tests', () => {
       'panic',
       `
         #[export] fun test(): void = {
-          support::test::assert((1 > 0)  == true)
-          support::test::assert((0 > 0)  == false)
-          support::test::assert((0 > 1)  == false)
-          support::test::assert((0 >= 0) == true)
-          support::test::assert((1 < 0)  == false)
-          support::test::assert((0 < 0)  == false)
-          support::test::assert((0 < 1)  == true)
-          support::test::assert((0 <= 1) == true)
+          support::test::assert((1 > 0)  == true, "(1 > 0)  == true")
+          support::test::assert((0 > 0)  == false, "(0 > 0)  == false")
+          support::test::assert((0 > 1)  == false, "(0 > 1)  == false")
+          support::test::assert((0 >= 0) == true, "(0 >= 0) == true")
+          support::test::assert((1 < 0)  == false, "(1 < 0)  == false")
+          support::test::assert((0 < 0)  == false, "(0 < 0)  == false")
+          support::test::assert((0 < 1)  == true, "(0 < 1)  == true")
+          support::test::assert((0 <= 1) == true, "(0 <= 1) == true")
         }
 
         #[export] fun testBool(i: i32): boolean = match i {
@@ -661,11 +663,11 @@ describe('Execution tests', () => {
         #[export] fun testBool99(): boolean = true    // true
 
         #[export] fun testPanic1(): void = {
-          support::test::assert((0 > 0) == true)
+          support::test::assert((0 > 0) == true, "this one MUST fail")
         }
 
         #[export] fun testPanic2(): void = {
-          support::test::assert(0 > 0)
+          support::test::assert(0 > 0, "this one MUST fail")
         }
       `,
       async x => {

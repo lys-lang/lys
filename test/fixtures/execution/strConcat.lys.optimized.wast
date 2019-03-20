@@ -2,41 +2,46 @@
  (type $0 (func (param i32)))
  (type $1 (func (param i32 i32)))
  (type $2 (func))
- (type $3 (func (param i64 i32)))
- (type $4 (func (param i64)))
- (type $5 (func (result i32)))
- (type $6 (func (param i32) (result i32)))
- (type $7 (func (param i64) (result i64)))
- (type $8 (func (param i32 i32 i32) (result i32)))
- (type $9 (func (param i32 i32 i32)))
- (type $10 (func (param i64 i64) (result i32)))
- (type $11 (func (param i64 i64 i64)))
- (type $12 (func (param i32 i32 i64)))
- (type $13 (func (param i32 i64)))
- (type $14 (func (param i64 i64) (result i64)))
- (type $15 (func (param i64 i32) (result i32)))
+ (type $3 (func (param i32 f64)))
+ (type $4 (func (param i64 i32)))
+ (type $5 (func (param i64 f64)))
+ (type $6 (func (param i64)))
+ (type $7 (func (result i32)))
+ (type $8 (func (param i32) (result i32)))
+ (type $9 (func (param i64) (result i64)))
+ (type $10 (func (param i32 i32 i32) (result i32)))
+ (type $11 (func (param i32 i32 i32)))
+ (type $12 (func (param i64 i64) (result i32)))
+ (type $13 (func (param f64 f64 i64)))
+ (type $14 (func (param i64 i64 i64)))
+ (type $15 (func (param i32 i32 i64)))
+ (type $16 (func (param i32 i64)))
+ (type $17 (func (param i64 i64) (result i64)))
+ (type $18 (func (param i64 i32) (result i32)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
  (import "env" "printf" (func $fimport$3 (param i32 i32)))
  (import "env" "printf" (func $fimport$4 (param i32 i32)))
- (import "env" "printf" (func $fimport$5 (param i32 i32)))
+ (import "env" "printf" (func $fimport$5 (param i32 f64)))
  (memory $0 1)
  (data (i32.const 1130) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
  (data (i32.const 1157) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
  (data (i32.const 1190) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
  (data (i32.const 1217) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1250) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1277) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1310) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1337) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1370) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1397) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1430) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1457) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1490) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1517) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1550) "\1a\00\00\00a\00s\00s\00e\00r\00t\00(\00f\00a\00l\00s\00e\00)")
+ (data (i32.const 1250) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1285) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1326) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1361) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1402) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1437) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1478) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1513) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1554) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00X")
+ (data (i32.const 1581) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00X")
+ (data (i32.const 1614) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
+ (data (i32.const 1641) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
+ (data (i32.const 1674) "\1a\00\00\00a\00s\00s\00e\00r\00t\00(\00f\00a\00l\00s\00e\00)")
  (data (i32.const 1088) "\08\00\00\00t\00r\00u\00e")
  (data (i32.const 1101) "\n\00\00\00f\00a\00l\00s\00e")
  (data (i32.const 1116) "\02\00\00\000")
@@ -88,7 +93,7 @@
  (export "test_getLastErrorMessage" (func $11))
  (export "main" (func $19))
  (start $20)
- (func $0 (; 6 ;) (type $3) (param $0 i64) (param $1 i32)
+ (func $0 (; 6 ;) (type $4) (param $0 i64) (param $1 i32)
   (call $fimport$3
    (i32.wrap_i64
     (local.get $0)
@@ -96,7 +101,7 @@
    (local.get $1)
   )
  )
- (func $1 (; 7 ;) (type $3) (param $0 i64) (param $1 i32)
+ (func $1 (; 7 ;) (type $4) (param $0 i64) (param $1 i32)
   (call $fimport$4
    (i32.wrap_i64
     (local.get $0)
@@ -104,7 +109,7 @@
    (local.get $1)
   )
  )
- (func $2 (; 8 ;) (type $3) (param $0 i64) (param $1 i32)
+ (func $2 (; 8 ;) (type $5) (param $0 i64) (param $1 f64)
   (call $fimport$5
    (i32.wrap_i64
     (local.get $0)
@@ -112,10 +117,10 @@
    (local.get $1)
   )
  )
- (func $3 (; 9 ;) (type $5) (result i32)
+ (func $3 (; 9 ;) (type $7) (result i32)
   (global.get $global$6)
  )
- (func $4 (; 10 ;) (type $6) (param $0 i32) (result i32)
+ (func $4 (; 10 ;) (type $8) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -214,7 +219,7 @@
   )
   (local.get $2)
  )
- (func $5 (; 11 ;) (type $8) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+ (func $5 (; 11 ;) (type $10) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
   (local $4 i64)
   (local $5 i64)
@@ -266,7 +271,7 @@
    (local.get $2)
   )
  )
- (func $6 (; 12 ;) (type $9) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $6 (; 12 ;) (type $11) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
    (i32.add
     (local.get $0)
@@ -299,7 +304,32 @@
    )
   )
  )
- (func $7 (; 13 ;) (type $12) (param $0 i32) (param $1 i32) (param $2 i64)
+ (func $7 (; 13 ;) (type $13) (param $0 f64) (param $1 f64) (param $2 i64)
+  (call $13
+   (f64.eq
+    (local.get $0)
+    (local.get $1)
+   )
+   (local.get $2)
+  )
+  (if
+   (f64.ne
+    (local.get $0)
+    (local.get $1)
+   )
+   (block
+    (call $2
+     (i64.const 1130)
+     (local.get $0)
+    )
+    (call $2
+     (i64.const 1157)
+     (local.get $1)
+    )
+   )
+  )
+ )
+ (func $8 (; 14 ;) (type $15) (param $0 i32) (param $1 i32) (param $2 i64)
   (call $13
    (i32.eq
     (local.get $0)
@@ -314,17 +344,17 @@
    )
    (block
     (call $1
-     (i64.const 1250)
+     (i64.const 1554)
      (local.get $0)
     )
     (call $1
-     (i64.const 1277)
+     (i64.const 1581)
      (local.get $1)
     )
    )
   )
  )
- (func $8 (; 14 ;) (type $12) (param $0 i32) (param $1 i32) (param $2 i64)
+ (func $9 (; 15 ;) (type $15) (param $0 i32) (param $1 i32) (param $2 i64)
   (call $13
    (i32.eq
     (local.get $0)
@@ -339,42 +369,17 @@
    )
    (block
     (call $0
-     (i64.const 1310)
+     (i64.const 1614)
      (local.get $0)
     )
     (call $0
-     (i64.const 1337)
+     (i64.const 1641)
      (local.get $1)
     )
    )
   )
  )
- (func $9 (; 15 ;) (type $12) (param $0 i32) (param $1 i32) (param $2 i64)
-  (call $13
-   (i32.eq
-    (local.get $0)
-    (local.get $1)
-   )
-   (local.get $2)
-  )
-  (if
-   (i32.ne
-    (local.get $0)
-    (local.get $1)
-   )
-   (block
-    (call $2
-     (i64.const 1370)
-     (local.get $0)
-    )
-    (call $2
-     (i64.const 1397)
-     (local.get $1)
-    )
-   )
-  )
- )
- (func $10 (; 16 ;) (type $11) (param $0 i64) (param $1 i64) (param $2 i64)
+ (func $10 (; 16 ;) (type $14) (param $0 i64) (param $1 i64) (param $2 i64)
   (call $13
    (call $18
     (local.get $0)
@@ -383,7 +388,7 @@
    (local.get $2)
   )
  )
- (func $11 (; 17 ;) (type $5) (result i32)
+ (func $11 (; 17 ;) (type $7) (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -409,14 +414,14 @@
    )
   )
  )
- (func $12 (; 18 ;) (type $4) (param $0 i64)
+ (func $12 (; 18 ;) (type $6) (param $0 i64)
   (call $fimport$0
    (i32.wrap_i64
     (local.get $0)
    )
   )
  )
- (func $13 (; 19 ;) (type $13) (param $0 i32) (param $1 i64)
+ (func $13 (; 19 ;) (type $16) (param $0 i32) (param $1 i64)
   (call $fimport$1
    (local.get $0)
    (i32.wrap_i64
@@ -424,7 +429,7 @@
    )
   )
  )
- (func $14 (; 20 ;) (type $7) (param $0 i64) (result i64)
+ (func $14 (; 20 ;) (type $9) (param $0 i64) (result i64)
   (local $1 i32)
   (local $2 i64)
   (call $6
@@ -451,7 +456,7 @@
   )
   (local.get $2)
  )
- (func $15 (; 21 ;) (type $14) (param $0 i64) (param $1 i64) (result i64)
+ (func $15 (; 21 ;) (type $17) (param $0 i64) (param $1 i64) (result i64)
   (call $14
    (call $17
     (i64.load
@@ -467,7 +472,7 @@
    )
   )
  )
- (func $16 (; 22 ;) (type $15) (param $0 i64) (param $1 i32) (result i32)
+ (func $16 (; 22 ;) (type $18) (param $0 i64) (param $1 i32) (result i32)
   (if
    (i32.gt_u
     (local.get $1)
@@ -509,7 +514,7 @@
    )
   )
  )
- (func $17 (; 23 ;) (type $14) (param $0 i64) (param $1 i64) (result i64)
+ (func $17 (; 23 ;) (type $17) (param $0 i64) (param $1 i64) (result i64)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -582,7 +587,7 @@
   )
   (local.get $0)
  )
- (func $18 (; 24 ;) (type $10) (param $0 i64) (param $1 i64) (result i32)
+ (func $18 (; 24 ;) (type $12) (param $0 i64) (param $1 i64) (result i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -723,21 +728,21 @@
     (i64.const 78)
    )
   )
-  (call $7
+  (call $8
    (i32.load
     (i32.const 67)
    )
    (i32.const 6)
    (i64.const 91)
   )
-  (call $7
+  (call $8
    (i32.load
     (i32.const 78)
    )
    (i32.const 8)
    (i64.const 122)
   )
-  (call $7
+  (call $8
    (i32.load
     (i32.wrap_i64
      (local.get $0)
@@ -762,7 +767,7 @@
    (i64.const 246)
    (i64.const 265)
   )
-  (call $7
+  (call $8
    (i32.load
     (i32.wrap_i64
      (local.get $1)
@@ -780,7 +785,7 @@
   (call $12
    (i64.const 372)
   )
-  (call $7
+  (call $8
    (i32.div_u
     (i32.load
      (i32.wrap_i64
@@ -800,59 +805,71 @@
    (i32.const 6)
    (i64.const 438)
   )
-  (call $9
-   (call $16
-    (local.get $0)
-    (i32.const 0)
+  (call $7
+   (f64.convert_i32_u
+    (call $16
+     (local.get $0)
+     (i32.const 0)
+    )
    )
-   (i32.const 97)
+   (f64.const 97)
    (i64.const 473)
   )
-  (call $9
-   (call $16
-    (local.get $0)
-    (i32.const 1)
+  (call $7
+   (f64.convert_i32_u
+    (call $16
+     (local.get $0)
+     (i32.const 1)
+    )
    )
-   (i32.const 115)
+   (f64.const 115)
    (i64.const 496)
   )
-  (call $9
-   (call $16
-    (local.get $0)
-    (i32.const 2)
+  (call $7
+   (f64.convert_i32_u
+    (call $16
+     (local.get $0)
+     (i32.const 2)
+    )
    )
-   (i32.const 100)
+   (f64.const 100)
    (i64.const 519)
   )
-  (call $9
-   (call $16
-    (local.get $0)
-    (i32.const 3)
+  (call $7
+   (f64.convert_i32_u
+    (call $16
+     (local.get $0)
+     (i32.const 3)
+    )
    )
-   (i32.const 10094)
+   (f64.const 10094)
    (i64.const 542)
   )
-  (call $9
-   (call $16
-    (local.get $0)
-    (i32.const 4)
+  (call $7
+   (f64.convert_i32_u
+    (call $16
+     (local.get $0)
+     (i32.const 4)
+    )
    )
-   (i32.const 55349)
+   (f64.const 55349)
    (i64.const 565)
   )
-  (call $9
-   (call $16
-    (local.get $0)
-    (i32.const 5)
+  (call $7
+   (f64.convert_i32_u
+    (call $16
+     (local.get $0)
+     (i32.const 5)
+    )
    )
-   (i32.const 56337)
+   (f64.const 56337)
    (i64.const 588)
   )
   (call $fimport$2)
   (call $12
    (i64.const 611)
   )
-  (call $8
+  (call $9
    (i32.div_u
     (i32.load
      (i32.wrap_i64
@@ -877,7 +894,7 @@
    (i32.const 4)
    (i64.const 674)
   )
-  (call $8
+  (call $9
    (i32.load
     (i32.wrap_i64
      (i64.load
@@ -894,7 +911,7 @@
   (call $12
    (i64.const 786)
   )
-  (call $8
+  (call $9
    (call $16
     (local.tee $0
      (call $15
@@ -911,7 +928,7 @@
    (i32.const 97)
    (i64.const 863)
   )
-  (call $8
+  (call $9
    (call $16
     (local.get $0)
     (i32.const 1)
@@ -919,7 +936,7 @@
    (i32.const 98)
    (i64.const 904)
   )
-  (call $8
+  (call $9
    (call $16
     (local.get $0)
     (i32.const 2)
@@ -927,7 +944,7 @@
    (i32.const 181)
    (i64.const 945)
   )
-  (call $8
+  (call $9
    (call $16
     (local.get $0)
     (i32.const 3)
@@ -935,7 +952,7 @@
    (i32.const 9884)
    (i64.const 986)
   )
-  (call $8
+  (call $9
    (call $16
     (local.get $0)
     (i32.const 4)

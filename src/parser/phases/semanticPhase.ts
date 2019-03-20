@@ -9,7 +9,7 @@ import { annotations } from '../annotations';
 import { ParsingContext } from '../ParsingContext';
 import { printNode } from '../../utils/nodePrinter';
 
-function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.DirectiveNode) {
+function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
   if (decorator.arguments.length != 2) {
     phase.parsingContext.messageCollector.error(
       '"extern" requires two arguments, module and function name',
@@ -37,7 +37,7 @@ function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
   }
 
   if (moduleName && functionName) {
-    target.annotate(new annotations.Extern(moduleName, functionName));
+    target.functionNode.functionName.annotate(new annotations.Extern(moduleName, functionName));
   }
 }
 function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
@@ -61,24 +61,24 @@ function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
   }
 
   if (exportedName) {
-    target.annotate(new annotations.Export(exportedName));
+    target.functionNode.functionName.annotate(new annotations.Export(exportedName));
   }
 }
 
-function inlineDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.DirectiveNode) {
+function inlineDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
   if (decorator.arguments.length != 0) {
     phase.parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName);
   }
 
-  target.annotate(new annotations.Inline());
+  target.functionNode.functionName.annotate(new annotations.Inline());
 }
 
-function explicitDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.DirectiveNode) {
+function explicitDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
   if (decorator.arguments.length != 0) {
     phase.parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName);
   }
 
-  target.annotate(new annotations.Explicit());
+  target.functionNode.functionName.annotate(new annotations.Explicit());
 }
 
 function processDecorations(node: Nodes.FunDirectiveNode, phase: SemanticPhaseResult) {

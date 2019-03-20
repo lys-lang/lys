@@ -57,11 +57,11 @@
       |-QNameNode=asd
         |-NameIdentifierNode="asd"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="asd$discriminant"
+          |-NameIdentifierNode="asd$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -252,7 +252,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -261,7 +261,7 @@
             |-ReferenceNode
               |-QNameNode=asd
                 |-NameIdentifierNode="asd"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -369,7 +369,7 @@
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="max"
   |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Inline
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="inline"
       |-FunctionNode
@@ -378,7 +378,7 @@
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="allocBytes"
+        |-NameIdentifierNode="allocBytes" annotations=Inline
         |-ReferenceNode
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
@@ -418,7 +418,7 @@
                 |-IntegerLiteral=32
     |-NameIdentifierNode="allocBytes"
   |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode annotations=Inline,Export,Explicit
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="inline"
       |-DecoratorNode
@@ -437,7 +437,7 @@
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="calloc"
+        |-NameIdentifierNode="calloc" annotations=Inline,Export,Explicit
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -837,11 +837,11 @@
       |-QNameNode=String
         |-NameIdentifierNode="String"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="String$discriminant"
+          |-NameIdentifierNode="String$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -1038,7 +1038,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_data"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1047,7 +1047,7 @@
             |-ReferenceNode
               |-QNameNode=String
                 |-NameIdentifierNode="String"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
@@ -1065,7 +1065,7 @@
                 |-QNameNode=String
                   |-NameIdentifierNode="String"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1079,7 +1079,7 @@
             |-ReferenceNode
               |-QNameNode=bytes
                 |-NameIdentifierNode="bytes"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -1201,7 +1201,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -1210,7 +1210,7 @@
             |-ReferenceNode
               |-QNameNode=String
                 |-NameIdentifierNode="String"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -1453,7 +1453,7 @@
                   |-NameIdentifierNode="BB"
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -1462,7 +1462,7 @@
             |-ReferenceNode
               |-QNameNode=AA
                 |-NameIdentifierNode="AA"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -1613,7 +1613,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -1622,7 +1622,7 @@
             |-ReferenceNode
               |-QNameNode=BB
                 |-NameIdentifierNode="BB"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -1632,11 +1632,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="BB$discriminant"
+          |-NameIdentifierNode="BB$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -1846,11 +1846,11 @@
       |-QNameNode=TT
         |-NameIdentifierNode="TT"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="TT$discriminant"
+          |-NameIdentifierNode="TT$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -2041,7 +2041,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -2050,7 +2050,7 @@
             |-ReferenceNode
               |-QNameNode=TT
                 |-NameIdentifierNode="TT"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -2160,7 +2160,9 @@
                 |-IntegerLiteral=2 annotations=IsValueNode
                 |-IntegerLiteral=3 annotations=IsValueNode
               |-IntegerLiteral=4 annotations=IsValueNode
-          |-IntegerLiteral=-5 annotations=IsValueNode
+          |-UnaryExpressionNode annotations=IsValueNode
+            |-IntegerLiteral=5
+            |-NameIdentifierNode="-"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x1"
@@ -2317,7 +2319,7 @@
                     |-NameIdentifierNode="Node"
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -2326,7 +2328,7 @@
             |-ReferenceNode
               |-QNameNode=Tree
                 |-NameIdentifierNode="Tree"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -2477,7 +2479,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -2486,7 +2488,7 @@
             |-ReferenceNode
               |-QNameNode=Empty
                 |-NameIdentifierNode="Empty"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -2496,11 +2498,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Empty$discriminant"
+          |-NameIdentifierNode="Empty$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -2710,7 +2712,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -2719,7 +2721,7 @@
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -2729,11 +2731,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Node$discriminant"
+          |-NameIdentifierNode="Node$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -2942,7 +2944,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_a"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -2951,7 +2953,7 @@
             |-ReferenceNode
               |-QNameNode=Node
                 |-NameIdentifierNode="Node"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-UnionTypeNode
             |-ReferenceNode
               |-QNameNode=Tree
@@ -2971,7 +2973,7 @@
                 |-QNameNode=Node
                   |-NameIdentifierNode="Node"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -2989,7 +2991,7 @@
               |-ReferenceNode
                 |-QNameNode=Forest
                   |-NameIdentifierNode="Forest"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -3010,7 +3012,7 @@
               |-NameIdentifierNode="property$0_offset"
       |-NameIdentifierNode="property$0"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -3024,7 +3026,7 @@
             |-ReferenceNode
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="loadPropertyWithOffset$0"
+          |-NameIdentifierNode="loadPropertyWithOffset$0" annotations=Inline
           |-UnionTypeNode
             |-ReferenceNode
               |-QNameNode=Tree
@@ -3047,7 +3049,7 @@
                       |-NameIdentifierNode="$self"
       |-NameIdentifierNode="loadPropertyWithOffset$0"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -3070,7 +3072,7 @@
             |-ReferenceNode
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="storePropertyWithOffset$0"
+          |-NameIdentifierNode="storePropertyWithOffset$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -3253,7 +3255,7 @@
                     |-NameIdentifierNode="Cons"
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -3262,7 +3264,7 @@
             |-ReferenceNode
               |-QNameNode=Forest
                 |-NameIdentifierNode="Forest"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -3413,7 +3415,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -3422,7 +3424,7 @@
             |-ReferenceNode
               |-QNameNode=Nil
                 |-NameIdentifierNode="Nil"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -3432,11 +3434,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Nil$discriminant"
+          |-NameIdentifierNode="Nil$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -3646,7 +3648,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -3655,7 +3657,7 @@
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -3665,11 +3667,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Cons$discriminant"
+          |-NameIdentifierNode="Cons$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -3878,7 +3880,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_tree"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -3887,7 +3889,7 @@
             |-ReferenceNode
               |-QNameNode=Cons
                 |-NameIdentifierNode="Cons"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-UnionTypeNode
             |-ReferenceNode
               |-QNameNode=Tree
@@ -3907,7 +3909,7 @@
                 |-QNameNode=Cons
                   |-NameIdentifierNode="Cons"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -3925,7 +3927,7 @@
               |-ReferenceNode
                 |-QNameNode=Forest
                   |-NameIdentifierNode="Forest"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -3946,7 +3948,7 @@
               |-NameIdentifierNode="property$0_offset"
       |-NameIdentifierNode="property$0"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -3960,7 +3962,7 @@
             |-ReferenceNode
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="loadPropertyWithOffset$0"
+          |-NameIdentifierNode="loadPropertyWithOffset$0" annotations=Inline
           |-UnionTypeNode
             |-ReferenceNode
               |-QNameNode=Tree
@@ -3983,7 +3985,7 @@
                       |-NameIdentifierNode="$self"
       |-NameIdentifierNode="loadPropertyWithOffset$0"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4006,7 +4008,7 @@
             |-ReferenceNode
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="storePropertyWithOffset$0"
+          |-NameIdentifierNode="storePropertyWithOffset$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -4381,11 +4383,11 @@
       |-QNameNode=Color
         |-NameIdentifierNode="Color"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Color$discriminant"
+          |-NameIdentifierNode="Color$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -4612,7 +4614,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_r"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4621,7 +4623,7 @@
             |-ReferenceNode
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -4639,7 +4641,7 @@
                 |-QNameNode=Color
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4653,7 +4655,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -4722,7 +4724,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_g"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4731,7 +4733,7 @@
             |-ReferenceNode
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -4749,7 +4751,7 @@
                 |-QNameNode=Color
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$1_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4763,7 +4765,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -4832,7 +4834,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_b"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4841,7 +4843,7 @@
             |-ReferenceNode
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="property$2"
+          |-NameIdentifierNode="property$2" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -4859,7 +4861,7 @@
                 |-QNameNode=Color
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$2_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -4873,7 +4875,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$2"
+          |-NameIdentifierNode="property$2" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -4995,7 +4997,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -5004,7 +5006,7 @@
             |-ReferenceNode
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -5021,11 +5023,11 @@
       |-QNameNode=True
         |-NameIdentifierNode="True"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="True$discriminant"
+          |-NameIdentifierNode="True$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -5216,7 +5218,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -5225,7 +5227,7 @@
             |-ReferenceNode
               |-QNameNode=True
                 |-NameIdentifierNode="True"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -5257,11 +5259,11 @@
       |-QNameNode=False
         |-NameIdentifierNode="False"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="False$discriminant"
+          |-NameIdentifierNode="False$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -5452,7 +5454,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -5461,7 +5463,7 @@
             |-ReferenceNode
               |-QNameNode=False
                 |-NameIdentifierNode="False"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -5533,7 +5535,7 @@
                     |-NameIdentifierNode="False"
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -5542,7 +5544,7 @@
             |-ReferenceNode
               |-QNameNode=Boolean
                 |-NameIdentifierNode="Boolean"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -5748,11 +5750,11 @@
       |-QNameNode=Iterator
         |-NameIdentifierNode="Iterator"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Iterator$discriminant"
+          |-NameIdentifierNode="Iterator$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -5964,7 +5966,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_current"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -5973,7 +5975,7 @@
             |-ReferenceNode
               |-QNameNode=Iterator
                 |-NameIdentifierNode="Iterator"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -5991,7 +5993,7 @@
                 |-QNameNode=Iterator
                   |-NameIdentifierNode="Iterator"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -6005,7 +6007,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -6074,7 +6076,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_target"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -6083,7 +6085,7 @@
             |-ReferenceNode
               |-QNameNode=Iterator
                 |-NameIdentifierNode="Iterator"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -6101,7 +6103,7 @@
                 |-QNameNode=Iterator
                   |-NameIdentifierNode="Iterator"
               |-NameIdentifierNode="property$1_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -6115,7 +6117,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -6237,7 +6239,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -6246,7 +6248,7 @@
             |-ReferenceNode
               |-QNameNode=Iterator
                 |-NameIdentifierNode="Iterator"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -6365,7 +6367,7 @@
                     |-NameIdentifierNode="Some"
       |-NameIdentifierNode="is"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -6374,7 +6376,7 @@
             |-ReferenceNode
               |-QNameNode=Maybe
                 |-NameIdentifierNode="Maybe"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -6525,7 +6527,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -6534,7 +6536,7 @@
             |-ReferenceNode
               |-QNameNode=None
                 |-NameIdentifierNode="None"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -6544,11 +6546,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="None$discriminant"
+          |-NameIdentifierNode="None$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -6758,7 +6760,7 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode
@@ -6767,7 +6769,7 @@
             |-ReferenceNode
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -6777,11 +6779,11 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Some$discriminant"
+          |-NameIdentifierNode="Some$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -6978,7 +6980,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_value"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -6987,7 +6989,7 @@
             |-ReferenceNode
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -7005,7 +7007,7 @@
                 |-QNameNode=Some
                   |-NameIdentifierNode="Some"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -7019,7 +7021,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"

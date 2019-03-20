@@ -27,11 +27,11 @@
       |-QNameNode=Color
         |-NameIdentifierNode="Color"
     |-OverloadedFunctionNode type=(fun "Color$discriminant" () (alias u64)) annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "Color$discriminant" () (alias u64)) annotations=IsOverloaded
-          |-NameIdentifierNode="Color$discriminant"
+          |-NameIdentifierNode="Color$discriminant" annotations=Inline
           |-ReferenceNode type=(type (alias u64 (native u64)))
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -46,9 +46,9 @@
                   |-QNameNode=Color
                     |-NameIdentifierNode="Color"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
+            |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-NameIdentifierNode="<<"
-              |-AsExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode
+              |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
                 |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/getter.lys::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -82,17 +82,17 @@
           |-BlockNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode
             |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/getter.lys::$ref:Color#3)
               |-NameIdentifierNode="$ref" type=(alias Color (struct r:<null> g:<null> b:<null>))
-              |-FunctionCallNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode
+              |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Color)) type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias Color))
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
-                |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode
+                |-FunctionCallNode=(fun "calloc" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                   |-ReferenceNode type=(fun "calloc" ((alias u32) (alias u32)) (alias u32))
                     |-QNameNode=system::memory::calloc
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                     |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-ReferenceNode type=(type (alias u32 (native u32)))
                       |-QNameNode=u32
@@ -102,7 +102,7 @@
                       |-QNameNode=Color
                         |-NameIdentifierNode="Color"
                     |-NameIdentifierNode="allocationSize"
-            |-FunctionCallNode type=(alias void (native void))
+            |-FunctionCallNode=(fun "property$0" ((alias Color) (alias i32)) (alias void)) type=(alias void (native void))
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Color)) (alias i32)) (fun "property$0" ((alias Color) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
@@ -112,7 +112,7 @@
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(r:i32#0)
                 |-QNameNode=r
                   |-NameIdentifierNode="r"
-            |-FunctionCallNode type=(alias void (native void))
+            |-FunctionCallNode=(fun "property$1" ((alias Color) (alias i32)) (alias void)) type=(alias void (native void))
               |-ReferenceNode type=(intersection (fun "property$1" ((alias Color)) (alias i32)) (fun "property$1" ((alias Color) (alias i32)) (alias void)))
                 |-QNameNode=property$1
                   |-NameIdentifierNode="property$1"
@@ -122,7 +122,7 @@
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(g:i32#1)
                 |-QNameNode=g
                   |-NameIdentifierNode="g"
-            |-FunctionCallNode type=(alias void (native void))
+            |-FunctionCallNode=(fun "property$2" ((alias Color) (alias i32)) (alias void)) type=(alias void (native void))
               |-ReferenceNode type=(intersection (fun "property$2" ((alias Color)) (alias i32)) (fun "property$2" ((alias Color) (alias i32)) (alias void)))
                 |-QNameNode=property$2
                   |-NameIdentifierNode="property$2"
@@ -223,7 +223,7 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "property$0" ((alias Color)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
             |-ReferenceNode type=(intersection (fun "property$0" ((alias Color)) (alias i32)) (fun "property$0" ((alias Color) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -246,7 +246,7 @@
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode type=(alias void (native void))
+          |-FunctionCallNode=(fun "property$0" ((alias Color) (alias i32)) (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(intersection (fun "property$0" ((alias Color)) (alias i32)) (fun "property$0" ((alias Color) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -258,7 +258,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_r" type=(intersection (fun "property_r" ((alias Color)) (alias i32)) (fun "property_r" ((alias Color) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(intersection (fun "property$0" ((alias Color)) (alias i32)) (fun "property$0" ((alias Color) (alias i32)) (alias void))) annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$0" ((alias Color)) (alias i32)) annotations=IsOverloaded
@@ -267,11 +267,11 @@
             |-ReferenceNode type=(type (alias Color (struct r:<null> g:<null> b:<null>)))
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "load" ((alias ref) (alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
             |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias u32)) (alias i32)))
               |-ReferenceNode type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -285,7 +285,7 @@
                 |-QNameNode=Color
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$0" ((alias Color) (alias i32)) (alias void)) annotations=IsOverloaded
@@ -299,11 +299,11 @@
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode type=(alias void (native void))
+          |-FunctionCallNode=(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)) type=(alias void (native void))
             |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)))
               |-ReferenceNode type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -333,7 +333,7 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "property$1" ((alias Color)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
             |-ReferenceNode type=(intersection (fun "property$1" ((alias Color)) (alias i32)) (fun "property$1" ((alias Color) (alias i32)) (alias void)))
               |-QNameNode=property$1
                 |-NameIdentifierNode="property$1"
@@ -356,7 +356,7 @@
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode type=(alias void (native void))
+          |-FunctionCallNode=(fun "property$1" ((alias Color) (alias i32)) (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(intersection (fun "property$1" ((alias Color)) (alias i32)) (fun "property$1" ((alias Color) (alias i32)) (alias void)))
               |-QNameNode=property$1
                 |-NameIdentifierNode="property$1"
@@ -368,7 +368,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_g" type=(intersection (fun "property_g" ((alias Color)) (alias i32)) (fun "property_g" ((alias Color) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(intersection (fun "property$1" ((alias Color)) (alias i32)) (fun "property$1" ((alias Color) (alias i32)) (alias void))) annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$1" ((alias Color)) (alias i32)) annotations=IsOverloaded
@@ -377,11 +377,11 @@
             |-ReferenceNode type=(type (alias Color (struct r:<null> g:<null> b:<null>)))
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "load" ((alias ref) (alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
             |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias u32)) (alias i32)))
               |-ReferenceNode type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -395,7 +395,7 @@
                 |-QNameNode=Color
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$1_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$1" ((alias Color) (alias i32)) (alias void)) annotations=IsOverloaded
@@ -409,11 +409,11 @@
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode type=(alias void (native void))
+          |-FunctionCallNode=(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)) type=(alias void (native void))
             |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)))
               |-ReferenceNode type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -443,7 +443,7 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "property$2" ((alias Color)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
             |-ReferenceNode type=(intersection (fun "property$2" ((alias Color)) (alias i32)) (fun "property$2" ((alias Color) (alias i32)) (alias void)))
               |-QNameNode=property$2
                 |-NameIdentifierNode="property$2"
@@ -466,7 +466,7 @@
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode type=(alias void (native void))
+          |-FunctionCallNode=(fun "property$2" ((alias Color) (alias i32)) (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(intersection (fun "property$2" ((alias Color)) (alias i32)) (fun "property$2" ((alias Color) (alias i32)) (alias void)))
               |-QNameNode=property$2
                 |-NameIdentifierNode="property$2"
@@ -478,7 +478,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_b" type=(intersection (fun "property_b" ((alias Color)) (alias i32)) (fun "property_b" ((alias Color) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(intersection (fun "property$2" ((alias Color)) (alias i32)) (fun "property$2" ((alias Color) (alias i32)) (alias void))) annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$2" ((alias Color)) (alias i32)) annotations=IsOverloaded
@@ -487,11 +487,11 @@
             |-ReferenceNode type=(type (alias Color (struct r:<null> g:<null> b:<null>)))
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="property$2"
+          |-NameIdentifierNode="property$2" annotations=Inline
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "load" ((alias ref) (alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
             |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias u32)) (alias i32)))
               |-ReferenceNode type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -505,7 +505,7 @@
                 |-QNameNode=Color
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$2_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$2" ((alias Color) (alias i32)) (alias void)) annotations=IsOverloaded
@@ -519,11 +519,11 @@
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$2"
+          |-NameIdentifierNode="property$2" annotations=Inline
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode type=(alias void (native void))
+          |-FunctionCallNode=(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)) type=(alias void (native void))
             |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)))
               |-ReferenceNode type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -641,7 +641,7 @@
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias Color))
     |-OverloadedFunctionNode type=(fun "as" ((alias Color)) (alias ref)) annotations=Injected
-      |-FunDirectiveNode annotations=Explicit
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode type=(fun "as" ((alias Color)) (alias ref)) annotations=IsOverloaded
@@ -650,7 +650,7 @@
             |-ReferenceNode type=(type (alias Color (struct r:<null> g:<null> b:<null>)))
               |-QNameNode=Color
                 |-NameIdentifierNode="Color"
-          |-NameIdentifierNode="as"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -660,7 +660,7 @@
                 |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as" type=(fun "as" ((alias Color)) (alias ref))
   |-OverloadedFunctionNode type=(fun "main" ((alias Color)) (alias i32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "main" ((alias Color)) (alias i32)) annotations=IsOverloaded
@@ -669,15 +669,15 @@
           |-ReferenceNode type=(type (alias Color (struct r:<null> g:<null> b:<null>)))
             |-QNameNode=Color
               |-NameIdentifierNode="Color"
-        |-NameIdentifierNode="main"
+        |-NameIdentifierNode="main" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+        |-BinaryExpressionNode=(fun "|" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="|"
-          |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun "|" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
             |-NameIdentifierNode="|"
-            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode=(fun "*" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-NameIdentifierNode="*"
               |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property_r" ((alias Color)) (alias i32))
                 |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=Local(color:Color#0)
@@ -685,7 +685,7 @@
                     |-NameIdentifierNode="color"
                 |-NameIdentifierNode="r"
               |-HexLiteral=65536 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode=(fun "*" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-NameIdentifierNode="*"
               |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property_g" ((alias Color)) (alias i32))
                 |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=Local(color:Color#0)

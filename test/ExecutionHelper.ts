@@ -104,8 +104,6 @@ async function generateInstance(compilationPhaseResult: CodeGenerationPhaseResul
   const testResults: TestDescription[] = [];
   const testStack: TestDescription[] = [];
 
-  let assertionCount = 0;
-
   function getTop() {
     if (testStack.length) {
       return testStack[testStack.length - 1];
@@ -113,18 +111,48 @@ async function generateInstance(compilationPhaseResult: CodeGenerationPhaseResul
     return null;
   }
 
+  const tmpArrayBuffer = new DataView(new ArrayBuffer(1024));
+
+  function printHexByte(x: number) {
+    return ('00' + x.toString(16)).substr(-2);
+  }
+
+  function printHexInt(x: number) {
+    tmpArrayBuffer.setInt32(0, x);
+
+    return [0, 1, 2, 3].map($ => printHexByte(tmpArrayBuffer.getUint8($))).join('');
+  }
+
   const lib = {
     env: {
       memoryBase: 0,
       tableBase: 0,
       table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' }),
-      printf: (offset: number, extra: number) => {
+      printf: function(offset: number, ...args: number[]) {
         try {
-          const str = readString(instance.exports.memory.buffer, offset).replace('%d', extra.toString());
+          let str = readString(instance.exports.memory.buffer, offset);
+
+          let ix = 0;
+
+          str = str.replace(/(%(.))/g, function(substr, group1, group2) {
+            const extra = args[ix];
+
+            ix++;
+            switch (group2) {
+              case 'd':
+                return extra.toString();
+              case 'x':
+                return '0x' + printHexInt(extra);
+              case 'X':
+                return '0x' + printHexInt(extra).toUpperCase();
+            }
+            return substr;
+          });
+
           instance.logs.push(str);
           console.log(str);
         } catch (e) {
-          console.log(e.message, 'offset:', offset, 'extra:', extra);
+          console.log(e.message, 'offset:', offset, 'extra:', args);
         }
       },
       segfault: function() {
@@ -176,7 +204,6 @@ async function generateInstance(compilationPhaseResult: CodeGenerationPhaseResul
         }
       },
       registerAssertion: (passed: number, nameOffset: number) => {
-        assertionCount++;
         const title = readString(instance.exports.memory.buffer, nameOffset);
         const didPass = !!passed;
 
@@ -229,8 +256,11 @@ async function testSrc(
   try {
     compilationPhaseResult = phases(content, fileName);
 
-    if (!compilationPhaseResult.isSuccess()) {
+    if (compilationPhaseResult.parsingContext.messageCollector.errors.length) {
       console.log(printErrors(compilationPhaseResult.parsingContext));
+    }
+
+    if (!compilationPhaseResult.isSuccess()) {
       console.log(printNode(compilationPhaseResult.document));
       console.log(printAST(compilationPhaseResult.document));
       console.log(print(compilationPhaseResult.compilationPhaseResult.typePhaseResult.typeGraph));
@@ -270,7 +300,7 @@ async function testSrc(
 
     for (let testResult of instance.testResults) {
       if (!testResult.passed) {
-        throw new Error('Suite ' + testResult.title + ' failed');
+        throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
       }
     }
 

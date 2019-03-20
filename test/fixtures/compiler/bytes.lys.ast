@@ -13,11 +13,11 @@
       |-NameIdentifierNode="b" type=(alias bytes (native bytes))
       |-StringLiteral="utf «【】»" type=(alias bytes (native bytes)) annotations=IsValueNode
   |-OverloadedFunctionNode type=(fun "main" () (alias bytes)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "main" () (alias bytes)) annotations=IsOverloaded
-        |-NameIdentifierNode="main"
+        |-NameIdentifierNode="main" annotations=Export
         |-ReferenceNode type=(type (alias bytes (native bytes)))
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"

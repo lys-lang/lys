@@ -394,8 +394,19 @@ const visitor = {
     const ret = new Nodes.BreakNode(x);
     return ret;
   },
-
+  PostfixNumber(x: Nodes.ASTNode) {
+    const literal = visit(x.children[0]) as Nodes.IntegerLiteral | Nodes.HexLiteral | Nodes.FloatLiteral;
+    literal.suffixReference = visit(x.children[1]);
+    return literal;
+  },
   NumberLiteral(x: Nodes.ASTNode) {
+    if (x.text.includes('.') || x.text.includes('E') || x.text.includes('e')) {
+      return new Nodes.FloatLiteral(x);
+    } else {
+      return new Nodes.IntegerLiteral(x);
+    }
+  },
+  NegNumberLiteral(x: Nodes.ASTNode) {
     if (x.text.includes('.') || x.text.includes('E') || x.text.includes('e')) {
       return new Nodes.FloatLiteral(x);
     } else {

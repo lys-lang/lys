@@ -17,22 +17,22 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun ">=" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
             |-NameIdentifierNode=">="
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-          |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun "*" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
             |-NameIdentifierNode="*"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
-            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-FunctionCallNode=(fun "factorial" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode type=(fun "factorial" ((alias i32)) (alias i32))
                 |-QNameNode=factorial
                   |-NameIdentifierNode="factorial"
-              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                 |-NameIdentifierNode="-"
                 |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                   |-QNameNode=n
@@ -58,7 +58,7 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
             |-NameIdentifierNode=">"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=x
@@ -66,11 +66,11 @@
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=y
                 |-NameIdentifierNode="y"
-          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "gcd" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
             |-ReferenceNode type=(fun "gcd" ((alias i32) (alias i32)) (alias i32))
               |-QNameNode=gcd
                 |-NameIdentifierNode="gcd"
-            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-NameIdentifierNode="-"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x
@@ -82,7 +82,7 @@
               |-QNameNode=y
                 |-NameIdentifierNode="y"
           |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode
-            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BinaryExpressionNode=(fun "<" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
               |-NameIdentifierNode="<"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x
@@ -90,14 +90,14 @@
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
-            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-FunctionCallNode=(fun "gcd" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode type=(fun "gcd" ((alias i32) (alias i32)) (alias i32))
                 |-QNameNode=gcd
                   |-NameIdentifierNode="gcd"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
-              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                 |-NameIdentifierNode="-"
                 |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                   |-QNameNode=y
@@ -105,7 +105,7 @@
                 |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
-            |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-FunctionCallNode=(fun "factorial" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode type=(fun "factorial" ((alias i32)) (alias i32))
                 |-QNameNode=factorial
                   |-NameIdentifierNode="factorial"

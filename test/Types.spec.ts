@@ -291,7 +291,6 @@ describe('Types', function() {
         fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64
         ---
         Cannot convert type i16 into u16
-        Cannot convert type i16 into u32
         Cannot convert type i16 into u64
         Cannot convert type u16 into i16
         Cannot convert type u32 into u8
@@ -299,7 +298,6 @@ describe('Types', function() {
         Cannot convert type i64 into u8
         Cannot convert type i64 into i16
         Cannot convert type i64 into u16
-        Cannot convert type i64 into u32
         Cannot convert type u64 into i16
         Cannot convert type f32 into u8
         Cannot convert type f32 into i16
@@ -730,7 +728,6 @@ describe('Types', function() {
           fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64          ---
           This cast is useless
           Cannot convert type i16 into u16
-          Cannot convert type i16 into u32
           Cannot convert type i16 into u64
           Cannot convert type u16 into i16
           This cast is useless
@@ -741,7 +738,6 @@ describe('Types', function() {
           Cannot convert type i64 into u8
           Cannot convert type i64 into i16
           Cannot convert type i64 into u16
-          Cannot convert type i64 into u32
           This cast is useless
           Cannot convert type u64 into i16
           This cast is useless
@@ -2933,14 +2929,14 @@ describe('Types', function() {
 
     describe('implicit cast', () => {
       checkMainType`
-        fun test1(x: u8): u8 = x
+        fun test1(x: i32): i32 = x
 
-        fun main(x: i32): void = {
+        fun main(x: u8): void = {
           test1(x)
         }
         ---
-        fun(x: u8) -> u8
-        fun(x: i32) -> void
+        fun(x: i32) -> i32
+        fun(x: u8) -> void
       `;
 
       checkMainType`
@@ -3597,14 +3593,14 @@ describe('Types', function() {
             const typePhase = new TypePhaseResult(scope);
             typePhase.execute();
             typePhase.ensureIsValid();
+            throw new Error('Type phase did not fail');
           } catch (e) {
             if (!canonical.parsingContext.messageCollector.errors.length) {
               throw e;
             }
-            return printErrors(canonical.parsingContext, true);
           }
 
-          throw new Error('Type phase did not fail');
+          return printErrors(canonical.parsingContext, true);
         },
         '.txt'
       );

@@ -73,17 +73,9 @@ export class TypeGraphBuilder {
 
     if (args.length != paramList.length) {
       throw new Error('args.length != paramList.length');
-    } else {
-      // paramList.forEach((param, index) => {
-      //   this.createNode(param.parameterName, new LiteralTypeResolver(args[index]));
-      // });
     }
 
     this.traverse(functionNode.body);
-
-    // if (functionNode.functionReturnType) {
-    //   this.traverse(functionNode.functionReturnType);
-    // }
 
     return this.createTypeGraph();
   }
@@ -342,7 +334,9 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      this.resolveVariableByName(node, 'i32', target);
+      const type = getTypeForIntValue(node.value);
+
+      this.resolveVariableByName(node, type, target);
     } else if (node instanceof Nodes.FloatLiteral) {
       this.resolveVariableByName(node, 'f32', target);
     } else if (node instanceof Nodes.BooleanLiteral) {
@@ -435,4 +429,9 @@ export class TypeGraphBuilder {
     const children = node.children;
     return children.map(child => Edge.addEdge(this.parsingContext, this.traverse(child), result));
   }
+}
+
+function getTypeForIntValue(value: number): string {
+  if (value >= -2147483648 && value <= 4294967295) return 'i32';
+  return 'i64';
 }

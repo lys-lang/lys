@@ -140,6 +140,7 @@ export class TypePhaseResult extends PhaseResult {
       if (e instanceof AstNodeError) {
         this.parsingContext.messageCollector.error(e);
       } else {
+        console.error(e);
         throw e;
       }
     }

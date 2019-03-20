@@ -2618,7 +2618,11 @@
             |-QNameNode=context_offset
               |-NameIdentifierNode="context_offset"
           |-IntegerLiteral=0
-          |-IntegerLiteral=400
+          |-AsExpressionNode
+            |-IntegerLiteral=400
+            |-ReferenceNode
+              |-QNameNode=u32
+                |-NameIdentifierNode="u32"
   |-FunDirectiveNode
     |-FunctionNode
       |-ParameterNode
@@ -3092,8 +3096,16 @@
                 |-NameIdentifierNode="system"
                 |-NameIdentifierNode="memory"
                 |-NameIdentifierNode="calloc"
-            |-IntegerLiteral=616
-            |-IntegerLiteral=1
+            |-AsExpressionNode
+              |-IntegerLiteral=616
+              |-ReferenceNode
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
+            |-AsExpressionNode
+              |-IntegerLiteral=1
+              |-ReferenceNode
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
         |-ValDeclarationNode
           |-NameIdentifierNode="ret"
           |-FunctionCallNode
@@ -3102,7 +3114,11 @@
                 |-NameIdentifierNode="system"
                 |-NameIdentifierNode="memory"
                 |-NameIdentifierNode="allocBytes"
-            |-IntegerLiteral=32
+            |-AsExpressionNode
+              |-IntegerLiteral=32
+              |-ReferenceNode
+                |-QNameNode=u32
+                  |-NameIdentifierNode="u32"
         |-FunctionCallNode
           |-ReferenceNode
             |-QNameNode=keccak_init

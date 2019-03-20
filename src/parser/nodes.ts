@@ -425,6 +425,7 @@ export namespace Nodes {
   }
 
   export class FloatLiteral extends LiteralNode<number> {
+    suffixReference: ReferenceNode;
     get value(): number {
       return parseFloat(this.astNode.text);
     }
@@ -434,6 +435,7 @@ export namespace Nodes {
   }
 
   export class IntegerLiteral extends LiteralNode<number> {
+    suffixReference: ReferenceNode;
     get value(): number {
       return parseInt(this.astNode.text);
     }
@@ -467,8 +469,7 @@ export namespace Nodes {
   }
 
   export class HexLiteral extends IntegerLiteral {
-    // TODO: support bignumber here
-
+    suffixReference: ReferenceNode;
     get value(): number {
       return parseInt(this.astNode.text, 16);
     }

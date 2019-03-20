@@ -238,12 +238,21 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     if (node.hasAnnotation(annotations.ImplicitCall)) {
       return emitImplicitCall(node, document);
     } else if (node instanceof Nodes.AbstractFunctionCallNode) {
-      const ofType = node.resolvedFunctionType;
+      const funType = node.resolvedFunctionType;
 
-      assert(ofType.name.internalIdentifier, `${ofType}.internalIdentifier is falsy`);
+      if (!funType && node.hasAnnotation(annotations.ByPassFunction)) {
+        return emit(node.argumentsNode[0], document);
+      }
+
+      if (!funType) {
+        assert(!funType, `funType is falsy`);
+        return t.instruction('unreachable', []);
+      }
+
+      assert(funType.name.internalIdentifier, `${funType}.internalIdentifier is falsy`);
 
       return t.callInstruction(
-        t.identifier(ofType.name.internalIdentifier),
+        t.identifier(funType.name.internalIdentifier),
         node.argumentsNode.map($ => emit($, document))
       );
     } else if (node instanceof Nodes.WasmExpressionNode) {
@@ -255,9 +264,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
       return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
-    } else if (node instanceof Nodes.IntegerLiteral) {
-      return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value)]);
+      const type = node.ofType.binaryenType;
+      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
@@ -343,18 +351,18 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         emit(node.lhs, document),
         emit(node.rhs, document)
       ]);
-    } else if (node instanceof Nodes.AsExpressionNode) {
-      const ofType = node.resolvedFunctionType;
+      // } else if (node instanceof Nodes.AsExpressionNode) {
+      //   const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
-    } else if (node instanceof Nodes.IsExpressionNode) {
-      const ofType = node.resolvedFunctionType;
+      //   return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
+      // } else if (node instanceof Nodes.IsExpressionNode) {
+      //   const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
-    } else if (node instanceof Nodes.UnaryExpressionNode) {
-      const ofType = node.resolvedFunctionType;
+      //   return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
+      // } else if (node instanceof Nodes.UnaryExpressionNode) {
+      //   const ofType = node.resolvedFunctionType;
 
-      return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
+      //   return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
       const instr = node.isLocal ? 'local.get' : 'global.get';
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
@@ -576,28 +584,30 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
     functions.forEach($ => {
       $.functions.forEach(fun => {
-        if (fun.hasAnnotation(annotations.Extern)) {
-          const extern = fun.getAnnotation(annotations.Extern);
+        const functionName = fun.functionNode.functionName;
+
+        if (functionName.hasAnnotation(annotations.Extern)) {
+          const extern = functionName.getAnnotation(annotations.Extern);
           const fnType = getTypeForFunction(fun.functionNode);
 
           imports.push(
             t.moduleImport(
               extern.module,
               extern.fn,
-              t.funcImportDescr(t.identifier(fun.functionNode.functionName.internalIdentifier), fnType)
+              t.funcImportDescr(t.identifier(functionName.internalIdentifier), fnType)
             )
           );
         } else {
           createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
         }
 
-        const exportedAnnotation = fun.getAnnotation(annotations.Export);
+        const exportedAnnotation = functionName.getAnnotation(annotations.Export);
         // TODO: verify we are not exporting two things with the same name
         if (exportedAnnotation) {
           exportedElements.push(
             t.moduleExport(
               exportedAnnotation.exportedName,
-              t.moduleExportDescr('Func', t.identifier(fun.functionNode.functionName.internalIdentifier))
+              t.moduleExportDescr('Func', t.identifier(functionName.internalIdentifier))
             )
           );
         }

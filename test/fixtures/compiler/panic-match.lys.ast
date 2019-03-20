@@ -17,19 +17,19 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-IfNode type=(native void)
-          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun "==" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
             |-NameIdentifierNode="=="
             |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(x:boolean#0)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
-          |-FunctionCallNode type=(alias never (never))
+          |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
             |-ReferenceNode type=(fun "panic" () (alias never))
               |-QNameNode=panic
                 |-NameIdentifierNode="panic"
     |-NameIdentifierNode="assert" type=(fun "assert" ((alias boolean)) (alias void))
   |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias void)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test" ((alias i32)) (alias void)) annotations=IsOverloaded
@@ -38,7 +38,7 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="test"
+        |-NameIdentifierNode="test" annotations=Export
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -49,13 +49,13 @@
                 |-NameIdentifierNode="x"
             |-MatchLiteralNode type=(native void) annotations=Local(var$1:i32#1)
               |-IntegerLiteral=1 type=(alias i32 (native i32))
-              |-FunctionCallNode type=(alias void (native void))
+              |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
                 |-ReferenceNode type=(fun "assert" ((alias boolean)) (alias void))
                   |-QNameNode=assert
                     |-NameIdentifierNode="assert"
                 |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
             |-MatchDefaultNode type=(native void) annotations=Local(var$1:i32#1)
-              |-FunctionCallNode type=(alias never (never))
+              |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
                 |-ReferenceNode type=(fun "panic" () (alias never))
                   |-QNameNode=panic
                     |-NameIdentifierNode="panic"

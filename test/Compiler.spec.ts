@@ -92,4 +92,17 @@ describe('Compiler', function() {
       '.optimized.wast'
     );
   });
+
+  describe('Compilation-execution-tests-optimized-ast', () => {
+    folderBasedTest(
+      '**/execution/*.lys',
+      phases,
+      async (result, e) => {
+        if (e) throw e;
+
+        return printAST(result.document);
+      },
+      '.ast'
+    );
+  });
 });

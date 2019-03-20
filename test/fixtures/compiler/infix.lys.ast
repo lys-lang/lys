@@ -21,7 +21,7 @@
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-        |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode,IsReturnExpression
+        |-BinaryExpressionNode=(fun "+" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="+"
           |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode,Local(a:f32#0)
             |-QNameNode=a
@@ -45,7 +45,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+        |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-NameIdentifierNode="+"
           |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
             |-QNameNode=a
@@ -55,7 +55,7 @@
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="sum" type=(intersection (fun "sum" ((alias f32) (alias f32)) (alias f32)) (fun "sum" ((alias i32) (alias i32)) (alias i32)))
   |-OverloadedFunctionNode type=(fun "testInt" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "testInt" ((alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded
@@ -69,11 +69,11 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="testInt"
+        |-NameIdentifierNode="testInt" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+        |-FunctionCallNode=(fun "sum" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-ReferenceNode type=(intersection (fun "sum" ((alias f32) (alias f32)) (alias f32)) (fun "sum" ((alias i32) (alias i32)) (alias i32)))
             |-QNameNode=sum
               |-NameIdentifierNode="sum"
@@ -85,7 +85,7 @@
               |-NameIdentifierNode="b"
     |-NameIdentifierNode="testInt" type=(fun "testInt" ((alias i32) (alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "testFloat" ((alias f32) (alias f32)) (alias f32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "testFloat" ((alias f32) (alias f32)) (alias f32)) annotations=IsOverloaded
@@ -99,11 +99,11 @@
           |-ReferenceNode type=(type (alias f32 (native f32)))
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
-        |-NameIdentifierNode="testFloat"
+        |-NameIdentifierNode="testFloat" annotations=Export
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-        |-FunctionCallNode type=(alias f32 (native f32)) annotations=IsValueNode,IsReturnExpression
+        |-FunctionCallNode=(fun "sum" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode,IsReturnExpression
           |-ReferenceNode type=(intersection (fun "sum" ((alias f32) (alias f32)) (alias f32)) (fun "sum" ((alias i32) (alias i32)) (alias i32)))
             |-QNameNode=sum
               |-NameIdentifierNode="sum"

@@ -19,7 +19,7 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
           |-NameIdentifierNode="-"
           |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::bc:<no-type>)
             |-QNameNode=bc
@@ -28,11 +28,11 @@
             |-QNameNode=x
               |-NameIdentifierNode="x"
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="main"
+        |-NameIdentifierNode="main" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -41,9 +41,9 @@
             |-ReferenceNode type=(alias i32 (native i32)) annotations=Global(test/fixtures/compiler/globalMutability.lys::x:<no-type>)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
-            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-NameIdentifierNode="-"
-              |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                 |-NameIdentifierNode="+"
                 |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test/fixtures/compiler/globalMutability.lys::x:<no-type>)
                   |-QNameNode=x

@@ -17,6 +17,7 @@ interface ILocalError {
   start: ITextPosition;
   end: ITextPosition;
   stack?: string;
+  warning?: boolean;
 }
 
 const ansiRegex = new RegExp(
@@ -102,7 +103,7 @@ function printErrors_(
       if (start.line >= 0) {
         errorOnLines[start.line] = errorOnLines[start.line] || new Set();
 
-        const error = { start, end, message: err.message || err.toString(), stack: err.stack };
+        const error = { start, end, message: err.message || err.toString(), stack: err.stack, warning: err.warning };
         printableErrors.add(error);
 
         for (let l = start.line; l <= end.line; l++) {
@@ -110,7 +111,13 @@ function printErrors_(
         }
       }
     } catch (e) {
-      printableErrors.add({ start: null, end: null, message: err.message || err.toString(), stack: err.stack });
+      printableErrors.add({
+        start: null,
+        end: null,
+        message: err.message || err.toString(),
+        stack: err.stack,
+        warning: false
+      });
     }
   });
 
@@ -169,7 +176,12 @@ function printErrors_(
               }
 
               message = message + x.message;
-              message = colors.red(message);
+
+              if (x.warning) {
+                message = colors.yellow(message);
+              } else {
+                message = colors.red(message);
+              }
             }
 
             printedErrors.add(x);

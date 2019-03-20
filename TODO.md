@@ -16,13 +16,13 @@ arrays
 strings
 closure functions
 
-fun sizeOf(x: Type<A> | A): usize
-
-test parsing `enum test {}`
-
-test parsing
+```
+// test parsing
+enum test {}
+```
 
 ```lys
+// test parsing:
 fun malloc(size: i32): i32 = {
   if (size > 0) {
     val sizeToAlloc = size + 8 /* asd */
@@ -33,10 +33,6 @@ fun malloc(size: i32): i32 = {
 }
 
 ```
-
-MESSAGE TO FUTURE AGUS:
-
-struct and poly types should not receive a instance of Reference, they should receive only the nameIdentifier used for the declaration.
 
 ---
 
@@ -71,129 +67,6 @@ https://en.wikipedia.org/wiki/Namespace
 https://en.wikipedia.org/wiki/Entropy_(information_theory)
 https://en.wikipedia.org/wiki/Nullary_constructor
 
-```ts
-enum Color {
-  Red
-  Green
-  Blue
-}
-
-// desugars to:
-
-type Red // nullary type
-type Green // nullary type
-type Blue // nullary type
-type Color = Red | Green | Blue
-```
-
-```ts
-enum Option<T> {
-  Some(value: T)
-  None
-}
-
-// desugars to:
-
-type None
-type Some<T>
-type Option<T> = Some<T> | None
-```
-
-```ts
-enum Option<T> {
-  Some(value: T)
-  None
-}
-
-// desugars to:
-
-type Option<T> = Some<T> | None
-type Some<T>
-type None
-
-impl Option<T> {
-  fun is(x: ref) = {
-    Some.is(x) || None.is(x)
-  }
-
-  fun as(x: Some<T>): Option<T> = x
-  fun as(x: None): Option<Nothing> = x
-}
-
-impl None {
-  val determinant: u32 = 2
-  val staticInstance: ref = determinant
-  fun is(x: ref) = x == staticInstance
-
-  fun apply(): None = staticInstance
-}
-
-
-```
-
-```ts
-enum Temp {
-  Celcius(mut temperature: f32)
-  Kelvin(temperature: f32)
-}
-
-// desugars to:
-
-type Temp = Celcius | Kelvin
-type Celcius
-type Kelvin
-
-impl Temp {
-  fun is(x: ref) = {
-    Celcius.is(x) || Kelvin.is(x)
-  }
-
-  fun as(x: Kelvin): Temp = x
-  fun as(x: Celcius): Temp = x
-}
-
-impl Celcius {
-  val determinant = 1
-  val memorySize = ref.memorySize + f32.memorySize /* temperature: f32 */
-  fun is(x: ref) = x.determinant == determinant
-
-  fun apply(temperature: f32): Celcius = {
-    val ptr = core::memory::malloc(memorySize)
-    val base = ref.base(ptr)
-    f32.store(base + 0, temperature)
-    ref as Celcius
-  }
-
-  fun get_temperature(ptr: Celcius): f32 = {
-    val base = ref.base(ptr)
-    f32.read(base + 0)
-  }
-
-  fun set_temperature(ptr: Celcius, newValue: f32): void = {
-    val base = ref.base(ptr)
-    f32.store(base + 0, newValue)
-  }
-}
-
-impl Kelvin {
-  val determinant = 2
-  val memorySize = ref.memorySize + f32.memorySize  /* n: f32 */
-  fun is(x: ref) = x.determinant == determinant
-
-  fun apply(n: f32): Kelvin = {
-    val ptr = core::memory::malloc(memorySize)
-    val base = ref.base(ptr)
-    f32.store(base + 0, n)
-    ref as Kelvin
-  }
-
-  fun get_temperature(ptr: Celcius): f32 = {
-    val base = ref.base(ptr)
-    f32.read(base + 0)
-  }
-}
-```
-
 grammar changes:
 
 ```
@@ -204,6 +77,8 @@ grammar changes:
 .^
 
 as <type>
+
+- is now unary
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?

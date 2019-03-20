@@ -11,7 +11,8 @@ import {
   InjectableTypes,
   NeverType,
   NativeTypes,
-  StructType
+  StructType,
+  StackType
 } from '../types';
 import { annotations } from '../annotations';
 import { Nodes } from '../nodes';
@@ -427,7 +428,7 @@ class IntersectionTypeResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext) {
     const astNode = node.astNode as Nodes.IntersectionTypeNode;
 
-    const types = node.incomingEdges().map(($, ix) => getTypeTypeType(astNode[ix], $.incomingType(), ctx));
+    const types = node.incomingEdges().map(($, ix) => getTypeTypeType(astNode.children[ix], $.incomingType(), ctx));
 
     const ret = new IntersectionType(types).simplify();
 
@@ -501,7 +502,7 @@ function safeResolveTypeMember(
   try {
     return resolveTypeMember(type, memberName, ctx);
   } catch (e) {
-    ctx.parsingContext.messageCollector.error(e, errorNode);
+    ctx.parsingContext.messageCollector.error(new AstNodeError(e.message, errorNode));
   }
   return INVALID_TYPE;
 }
@@ -614,7 +615,7 @@ class MemberTypeResolver extends TypeResolver {
         if (e instanceof AstNodeError) {
           ctx.parsingContext.messageCollector.error(e);
         } else {
-          ctx.parsingContext.messageCollector.error(e.toString(), opNode);
+          ctx.parsingContext.messageCollector.error(e, opNode);
         }
       }
     }
@@ -646,6 +647,7 @@ class AsOpTypeResolver extends TypeResolver {
     if (rhsType != INVALID_TYPE) {
       if (lhsType.equals(rhsType) && rhsType.equals(lhsType)) {
         ctx.parsingContext.messageCollector.warning(`This cast is useless ${lhsType} as ${rhsType}`, opNode);
+        opNode.annotate(new annotations.ByPassFunction());
         return rhsType;
       }
 
@@ -659,7 +661,7 @@ class AsOpTypeResolver extends TypeResolver {
           ctx,
           rhsType,
           false,
-          ctx.parsingContext.messageCollector,
+          new MessageCollector(),
           false
         );
 
@@ -1101,7 +1103,7 @@ function processFunctionCall(
       if (e instanceof AstNodeError) {
         ctx.parsingContext.messageCollector.error(e);
       } else {
-        ctx.parsingContext.messageCollector.error(e.toString(), errorNode);
+        ctx.parsingContext.messageCollector.error(e, errorNode);
       }
     }
   }
@@ -1147,10 +1149,10 @@ function findFunctionOverload(
             }
           }
         } else {
-          const score = acceptsTypes(fun, argTypes, strict, ctx, automaticCoercion);
-          if (score) {
+          const result = acceptsTypes(fun, argTypes, strict, ctx, automaticCoercion);
+          if (result) {
             if (!returnType || canBeAssigned(fun.returnType, returnType)) {
-              matchList.push({ fun, score: score.score, casts: score.casts });
+              matchList.push({ fun, score: result.score, casts: result.casts });
             }
           }
         }
@@ -1164,7 +1166,7 @@ function findFunctionOverload(
 
     if (matchList.length == 1) {
       return matchList[0].fun;
-    } else if (matchList.length > 0) {
+    } else if (matchList.length > 1) {
       matchList.sort((a, b) => {
         if (a.score < b.score) {
           return 1;
@@ -1179,20 +1181,33 @@ function findFunctionOverload(
         return matchList[0].fun;
       }
 
-      const initialScore = matchList[0].score;
+      // const initialScore = matchList[0].score;
 
-      let i = 0;
+      // let i = 0;
 
-      while (i < matchList.length) {
-        i++;
+      let selectedOverload = 0;
 
-        if (matchList[i].score != initialScore) {
-          // TODO: WARN ABOUT NON-OPTIMAL CODE
-          return matchList[i].fun;
-        }
-      }
+      // while (i < matchList.length) {
+      //   if (matchList[i].score != initialScore) {
+      //     selectedOverload = i;
+      //     break;
+      //   }
 
-      console.log(matchList);
+      //   i++;
+      // }
+
+      messageCollector.warning(
+        `Implicit overload with ambiguity.\nPicking overload ${matchList[
+          selectedOverload
+        ].fun.toString()} for types (${argTypes
+          .map($ => $.toString())
+          .join(', ')})\nComplete list of overloads:\n${matchList
+          .map($ => '  ' + $.fun.toString() + ' score: ' + $.score)
+          .join('\n')}`,
+        errorNode
+      );
+
+      return matchList[selectedOverload].fun;
     }
 
     if (errorNode) {
@@ -1251,6 +1266,24 @@ function findImplicitTypeCasting(
   return null;
 }
 
+function sizeInBytes(type: Type, defaultSize: number) {
+  if (type instanceof StackType) {
+    return type.byteSize;
+  }
+  if (type instanceof RefType) {
+    return type.byteSize;
+  }
+  switch (type.binaryenType) {
+    case NativeTypes.i32:
+    case NativeTypes.f32:
+      return 4;
+    case NativeTypes.i64:
+    case NativeTypes.f64:
+      return 8;
+  }
+  return defaultSize;
+}
+
 function acceptsTypes(
   type: FunctionType,
   types: Type[],
@@ -1266,7 +1299,7 @@ function acceptsTypes(
   let casts = [];
 
   if (type.parameterTypes.length == 0) {
-    return { score: 1, casts: [] };
+    return { score: Infinity, casts: [] };
   }
 
   for (let index = 0; index < types.length; index++) {
@@ -1283,20 +1316,23 @@ function acceptsTypes(
 
       if (cleanAssignation) {
         score += getTypeSimilarity(argumentType, parameterType);
-      } else {
+      } else if (automaticCoercion) {
         try {
-          const implicitCast =
-            automaticCoercion && findImplicitTypeCasting(argumentType, parameterType, ctx, new MessageCollector());
+          const implicitCast = findImplicitTypeCasting(argumentType, parameterType, ctx, new MessageCollector());
 
           if (implicitCast) {
             casts.push(implicitCast);
-            score += 0.5 * ((types.length - index) / types.length);
+            const dataLossInBytes = sizeInBytes(parameterType, 0) / sizeInBytes(argumentType, 1);
+            if (isNaN(dataLossInBytes)) return null;
+            score += 0.5 * Math.min(((types.length - index) / types.length) * dataLossInBytes, 1);
           } else {
             return null;
           }
         } catch {
           return null;
         }
+      } else {
+        return null;
       }
     } else {
       return null;

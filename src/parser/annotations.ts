@@ -16,6 +16,7 @@ export namespace annotations {
   export class IsOverloaded extends Annotation {}
   export class Inline extends Annotation {}
   export class Explicit extends Annotation {}
+  export class ByPassFunction extends Annotation {}
 
   export class Extern extends Annotation {
     constructor(public module: string, public fn: string) {

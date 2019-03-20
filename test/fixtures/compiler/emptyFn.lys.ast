@@ -5,22 +5,22 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "main" () (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="main"
+        |-NameIdentifierNode="main" annotations=Export
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
     |-NameIdentifierNode="main" type=(fun "main" () (alias void))
   |-OverloadedFunctionNode type=(fun "returningValueFn" () (alias void)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "returningValueFn" () (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="returningValueFn"
+        |-NameIdentifierNode="returningValueFn" annotations=Export
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
