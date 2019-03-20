@@ -1,6 +1,9 @@
-Lys, a language that compiles to WebAssembly. https://github.com/lys-lang/lys
+<p align="center"><br><br>
+  <img src="https://user-images.githubusercontent.com/260114/54724904-c7e7d300-4b4b-11e9-8bbd-ec3f9044c86e.png" width="200" /><br><br><br><br></p>
 
-This is a personal side project of a language that compiles to WebAssembly. You can read more about [it here](https://menduz.com/posts/lys-language-project/).
+[Lys](https://github.com/lys-lang/lys), a language that compiles to WebAssembly.
+
+Read more about it [in this blog post](https://menduz.com/posts/lys-language-project/).
 
 ## Where to start?
 
