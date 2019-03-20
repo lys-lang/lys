@@ -2,6 +2,13 @@ Lys, a language that compiles to WebAssembly. https://github.com/lys-lang/lys
 
 This is a personal side project of a language that compiles to WebAssembly. You can read more about [it here](https://menduz.com/posts/lys-language-project/).
 
+## Where to start?
+
+- To learn what can be used so far: browse the [standard library](stdlib/system)
+- To learn how real code looks like: browse the [execution tests](test/fixtures/execution)
+- To learn how high level constructs get compiled: browse the [sugar syntax tests](test/fixtures/semantics)
+- To run it locally, I do `npm run watch` and then I run the tests in other terminal with `npm run test`
+
 ## How does it look?
 
 ### Structs & Implementing operators
