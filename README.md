@@ -96,7 +96,7 @@ fun main(): void = {
 }
 ```
 
-### The final code is not decided in the compiler
+### Types and overloads are created in the language itself
 
 The compiler only knows how to emit functions and how to link function names. I did that so I had fewer things hardcoded into the compiler and allows me to write the language in the language.
 
