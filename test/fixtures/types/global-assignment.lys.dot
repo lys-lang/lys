@@ -25,26 +25,24 @@ digraph LYS {
       20 [label="AssignmentNode\n(alias i32 (native i32))", fillcolor=grey];
       21 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
       22 [label="Ref: y\n(alias i32 (native i32))", fillcolor=grey];
-      23 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
       label="test/fixtures/types/global-assignment.lys::addOne()";
     }
     subgraph "cluster_test/fixtures/types/global-assignment.lys_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      24 [label="BlockNode\n(native void)", fillcolor=grey];
-      25 [label="AssignmentNode\n(native void)", fillcolor=grey];
-      26 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-      27 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
-      28 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-      29 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      30 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
+      23 [label="BlockNode\n(native void)", fillcolor=grey];
+      24 [label="AssignmentNode\n(native void)", fillcolor=grey];
+      25 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
+      26 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
+      27 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
+      28 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       label="test/fixtures/types/global-assignment.lys::addOneNoReturn()";
     }
     label="test/fixtures/types/global-assignment.lys";
   }
   1 -> 14[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   1 -> 21[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
-  1 -> 26[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
-  1 -> 28[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  1 -> 25[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  1 -> 27[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[DEFAULT_VALUE]" fontsize=7 fontname="times" color="black" ];
   3 -> 6[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   4 -> 3[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
@@ -65,10 +63,10 @@ digraph LYS {
   20 -> 11[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
   21 -> 20[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
   22 -> 20[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
-  25 -> 24[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
-  26 -> 25[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
-  27 -> 25[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
-  28 -> 27[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
-  29 -> 27[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
+  24 -> 23[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  25 -> 24[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
+  26 -> 24[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
+  27 -> 26[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
+  28 -> 26[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
   label="LYS";
 }

@@ -30,7 +30,7 @@ export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, ph
 }
 
 export function failWithErrors(phaseName: string, pc: ParsingContext) {
-  if (pc.messageCollector.errors.length === 0) return;
+  if (!pc.messageCollector.hasErrors()) return;
 
   if (pc && pc.messageCollector.errors.length) {
     console.log(printErrors(pc));
@@ -43,10 +43,8 @@ export function failWithErrors(phaseName: string, pc: ParsingContext) {
           pc.messageCollector.errors
             .map(($: Error, $$) => {
               let msg = $ instanceof AstNodeError ? $.message : $.toString() + '\n';
-              let stack = '';
-              // if ($.stack) stack = '\n' + indent($.stack || '(no stack)');
 
-              return indent(msg, '    ').replace(/^\s+(.*)/m, ($$ + 1).toString() + ')  $1') + stack;
+              return indent(msg, '    ').replace(/^\s+(.*)/m, ($$ + 1).toString() + ')  $1');
             })
             .join('\n')
         )

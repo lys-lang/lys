@@ -70,7 +70,7 @@ fun malloc(size: u32): u32 = {
     panic()
 
   val ptr = offset
-  val newPtr = (ptr + max(size, 8  as u32) + AL_MASK) & ~AL_MASK
+  val newPtr = (ptr + max(size, 8 as u32) + AL_MASK) & ~AL_MASK
   val pagesBefore = currentMemory()
   if (newPtr > pagesBefore << 16) {
     val pagesNeeded = ((newPtr - ptr + 0xffff as u32) & ~(0xffff as u32)) >> 16

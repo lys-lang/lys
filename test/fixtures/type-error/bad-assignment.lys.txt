@@ -1,9 +1,9 @@
 test/fixtures/type-error/bad-assignment.lys
     1│ fun test(): f32 = {
-     │             ^^^ Type mismatch: Type "i32" is not assignable to "f32"
-    2│   var test = 1
-    3│   test = 123.0
-     │          ^^^^^ Type mismatch: Type "f32" is not assignable to "i32"
+    2│   var test = false
+    3│   test = 12
+     │          ^^ Type mismatch: Type "i32" is not assignable to "boolean"
     4│   test
     5│ }
+     │ ^ Type mismatch: Type "boolean" is not assignable to "f32"
     6│ 

@@ -121,19 +121,19 @@ impl String {
   }
 
   fun stringify(value: i64): bytes = {
-    if (value == 0 as i64) {
+    if (value == 0) {
       "0"
     } else {
       var len = charLength(value)
 
       val ret = system::memory::allocBytes(len << 1)
 
-      if (value > 0 as i64)
+      if (value > 0)
         printToBytes(ret, value as u64, len)
       else
         printToBytes(ret, (-value) as u64, len)
 
-      if (value < 0 as i64) {
+      if (value < 0) {
         // 45 == '-'
         u16.store(ret.ptr as ref, 45 as u16, 0 as u32)
       }

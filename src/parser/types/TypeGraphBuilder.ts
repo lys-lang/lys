@@ -3,10 +3,10 @@ import { Nodes } from '../nodes';
 import {
   getTypeResolver,
   EdgeLabels,
-  PassThroughTypeResolver,
   TypeFromTypeResolver,
   VarDeclarationTypeResolver,
-  TypeDirectiveResolver
+  TypeDirectiveResolver,
+  ParameterTypeResolver
 } from './typeResolvers';
 import { Type, TypeAlias, InjectableTypes } from '../types';
 import { AstNodeError } from '../NodeError';
@@ -73,17 +73,9 @@ export class TypeGraphBuilder {
 
     if (args.length != paramList.length) {
       throw new Error('args.length != paramList.length');
-    } else {
-      paramList.forEach((param, index) => {
-        this.createNode(param.parameterName, new LiteralTypeResolver(args[index]));
-      });
     }
 
     this.traverse(functionNode.body);
-
-    if (functionNode.functionReturnType) {
-      this.traverse(functionNode.functionReturnType);
-    }
 
     return this.createTypeGraph();
   }
@@ -161,10 +153,9 @@ export class TypeGraphBuilder {
       node.parameters.forEach(arg => {
         const defaultValue: Nodes.Node = arg.defaultValue;
         if (arg.parameterType) {
-          const expectedType = this.traverse(arg.parameterType); // TODO validate assign
+          const argumentNode: TypeNode = this.createNode(arg.parameterName, new ParameterTypeResolver());
 
-          const argumentNode: TypeNode = this.createNode(arg.parameterName, new PassThroughTypeResolver());
-          Edge.addEdge(this.parsingContext, expectedType, argumentNode, EdgeLabels.EXPECTED_TYPE);
+          Edge.addEdge(this.parsingContext, this.traverse(arg.parameterType), argumentNode, EdgeLabels.EXPECTED_TYPE);
 
           if (defaultValue) {
             Edge.addEdge(this.parsingContext, this.traverse(defaultValue), argumentNode, EdgeLabels.DEFAULT_VALUE); // TODO validate default value type
@@ -172,7 +163,7 @@ export class TypeGraphBuilder {
 
           Edge.addEdge(this.parsingContext, argumentNode, target, arg.parameterName.name);
         } else {
-          this.messageCollector.error(`Parameter ${arg.parameterName.name} has no defined type`, node);
+          this.messageCollector.error(`Parameter ${arg.parameterName.name} has no defined type`, arg.parameterName);
         }
       });
 
@@ -189,11 +180,6 @@ export class TypeGraphBuilder {
         Edge.addEdge(this.parsingContext, this.traverse(fun.functionNode), target, EdgeLabels.FUNCTION);
       });
       Edge.addEdge(this.parsingContext, target, this.traverse(node.functionName));
-    } else if (node instanceof Nodes.StructTypeNode) {
-      node.parameters.forEach($ => {
-        const name = this.createNode($.parameterName, new PassThroughTypeResolver());
-        Edge.addEdge(this.parsingContext, this.traverse($.parameterType), name);
-      });
     } else if (node instanceof Nodes.ReferenceNode) {
       this.resolveVariable(node.variable, target);
     } else if (node instanceof Nodes.AssignmentNode) {
@@ -348,7 +334,9 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      this.resolveVariableByName(node, 'i32', target);
+      const type = getTypeForIntValue(node.value);
+
+      this.resolveVariableByName(node, type, target);
     } else if (node instanceof Nodes.FloatLiteral) {
       this.resolveVariableByName(node, 'f32', target);
     } else if (node instanceof Nodes.BooleanLiteral) {
@@ -415,6 +403,7 @@ export class TypeGraphBuilder {
       const shouldNotTraverse =
         !directive.valueType ||
         directive.valueType instanceof Nodes.StackTypeNode ||
+        directive.valueType instanceof Nodes.StructTypeNode ||
         directive.valueType instanceof Nodes.InjectedTypeNode;
 
       if (!shouldNotTraverse) {
@@ -440,4 +429,9 @@ export class TypeGraphBuilder {
     const children = node.children;
     return children.map(child => Edge.addEdge(this.parsingContext, this.traverse(child), result));
   }
+}
+
+function getTypeForIntValue(value: number): string {
+  if (value >= -2147483648 && value <= 4294967295) return 'i32';
+  return 'i64';
 }

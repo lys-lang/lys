@@ -1,8 +1,13 @@
 type AA = BB
 
 impl AA {
-  fun is(a: AA): boolean = {
+  fun is(a: (AA | ref)): boolean = {
     a is BB
+  }
+
+  #[explicit]
+  fun as(a: AA): ref = %wasm {
+    (local.get $a)
   }
 
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
@@ -18,21 +23,15 @@ impl AA {
   }
 }
 
-impl AA {
-  fun as(a: AA): ref = %wasm {
-    (local.get $a)
-  }
-}
-
 impl BB {
-  fun as(a: BB): AA = %wasm {
-    (local.get $a)
+  fun as(lhs: BB): AA = %wasm {
+    (local.get $lhs)
   }
-}
+  #[explicit]
+  fun as(lhs: BB): ref = %wasm {
+    (local.get $lhs)
+  }
 
-type BB = %struct {  }
-
-impl BB {
   #[inline]
   private fun BB$discriminant(): i64 = {
     val discriminant: u32 = BB.^discriminant
@@ -43,7 +42,7 @@ impl BB {
     (call BB$discriminant)
   }
 
-  fun is(a: BB): boolean = %wasm {
+  fun is(a: (BB | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call BB$discriminant))
   }
 
@@ -62,7 +61,11 @@ impl BB {
   fun load(lhs: ref, offset: u32): BB = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
+
+  fun a(): i32 = 1
 }
+
+type BB = %struct {  }
 
 type TT = %struct {  }
 
@@ -77,7 +80,7 @@ impl TT {
     (call TT$discriminant)
   }
 
-  fun is(a: TT): boolean = %wasm {
+  fun is(a: (TT | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call TT$discriminant))
   }
 
@@ -96,10 +99,11 @@ impl TT {
   fun load(lhs: ref, offset: u32): TT = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
-}
 
-impl BB {
-  fun a(): i32 = 1
+  #[explicit]
+  fun as(lhs: TT): ref = %wasm {
+    (local.get $lhs)
+  }
 }
 
 fun main(): i32 = BB.a()

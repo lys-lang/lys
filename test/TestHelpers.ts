@@ -3,8 +3,8 @@ import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
 import * as expect from 'expect';
 import glob = require('glob');
-import { Nodes } from '../dist/parser/nodes';
 import { PhaseResult } from '../dist/parser/phases/PhaseResult';
+import { failWithErrors } from '../dist/parser/phases/findAllErrors';
 
 const writeToFile = process.env.UPDATE_AST === 'true';
 
@@ -23,8 +23,8 @@ export function testParseToken<T extends PhaseResult>(
     fileName,
     target,
     async (doc: T, e) => {
-      if (doc && doc.parsingContext.messageCollector.errors && doc.parsingContext.messageCollector.errors.length) {
-        throw doc.parsingContext.messageCollector.errors[0];
+      if (doc && !doc.isSuccess()) {
+        failWithErrors('testParseToken', doc.parsingContext);
       }
 
       if (customTest) {
@@ -93,6 +93,9 @@ export function folderBasedTest<T extends PhaseResult>(
             throw new Error('Test did not fail');
           }
         } else {
+          if (!resultNode.isSuccess()) {
+            failWithErrors('testFile', resultNode.parsingContext);
+          }
           if (err) {
             throw err;
           }

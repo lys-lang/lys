@@ -17,13 +17,11 @@ digraph LYS {
       12 [label="Name: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
       13 [label="FunctionCallNode\n(alias f32 (native f32))", fillcolor=grey];
       14 [label="Ref: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
-      15 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
       label="test/fixtures/types/scope.lys::x1()";
     }
     subgraph "cluster_test/fixtures/types/scope.lys_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      16 [label="Float: 1.00000\n(alias f32 (native f32))", fillcolor=grey];
-      17 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
+      15 [label="Float: 1.00000\n(alias f32 (native f32))", fillcolor=grey];
       label="child";
     }
     subgraph "cluster_test/fixtures/types/scope.lys_2" { rankdir=TB;
@@ -32,22 +30,20 @@ digraph LYS {
     }
     subgraph "cluster_test/fixtures/types/scope.lys_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      18 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
-      19 [label="VarDecl: n\n(native void)", fillcolor=grey];
-      20 [label="Name: n\n(alias i32 (native i32))", fillcolor=grey];
-      21 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      22 [label="FunNode: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
-      23 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-      24 [label="Name: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
-      25 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
-      26 [label="Ref: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
-      27 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      16 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
+      17 [label="VarDecl: n\n(native void)", fillcolor=grey];
+      18 [label="Name: n\n(alias i32 (native i32))", fillcolor=grey];
+      19 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
+      20 [label="FunNode: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
+      21 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      22 [label="Name: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
+      23 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
+      24 [label="Ref: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
       label="test/fixtures/types/scope.lys::x2()";
     }
     subgraph "cluster_test/fixtures/types/scope.lys_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      28 [label="Ref: n\n(alias i32 (native i32))", fillcolor=grey];
-      29 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
+      25 [label="Ref: n\n(alias i32 (native i32))", fillcolor=grey];
       label="child";
     }
     subgraph "cluster_test/fixtures/types/scope.lys_5" { rankdir=TB;
@@ -68,14 +64,14 @@ digraph LYS {
   12 -> 14[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   13 -> 9[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
   14 -> 13[taillabel="[]" fontsize=7 fontname="times" color="black" ];
-  19 -> 18[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
-  20 -> 28[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
-  21 -> 20[taillabel="[DEFAULT_VALUE]" fontsize=7 fontname="times" color="black" ];
-  22 -> 24[taillabel="[]" fontsize=7 fontname="times" color="black" ];
-  22 -> 18[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
-  23 -> 22[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
-  24 -> 26[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
-  25 -> 18[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
-  26 -> 25[taillabel="[]" fontsize=7 fontname="times" color="black" ];
+  17 -> 16[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  18 -> 25[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  19 -> 18[taillabel="[DEFAULT_VALUE]" fontsize=7 fontname="times" color="black" ];
+  20 -> 22[taillabel="[]" fontsize=7 fontname="times" color="black" ];
+  20 -> 16[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  21 -> 20[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
+  22 -> 24[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
+  23 -> 16[taillabel="[STATEMENTS]" fontsize=7 fontname="times" color="black" ];
+  24 -> 23[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   label="LYS";
 }

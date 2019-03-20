@@ -15,10 +15,13 @@ export class MessageCollector {
         this.errors.push(error);
       }
     } else {
-      if (!this.errors.some($ => $.message == error && $.node == node)) {
-        const err = new AstNodeError(error.toString(), node);
+      const message = error instanceof Error ? error.message : error;
+
+      if (!this.errors.some($ => $.message == message && $.node == node)) {
+        const err = new AstNodeError(message, node);
         if (error instanceof Error && error.stack) {
           err.stack = error.stack;
+          console.error(err);
         }
 
         this.errors.push(err);

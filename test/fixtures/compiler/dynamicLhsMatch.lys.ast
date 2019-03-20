@@ -5,7 +5,7 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test" ((alias i32)) (alias i32)) annotations=IsOverloaded
@@ -14,12 +14,12 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="test"
+        |-NameIdentifierNode="test" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-PatternMatcherNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
             |-NameIdentifierNode="+"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
               |-QNameNode=a
@@ -32,7 +32,7 @@
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
     |-NameIdentifierNode="test" type=(fun "test" ((alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "test2" ((alias i32)) (alias i32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test2" ((alias i32)) (alias i32)) annotations=IsOverloaded
@@ -41,14 +41,14 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="test2"
+        |-NameIdentifierNode="test2" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
             |-NameIdentifierNode="=="
-            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-NameIdentifierNode="+"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:i32#0)
                 |-QNameNode=a

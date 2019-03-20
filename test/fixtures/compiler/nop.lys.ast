@@ -8,11 +8,11 @@
     |-NameIdentifierNode="void" type=(type (alias void (native void)))
     |-InjectedTypeNode
   |-OverloadedFunctionNode type=(fun "x" () (alias void)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "x" () (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="x"
+        |-NameIdentifierNode="x" annotations=Export
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"

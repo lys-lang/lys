@@ -71,6 +71,12 @@ impl i16 {
   fun as(lhs: i16): f32 = %wasm { (f32.convert_i32_s (get_local $lhs)) }
   fun as(lhs: i16): f64 = %wasm { (f64.convert_i32_s (get_local $lhs)) }
 
+  #[explicit]
+  fun as(lhs: i16): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i16): u32 = %wasm { (get_local $lhs) }
+
   fun ==(lhs: i16, rhs: i16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: i16, rhs: i32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
 
@@ -130,8 +136,6 @@ impl i16 {
     (i32.shr_s (i32.shl (i32.sub (i32.const 0) (get_local $rhs)) (i32.const 16)) (i32.const 16))
   }
 
-  #[explicit]
-  fun as(lhs: i16): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
 
   fun store(lhs: ref, rhs: i16): void = %wasm {
     (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -168,6 +172,9 @@ impl u16 {
   fun as(lhs: u16): u64 = %wasm { (i64.extend_i32_u (get_local $lhs)) }
   fun as(lhs: u16): f32 = %wasm { (f32.convert_i32_u (get_local $lhs)) }
   fun as(lhs: u16): f64 = %wasm { (f64.convert_i32_u (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: u16): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
 
   fun ==(lhs: u16, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: u16, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
@@ -230,9 +237,6 @@ impl u16 {
   fun <(lhs: u16, rhs: u16): boolean = %wasm { (i32.lt_u (get_local $lhs) (get_local $rhs)) }
   fun %(lhs: u16, rhs: u16): u16 = %wasm { (i32.rem_u (get_local $lhs) (get_local $rhs)) }
 
-  #[explicit]
-  fun as(lhs: u16): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
-
   fun store(lhs: ref, rhs: u16): void = %wasm {
     (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
@@ -263,9 +267,31 @@ impl u16 {
 
 impl i32 {
   fun as(lhs: i32): i64 = %wasm { (i64.extend_i32_s (get_local $lhs)) }
-
   fun as(lhs: i32): f32 = %wasm { (f32.convert_i32_s (get_local $lhs)) }
   fun as(lhs: i32): f64 = %wasm { (f64.convert_i32_s (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i32): u32 = %wasm { (get_local $lhs) }
+
+  #[explicit]
+  fun as(lhs: i32): u64 = %wasm { (i64.extend_i32_s (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i32): f32 = %wasm { (f32.convert_i32_s (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i32): ref = %wasm { (i64.extend_i32_s (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i32): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i32): u16 = %wasm { (i32.and (i32.const 0xFFFF) (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i32): i16 = %wasm {
+    (i32.shr_s (i32.shl (get_local $lhs) (i32.const 16)) (i32.const 16))
+  }
 
   fun ==(lhs: i32, rhs: i32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: i32, rhs: i16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
@@ -289,29 +315,6 @@ impl i32 {
   fun >(lhs: i32, rhs: i32): boolean = %wasm { (i32.gt_s (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: i32, rhs: i32): boolean = %wasm { (i32.lt_s (get_local $lhs) (get_local $rhs)) }
   fun %(lhs: i32, rhs: i32): i32 = %wasm { (i32.rem_s (get_local $lhs) (get_local $rhs)) }
-
-  #[explicit]
-  fun as(lhs: i32): u32 = %wasm { (get_local $lhs) }
-
-  #[explicit]
-  fun as(lhs: i32): u64 = %wasm { (i64.extend_i32_s (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: i32): /* may fail */ f32 = %wasm { (f32.convert_i32_s (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: i32): ref = %wasm { (i64.extend_i32_s (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: i32): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: i32): u16 = %wasm { (i32.and (i32.const 0xFFFF) (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: i32): i16 = %wasm {
-    (i32.shr_s (i32.shl (get_local $lhs) (i32.const 16)) (i32.const 16))
-  }
 
   fun store(lhs: ref, rhs: i32): void = %wasm {
     (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -348,6 +351,20 @@ impl u32 {
   fun as(lhs: u32): f32 = %wasm { (f32.convert_i32_u (get_local $lhs)) }
   fun as(lhs: u32): f64 = %wasm { (f64.convert_i32_u (get_local $lhs)) }
 
+
+  #[explicit]
+  fun as(lhs: u32): i32 = %wasm { (get_local $lhs) }
+
+  #[explicit]
+  fun as(lhs: u32): i16 = %wasm { (i32.shr_s (i32.shl (get_local $lhs) (i32.const 16)) (i32.const 16)) }
+
+  #[explicit]
+  fun as(lhs: i32): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: u32): ref = %wasm { (i64.extend_i32_s (get_local $lhs)) }
+
+
   fun ==(lhs: u32, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: u32, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: u32, rhs: u8): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
@@ -369,20 +386,6 @@ impl u32 {
   fun >(lhs: u32, rhs: u32): boolean = %wasm { (i32.gt_u (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: u32, rhs: u32): boolean = %wasm { (i32.lt_u (get_local $lhs) (get_local $rhs)) }
   fun %(lhs: u32, rhs: u32): u32 = %wasm { (i32.rem_u (get_local $lhs) (get_local $rhs)) }
-
-  #[explicit]
-  fun as(lhs: u32): i32 = %wasm { (get_local $lhs) }
-
-  #[explicit]
-  fun as(lhs: u32): i16 = %wasm {
-    (i32.shr_s (i32.shl (get_local $lhs) (i32.const 16)) (i32.const 16))
-  }
-
-  #[explicit]
-  fun as(lhs: i32): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: u32): ref = %wasm { (i64.extend_i32_s (get_local $lhs)) }
 
   fun store(lhs: ref, rhs: u32): void = %wasm {
     (i32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -417,9 +420,20 @@ impl i64 {
   fun as(lhs: i64): f32 = %wasm { (f32.convert_i64_s (get_local $lhs)) }
   fun as(lhs: i64): f64 = %wasm { (f64.convert_i64_s (get_local $lhs)) }
 
+  #[explicit]
+  fun as(lhs: i64): u64 = %wasm { (get_local $lhs) }
+
+  #[explicit]
+  fun as(lhs: i64): i32 = %wasm { (i32.wrap_i64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i64): u32 = %wasm { (i32.wrap_i64 (get_local $lhs)) }
+
   fun ==(lhs: i64, rhs: i64): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: i64, rhs: i32): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_s (get_local $rhs))) }
-  fun ==(lhs: i64, rhs: i16): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_s (get_local $rhs))) }
+  // fun ==(lhs: i64, rhs: i16): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i16_s (get_local $rhs))) }
+  fun ==(lhs: i64, rhs: u8): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
+
   fun !=(lhs: i64, rhs: i64): boolean = %wasm { (i64.ne (get_local $lhs) (get_local $rhs)) }
   fun +(lhs: i64, rhs: i64): i64 = %wasm { (i64.add (get_local $lhs) (get_local $rhs)) }
   fun -(lhs: i64): i64 = %wasm { (i64.mul (get_local $lhs) (i64.const -1)) }
@@ -433,21 +447,16 @@ impl i64 {
   fun >>>(lhs: i64, rhs: i64): i64 = %wasm { (i64.shr_u (get_local $lhs) (get_local $rhs)) }
   fun >>(lhs: i64, rhs: i64): i64 = %wasm { (i64.shr_s (get_local $lhs) (get_local $rhs)) }
   fun <<(lhs: i64, rhs: i64): i64 = %wasm { (i64.shl (get_local $lhs) (get_local $rhs)) }
-  fun ^(lhs: i64, rhs: i64): i64 = %wasm { (i64.xor (get_local $lhs) (get_local $rhs)) }
   fun >=(lhs: i64, rhs: i64): boolean = %wasm { (i64.ge_s (get_local $lhs) (get_local $rhs)) }
   fun <=(lhs: i64, rhs: i64): boolean = %wasm { (i64.le_s (get_local $lhs) (get_local $rhs)) }
   fun >(lhs: i64, rhs: i64): boolean = %wasm { (i64.gt_s (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: i64, rhs: i64): boolean = %wasm { (i64.lt_s (get_local $lhs) (get_local $rhs)) }
   fun %(lhs: i64, rhs: i64): i64 = %wasm { (i64.rem_s (get_local $lhs) (get_local $rhs)) }
-
-  #[explicit]
-  fun as(lhs: i64): u64 = %wasm { (get_local $lhs) }
-
-  #[explicit]
-  fun as(lhs: i64): /* may fail */ f32 = %wasm { (f32.convert_i64_s (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: i64): /* may fail */ i32 = %wasm { (i32.wrap_i64 (get_local $lhs)) }
+  fun &(lhs: i64, rhs: i64): i64 = %wasm { (i64.and (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: i64, rhs: i32): i32 = (lhs as i32) & rhs
+  fun &(lhs: i64, rhs: u32): u32 = (lhs as u32) & rhs
+  fun |(lhs: i64, rhs: i64): i64 = %wasm { (i64.or (get_local $lhs) (get_local $rhs)) }
+  fun ^(lhs: i64, rhs: i64): i64 = %wasm { (i64.xor (get_local $lhs) (get_local $rhs)) }
 
   fun store(lhs: ref, rhs: i64): void = %wasm {
     (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -481,29 +490,6 @@ impl u64 {
   fun as(lhs: u64): f32 = %wasm { (f32.convert_i64_u (get_local $lhs)) }
   fun as(lhs: u64): f64 = %wasm { (f64.convert_i64_u (get_local $lhs)) }
 
-  fun ==(lhs: u64, rhs: u64): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
-  fun ==(lhs: u64, rhs: u32): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
-  fun ==(lhs: u64, rhs: u16): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
-  fun ==(lhs: u64, rhs: u8): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
-  fun !=(lhs: u64, rhs: u64): boolean = %wasm { (i64.ne (get_local $lhs) (get_local $rhs)) }
-  fun +(lhs: u64, rhs: u64): u64 = %wasm { (i64.add (get_local $lhs) (get_local $rhs)) }
-  fun -(lhs: u64, rhs: u64): u64 = %wasm { (i64.sub (get_local $lhs) (get_local $rhs)) }
-  fun *(lhs: u64, rhs: u64): u64 = %wasm { (i64.mul (get_local $lhs) (get_local $rhs)) }
-  fun /(lhs: u64, rhs: u64): u64 = %wasm { (i64.div_u (get_local $lhs) (get_local $rhs)) }
-  fun ~(rhs: u64): u64 = %wasm { (i64.xor (i64.const 0xFFFFFFFFFFFFFFFF) (get_local $rhs)) }
-  fun >>>(lhs: u64, rhs: i32): u64 = lhs >>> (rhs as i64)
-  fun >>(lhs: u64, rhs: i32): u64 = lhs >> (rhs as i64)
-  fun <<(lhs: u64, rhs: i32): u64 = lhs << (rhs as i64)
-  fun >>>(lhs: u64, rhs: i64): u64 = %wasm { (i64.shr_u (get_local $lhs) (get_local $rhs)) }
-  fun >>(lhs: u64, rhs: i64): u64 = %wasm { (i64.shr_s (get_local $lhs) (get_local $rhs)) }
-  fun <<(lhs: u64, rhs: i64): u64 = %wasm { (i64.shl (get_local $lhs) (get_local $rhs)) }
-  fun ^(lhs: u64, rhs: u64): u64 = %wasm { (i64.xor (get_local $lhs) (get_local $rhs)) }
-  fun >=(lhs: u64, rhs: u64): boolean = %wasm { (i64.ge_u (get_local $lhs) (get_local $rhs)) }
-  fun <=(lhs: u64, rhs: u64): boolean = %wasm { (i64.le_u (get_local $lhs) (get_local $rhs)) }
-  fun >(lhs: u64, rhs: u64): boolean = %wasm { (i64.gt_u (get_local $lhs) (get_local $rhs)) }
-  fun <(lhs: u64, rhs: u64): boolean = %wasm { (i64.lt_u (get_local $lhs) (get_local $rhs)) }
-  fun %(lhs: u64, rhs: u64): u64 = %wasm { (i64.rem_u (get_local $lhs) (get_local $rhs)) }
-
   #[explicit]
   fun as(lhs: u64): u8 = %wasm { (i32.and (i32.const 0xFF) (i32.wrap_i64 (get_local $lhs))) }
 
@@ -521,6 +507,33 @@ impl u64 {
 
   #[explicit]
   fun as(lhs: u64): u32 = %wasm { (i32.wrap_i64 (get_local $lhs)) }
+
+  fun ==(lhs: u64, rhs: u64): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
+  fun ==(lhs: u64, rhs: u32): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
+  fun ==(lhs: u64, rhs: u16): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
+  fun ==(lhs: u64, rhs: u8): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
+  fun !=(lhs: u64, rhs: u64): boolean = %wasm { (i64.ne (get_local $lhs) (get_local $rhs)) }
+  fun +(lhs: u64, rhs: u64): u64 = %wasm { (i64.add (get_local $lhs) (get_local $rhs)) }
+  fun -(lhs: u64, rhs: u64): u64 = %wasm { (i64.sub (get_local $lhs) (get_local $rhs)) }
+  fun *(lhs: u64, rhs: u64): u64 = %wasm { (i64.mul (get_local $lhs) (get_local $rhs)) }
+  fun /(lhs: u64, rhs: u64): u64 = %wasm { (i64.div_u (get_local $lhs) (get_local $rhs)) }
+  fun ~(rhs: u64): u64 = %wasm { (i64.xor (i64.const 0xFFFFFFFFFFFFFFFF) (get_local $rhs)) }
+  fun >>>(lhs: u64, rhs: i32): u64 = lhs >>> (rhs as i64)
+  fun >>(lhs: u64, rhs: i32): u64 = lhs >> (rhs as i64)
+  fun <<(lhs: u64, rhs: i32): u64 = lhs << (rhs as i64)
+  fun >>>(lhs: u64, rhs: i64): u64 = %wasm { (i64.shr_u (get_local $lhs) (get_local $rhs)) }
+  fun >>(lhs: u64, rhs: i64): u64 = %wasm { (i64.shr_s (get_local $lhs) (get_local $rhs)) }
+  fun <<(lhs: u64, rhs: i64): u64 = %wasm { (i64.shl (get_local $lhs) (get_local $rhs)) }
+  fun >=(lhs: u64, rhs: u64): boolean = %wasm { (i64.ge_u (get_local $lhs) (get_local $rhs)) }
+  fun <=(lhs: u64, rhs: u64): boolean = %wasm { (i64.le_u (get_local $lhs) (get_local $rhs)) }
+  fun >(lhs: u64, rhs: u64): boolean = %wasm { (i64.gt_u (get_local $lhs) (get_local $rhs)) }
+  fun <(lhs: u64, rhs: u64): boolean = %wasm { (i64.lt_u (get_local $lhs) (get_local $rhs)) }
+  fun %(lhs: u64, rhs: u64): u64 = %wasm { (i64.rem_u (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: u64, rhs: u64): u64 = %wasm { (i64.and (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: u64, rhs: i32): i32 = (lhs as i32) & rhs
+  fun &(lhs: u64, rhs: u32): u32 = (lhs as u32) & rhs
+  fun |(lhs: u64, rhs: u64): u64 = %wasm { (i64.or (get_local $lhs) (get_local $rhs)) }
+  fun ^(lhs: u64, rhs: u64): u64 = %wasm { (i64.xor (get_local $lhs) (get_local $rhs)) }
 
   fun store(lhs: ref, rhs: u64): void = %wasm {
     (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -553,8 +566,21 @@ impl u64 {
 impl f32 {
   fun as(lhs: f32): f64 = %wasm { (f64.promote/f32 (get_local $lhs)) }
 
+  #[explicit]
+  fun as(lhs: f32): i64 = %wasm { (i64.trunc_s/f32 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f32): u64 = %wasm { (i64.trunc_u/f32 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f32): i32 = %wasm { (i32.trunc_s/f32 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f32): u32 = %wasm { (i32.trunc_u/f32 (get_local $lhs)) }
+
   fun +(lhs: f32, rhs: f32): f32 = %wasm { (f32.add (get_local $lhs) (get_local $rhs)) }
   fun -(lhs: f32, rhs: f32): f32 = %wasm { (f32.sub (get_local $lhs) (get_local $rhs)) }
+  fun -(rhs: f32): f32 = %wasm { (f32.neg (get_local $rhs)) }
   fun *(lhs: f32, rhs: f32): f32 = %wasm { (f32.mul (get_local $lhs) (get_local $rhs)) }
   fun /(lhs: f32, rhs: f32): f32 = %wasm { (f32.div (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: f32, rhs: f32): boolean = %wasm { (f32.eq (get_local $lhs) (get_local $rhs)) }
@@ -563,18 +589,6 @@ impl f32 {
   fun >(lhs: f32, rhs: f32): boolean = %wasm { (f32.gt (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: f32, rhs: f32): boolean = %wasm { (f32.lt (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (get_local $lhs) (get_local $rhs)) }
-
-  #[explicit]
-  fun as(lhs: f32): /* may fail */ i64 = %wasm { (i64.trunc_s/f32 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f32): /* may fail */ u64 = %wasm { (i64.trunc_u/f32 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f32): /* may fail */ i32 = %wasm { (i32.trunc_s/f32 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f32): /* may fail */ u32 = %wasm { (i32.trunc_u/f32 (get_local $lhs)) }
 
   fun store(lhs: ref, rhs: f32): void = %wasm {
     (f32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -605,8 +619,24 @@ impl f32 {
 }
 
 impl f64 {
+  #[explicit]
+  fun as(lhs: f64): f32 = %wasm { (f32.demote/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): i64 = %wasm { (i64.trunc_s/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): u64 = %wasm { (i64.trunc_u/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): i32 = %wasm { (i32.trunc_s/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): u32 = %wasm { (i32.trunc_u/f64 (get_local $lhs)) }
+
   fun +(lhs: f64, rhs: f64): f64 = %wasm { (f64.add (get_local $lhs) (get_local $rhs)) }
   fun -(lhs: f64, rhs: f64): f64 = %wasm { (f64.sub (get_local $lhs) (get_local $rhs)) }
+  fun -(rhs: f64): f64 = %wasm { (f64.neg (get_local $rhs)) }
   fun *(lhs: f64, rhs: f64): f64 = %wasm { (f64.mul (get_local $lhs) (get_local $rhs)) }
   fun /(lhs: f64, rhs: f64): f64 = %wasm { (f64.div (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: f64, rhs: f64): boolean = %wasm { (f64.eq (get_local $lhs) (get_local $rhs)) }
@@ -615,21 +645,6 @@ impl f64 {
   fun >(lhs: f64, rhs: f64): boolean = %wasm { (f64.gt (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: f64, rhs: f64): boolean = %wasm { (f64.lt (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: f64, rhs: f64): boolean = %wasm { (f64.ne (get_local $lhs) (get_local $rhs)) }
-
-  #[explicit]
-  fun as(lhs: f64): /* may fail */ f32 = %wasm { (f32.demote/f64 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f64): /* may fail */ i64 = %wasm { (i64.trunc_s/f64 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f64): /* may fail */ u64 = %wasm { (i64.trunc_u/f64 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f64): /* may fail */ i32 = %wasm { (i32.trunc_s/f64 (get_local $lhs)) }
-
-  #[explicit]
-  fun as(lhs: f64): /* may fail */ u32 = %wasm { (i32.trunc_u/f64 (get_local $lhs)) }
 
   fun store(lhs: ref, rhs: f64): void = %wasm {
     (f64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))

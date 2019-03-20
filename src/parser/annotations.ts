@@ -1,5 +1,4 @@
 import { Local, Nodes, Global } from './nodes';
-import { FunctionType } from './types';
 
 export abstract class Annotation {
   get name(): string {
@@ -17,6 +16,7 @@ export namespace annotations {
   export class IsOverloaded extends Annotation {}
   export class Inline extends Annotation {}
   export class Explicit extends Annotation {}
+  export class ByPassFunction extends Annotation {}
 
   export class Extern extends Annotation {
     constructor(public module: string, public fn: string) {
@@ -59,8 +59,12 @@ export namespace annotations {
   }
 
   export class ImplicitCall extends Annotation {
-    constructor(public functionType: FunctionType, public args: Nodes.ExpressionNode[]) {
+    constructor(public implicitCall: Nodes.InjectedFunctionCallNode) {
       super();
+    }
+
+    toString() {
+      return super.toString() + this.implicitCall.resolvedFunctionType.inspect(1);
     }
   }
 

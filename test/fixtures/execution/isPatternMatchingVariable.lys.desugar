@@ -3,8 +3,13 @@ import support::test
 type Enum = (A | B | C)
 
 impl Enum {
-  fun is(a: Enum): boolean = {
+  fun is(a: (Enum | ref)): boolean = {
     a is A || a is B || a is C
+  }
+
+  #[explicit]
+  fun as(a: Enum): ref = %wasm {
+    (local.get $a)
   }
 
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
@@ -20,37 +25,15 @@ impl Enum {
   }
 }
 
-impl Enum {
-  fun as(a: Enum): ref = %wasm {
-    (local.get $a)
-  }
-}
-
 impl A {
-  fun as(a: A): Enum = %wasm {
-    (local.get $a)
+  fun as(lhs: A): Enum = %wasm {
+    (local.get $lhs)
   }
-}
-
-impl B {
-  fun as(a: B): Enum = %wasm {
-    (local.get $a)
+  #[explicit]
+  fun as(lhs: A): ref = %wasm {
+    (local.get $lhs)
   }
-}
 
-impl C {
-  fun as(a: C): Enum = %wasm {
-    (local.get $a)
-  }
-}
-
-type A = %struct {  }
-
-type B = %struct {  }
-
-type C = %struct {  }
-
-impl A {
   #[inline]
   private fun A$discriminant(): i64 = {
     val discriminant: u32 = A.^discriminant
@@ -61,7 +44,7 @@ impl A {
     (call A$discriminant)
   }
 
-  fun is(a: A): boolean = %wasm {
+  fun is(a: (A | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call A$discriminant))
   }
 
@@ -83,6 +66,14 @@ impl A {
 }
 
 impl B {
+  fun as(lhs: B): Enum = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: B): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun B$discriminant(): i64 = {
     val discriminant: u32 = B.^discriminant
@@ -93,7 +84,7 @@ impl B {
     (call B$discriminant)
   }
 
-  fun is(a: B): boolean = %wasm {
+  fun is(a: (B | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call B$discriminant))
   }
 
@@ -115,6 +106,14 @@ impl B {
 }
 
 impl C {
+  fun as(lhs: C): Enum = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: C): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun C$discriminant(): i64 = {
     val discriminant: u32 = C.^discriminant
@@ -125,7 +124,7 @@ impl C {
     (call C$discriminant)
   }
 
-  fun is(a: C): boolean = %wasm {
+  fun is(a: (C | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call C$discriminant))
   }
 
@@ -146,11 +145,22 @@ impl C {
   }
 }
 
+type A = %struct {  }
+
+type B = %struct {  }
+
+type C = %struct {  }
+
 type Color = (Red | Green | Blue | Custom)
 
 impl Color {
-  fun is(a: Color): boolean = {
+  fun is(a: (Color | ref)): boolean = {
     a is Red || a is Green || a is Blue || a is Custom
+  }
+
+  #[explicit]
+  fun as(a: Color): ref = %wasm {
+    (local.get $a)
   }
 
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
@@ -166,45 +176,15 @@ impl Color {
   }
 }
 
-impl Color {
-  fun as(a: Color): ref = %wasm {
-    (local.get $a)
-  }
-}
-
 impl Red {
-  fun as(a: Red): Color = %wasm {
-    (local.get $a)
+  fun as(lhs: Red): Color = %wasm {
+    (local.get $lhs)
   }
-}
-
-impl Green {
-  fun as(a: Green): Color = %wasm {
-    (local.get $a)
+  #[explicit]
+  fun as(lhs: Red): ref = %wasm {
+    (local.get $lhs)
   }
-}
 
-impl Blue {
-  fun as(a: Blue): Color = %wasm {
-    (local.get $a)
-  }
-}
-
-impl Custom {
-  fun as(a: Custom): Color = %wasm {
-    (local.get $a)
-  }
-}
-
-type Red = %struct {  }
-
-type Green = %struct {  }
-
-type Blue = %struct {  }
-
-type Custom = %struct { a: i32 }
-
-impl Red {
   #[inline]
   private fun Red$discriminant(): i64 = {
     val discriminant: u32 = Red.^discriminant
@@ -215,7 +195,7 @@ impl Red {
     (call Red$discriminant)
   }
 
-  fun is(a: Red): boolean = %wasm {
+  fun is(a: (Red | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Red$discriminant))
   }
 
@@ -237,6 +217,14 @@ impl Red {
 }
 
 impl Green {
+  fun as(lhs: Green): Color = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: Green): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun Green$discriminant(): i64 = {
     val discriminant: u32 = Green.^discriminant
@@ -247,7 +235,7 @@ impl Green {
     (call Green$discriminant)
   }
 
-  fun is(a: Green): boolean = %wasm {
+  fun is(a: (Green | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Green$discriminant))
   }
 
@@ -269,6 +257,14 @@ impl Green {
 }
 
 impl Blue {
+  fun as(lhs: Blue): Color = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: Blue): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun Blue$discriminant(): i64 = {
     val discriminant: u32 = Blue.^discriminant
@@ -279,7 +275,7 @@ impl Blue {
     (call Blue$discriminant)
   }
 
-  fun is(a: Blue): boolean = %wasm {
+  fun is(a: (Blue | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Blue$discriminant))
   }
 
@@ -301,6 +297,14 @@ impl Blue {
 }
 
 impl Custom {
+  fun as(lhs: Custom): Color = %wasm {
+    (local.get $lhs)
+  }
+  #[explicit]
+  fun as(lhs: Custom): ref = %wasm {
+    (local.get $lhs)
+  }
+
   #[inline]
   private fun Custom$discriminant(): u64 = {
     val discriminant: u32 = Custom.^discriminant
@@ -333,7 +337,7 @@ impl Custom {
   #[inline]
   private fun property$0(self: Custom, value: i32): void = i32.store(self, value, Custom.^property$0_offset)
 
-  fun is(a: Custom): boolean = %wasm {
+  fun is(a: (Custom | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom$discriminant))
   }
 
@@ -345,6 +349,14 @@ impl Custom {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 }
+
+type Red = %struct {  }
+
+type Green = %struct {  }
+
+type Blue = %struct {  }
+
+type Custom = %struct { a: i32 }
 
 type J = %struct {  }
 
@@ -359,7 +371,7 @@ impl J {
     (call J$discriminant)
   }
 
-  fun is(a: J): boolean = %wasm {
+  fun is(a: (J | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call J$discriminant))
   }
 
@@ -377,6 +389,11 @@ impl J {
 
   fun load(lhs: ref, offset: u32): J = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
+  }
+
+  #[explicit]
+  fun as(lhs: J): ref = %wasm {
+    (local.get $lhs)
   }
 }
 

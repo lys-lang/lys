@@ -1,0 +1,32 @@
+import support::test
+
+fun test1(x: i32): i32 = x
+
+fun main2(x: u8): i64 = test1(x)
+
+
+
+fun testMatchWithDifferentTypes(input: i32): boolean = {
+  match input {
+    case 1 -> true
+    else -> false
+  }
+}
+
+#[export]
+fun main(): void = {
+  START("Implicit number casting")
+
+  var x: u16 = (10 as u8)
+  mustEqual(x, 10, "eq(10_u16, 10_i32)")
+
+  verify(testMatchWithDifferentTypes(0) == false, "match 0")
+  verify(testMatchWithDifferentTypes(1) == true, "match 1")
+
+  var u8_1 = 1 as u8
+  verify(testMatchWithDifferentTypes(u8_1) == true, "match 1.1")
+
+  verify(0.0 == 0, "0.0 == 0")
+
+  END()
+}

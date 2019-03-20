@@ -84,6 +84,10 @@ function privatePrint(node: Nodes.Node) {
     return `${printNode(node.lhs)} = ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.LiteralNode) {
     return `${node.astNode.text}`;
+  } else if (node instanceof Nodes.InjectedFunctionCallNode) {
+    return `/* <Injected function call> */\n${indent(
+      node.argumentsNode.map(printNode).join('\n')
+    )}\n/* </Injected function call> */`;
   } else if (node instanceof Nodes.FunctionCallNode) {
     return printNode(node.functionNode) + '(' + node.argumentsNode.map(printNode).join(', ') + ')';
   } else if (node instanceof Nodes.BinaryExpressionNode) {

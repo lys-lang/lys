@@ -5,7 +5,7 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
         |-StringLiteral="keccak"
@@ -15,12 +15,12 @@
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="keccak"
+        |-NameIdentifierNode="keccak" annotations=Export
         |-ReferenceNode type=(type (alias bytes (native bytes)))
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
         |-BlockNode type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode=(fun "keccak" ((alias bytes)) (alias bytes)) type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
             |-ReferenceNode type=(fun "keccak" ((alias bytes)) (alias bytes))
               |-QNameNode=system::hash::keccak::keccak
                 |-NameIdentifierNode="system"

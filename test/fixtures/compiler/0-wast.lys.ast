@@ -67,15 +67,15 @@
                 |-NameIdentifierNode="$t"
     |-NameIdentifierNode="add" type=(fun "add" ((alias i32) (alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-FunDirectiveNode annotations=Export
+    |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="main"
+        |-NameIdentifierNode="main" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+        |-FunctionCallNode=(fun "add" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-ReferenceNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
             |-QNameNode=add
               |-NameIdentifierNode="add"

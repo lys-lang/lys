@@ -1,0 +1,170 @@
+
+|-DocumentNode
+  |-ImportDirectiveNode
+    |-QNameNode=system::core
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+  |-ImportDirectiveNode
+    |-QNameNode=support::test
+      |-NameIdentifierNode="support"
+      |-NameIdentifierNode="test"
+  |-OverloadedFunctionNode type=(fun "test1" ((alias i32)) (alias i32)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "test1" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:i32#0)
+          |-NameIdentifierNode="x" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="test1"
+        |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-QNameNode=x
+            |-NameIdentifierNode="x"
+    |-NameIdentifierNode="test1" type=(fun "test1" ((alias i32)) (alias i32))
+  |-OverloadedFunctionNode type=(fun "main2" ((alias u8)) (alias i64)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "main2" ((alias u8)) (alias i64)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(x:u8#0)
+          |-NameIdentifierNode="x" type=(alias u8 (native u8))
+          |-ReferenceNode type=(type (alias u8 (native u8)))
+            |-QNameNode=u8
+              |-NameIdentifierNode="u8"
+        |-NameIdentifierNode="main2"
+        |-ReferenceNode type=(type (alias i64 (native i64)))
+          |-QNameNode=i64
+            |-NameIdentifierNode="i64"
+        |-FunctionCallNode=(fun "test1" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode type=(fun "test1" ((alias i32)) (alias i32))
+            |-QNameNode=test1
+              |-NameIdentifierNode="test1"
+          |-InjectedFunctionCallNode=(fun "as" ((alias u8)) (alias i32)) type=(alias i32 (native i32)) annotations=Injected
+            |-ReferenceNode type=(alias u8 (native u8)) annotations=IsValueNode
+              |-QNameNode=x
+                |-NameIdentifierNode="x"
+    |-NameIdentifierNode="main2" type=(fun "main2" ((alias u8)) (alias i64))
+  |-OverloadedFunctionNode type=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean)) annotations=Injected
+    |-FunDirectiveNode
+      |-FunctionNode type=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean)) annotations=IsOverloaded
+        |-ParameterNode annotations=Local(input:i32#0)
+          |-NameIdentifierNode="input" type=(alias i32 (native i32))
+          |-ReferenceNode type=(type (alias i32 (native i32)))
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+        |-NameIdentifierNode="testMatchWithDifferentTypes"
+        |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-QNameNode=boolean
+            |-NameIdentifierNode="boolean"
+        |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-PatternMatcherNode type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-QNameNode=input
+                |-NameIdentifierNode="input"
+            |-MatchLiteralNode type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-IntegerLiteral=1 type=(alias i32 (native i32))
+              |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-MatchDefaultNode type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+    |-NameIdentifierNode="testMatchWithDifferentTypes" type=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean))
+  |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
+    |-FunDirectiveNode
+      |-DecoratorNode
+        |-NameIdentifierNode="export"
+      |-FunctionNode type=(fun "main" () (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="main" annotations=Export
+        |-ReferenceNode type=(type (alias void (native void)))
+          |-QNameNode=void
+            |-NameIdentifierNode="void"
+        |-BlockNode type=(native void)
+          |-FunctionCallNode=(fun "START" ((alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias bytes)) (alias void)))
+              |-QNameNode=START
+                |-NameIdentifierNode="START"
+            |-StringLiteral="Implicit number casting" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-VarDeclarationNode type=(native void)
+            |-NameIdentifierNode="x" type=(alias u16 (native u16))
+            |-ReferenceNode type=(type (alias u16 (native u16)))
+              |-QNameNode=u16
+                |-NameIdentifierNode="u16"
+            |-InjectedFunctionCallNode=(fun "as" ((alias u8)) (alias u16)) type=(alias u16 (native u16)) annotations=Injected
+              |-AsExpressionNode=(fun "as" ((alias i32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
+                |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
+                |-ReferenceNode type=(type (alias u8 (native u8)))
+                  |-QNameNode=u8
+                    |-NameIdentifierNode="u8"
+          |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) (fun "mustEqual" ((alias bytes) (alias bytes) (alias bytes)) (alias void)))
+              |-QNameNode=mustEqual
+                |-NameIdentifierNode="mustEqual"
+            |-InjectedFunctionCallNode=(fun "as" ((alias u16)) (alias i32)) type=(alias i32 (native i32)) annotations=Injected
+              |-ReferenceNode type=(alias u16 (native u16)) annotations=IsValueNode
+                |-QNameNode=x
+                  |-NameIdentifierNode="x"
+            |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-StringLiteral="eq(10_u16, 10_i32)" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+              |-QNameNode=verify
+                |-NameIdentifierNode="verify"
+            |-BinaryExpressionNode=(fun "==" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+                |-ReferenceNode type=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean))
+                  |-QNameNode=testMatchWithDifferentTypes
+                    |-NameIdentifierNode="testMatchWithDifferentTypes"
+                |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-StringLiteral="match 0" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+              |-QNameNode=verify
+                |-NameIdentifierNode="verify"
+            |-BinaryExpressionNode=(fun "==" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+                |-ReferenceNode type=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean))
+                  |-QNameNode=testMatchWithDifferentTypes
+                    |-NameIdentifierNode="testMatchWithDifferentTypes"
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-StringLiteral="match 1" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-VarDeclarationNode type=(native void)
+            |-NameIdentifierNode="u8_1" type=(alias u8 (native u8))
+            |-AsExpressionNode=(fun "as" ((alias i32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
+              |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode type=(type (alias u8 (native u8)))
+                |-QNameNode=u8
+                  |-NameIdentifierNode="u8"
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+              |-QNameNode=verify
+                |-NameIdentifierNode="verify"
+            |-BinaryExpressionNode=(fun "==" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+                |-ReferenceNode type=(fun "testMatchWithDifferentTypes" ((alias i32)) (alias boolean))
+                  |-QNameNode=testMatchWithDifferentTypes
+                    |-NameIdentifierNode="testMatchWithDifferentTypes"
+                |-InjectedFunctionCallNode=(fun "as" ((alias u8)) (alias i32)) type=(alias i32 (native i32)) annotations=Injected
+                  |-ReferenceNode type=(alias u8 (native u8)) annotations=IsValueNode
+                    |-QNameNode=u8_1
+                      |-NameIdentifierNode="u8_1"
+              |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-StringLiteral="match 1.1" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+              |-QNameNode=verify
+                |-NameIdentifierNode="verify"
+            |-BinaryExpressionNode=(fun "==" ((alias f32) (alias f32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FloatLiteral=0 type=(alias f32 (native f32)) annotations=IsValueNode
+              |-InjectedFunctionCallNode=(fun "as" ((alias i32)) (alias f32)) type=(alias f32 (native f32)) annotations=Injected
+                |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-StringLiteral="0.0 == 0" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(fun "END" () (alias void))
+              |-QNameNode=END
+                |-NameIdentifierNode="END"
+    |-NameIdentifierNode="main" type=(fun "main" () (alias void))

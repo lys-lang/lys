@@ -30,8 +30,10 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
   (node, phase: TypePhaseResult) => {
     if (node instanceof Nodes.TypeDirectiveNode) {
       if (node.valueType instanceof Nodes.StructTypeNode) {
-        node.valueType.ofType = new StructType(node.valueType.parameters);
-        node.variableName.ofType = TypeType.of(phase.createTypeAlias(node.variableName, node.valueType.ofType));
+        node.valueType.ofType = TypeType.of(
+          phase.createTypeAlias(node.variableName, new StructType(node.valueType.parameters))
+        );
+        node.variableName.ofType = node.valueType.ofType;
       } else if (node.valueType instanceof Nodes.StackTypeNode) {
         const lowLevelType = node.valueType.metadata['lowLevelType'];
         const byteSize = node.valueType.metadata['byteSize'];
@@ -138,6 +140,7 @@ export class TypePhaseResult extends PhaseResult {
       if (e instanceof AstNodeError) {
         this.parsingContext.messageCollector.error(e);
       } else {
+        console.error(e);
         throw e;
       }
     }

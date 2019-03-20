@@ -150,7 +150,7 @@ BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? 
 
 NegExpression     ::= '!' AtomicExpression {pin=1}
 BinNegExpression  ::= '~' AtomicExpression {pin=1}
-UnaryMinus        ::= !NumberLiteral '-' AtomicExpression {pin=2}
+UnaryMinus        ::= '-' AtomicExpression {pin=2}
 
 Value             ::= ( Literal
                       | Reference
@@ -176,12 +176,13 @@ NthArgument       ::= ',' WS* Expression WS* {pin=1,fragment=true,recoverUntil=N
 Reference         ::= QName
 
 BooleanLiteral    ::= TRUE_KEYWORD | FALSE_KEYWORD
-NumberLiteral     ::= "-"? !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=3}
+PostfixNumber     ::= (HexLiteral | NumberLiteral) Reference? {pin=1,simplifyWhenOneChildren=true}
+NumberLiteral     ::= !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=2}
+NegNumberLiteral  ::= '-'? NumberLiteral {pin=2}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
 StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
 Literal           ::= StringLiteral
-                    | HexLiteral
-                    | NumberLiteral
+                    | PostfixNumber
                     | BooleanLiteral {fragment=true}
 
 NameIdentifier    ::= !KEYWORD '$'? [A-Za-z_]([A-Za-z0-9_$])* {pin=3}
@@ -193,7 +194,7 @@ SExpression       ::= OPEN_PAREN WS* SSymbol WS* SAtom* WS* CLOSE_PAREN WS* {pin
 
 SAtom             ::= ( QName
                       | SExpression
-                      | NumberLiteral
+                      | NegNumberLiteral
                       | HexLiteral) WS* {fragment=true}
 
 SSymbol           ::= [a-zA-Z][a-zA-Z0-9_./]* {pin=1}

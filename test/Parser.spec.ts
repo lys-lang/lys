@@ -74,6 +74,17 @@ describe('Parser', () => {
       );
     }
 
+    describe('suffix', () => {
+      test`
+        var a = 1
+        var a = 0x1
+        var a = 0.123
+        var a = 0.1E-12
+        var a = 1_u32
+        var a = 0xfefaU
+      `;
+    });
+
     describe('operator precedence', () => {
       testEquivalence(`val z = (HEAP_BASE + AL_MASK) & ~AL_MASK`, `val z = (HEAP_BASE + AL_MASK) & (~AL_MASK)`);
       testEquivalence(`val z = newPtr > pagesBefore << 16`, `val z = newPtr > (pagesBefore << 16)`);
@@ -87,12 +98,14 @@ describe('Parser', () => {
       );
       testEquivalence(`var x = a ~= b !== c == b === c`, `var x = ((((a ~= b) !== c) == b) === c)`);
       testEquivalence(`var x = a as int`, `var x = (a) as int`);
+      testEquivalence(`var x = a - -1`, `var x = (a) - (-(1))`);
       testEquivalence(`var x = a is int`, `var x = (a) is int`);
       testEquivalence(`var x = -1 as int`, `var x = (-1) as int`);
-      testEquivalence(`var x = -1 is int`, `var x = (-1) is int`);
+      testEquivalence(`var x = -1 is int`, `var x = (-(1)) is int`);
       testEquivalence(`var x = -a as int`, `var x = (-a) as int`);
+      testEquivalence(`var x = -a as int`, `var x = (-(a)) as int`);
       testEquivalence(`var x = ~a as int`, `var x = (~a) as int`);
-      testEquivalence(`var x = ~a is int`, `var x = (~a) is int`);
+      testEquivalence(`var x = ~a is int`, `var x = (~(a)) is int`);
       testEquivalence(`var x = 123 + a as int`, `var x = 123 + (a as int)`);
       testEquivalence(`var x = 123 + a is int`, `var x = 123 + (a is int)`);
       testEquivalence(`var x = 1 + 2`, `var x = (1 + 2)`);
@@ -367,6 +380,9 @@ describe('Parser', () => {
         }
       `;
       test`
+        fun -(lhs: i64): i64 = %wasm { (i64.mul (get_local $lhs) (i64.const -1)) }
+      `;
+      test`
       fun strAdd(a: i32, b: i32): i32 = %wasm {
         (local $sum i32)
         (local $aSize i32)
@@ -613,7 +629,7 @@ describe('Parser', () => {
         var c = true
         var d = false
         var f = "a string 'single' quote"
-        var g = 'a string "double" quote'
+        // var g = 'a string "double" quote'
       `;
     });
 

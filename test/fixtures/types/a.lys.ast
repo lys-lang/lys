@@ -76,7 +76,7 @@
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-        |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode
+        |-BinaryExpressionNode=(fun "+" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
           |-NameIdentifierNode="+"
           |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
             |-QNameNode=a
@@ -102,7 +102,7 @@
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
           |-NameIdentifierNode="+"
           |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
             |-QNameNode=a
@@ -128,9 +128,9 @@
         |-ReferenceNode type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-        |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode
+        |-BinaryExpressionNode=(fun "*" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
           |-NameIdentifierNode="*"
-          |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode
+          |-BinaryExpressionNode=(fun "+" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
             |-NameIdentifierNode="+"
             |-ReferenceNode type=(alias f32 (native f32)) annotations=IsValueNode
               |-QNameNode=width

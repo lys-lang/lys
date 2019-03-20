@@ -31,9 +31,13 @@
         |-FunctionNode
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Number
-                |-NameIdentifierNode="Number"
+            |-UnionTypeNode
+              |-ReferenceNode
+                |-QNameNode=Number
+                  |-NameIdentifierNode="Number"
+              |-ReferenceNode
+                |-QNameNode=ref
+                  |-NameIdentifierNode="ref"
           |-NameIdentifierNode="is"
           |-ReferenceNode
             |-QNameNode=boolean
@@ -83,6 +87,25 @@
                   |-QNameNode=Complex
                     |-NameIdentifierNode="Complex"
       |-NameIdentifierNode="is"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(a:<no-type>#0)
+            |-NameIdentifierNode="a"
+            |-ReferenceNode
+              |-QNameNode=Number
+                |-NameIdentifierNode="Number"
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$a
+                |-NameIdentifierNode="$a"
+      |-NameIdentifierNode="as"
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode
         |-FunctionNode
@@ -207,34 +230,13 @@
       |-NameIdentifierNode="load"
   |-ImplDirective
     |-ReferenceNode
-      |-QNameNode=Number
-        |-NameIdentifierNode="Number"
-    |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-ParameterNode annotations=Local(a:<no-type>#0)
-            |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Number
-                |-NameIdentifierNode="Number"
-          |-NameIdentifierNode="as"
-          |-ReferenceNode
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
-      |-NameIdentifierNode="as"
-  |-ImplDirective
-    |-ReferenceNode
       |-QNameNode=Infinity
         |-NameIdentifierNode="Infinity"
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode
         |-FunctionNode
-          |-ParameterNode annotations=Local(a:<no-type>#0)
-            |-NameIdentifierNode="a"
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
             |-ReferenceNode
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
@@ -244,138 +246,32 @@
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
-      |-NameIdentifierNode="as"
-  |-ImplDirective
-    |-ReferenceNode
-      |-QNameNode=NDet
-        |-NameIdentifierNode="NDet"
-    |-OverloadedFunctionNode annotations=Injected
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
         |-FunctionNode
-          |-ParameterNode annotations=Local(a:<no-type>#0)
-            |-NameIdentifierNode="a"
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
             |-ReferenceNode
-              |-QNameNode=NDet
-                |-NameIdentifierNode="NDet"
-          |-NameIdentifierNode="as"
+              |-QNameNode=Infinity
+                |-NameIdentifierNode="Infinity"
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="as"
-  |-ImplDirective
-    |-ReferenceNode
-      |-QNameNode=Real
-        |-NameIdentifierNode="Real"
     |-OverloadedFunctionNode annotations=Injected
       |-FunDirectiveNode
-        |-FunctionNode
-          |-ParameterNode annotations=Local(a:<no-type>#0)
-            |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Real
-                |-NameIdentifierNode="Real"
-          |-NameIdentifierNode="as"
-          |-ReferenceNode
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
-      |-NameIdentifierNode="as"
-  |-ImplDirective
-    |-ReferenceNode
-      |-QNameNode=Natural
-        |-NameIdentifierNode="Natural"
-    |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-ParameterNode annotations=Local(a:<no-type>#0)
-            |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Natural
-                |-NameIdentifierNode="Natural"
-          |-NameIdentifierNode="as"
-          |-ReferenceNode
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
-      |-NameIdentifierNode="as"
-  |-ImplDirective
-    |-ReferenceNode
-      |-QNameNode=Complex
-        |-NameIdentifierNode="Complex"
-    |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-ParameterNode annotations=Local(a:<no-type>#0)
-            |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Complex
-                |-NameIdentifierNode="Complex"
-          |-NameIdentifierNode="as"
-          |-ReferenceNode
-            |-QNameNode=Number
-              |-NameIdentifierNode="Number"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$a
-                |-NameIdentifierNode="$a"
-      |-NameIdentifierNode="as"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Infinity"
-    |-StructTypeNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="NDet"
-    |-StructTypeNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Real"
-    |-StructTypeNode
-      |-ParameterNode
-        |-NameIdentifierNode="number"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Natural"
-    |-StructTypeNode
-      |-ParameterNode
-        |-NameIdentifierNode="number"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Complex"
-    |-StructTypeNode
-      |-ParameterNode
-        |-NameIdentifierNode="real"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-      |-ParameterNode
-        |-NameIdentifierNode="imaginary"
-        |-ReferenceNode
-          |-QNameNode=f32
-            |-NameIdentifierNode="f32"
-  |-ImplDirective
-    |-ReferenceNode
-      |-QNameNode=Infinity
-        |-NameIdentifierNode="Infinity"
-    |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Infinity$discriminant"
+          |-NameIdentifierNode="Infinity$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -419,9 +315,13 @@
         |-FunctionNode
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Infinity
-                |-NameIdentifierNode="Infinity"
+            |-UnionTypeNode
+              |-ReferenceNode
+                |-QNameNode=Infinity
+                  |-NameIdentifierNode="Infinity"
+              |-ReferenceNode
+                |-QNameNode=ref
+                  |-NameIdentifierNode="ref"
           |-NameIdentifierNode="is"
           |-ReferenceNode
             |-QNameNode=boolean
@@ -566,11 +466,45 @@
       |-QNameNode=NDet
         |-NameIdentifierNode="NDet"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=NDet
+                |-NameIdentifierNode="NDet"
+          |-NameIdentifierNode="as"
+          |-ReferenceNode
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=NDet
+                |-NameIdentifierNode="NDet"
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="as"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="NDet$discriminant"
+          |-NameIdentifierNode="NDet$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
@@ -614,9 +548,13 @@
         |-FunctionNode
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=NDet
-                |-NameIdentifierNode="NDet"
+            |-UnionTypeNode
+              |-ReferenceNode
+                |-QNameNode=NDet
+                  |-NameIdentifierNode="NDet"
+              |-ReferenceNode
+                |-QNameNode=ref
+                  |-NameIdentifierNode="ref"
           |-NameIdentifierNode="is"
           |-ReferenceNode
             |-QNameNode=boolean
@@ -761,11 +699,45 @@
       |-QNameNode=Real
         |-NameIdentifierNode="Real"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=Real
+                |-NameIdentifierNode="Real"
+          |-NameIdentifierNode="as"
+          |-ReferenceNode
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=Real
+                |-NameIdentifierNode="Real"
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="as"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Real$discriminant"
+          |-NameIdentifierNode="Real$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -962,7 +934,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_number"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -971,7 +943,7 @@
             |-ReferenceNode
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
@@ -989,7 +961,7 @@
                 |-QNameNode=Real
                   |-NameIdentifierNode="Real"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1003,7 +975,7 @@
             |-ReferenceNode
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -1030,9 +1002,13 @@
         |-FunctionNode
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Real
-                |-NameIdentifierNode="Real"
+            |-UnionTypeNode
+              |-ReferenceNode
+                |-QNameNode=Real
+                  |-NameIdentifierNode="Real"
+              |-ReferenceNode
+                |-QNameNode=ref
+                  |-NameIdentifierNode="ref"
           |-NameIdentifierNode="is"
           |-ReferenceNode
             |-QNameNode=boolean
@@ -1125,11 +1101,45 @@
       |-QNameNode=Natural
         |-NameIdentifierNode="Natural"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=Natural
+                |-NameIdentifierNode="Natural"
+          |-NameIdentifierNode="as"
+          |-ReferenceNode
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=Natural
+                |-NameIdentifierNode="Natural"
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="as"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Natural$discriminant"
+          |-NameIdentifierNode="Natural$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -1326,7 +1336,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_number"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1335,7 +1345,7 @@
             |-ReferenceNode
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -1353,7 +1363,7 @@
                 |-QNameNode=Natural
                   |-NameIdentifierNode="Natural"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1367,7 +1377,7 @@
             |-ReferenceNode
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -1394,9 +1404,13 @@
         |-FunctionNode
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Natural
-                |-NameIdentifierNode="Natural"
+            |-UnionTypeNode
+              |-ReferenceNode
+                |-QNameNode=Natural
+                  |-NameIdentifierNode="Natural"
+              |-ReferenceNode
+                |-QNameNode=ref
+                  |-NameIdentifierNode="ref"
           |-NameIdentifierNode="is"
           |-ReferenceNode
             |-QNameNode=boolean
@@ -1489,11 +1503,45 @@
       |-QNameNode=Complex
         |-NameIdentifierNode="Complex"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=Complex
+                |-NameIdentifierNode="Complex"
+          |-NameIdentifierNode="as"
+          |-ReferenceNode
+            |-QNameNode=Number
+              |-NameIdentifierNode="Number"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode
+              |-QNameNode=Complex
+                |-NameIdentifierNode="Complex"
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ReferenceNode
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="as"
+    |-OverloadedFunctionNode annotations=Injected
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
-          |-NameIdentifierNode="Complex$discriminant"
+          |-NameIdentifierNode="Complex$discriminant" annotations=Inline
           |-ReferenceNode
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
@@ -1705,7 +1753,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_real"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1714,7 +1762,7 @@
             |-ReferenceNode
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
@@ -1732,7 +1780,7 @@
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-NameIdentifierNode="property$0_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1746,7 +1794,7 @@
             |-ReferenceNode
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-NameIdentifierNode="property$0"
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -1815,7 +1863,7 @@
                 |-NameIdentifierNode="value"
       |-NameIdentifierNode="property_imaginary"
     |-OverloadedFunctionNode annotations=Injected
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1824,7 +1872,7 @@
             |-ReferenceNode
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
@@ -1842,7 +1890,7 @@
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-NameIdentifierNode="property$1_offset"
-      |-FunDirectiveNode annotations=Inline
+      |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode
@@ -1856,7 +1904,7 @@
             |-ReferenceNode
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-NameIdentifierNode="property$1"
+          |-NameIdentifierNode="property$1" annotations=Inline
           |-ReferenceNode
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -1883,9 +1931,13 @@
         |-FunctionNode
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
-              |-QNameNode=Complex
-                |-NameIdentifierNode="Complex"
+            |-UnionTypeNode
+              |-ReferenceNode
+                |-QNameNode=Complex
+                  |-NameIdentifierNode="Complex"
+              |-ReferenceNode
+                |-QNameNode=ref
+                  |-NameIdentifierNode="ref"
           |-NameIdentifierNode="is"
           |-ReferenceNode
             |-QNameNode=boolean
@@ -1973,6 +2025,41 @@
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
       |-NameIdentifierNode="load"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Infinity"
+    |-StructTypeNode
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="NDet"
+    |-StructTypeNode
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Real"
+    |-StructTypeNode
+      |-ParameterNode
+        |-NameIdentifierNode="number"
+        |-ReferenceNode
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Natural"
+    |-StructTypeNode
+      |-ParameterNode
+        |-NameIdentifierNode="number"
+        |-ReferenceNode
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Complex"
+    |-StructTypeNode
+      |-ParameterNode
+        |-NameIdentifierNode="real"
+        |-ReferenceNode
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
+      |-ParameterNode
+        |-NameIdentifierNode="imaginary"
+        |-ReferenceNode
+          |-QNameNode=f32
+            |-NameIdentifierNode="f32"
   |-OverloadedFunctionNode annotations=Injected
     |-FunDirectiveNode
       |-FunctionNode
