@@ -12,7 +12,7 @@ Read more about it [in this blog post](https://menduz.com/posts/lys-language-pro
 - To learn how high level constructs get compiled: browse the [sugar syntax tests](test/fixtures/semantics)
 - To start developing it locally, I do `make watch` and then I run the tests in other terminal with `make snapshot`
 
-## Installing
+## Getting started
 
 For the time being I'll use npm to distribute the language.
 
@@ -24,16 +24,16 @@ For the time being I'll use npm to distribute the language.
 
    #[export]
    fun test(): void = {
-    support::test::START("This is a test suite")
+     support::test::START("This is a test suite")
 
-    printf("Hello %X", 0xDEADBEEF)
-    support::test::mustEqual(3 as u8, 3 as u16, "assertion name")
+     printf("Hello %X", 0xDEADBEEF)
+     support::test::mustEqual(3 as u8, 3 as u16, "assertion name")
 
-    support::test::END()
+     support::test::END()
    }
    ```
 
-3. Run `lys-compiler main.lys --test --wast`
+3. Run `lys-compiler main.lys --test --wast`. It will create `main.wasm` `main.wast` and will run the exported function named `test`.
 
 ## How does it look?
 
