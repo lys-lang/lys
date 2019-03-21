@@ -1,7 +1,8 @@
 declare var describe;
 
-import { test, readBytes, testFolder } from './ExecutionHelper';
+import { test, testFolder } from './ExecutionHelper';
 import { expect } from 'chai';
+import { readBytes } from '../dist/utils/execution';
 
 const getBytes = require('utf8-bytes');
 

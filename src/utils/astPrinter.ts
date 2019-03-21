@@ -1,4 +1,4 @@
-import { Nodes } from '../parser/nodes';
+import { Nodes } from '../compiler/nodes';
 
 export function printAST(token: Nodes.Node, level = 0) {
   if (!token) return '<no token was provided>';

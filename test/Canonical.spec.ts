@@ -1,9 +1,9 @@
 declare var describe, it;
 
 import { testParseToken, folderBasedTest } from './TestHelpers';
-import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
 import { printAST } from '../dist/utils/astPrinter';
-import { ParsingContext } from '../dist/parser/ParsingContext';
+import { ParsingContext } from '../dist/compiler/ParsingContext';
 
 const phases = function(txt: string): CanonicalPhaseResult {
   const parsingContext = new ParsingContext();

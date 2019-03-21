@@ -1,9 +1,9 @@
 declare var require;
 const colors = require('colors/safe');
 import { LineMapper, ITextPosition } from './LineMapper';
-import { IErrorPositionCapable } from '../parser/NodeError';
-import { ParsingContext } from '../parser/ParsingContext';
-import { ParsingPhaseResult } from '../parser/phases/parsingPhase';
+import { IErrorPositionCapable } from '../compiler/NodeError';
+import { ParsingContext } from '../compiler/ParsingContext';
+import { ParsingPhaseResult } from '../compiler/phases/parsingPhase';
 import { indent } from './astPrinter';
 
 function mapSet<T, V>(set: Set<T>, fn: (x: T) => V): V[] {

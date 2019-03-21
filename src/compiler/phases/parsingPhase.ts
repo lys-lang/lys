@@ -1,7 +1,7 @@
 import { PhaseResult } from './PhaseResult';
 import { parser } from '../../grammar';
 import { walkPreOrder } from '../walker';
-import { failWithErrors } from './findAllErrors';
+import { failWithErrors } from '../findAllErrors';
 import { ParsingContext } from '../ParsingContext';
 import { Nodes } from '../nodes';
 import { PositionCapableError } from '../NodeError';

@@ -1,6 +1,6 @@
 import { StringCodeWriter } from './StringCodeWriter';
-import { TypeGraph, Edge, TypeNode } from '../parser/types/TypeGraph';
-import { Nodes } from '../parser/nodes';
+import { TypeGraph, Edge, TypeNode } from '../compiler/types/TypeGraph';
+import { Nodes } from '../compiler/nodes';
 
 export function print(rootGraph: TypeGraph): string {
   const documents = new Set<string>();

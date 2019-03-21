@@ -1,0 +1,24 @@
+// this snippet is an actual unit test
+
+enum Tree {
+  Node(value: i32, left: Tree, right: Tree)
+  Empty
+}
+
+fun sum(arg: Tree): i32 = {
+  match arg {
+    case is Empty -> 0
+    case is Node(value, left, right) -> value + sum(left) + sum(right)
+  }
+}
+
+#[export]
+fun main(): void = {
+  support::test::START("Traverse tree")
+
+  val tree = Node(42, Node(3, Empty, Empty), Empty)
+
+  support::test::mustEqual(sum(tree), 45, "sum(tree) returns 45")
+
+  support::test::END()
+}
