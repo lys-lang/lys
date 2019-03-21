@@ -4,8 +4,10 @@ build:
 	node_modules/.bin/tsc -p tsconfig.test.json
 	chmod +x dist/bin.js
 
-test: build
+just-test:
 	node ./node_modules/mocha/bin/_mocha --require source-map-support/register
+
+test: | build just-test
 
 ci-test: test
 
@@ -19,6 +21,6 @@ lint:
 	node_modules/.bin/tslint -t msbuild src/**/*.ts
 
 snapshot: export UPDATE_AST=true
-snapshot: test
+snapshot: just-test
 
 .PHONY: build test snapshot
