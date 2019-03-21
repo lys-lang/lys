@@ -5,17 +5,7 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "bin": "dist/bin.js",
-  "scripts": {
-    "test": "node ./node_modules/mocha/bin/_mocha --require source-map-support/register",
-    "test:inspect": "node --inspect ./node_modules/mocha/bin/_mocha --require source-map-support/register",
-    "prof": "node --prof ./node_modules/mocha/bin/_mocha --timeout 999999",
-    "test-travis": "npm run lint && npm run build && npm run coverage && npm run test",
-    "preversion": "npm run build && npm test",
-    "coverage": "(`npm bin`/istanbul cover `npm bin`/_mocha || true)",
-    "lint": "tslint -t msbuild src/**/*.ts",
-    "build": "rm -rf dist && tsc -p tsconfig.json && tsc -p tsconfig.test.json && chmod +x dist/bin.js",
-    "watch": "npm run build && chmod +x dist/bin.js && (tsc -p tsconfig.json --watch & tsc -p tsconfig.test.json --watch)"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/menduz/aureum.git"
