@@ -96,7 +96,7 @@ fun discriminant(v: ref): u64 = %wasm {
   )
 }
 
-fun memcpy(src: u32, dst: u32, length: u32): u32 = {
+fun memcpy(dst: u32, src: u32, length: u32): u32 = {
   var i: u32 = 0 as u32
 
   val SRC = src as ref

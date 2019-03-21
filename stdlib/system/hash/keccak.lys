@@ -7,887 +7,451 @@
 // - input length (i32)
 // - output offset (i32) -> 32 byte hash
 //
-// The context is laid out as follows:
-//   0: 1600 bits - 200 bytes - hashing state
-// 200:   64 bits -   8 bytes - residue position
-// 208: 1536 bits - 192 bytes - residue buffer
-// 400: 1536 bits - 192 bytes - round constants
-// 592:  192 bits -  24 bytes - rotation constants
-//
 // --
 //
 // Specification at: http://keccak.noekeon.org/specs_summary.html
 //
 // This implementation is based on https://github.com/rhash/RHash/blob/master/librhash/sha3.c
 //
-// Most of the methods are fully unrolled.  Would be much nicer with macros, hopefully this
-// gets implemented: https://github.com/WebAssembly/sexpr-wasm-prototype/issues/92
 //
 
-private fun keccak_theta(context_offset: u32): void = %wasm {
-  (local $C0 i64)
-  (local $C1 i64)
-  (local $C2 i64)
-  (local $C3 i64)
-  (local $C4 i64)
-  (local $D0 i64)
-  (local $D1 i64)
-  (local $D2 i64)
-  (local $D3 i64)
-  (local $D4 i64)
+struct Keccak(data: bytes, result: bytes)
 
-  // C[x] = A[x] ^ A[x + 5] ^ A[x + 10] ^ A[x + 15] ^ A[x + 20];
-  (set_local $C0
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 0)))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.const 40)))
-        (i64.xor
-          (i64.load (i32.add (get_local $context_offset) (i32.const 80)))
-          (i64.xor
-            (i64.load (i32.add (get_local $context_offset) (i32.const 120)))
-            (i64.load (i32.add (get_local $context_offset) (i32.const 160)))
-          )
+impl Keccak {
+  fun apply(): Keccak = {
+    // The context is laid out as follows:
+    //   0: 1600 bits - 200 bytes - hashing state
+    // 200:   64 bits -   8 bytes - residue position
+    // 208: 1536 bits - 192 bytes - residue buffer
+    // 400: 1536 bits - 192 bytes - round constants
+    // 592:  192 bits -  24 bytes - rotation constants
+
+    val context = system::memory::allocBytes(616 as u32)
+
+    val result = system::memory::allocBytes(32 as u32)
+
+    keccakInit(context.ptr)
+
+    Keccak(context, result)
+  }
+
+  fun reset(self: Keccak): void = {
+    keccakInit(self.data.ptr)
+  }
+
+  fun update(self: Keccak, data: bytes): void = {
+    update(self, data.ptr, data.length)
+  }
+
+  fun update(self: Keccak, address: u32, length: u32): void = {
+    keccakUpdate(self.data.ptr, address, length)
+  }
+
+  fun digest(self: Keccak): bytes = {
+    keccakFinish(self.data.ptr, self.result.ptr)
+
+    self.result
+  }
+
+  /// Internal implementation
+
+  private fun keccakTheta(context: ref): void = {
+    // C[x] = A[x] ^ A[x + 5] ^ A[x + 10] ^ A[x + 15] ^ A[x + 20];
+    val C0 =
+        i64.load(context, 0 as u32) ^ i64.load(context, 40 as u32) ^
+        i64.load(context, 80 as u32) ^ i64.load(context, 120 as u32) ^
+        i64.load(context, 160 as u32)
+
+    val C1 =
+        i64.load(context, 8 as u32) ^ i64.load(context, 48 as u32) ^
+        i64.load(context, 88 as u32) ^ i64.load(context, 128 as u32) ^
+        i64.load(context, 168 as u32)
+
+    val C2 =
+        i64.load(context, 16 as u32) ^ i64.load(context, 56 as u32) ^
+        i64.load(context, 96 as u32) ^ i64.load(context, 136 as u32) ^
+        i64.load(context, 176 as u32)
+
+    val C3 =
+        i64.load(context, 24 as u32) ^ i64.load(context, 64 as u32) ^
+        i64.load(context, 104 as u32) ^ i64.load(context, 144 as u32) ^
+        i64.load(context, 184 as u32)
+
+    val C4 =
+        i64.load(context, 32 as u32) ^ i64.load(context, 72 as u32) ^
+        i64.load(context, 112 as u32) ^ i64.load(context, 152 as u32) ^
+        i64.load(context, 192 as u32)
+
+    val D0 = C4 ^ i64.rotl(C1, 1 as i64)
+    val D1 = C0 ^ i64.rotl(C2, 1 as i64)
+    val D2 = C1 ^ i64.rotl(C3, 1 as i64)
+    val D3 = C2 ^ i64.rotl(C4, 1 as i64)
+    val D4 = C3 ^ i64.rotl(C0, 1 as i64)
+
+    // A[x]      ^= D[x];
+    // A[x + 5]  ^= D[x];
+    // A[x + 10] ^= D[x];
+    // A[x + 15] ^= D[x];
+    // A[x + 20] ^= D[x];
+
+    // x = 0
+    i64.store(context, i64.load(context, 0 as u32) ^ D0, 0 as u32)
+    i64.store(context, i64.load(context, 40 as u32) ^ D0, 40 as u32)
+    i64.store(context, i64.load(context, 80 as u32) ^ D0, 80 as u32)
+    i64.store(context, i64.load(context, 120 as u32) ^ D0, 120 as u32)
+    i64.store(context, i64.load(context, 160 as u32) ^ D0, 160 as u32)
+
+    // x = 1
+    i64.store(context, i64.load(context, 8 as u32) ^ D1, 8 as u32)
+    i64.store(context, i64.load(context, 48 as u32) ^ D1, 48 as u32)
+    i64.store(context, i64.load(context, 88 as u32) ^ D1, 88 as u32)
+    i64.store(context, i64.load(context, 128 as u32) ^ D1, 128 as u32)
+    i64.store(context, i64.load(context, 168 as u32) ^ D1, 168 as u32)
+
+    // x = 2
+    i64.store(context, i64.load(context, 16 as u32) ^ D2, 16 as u32)
+    i64.store(context, i64.load(context, 56 as u32) ^ D2, 56 as u32)
+    i64.store(context, i64.load(context, 96 as u32) ^ D2, 96 as u32)
+    i64.store(context, i64.load(context, 136 as u32) ^ D2, 136 as u32)
+    i64.store(context, i64.load(context, 176 as u32) ^ D2, 176 as u32)
+
+    // x = 3
+    i64.store(context, i64.load(context, 24 as u32) ^ D3, 24 as u32)
+    i64.store(context, i64.load(context, 64 as u32) ^ D3, 64 as u32)
+    i64.store(context, i64.load(context, 104 as u32) ^ D3, 104 as u32)
+    i64.store(context, i64.load(context, 144 as u32) ^ D3, 144 as u32)
+    i64.store(context, i64.load(context, 184 as u32) ^ D3, 184 as u32)
+
+    // x = 4
+    i64.store(context, i64.load(context, 32 as u32) ^ D4, 32 as u32)
+    i64.store(context, i64.load(context, 72 as u32) ^ D4, 72 as u32)
+    i64.store(context, i64.load(context, 112 as u32) ^ D4, 112 as u32)
+    i64.store(context, i64.load(context, 152 as u32) ^ D4, 152 as u32)
+    i64.store(context, i64.load(context, 192 as u32) ^ D4, 192 as u32)
+  }
+
+  private fun keccakRho(contextRef: ref, rotationConsts: ref): void = {
+    var i = 0 as u32
+
+    loop {
+      if (i >= 24 as u32) {
+        break
+      } else {
+        val offset = (1 as u32 + i) << 3
+
+        i64.store(contextRef,
+          i64.rotl(
+            i64.load(contextRef, offset),
+            i64.load8_u(rotationConsts, i)
+          ),
+          offset
         )
-      )
-    )
-  )
 
-  (set_local $C1
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 8)))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.const 48)))
-        (i64.xor
-          (i64.load (i32.add (get_local $context_offset) (i32.const 88)))
-          (i64.xor
-            (i64.load (i32.add (get_local $context_offset) (i32.const 128)))
-            (i64.load (i32.add (get_local $context_offset) (i32.const 168)))
-          )
+        i = i + 1 as u32
+        continue
+      }
+    }
+  }
+
+  private fun keccakPi(context: ref): void = {
+    val A1 = i64.load(context, 8 as u32)
+
+    // Swap non-overlapping fields, i.e. $A1 = $A6, etc.
+    // NOTE: $A0 is untouched
+    i64.store(context, i64.load(context, 48 as u32), 8 as u32)
+    i64.store(context, i64.load(context, 72 as u32), 48 as u32)
+    i64.store(context, i64.load(context, 176 as u32), 72 as u32)
+    i64.store(context, i64.load(context, 112 as u32), 176 as u32)
+    i64.store(context, i64.load(context, 160 as u32), 112 as u32)
+    i64.store(context, i64.load(context, 16 as u32), 160 as u32)
+    i64.store(context, i64.load(context, 96 as u32), 16 as u32)
+    i64.store(context, i64.load(context, 104 as u32), 96 as u32)
+    i64.store(context, i64.load(context, 152 as u32), 104 as u32)
+    i64.store(context, i64.load(context, 184 as u32), 152 as u32)
+    i64.store(context, i64.load(context, 120 as u32), 184 as u32)
+    i64.store(context, i64.load(context, 32 as u32), 120 as u32)
+    i64.store(context, i64.load(context, 192 as u32), 32 as u32)
+    i64.store(context, i64.load(context, 168 as u32), 192 as u32)
+    i64.store(context, i64.load(context, 64 as u32), 168 as u32)
+    i64.store(context, i64.load(context, 128 as u32), 64 as u32)
+    i64.store(context, i64.load(context, 40 as u32), 128 as u32)
+    i64.store(context, i64.load(context, 24 as u32), 40 as u32)
+    i64.store(context, i64.load(context, 144 as u32), 24 as u32)
+    i64.store(context, i64.load(context, 136 as u32), 144 as u32)
+    i64.store(context, i64.load(context, 88 as u32), 136 as u32)
+    i64.store(context, i64.load(context, 56 as u32), 88 as u32)
+    i64.store(context, i64.load(context, 80 as u32), 56 as u32)
+
+    // Place the previously saved overlapping field
+    i64.store(context, A1, 80 as u32)
+  }
+
+  private fun keccakChi(context: ref): void = {
+    var i = 0 as u32
+
+    // for (round = 0; round < 25; i += 5)
+    loop {
+      if (i >= 25 as u32) break
+
+      val A0 = i64.load(context, i << 3)
+      val A1 = i64.load(context, (i + 1 as u32) << 3)
+
+      // A[0 + i] ^= ~A1 & A[2 + i];
+      i64.store(context,
+        i64.load(context, i << 3) ^ (~A1 & i64.load(context, (i + 2 as u32) << 3)),
+        i << 3
+      )
+
+      // A[1 + i] ^= ~A[2 + i] & A[3 + i];
+      i64.store(context,
+        i64.load(context, (i + 1 as u32) << 3) ^ (~i64.load(context, (i + 2 as u32) << 3) & i64.load(context, (i + 3 as u32) << 3)),
+        (i + 1 as u32) << 3
+      )
+
+      // A[2 + i] ^= ~A[3 + i] & A[4 + i];
+      i64.store(context,
+        i64.load(context, (i + 2 as u32) << 3) ^ (~i64.load(context, (i + 3 as u32) << 3) & i64.load(context, (i + 4 as u32) << 3)),
+        (i + 2 as u32) << 3
+      )
+
+      // A[3 + i] ^= ~A[4 + i] & A0;
+      i64.store(context,
+        i64.load(context, (i + 3 as u32) << 3) ^ (~i64.load(context, (i + 4 as u32) << 3) & A0),
+        (i + 3 as u32) << 3
+      )
+
+      // A[4 + i] ^= ~A0 & A1;
+      i64.store(context, i64.load(context, (i + 4 as u32) << 3) ^ ~A0 & A1, (i + 4 as u32) << 3)
+
+      i = i + 5 as u32
+
+      continue
+    }
+  }
+
+  private fun keccakPermute(contextOffset: u32): void = {
+    val roundConsts = (contextOffset + 400 as u32) as ref
+    val rotationConsts = (contextOffset + 592 as u32) as ref
+    val contextRef = contextOffset as ref
+    var round = 0
+
+    // for (round = 0; round < 24; round++)
+    loop {
+      if (round >= 24) {
+        break
+      } else {
+
+        // theta transform
+        keccakTheta(contextRef)
+
+        // rho transform
+        keccakRho(contextRef, rotationConsts)
+
+        // pi transform
+        keccakPi(contextRef)
+
+        // chi transform
+        keccakChi(contextRef)
+
+        // iota transform
+        // contextOffset[0] ^= KECCAK_ROUND_CONSTANTS[round];
+        i64.store(
+          contextRef,
+          i64.load(contextRef) ^ i64.load(roundConsts, (round as u32) << 3)
         )
-      )
-    )
-  )
 
-  (set_local $C2
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 16)))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.const 56)))
-        (i64.xor
-          (i64.load (i32.add (get_local $context_offset) (i32.const 96)))
-          (i64.xor
-            (i64.load (i32.add (get_local $context_offset) (i32.const 136)))
-            (i64.load (i32.add (get_local $context_offset) (i32.const 176)))
-          )
-        )
-      )
-    )
-  )
-
-  (set_local $C3
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 24)))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.const 64)))
-        (i64.xor
-          (i64.load (i32.add (get_local $context_offset) (i32.const 104)))
-          (i64.xor
-            (i64.load (i32.add (get_local $context_offset) (i32.const 144)))
-            (i64.load (i32.add (get_local $context_offset) (i32.const 184)))
-          )
-        )
-      )
-    )
-  )
-
-  (set_local $C4
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 32)))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.const 72)))
-        (i64.xor
-          (i64.load (i32.add (get_local $context_offset) (i32.const 112)))
-          (i64.xor
-            (i64.load (i32.add (get_local $context_offset) (i32.const 152)))
-            (i64.load (i32.add (get_local $context_offset) (i32.const 192)))
-          )
-        )
-      )
-    )
-  )
-
-  // D[0] = ROTL64(C[1], 1) ^ C[4];
-  (set_local $D0
-    (i64.xor
-      (get_local $C4)
-      (i64.rotl
-        (get_local $C1)
-        (i64.const 1)
-      )
-    )
-  )
-
-  // D[1] = ROTL64(C[2], 1) ^ C[0];
-  (set_local $D1
-    (i64.xor
-      (get_local $C0)
-      (i64.rotl
-        (get_local $C2)
-        (i64.const 1)
-      )
-    )
-  )
-
-  // D[2] = ROTL64(C[3], 1) ^ C[1];
-  (set_local $D2
-    (i64.xor
-      (get_local $C1)
-      (i64.rotl
-        (get_local $C3)
-        (i64.const 1)
-      )
-    )
-  )
-
-  // D[3] = ROTL64(C[4], 1) ^ C[2];
-  (set_local $D3
-    (i64.xor
-      (get_local $C2)
-      (i64.rotl
-        (get_local $C4)
-        (i64.const 1)
-      )
-    )
-  )
-
-  // D[4] = ROTL64(C[0], 1) ^ C[3];
-  (set_local $D4
-    (i64.xor
-      (get_local $C3)
-      (i64.rotl
-        (get_local $C0)
-        (i64.const 1)
-      )
-    )
-  )
-
-  // A[x]      ^= D[x];
-  // A[x + 5]  ^= D[x];
-  // A[x + 10] ^= D[x];
-  // A[x + 15] ^= D[x];
-  // A[x + 20] ^= D[x];
-
-  // x = 0
-  (i64.store (i32.add (get_local $context_offset) (i32.const 0))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 0)))
-      (get_local $D0)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 40))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 40)))
-      (get_local $D0)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 80))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 80)))
-      (get_local $D0)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 120))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 120)))
-      (get_local $D0)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 160))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 160)))
-      (get_local $D0)
-    )
-  )
-
-  // x = 1
-  (i64.store (i32.add (get_local $context_offset) (i32.const 8))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 8)))
-      (get_local $D1)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 48))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 48)))
-      (get_local $D1)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 88))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 88)))
-      (get_local $D1)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 128))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 128)))
-      (get_local $D1)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 168))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 168)))
-      (get_local $D1)
-    )
-  )
-
-  // x = 2
-  (i64.store (i32.add (get_local $context_offset) (i32.const 16))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 16)))
-      (get_local $D2)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 56))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 56)))
-      (get_local $D2)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 96))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 96)))
-      (get_local $D2)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 136))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 136)))
-      (get_local $D2)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 176))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 176)))
-      (get_local $D2)
-    )
-  )
-
-  // x = 3
-  (i64.store (i32.add (get_local $context_offset) (i32.const 24))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 24)))
-      (get_local $D3)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 64))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 64)))
-      (get_local $D3)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 104))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 104)))
-      (get_local $D3)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 144))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 144)))
-      (get_local $D3)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 184))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 184)))
-      (get_local $D3)
-    )
-  )
-
-  // x = 4
-  (i64.store (i32.add (get_local $context_offset) (i32.const 32))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 32)))
-      (get_local $D4)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 72))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 72)))
-      (get_local $D4)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 112))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 112)))
-      (get_local $D4)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 152))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 152)))
-      (get_local $D4)
-    )
-  )
-
-  (i64.store (i32.add (get_local $context_offset) (i32.const 192))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 192)))
-      (get_local $D4)
-    )
-  )
-}
-
-private fun keccak_rho(context_offset: u32, rotation_consts: u32): void = %wasm {
-  //(local $tmp i32)
-
-  // state[ 1] = ROTL64(state[ 1],  1);
-  //(set_local $tmp (i32.add (get_local $context_offset) (i32.const 1)))
-  //(i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $context_offset)) (i64.const 1)))
-
-  //(set_local $tmp (i32.add (get_local $context_offset) (i32.const 2)))
-  //(i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $context_offset)) (i64.const 62)))
-
-  (local $tmp i32)
-  (local $i i32)
-
-  // for (i = 0; i <= 24; i++)
-  (set_local $i (i32.const 0))
-    (block $done
-  (loop $loop
-    (if (i32.ge_u (get_local $i) (i32.const 24))
-      (br $done)
-    )
-
-    (set_local $tmp (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (i32.const 1) (get_local $i)))))
-
-    (i64.store (get_local $tmp) (i64.rotl (i64.load (get_local $tmp)) (i64.load8_u (i32.add (get_local $rotation_consts) (get_local $i)))))
-
-    (set_local $i (i32.add (get_local $i) (i32.const 1)))
-    (br $loop)
-  ))
-}
-
-private fun keccak_pi(context_offset: u32): void = %wasm {
-  (local $A1 i64)
-  (set_local $A1 (i64.load (i32.add (get_local $context_offset) (i32.const 8))))
-
-  // Swap non-overlapping fields, i.e. $A1 = $A6, etc.
-  // NOTE: $A0 is untouched
-  (i64.store (i32.add (get_local $context_offset) (i32.const 8)) (i64.load (i32.add (get_local $context_offset) (i32.const 48))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 48)) (i64.load (i32.add (get_local $context_offset) (i32.const 72))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 72)) (i64.load (i32.add (get_local $context_offset) (i32.const 176))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 176)) (i64.load (i32.add (get_local $context_offset) (i32.const 112))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 112)) (i64.load (i32.add (get_local $context_offset) (i32.const 160))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 160)) (i64.load (i32.add (get_local $context_offset) (i32.const 16))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 16)) (i64.load (i32.add (get_local $context_offset) (i32.const 96))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 96)) (i64.load (i32.add (get_local $context_offset) (i32.const 104))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 104)) (i64.load (i32.add (get_local $context_offset) (i32.const 152))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 152)) (i64.load (i32.add (get_local $context_offset) (i32.const 184))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 184)) (i64.load (i32.add (get_local $context_offset) (i32.const 120))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 120)) (i64.load (i32.add (get_local $context_offset) (i32.const 32))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 32)) (i64.load (i32.add (get_local $context_offset) (i32.const 192))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 192)) (i64.load (i32.add (get_local $context_offset) (i32.const 168))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 168)) (i64.load (i32.add (get_local $context_offset) (i32.const 64))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 64)) (i64.load (i32.add (get_local $context_offset) (i32.const 128))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 128)) (i64.load (i32.add (get_local $context_offset) (i32.const 40))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 40)) (i64.load (i32.add (get_local $context_offset) (i32.const 24))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 24)) (i64.load (i32.add (get_local $context_offset) (i32.const 144))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 144)) (i64.load (i32.add (get_local $context_offset) (i32.const 136))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 136)) (i64.load (i32.add (get_local $context_offset) (i32.const 88))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 88)) (i64.load (i32.add (get_local $context_offset) (i32.const 56))))
-  (i64.store (i32.add (get_local $context_offset) (i32.const 56)) (i64.load (i32.add (get_local $context_offset) (i32.const 80))))
-
-  // Place the previously saved overlapping field
-  (i64.store (i32.add (get_local $context_offset) (i32.const 80)) (get_local $A1))
-}
-
-private fun keccak_chi(context_offset: u32): void = %wasm {
-  (local $A0 i64)
-  (local $A1 i64)
-  (local $i i32)
-
-  // for (round = 0; round < 25; i += 5)
-  (set_local $i (i32.const 0))
-    (block $done
-  (loop $loop
-    (if (i32.ge_u (get_local $i) (i32.const 25))
-      (br $done)
-    )
-
-    (set_local $A0 (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (get_local $i)))))
-    (set_local $A1 (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 1))))))
-
-    // A[0 + i] ^= ~A1 & A[2 + i];
-    (i64.store (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (get_local $i)))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (get_local $i))))
-        (i64.and
-          (i64.xor (get_local $A1) (i64.const 0xFFFFFFFFFFFFFFFF)) // bitwise not
-          (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2)))))
-        )
-      )
-    )
-
-    // A[1 + i] ^= ~A[2 + i] & A[3 + i];
-    (i64.store (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 1))))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 1)))))
-        (i64.and
-          (i64.xor (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2))))) (i64.const 0xFFFFFFFFFFFFFFFF)) // bitwise not
-          (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3)))))
-        )
-      )
-    )
-
-    // A[2 + i] ^= ~A[3 + i] & A[4 + i];
-    (i64.store (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2))))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 2)))))
-        (i64.and
-          (i64.xor (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3))))) (i64.const 0xFFFFFFFFFFFFFFFF)) // bitwise not
-          (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4)))))
-        )
-      )
-    )
-
-    // A[3 + i] ^= ~A[4 + i] & A0;
-    (i64.store (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3))))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 3)))))
-        (i64.and
-          (i64.xor (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4))))) (i64.const 0xFFFFFFFFFFFFFFFF)) // bitwise not
-          (get_local $A0)
-        )
-      )
-    )
-
-    // A[4 + i] ^= ~A0 & A1;
-    (i64.store (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4))))
-      (i64.xor
-        (i64.load (i32.add (get_local $context_offset) (i32.mul (i32.const 8) (i32.add (get_local $i) (i32.const 4)))))
-        (i64.and
-          (i64.xor (get_local $A0) (i64.const 0xFFFFFFFFFFFFFFFF)) // bitwise not
-          (get_local $A1)
-        )
-      )
-    )
-
-    (set_local $i (i32.add (get_local $i) (i32.const 5)))
-    (br $loop)
-  ))
-}
-
-private fun keccak_permute(context_offset: u32): void = %wasm {
-  (local $rotation_consts i32)
-  (local $round_consts i32)
-  (local $round i32)
-
-  (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
-  (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 592)))
-
-  // for (round = 0; round < 24; round++)
-  (set_local $round (i32.const 0))
-    (block $done
-  (loop $loop
-    (if (i32.ge_u (get_local $round) (i32.const 24))
-      (br $done)
-    )
-
-    // theta transform
-    (call $keccak_theta (get_local $context_offset))
-
-    // rho transform
-    (call $keccak_rho (get_local $context_offset) (get_local $rotation_consts))
-
-    // pi transform
-    (call $keccak_pi (get_local $context_offset))
-
-    // chi transform
-    (call $keccak_chi (get_local $context_offset))
-
-    // iota transform
-    // context_offset[0] ^= KECCAK_ROUND_CONSTANTS[round];
-    (i64.store (get_local $context_offset)
-      (i64.xor
-        (i64.load (get_local $context_offset))
-        (i64.load (i32.add (get_local $round_consts) (i32.mul (i32.const 8) (get_local $round))))
-      )
-    )
-
-    (set_local $round (i32.add (get_local $round) (i32.const 1)))
-    (br $loop)
-  )  )
-}
-
-private fun keccak_block(input_offset: u32, input_length: u32, context_offset: u32): void = %wasm {
-
-  // read blocks in little-endian order and XOR against context_offset
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 0))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 0)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 0)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 8))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 8)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 8)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 16))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 16)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 16)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 24))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 24)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 24)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 32))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 32)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 32)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 40))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 40)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 40)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 48))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 48)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 48)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 56))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 56)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 56)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 64))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 64)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 64)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 72))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 72)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 72)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 80))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 80)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 80)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 88))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 88)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 88)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 96))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 96)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 96)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 104))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 104)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 104)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 112))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 112)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 112)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 120))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 120)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 120)))
-    )
-  )
-
-  (i64.store
-    (i32.add (get_local $context_offset) (i32.const 128))
-    (i64.xor
-      (i64.load (i32.add (get_local $context_offset) (i32.const 128)))
-      (i64.load (i32.add (get_local $input_offset) (i32.const 128)))
-    )
-  )
-
-  (call $keccak_permute (get_local $context_offset))
-}
-
-//
-// Initialise the context
-//
-private fun keccak_init(context_offset: u32): void = %wasm {
-  (local $round_consts i32)
-  (local $rotation_consts i32)
-
-  (call $keccak_reset (get_local $context_offset))
-
-  // insert the round constants (used by $KECCAK_IOTA)
-  (set_local $round_consts (i32.add (get_local $context_offset) (i32.const 400)))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 0)) (i64.const 0x0000000000000001))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 8)) (i64.const 0x0000000000008082))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 16)) (i64.const 0x800000000000808A))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 24)) (i64.const 0x8000000080008000))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 32)) (i64.const 0x000000000000808B))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 40)) (i64.const 0x0000000080000001))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 48)) (i64.const 0x8000000080008081))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 56)) (i64.const 0x8000000000008009))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 64)) (i64.const 0x000000000000008A))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 72)) (i64.const 0x0000000000000088))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 80)) (i64.const 0x0000000080008009))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 88)) (i64.const 0x000000008000000A))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 96)) (i64.const 0x000000008000808B))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 104)) (i64.const 0x800000000000008B))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 112)) (i64.const 0x8000000000008089))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 120)) (i64.const 0x8000000000008003))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 128)) (i64.const 0x8000000000008002))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 136)) (i64.const 0x8000000000000080))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 144)) (i64.const 0x000000000000800A))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 152)) (i64.const 0x800000008000000A))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 160)) (i64.const 0x8000000080008081))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 168)) (i64.const 0x8000000000008080))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 176)) (i64.const 0x0000000080000001))
-  (i64.store (i32.add (get_local $round_consts) (i32.const 184)) (i64.const 0x8000000080008008))
-
-  // insert the rotation constants (used by $keccak_rho)
-  (set_local $rotation_consts (i32.add (get_local $context_offset) (i32.const 592)))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 0)) (i32.const 1))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 1)) (i32.const 62))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 2)) (i32.const 28))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 3)) (i32.const 27))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 4)) (i32.const 36))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 5)) (i32.const 44))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 6)) (i32.const 6))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 7)) (i32.const 55))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 8)) (i32.const 20))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 9)) (i32.const 3))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 10)) (i32.const 10))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 11)) (i32.const 43))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 12)) (i32.const 25))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 13)) (i32.const 39))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 14)) (i32.const 41))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 15)) (i32.const 45))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 16)) (i32.const 15))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 17)) (i32.const 21))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 18)) (i32.const 8))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 19)) (i32.const 18))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 20)) (i32.const 2))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 21)) (i32.const 61))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 22)) (i32.const 56))
-  (i32.store8 (i32.add (get_local $rotation_consts) (i32.const 23)) (i32.const 14))
-}
-
-// Reset the context
-//
-private fun keccak_reset(context_offset: u32): void = {
-  // clear out the context memory
-  system::memory::memset(context_offset, 0 as u8, 400 as u32)
-}
-
-//
-// Push input to the context
-//
-private fun keccak_update(context_offset: u32, input_offset: u32, input_length: u32): void = %wasm {
-  (local $residue_offset i32)
-  (local $residue_buffer i32)
-  (local $residue_index i32)
-  (local $tmp i32)
-
-  // this is where we store the pointer
-  (set_local $residue_offset (i32.add (get_local $context_offset) (i32.const 200)))
-  // this is where the buffer is
-  (set_local $residue_buffer (i32.add (get_local $context_offset) (i32.const 208)))
-
-  (set_local $residue_index (i32.load (get_local $residue_offset)))
-
-  // process residue from last block
-  (if (i32.ne (get_local $residue_index) (i32.const 0))
-    (then
+        round = round + 1
+        continue
+      }
+    }
+  }
+
+  private fun keccakBlock(inputOffset: u32, contextOffset: u32): void = {
+    val input = inputOffset as ref
+    val context = contextOffset as ref
+
+    // read blocks in little-endian order and XOR against contextOffset
+    i64.store(context, i64.load(context, 0 as u32) ^ i64.load(input, 0 as u32), 0 as u32)
+    i64.store(context, i64.load(context, 8 as u32) ^ i64.load(input, 8 as u32), 8 as u32)
+    i64.store(context, i64.load(context, 16 as u32) ^ i64.load(input, 16 as u32), 16 as u32)
+    i64.store(context, i64.load(context, 24 as u32) ^ i64.load(input, 24 as u32), 24 as u32)
+    i64.store(context, i64.load(context, 32 as u32) ^ i64.load(input, 32 as u32), 32 as u32)
+    i64.store(context, i64.load(context, 40 as u32) ^ i64.load(input, 40 as u32), 40 as u32)
+    i64.store(context, i64.load(context, 48 as u32) ^ i64.load(input, 48 as u32), 48 as u32)
+    i64.store(context, i64.load(context, 56 as u32) ^ i64.load(input, 56 as u32), 56 as u32)
+    i64.store(context, i64.load(context, 64 as u32) ^ i64.load(input, 64 as u32), 64 as u32)
+    i64.store(context, i64.load(context, 72 as u32) ^ i64.load(input, 72 as u32), 72 as u32)
+    i64.store(context, i64.load(context, 80 as u32) ^ i64.load(input, 80 as u32), 80 as u32)
+    i64.store(context, i64.load(context, 88 as u32) ^ i64.load(input, 88 as u32), 88 as u32)
+    i64.store(context, i64.load(context, 96 as u32) ^ i64.load(input, 96 as u32), 96 as u32)
+    i64.store(context, i64.load(context, 104 as u32) ^ i64.load(input, 104 as u32), 104 as u32)
+    i64.store(context, i64.load(context, 112 as u32) ^ i64.load(input, 112 as u32), 112 as u32)
+    i64.store(context, i64.load(context, 120 as u32) ^ i64.load(input, 120 as u32), 120 as u32)
+    i64.store(context, i64.load(context, 128 as u32) ^ i64.load(input, 128 as u32), 128 as u32)
+
+    keccakPermute(contextOffset)
+  }
+
+  //
+  // Initialise the context
+  //
+  private fun keccakInit(contextOffset: u32): void = {
+    keccakReset(contextOffset)
+
+    // insert the round constants (used by $KECCAK_IOTA)
+    val roundConsts = (contextOffset + 400 as u32) as ref
+    i64.store(roundConsts, 0x0000000000000001, 0 as u32)
+    i64.store(roundConsts, 0x0000000000008082, 8 as u32)
+    i64.store(roundConsts, 0x800000000000808A, 16 as u32)
+    i64.store(roundConsts, 0x8000000080008000, 24 as u32)
+    i64.store(roundConsts, 0x000000000000808B, 32 as u32)
+    i64.store(roundConsts, 0x0000000080000001, 40 as u32)
+    i64.store(roundConsts, 0x8000000080008081, 48 as u32)
+    i64.store(roundConsts, 0x8000000000008009, 56 as u32)
+    i64.store(roundConsts, 0x000000000000008A, 64 as u32)
+    i64.store(roundConsts, 0x0000000000000088, 72 as u32)
+    i64.store(roundConsts, 0x0000000080008009, 80 as u32)
+    i64.store(roundConsts, 0x000000008000000A, 88 as u32)
+    i64.store(roundConsts, 0x000000008000808B, 96 as u32)
+    i64.store(roundConsts, 0x800000000000008B, 104 as u32)
+    i64.store(roundConsts, 0x8000000000008089, 112 as u32)
+    i64.store(roundConsts, 0x8000000000008003, 120 as u32)
+    i64.store(roundConsts, 0x8000000000008002, 128 as u32)
+    i64.store(roundConsts, 0x8000000000000080, 136 as u32)
+    i64.store(roundConsts, 0x000000000000800A, 144 as u32)
+    i64.store(roundConsts, 0x800000008000000A, 152 as u32)
+    i64.store(roundConsts, 0x8000000080008081, 160 as u32)
+    i64.store(roundConsts, 0x8000000000008080, 168 as u32)
+    i64.store(roundConsts, 0x0000000080000001, 176 as u32)
+    i64.store(roundConsts, 0x8000000080008008, 184 as u32)
+
+    // insert the rotation constants (used by $keccakRho)
+    val rotationConsts = (contextOffset + 592 as u32) as ref
+    u8.store(rotationConsts, 1 as u8, 0 as u32)
+    u8.store(rotationConsts, 62 as u8, 1 as u32)
+    u8.store(rotationConsts, 28 as u8, 2 as u32)
+    u8.store(rotationConsts, 27 as u8, 3 as u32)
+    u8.store(rotationConsts, 36 as u8, 4 as u32)
+    u8.store(rotationConsts, 44 as u8, 5 as u32)
+    u8.store(rotationConsts, 6 as u8, 6 as u32)
+    u8.store(rotationConsts, 55 as u8, 7 as u32)
+    u8.store(rotationConsts, 20 as u8, 8 as u32)
+    u8.store(rotationConsts, 3 as u8, 9 as u32)
+    u8.store(rotationConsts, 10 as u8, 10 as u32)
+    u8.store(rotationConsts, 43 as u8, 11 as u32)
+    u8.store(rotationConsts, 25 as u8, 12 as u32)
+    u8.store(rotationConsts, 39 as u8, 13 as u32)
+    u8.store(rotationConsts, 41 as u8, 14 as u32)
+    u8.store(rotationConsts, 45 as u8, 15 as u32)
+    u8.store(rotationConsts, 15 as u8, 16 as u32)
+    u8.store(rotationConsts, 21 as u8, 17 as u32)
+    u8.store(rotationConsts, 8 as u8, 18 as u32)
+    u8.store(rotationConsts, 18 as u8, 19 as u32)
+    u8.store(rotationConsts, 2 as u8, 20 as u32)
+    u8.store(rotationConsts, 61 as u8, 21 as u32)
+    u8.store(rotationConsts, 56 as u8, 22 as u32)
+    u8.store(rotationConsts, 14 as u8, 23 as u32)
+  }
+
+  // Reset the context
+  //
+  private fun keccakReset(contextOffset: u32): void = {
+    // clear out the context memory
+    system::memory::memset(contextOffset, 0 as u8, 616 as u32)
+  }
+
+  //
+  // Push input to the context
+  //
+  private fun keccakUpdate(contextOffset: u32, inputOffset: u32, inputLength: u32): void = {
+    // this is where we store the pointer
+    val residueOffsetRef = (contextOffset + 200 as u32) as ref
+    // this is where the buffer is
+    val residueBuffer = contextOffset + 208 as u32
+
+    var residueIndex = u32.load(residueOffsetRef)
+
+    // process residue from last block
+    if (residueIndex != 0 as u32) {
       // the space left in the residue buffer
-      (set_local $tmp (i32.sub (i32.const 136) (get_local $residue_index)))
+      var tmp = 136 as u32 - residueIndex
 
       // limit to what we have as an input
-      (if (i32.lt_u (get_local $input_length) (get_local $tmp))
-        (set_local $tmp (get_local $input_length))
-      )
+      if (inputLength < tmp) {
+        tmp = inputLength
+      }
 
       // fill up the residue buffer
-      (drop
-        (call $system::memory::memcpy
-          (i32.add (get_local $residue_buffer) (get_local $residue_index))
-          (get_local $input_offset)
-          (get_local $tmp)
-        )
-      )
+      system::memory::memcpy(residueBuffer + residueIndex, inputOffset, tmp)
 
-      (set_local $residue_index (i32.add (get_local $residue_index) (get_local $tmp)))
+      residueIndex = residueIndex + tmp
 
       // block complete
-      (if (i32.eq (get_local $residue_index) (i32.const 136))
-        (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+      if (residueIndex == 136 as u32) {
+        keccakBlock(inputOffset, contextOffset)
 
-        (set_local $residue_index (i32.const 0))
-      )
+        residueIndex = 0 as u32
+      }
 
-      (i32.store (get_local $residue_offset) (get_local $residue_index))
+      u32.store(residueOffsetRef, residueIndex)
 
-      (set_local $input_length (i32.sub (get_local $input_length) (get_local $tmp)))
+      inputLength = inputLength - tmp
+    }
+
+    // while (inputLength > block_size)
+    loop {
+      if (inputLength < 136 as u32) {
+        break
+      }
+      keccakBlock(inputOffset, contextOffset)
+
+      inputOffset = inputOffset + 136 as u32
+      inputLength = inputLength - 136 as u32
+
+      continue
+    }
+
+    // copy to the residue buffer
+    if (inputLength > 0 as u32) {
+      system::memory::memcpy(residueBuffer + residueIndex, inputOffset, inputLength)
+
+      u32.store(residueOffsetRef, residueIndex + inputLength)
+    }
+  }
+
+  //
+  // Finalise and return the hash
+  //
+  // The 256 bit hash is returned at the output offset.
+  //
+  private fun keccakFinish(contextOffset: u32, outputOffset: u32): void =  {
+    // this is where the buffer is
+    var residueBuffer = contextOffset + 208 as u32
+    val residueRef = residueBuffer as ref
+
+    var residueIndex = u32.load(
+      // this is where we store the pointer
+      (contextOffset + 200 as u32) as ref
     )
-  )
 
-  // while (input_length > block_size)
-  (block $done
-    (loop $loop
-      (if (i32.lt_u (get_local $input_length) (i32.const 136))
-        (br $done)
-      )
+    // clear the rest of the residue buffer
+    system::memory::memset(residueBuffer + residueIndex, 0 as u8, 136 as u32 - residueIndex)
 
-      (call $keccak_block (get_local $input_offset) (i32.const 136) (get_local $context_offset))
+    // ((char*)ctx->message)[ctx->rest] |= 0x01;
+    u8.store(residueRef, u8.load(residueRef, residueIndex) | 0x01 as u8, residueIndex)
 
-      (set_local $input_offset (i32.add (get_local $input_offset) (i32.const 136)))
-      (set_local $input_length (i32.sub (get_local $input_length) (i32.const 136)))
-      (br $loop)
-    )
-  )
+    // ((char*)ctx->message)[block_size - 1] |= 0x80;
+    residueIndex = 135 as u32
+    u8.store(residueRef, u8.load(residueRef, residueIndex) | 0x80 as u8, residueIndex)
 
-  // copy to the residue buffer
-  (if (i32.gt_u (get_local $input_length) (i32.const 0))
-    (then
-      (drop
-        (call $system::memory::memcpy
-          (i32.add (get_local $residue_buffer) (get_local $residue_index))
-          (get_local $input_offset)
-          (get_local $input_length)
-        )
-      )
+    keccakBlock(residueBuffer, contextOffset)
 
-      (set_local $residue_index (i32.add (get_local $residue_index) (get_local $input_length)))
-      (i32.store (get_local $residue_offset) (get_local $residue_index))
-    )
-  )
-}
-
-//
-// Finalise and return the hash
-//
-// The 256 bit hash is returned at the output offset.
-//
-private fun keccak_finish(context_offset: u32, output_offset: u32): void = %wasm {
-  (local $residue_offset i32)
-  (local $residue_buffer i32)
-  (local $residue_index i32)
-  (local $tmp i32)
-
-  // this is where we store the pointer
-  (set_local $residue_offset (i32.add (get_local $context_offset) (i32.const 200)))
-  // this is where the buffer is
-  (set_local $residue_buffer (i32.add (get_local $context_offset) (i32.const 208)))
-
-  (set_local $residue_index (i32.load (get_local $residue_offset)))
-  (set_local $tmp (get_local $residue_index))
-
-  // clear the rest of the residue buffer
-  (call $system::memory::memset (i32.add (get_local $residue_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
-
-  // ((char*)ctx->message)[ctx->rest] |= 0x01;
-  (set_local $tmp (i32.add (get_local $residue_buffer) (get_local $residue_index)))
-  (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x01)))
-
-  // ((char*)ctx->message)[block_size - 1] |= 0x80;
-  (set_local $tmp (i32.add (get_local $residue_buffer) (i32.const 135)))
-  (i32.store8 (get_local $tmp) (i32.or (i32.load8_u (get_local $tmp)) (i32.const 0x80)))
-
-  (call $keccak_block (get_local $residue_buffer) (i32.const 136) (get_local $context_offset))
-
-  // the first 32 bytes pointed at by $output_offset is the final hash
-  (i64.store (get_local $output_offset) (i64.load (get_local $context_offset)))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 8)) (i64.load (i32.add (get_local $context_offset) (i32.const 8))))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 16)) (i64.load (i32.add (get_local $context_offset) (i32.const 16))))
-  (i64.store (i32.add (get_local $output_offset) (i32.const 24)) (i64.load (i32.add (get_local $context_offset) (i32.const 24))))
-}
-
-//
-// Calculate the hash. Helper method incorporating the above three.
-//
-fun keccak(input: bytes): bytes = {
-  val context = system::memory::allocBytes(616 as u32)
-
-  val ret = system::memory::allocBytes(32 as u32)
-
-  keccak_init(context.ptr)
-  keccak_update(context.ptr, input.ptr, input.length)
-  keccak_finish(context.ptr, ret.ptr)
-
-  ret
+    // the first 32 bytes pointed at by $outputOffset is the final hash
+    var outputRef = outputOffset as ref
+    var contextRef = contextOffset as ref
+    i64.store(outputRef, i64.load(contextRef))
+    i64.store(outputRef, i64.load(contextRef, 8 as u32), 8 as u32)
+    i64.store(outputRef, i64.load(contextRef, 16 as u32), 16 as u32)
+    i64.store(outputRef, i64.load(contextRef, 24 as u32), 24 as u32)
+  }
 }

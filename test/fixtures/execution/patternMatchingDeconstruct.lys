@@ -17,7 +17,7 @@ fun isRed(color: Color): boolean = {
 
 #[export]
 fun main(): void = {
-  START("pattern matching with deconstruct")
+  support::test::START("pattern matching with deconstruct")
 
   mustEqual(isRed(Red), true, "isRed(Red)")
   mustEqual(isRed(Green), false, "isRed(Green)")
@@ -27,5 +27,5 @@ fun main(): void = {
   mustEqual(isRed(Custom(0,1,3)), false, "isRed(Custom(0,1,3))")
   mustEqual(isRed(Custom(255,1,3)), false, "isRed(Custom(255,1,3))")
 
-  END()
+  support::test::END()
 }

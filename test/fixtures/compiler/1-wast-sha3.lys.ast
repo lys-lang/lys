@@ -4,6 +4,20 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+  |-ImportDirectiveNode
+    |-QNameNode=system::hash::keccak
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="hash"
+      |-NameIdentifierNode="keccak"
+  |-ValDirectiveNode
+    |-ValDeclarationNode annotations=Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+      |-NameIdentifierNode="k" type=(alias Keccak (struct data:<null> result:<null>))
+      |-FunctionCallNode=(fun "apply" () (alias Keccak)) type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode
+        |-MemberNode type=(intersection (fun "apply" ((alias bytes) (alias bytes)) (alias Keccak)) (fun "apply" () (alias Keccak)))
+          |-ReferenceNode type=(type (alias Keccak (struct data:<null> result:<null>)))
+            |-QNameNode=Keccak
+              |-NameIdentifierNode="Keccak"
+          |-NameIdentifierNode="apply"
   |-OverloadedFunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=Injected
     |-FunDirectiveNode
       |-DecoratorNode
@@ -20,14 +34,34 @@
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
         |-BlockNode type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "keccak" ((alias bytes)) (alias bytes)) type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
-            |-ReferenceNode type=(fun "keccak" ((alias bytes)) (alias bytes))
-              |-QNameNode=system::hash::keccak::keccak
-                |-NameIdentifierNode="system"
-                |-NameIdentifierNode="hash"
-                |-NameIdentifierNode="keccak"
-                |-NameIdentifierNode="keccak"
+          |-FunctionCallNode=(fun "reset" ((alias Keccak)) (alias void)) type=(alias void (native void))
+            |-MemberNode type=(fun "reset" ((alias Keccak)) (alias void))
+              |-ReferenceNode type=(type (alias Keccak (struct data:<null> result:<null>)))
+                |-QNameNode=Keccak
+                  |-NameIdentifierNode="Keccak"
+              |-NameIdentifierNode="reset"
+            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+              |-QNameNode=k
+                |-NameIdentifierNode="k"
+          |-FunctionCallNode=(fun "update" ((alias Keccak) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-MemberNode type=(intersection (fun "update" ((alias Keccak) (alias bytes)) (alias void)) (fun "update" ((alias Keccak) (alias u32) (alias u32)) (alias void)))
+              |-ReferenceNode type=(type (alias Keccak (struct data:<null> result:<null>)))
+                |-QNameNode=Keccak
+                  |-NameIdentifierNode="Keccak"
+              |-NameIdentifierNode="update"
+            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+              |-QNameNode=k
+                |-NameIdentifierNode="k"
             |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(input:bytes#0)
               |-QNameNode=input
                 |-NameIdentifierNode="input"
+          |-FunctionCallNode=(fun "digest" ((alias Keccak)) (alias bytes)) type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
+            |-MemberNode type=(fun "digest" ((alias Keccak)) (alias bytes))
+              |-ReferenceNode type=(type (alias Keccak (struct data:<null> result:<null>)))
+                |-QNameNode=Keccak
+                  |-NameIdentifierNode="Keccak"
+              |-NameIdentifierNode="digest"
+            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+              |-QNameNode=k
+                |-NameIdentifierNode="k"
     |-NameIdentifierNode="keccak" type=(fun "keccak" ((alias bytes)) (alias bytes))

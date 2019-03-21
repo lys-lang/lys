@@ -29,6 +29,10 @@ impl u8 {
   fun as(lhs: u8): f32 = %wasm { (f32.convert_i32_u (get_local $lhs)) }
   fun as(lhs: u8): f64 = %wasm { (f64.convert_i32_u (get_local $lhs)) }
 
+  fun |(lhs: u8, rhs: u8): u8 = %wasm { (i32.or (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: u8, rhs: u8): u8 = %wasm { (i32.and (get_local $lhs) (get_local $rhs)) }
+  fun ^(lhs: u8, rhs: u8): u8 = %wasm { (i32.xor (get_local $lhs) (get_local $rhs)) }
+
   fun ==(lhs: u8, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: u8, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
   fun ==(lhs: u8, rhs: u8): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
@@ -458,6 +462,9 @@ impl i64 {
   fun |(lhs: i64, rhs: i64): i64 = %wasm { (i64.or (get_local $lhs) (get_local $rhs)) }
   fun ^(lhs: i64, rhs: i64): i64 = %wasm { (i64.xor (get_local $lhs) (get_local $rhs)) }
 
+  fun rotl(value: i64, shift: i64): i64 = %wasm { (i64.rotl (get_local $value) (get_local $shift))  }
+  fun rotr(value: i64, shift: i64): i64 = %wasm { (i64.rotr (get_local $value) (get_local $shift))  }
+
   fun store(lhs: ref, rhs: i64): void = %wasm {
     (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
   }
@@ -478,6 +485,15 @@ impl i64 {
 
   fun load(lhs: ref, offset: u32): i64 = %wasm {
     (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+
+  fun load8_u(lhs: ref, offset: u32): i64 = %wasm {
+    (i64.load8_u
       (i32.add
         (get_local $offset)
         (call $addressFromRef (get_local $lhs))
