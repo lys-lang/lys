@@ -1,6 +1,6 @@
 import { TokenError } from 'ebnf';
 import { Nodes } from '../nodes';
-import { failIfErrors } from './findAllErrors';
+import { failIfErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ParsingPhaseResult } from './parsingPhase';
 import { ParsingContext } from '../ParsingContext';

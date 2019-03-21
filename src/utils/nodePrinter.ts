@@ -1,4 +1,4 @@
-import { Nodes } from '../parser/nodes';
+import { Nodes } from '../compiler/nodes';
 import { indent } from './astPrinter';
 
 function printDecorators(node: Nodes.DirectiveNode) {

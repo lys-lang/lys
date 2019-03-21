@@ -1,10 +1,9 @@
-import { IToken } from 'ebnf';
 import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
 import * as expect from 'expect';
 import glob = require('glob');
-import { PhaseResult } from '../dist/parser/phases/PhaseResult';
-import { failWithErrors } from '../dist/parser/phases/findAllErrors';
+import { PhaseResult } from '../dist/compiler/phases/PhaseResult';
+import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 const writeToFile = process.env.UPDATE_AST === 'true';
 

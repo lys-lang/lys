@@ -1,4 +1,4 @@
-import { failWithErrors } from './findAllErrors';
+import { failWithErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ScopePhaseResult } from './scopePhase';
 import { TypeResolutionContext } from '../types/TypePropagator';

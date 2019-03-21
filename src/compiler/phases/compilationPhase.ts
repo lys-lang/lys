@@ -1,7 +1,7 @@
 import { Nodes, Local, Global } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { findParentType } from './helpers';
-import { failIfErrors } from './findAllErrors';
+import { findParentType } from '../nodeHelpers';
+import { failIfErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { TypePhaseResult } from './typePhase';
 import { ParsingContext } from '../ParsingContext';

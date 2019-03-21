@@ -1,21 +1,14 @@
 declare var describe, it, require, console;
 
 import * as expect from 'expect';
-import { findNodesByType, Nodes } from '../dist/parser/nodes';
-import { walkPreOrder } from '../dist/parser/walker';
-import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
+import { findNodesByType, Nodes } from '../dist/compiler/nodes';
+import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
+import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
 import { folderBasedTest, testParseToken, testParseTokenFailsafe } from './TestHelpers';
-import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
-import { PhaseResult } from '../dist/parser/phases/PhaseResult';
-import { ParsingContext } from '../dist/parser/ParsingContext';
+import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
+import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
-
-const fixParents = walkPreOrder((node: Nodes.Node, _: PhaseResult, parent: Nodes.Node) => {
-  node.parent = parent;
-  return node;
-});
 
 const parsingContext = new ParsingContext();
 

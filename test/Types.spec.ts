@@ -1,20 +1,20 @@
 declare var describe, it, console;
 
 import { folderBasedTest } from './TestHelpers';
-import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
-import { TypePhaseResult } from '../dist/parser/phases/typePhase';
-import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
+import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
+import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
+import { TypePhaseResult } from '../dist/compiler/phases/typePhase';
+import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
 import { print } from '../dist/utils/typeGraphPrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
-import { annotations } from '../dist/parser/annotations';
-import { Nodes } from '../dist/parser/nodes';
-import { ParsingContext } from '../dist/parser/ParsingContext';
-import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes } from '../dist/parser/types';
+import { annotations } from '../dist/compiler/annotations';
+import { Nodes } from '../dist/compiler/nodes';
+import { ParsingContext } from '../dist/compiler/ParsingContext';
+import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes } from '../dist/compiler/types';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
-import { AstNodeError } from '../dist/parser/NodeError';
+import { AstNodeError } from '../dist/compiler/NodeError';
 
 const REF_TYPE = RefType.instance;
 

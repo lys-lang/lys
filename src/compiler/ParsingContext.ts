@@ -20,6 +20,8 @@ export class ParsingContext {
   private moduleCompilation = new Map<string, CompilationPhaseResult>();
 
   public cwd = process.cwd();
+  public paths = [resolve(__dirname, '../../stdlib')];
+
   public registeredParsingPhase = new Map<string, ParsingPhaseResult>();
 
   public typeGraph = new TypeGraph([], null);
@@ -40,16 +42,16 @@ export class ParsingContext {
   private resolveModule(moduleName: string) {
     const relative = moduleName.replace(/::/g, '/') + '.lys';
 
-    let x = resolve(this.cwd, relative);
+    const paths = [this.cwd, ...this.paths];
 
-    if (existsSync(x)) {
-      return x;
-    }
+    for (let path of paths) {
+      if (path) {
+        let x = resolve(path, relative);
 
-    x = resolve(process.cwd(), 'stdlib', relative);
-
-    if (existsSync(x)) {
-      return x;
+        if (existsSync(x)) {
+          return x;
+        }
+      }
     }
 
     return null;

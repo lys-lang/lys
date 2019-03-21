@@ -4,15 +4,15 @@ import { folderBasedTest } from './TestHelpers';
 
 import { print } from '@webassemblyjs/wast-printer';
 
-import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/parser/phases/semanticPhase';
-import { TypePhaseResult } from '../dist/parser/phases/typePhase';
-import { CompilationPhaseResult } from '../dist/parser/phases/compilationPhase';
-import { ScopePhaseResult } from '../dist/parser/phases/scopePhase';
-import { CodeGenerationPhaseResult } from '../dist/parser/phases/codeGenerationPhase';
-import { ParsingContext } from '../dist/parser/ParsingContext';
+import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
+import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
+import { TypePhaseResult } from '../dist/compiler/phases/typePhase';
+import { CompilationPhaseResult } from '../dist/compiler/phases/compilationPhase';
+import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
+import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGenerationPhase';
+import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
-import { failWithErrors } from '../dist/parser/phases/findAllErrors';
+import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 const compilerTestParsingContext = new ParsingContext();
 

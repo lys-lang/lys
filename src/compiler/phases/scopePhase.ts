@@ -1,13 +1,13 @@
 import { Nodes } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { annotations } from '../annotations';
-import { failIfErrors } from './findAllErrors';
+import { failIfErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { SemanticPhaseResult } from './semanticPhase';
 import { AstNodeError, UnreachableCode } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
-import { findParentDelegate } from './helpers';
+import { findParentDelegate } from '../nodeHelpers';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
 

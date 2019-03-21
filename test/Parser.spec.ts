@@ -1,9 +1,9 @@
-declare var describe, it, require, console;
+declare var describe;
 
 import { folderBasedTest, testParseToken } from './TestHelpers';
-import { CanonicalPhaseResult } from '../dist/parser/phases/canonicalPhase';
+import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
 import { expect } from 'chai';
-import { ParsingContext } from '../dist/parser/ParsingContext';
+import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
 
 describe('Parser', () => {

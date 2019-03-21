@@ -1,10 +1,10 @@
-import { Nodes } from '../nodes';
-import { walkPreOrder } from '../walker';
-import { PhaseResult } from './PhaseResult';
-import { printErrors } from '../../utils/errorPrinter';
-import { ParsingContext } from '../ParsingContext';
-import { AstNodeError } from '../NodeError';
-import { indent } from '../../utils/astPrinter';
+import { Nodes } from './nodes';
+import { walkPreOrder } from './walker';
+import { PhaseResult } from './phases/PhaseResult';
+import { printErrors } from '../utils/errorPrinter';
+import { ParsingContext } from './ParsingContext';
+import { AstNodeError } from './NodeError';
+import { indent } from '../utils/astPrinter';
 
 declare var console;
 
