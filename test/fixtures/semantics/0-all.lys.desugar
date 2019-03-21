@@ -116,7 +116,7 @@ fun discriminant(v: ref): u64 = %wasm {
   (i64.and (i64.const 0xffffffff00000000) (get_local $v))
 }
 
-fun memcpy(from: i32, to: i32, len: i32): void = %wasm {
+fun memcpy(to: i32, from: i32, len: i32): void = %wasm {
   (local $end i32)
   (set_local $end (i32.add (get_local $from) (get_local $len)))
   (block $exit (loop $cont (br_if $exit (i32.eq (get_local $from) (get_local $end))) (i32.store8 (get_local $to) (i32.load8_u (get_local $from))) (set_local $from (i32.add (get_local $from) (i32.const 1))) (set_local $to (i32.add (get_local $to) (i32.const 1))) (br $cont)))

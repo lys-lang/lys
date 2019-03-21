@@ -1685,7 +1685,9 @@
         |-BlockNode type=(native void)
           |-FunctionCallNode=(fun "START" ((alias bytes)) (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias bytes)) (alias void)))
-              |-QNameNode=START
+              |-QNameNode=support::test::START
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
                 |-NameIdentifierNode="START"
             |-StringLiteral="pattern matching with deconstruct" type=(alias bytes (native bytes)) annotations=IsValueNode
           |-FunctionCallNode=(fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
@@ -1786,6 +1788,8 @@
             |-StringLiteral="isRed(Custom(255,1,3))" type=(alias bytes (native bytes)) annotations=IsValueNode
           |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(fun "END" () (alias void))
-              |-QNameNode=END
+              |-QNameNode=support::test::END
+                |-NameIdentifierNode="support"
+                |-NameIdentifierNode="test"
                 |-NameIdentifierNode="END"
     |-NameIdentifierNode="main" type=(fun "main" () (alias void))

@@ -164,8 +164,12 @@ fun concatBytes(lhs: bytes, rhs: bytes): bytes = {
   val $ret = system::memory::allocBytes(lhsLen + rhsLen)
 
   system::memory::memcpy(
+    system::memory::memcpy(
+      $ret.ptr,
+      lhs.ptr,
+      lhsLen
+    ),
     rhs.ptr,
-    system::memory::memcpy(lhs.ptr, $ret.ptr, lhsLen),
     rhsLen
   )
 

@@ -265,7 +265,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
       const type = node.ofType.binaryenType;
-      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.value)]);
+      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.astNode.text)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {

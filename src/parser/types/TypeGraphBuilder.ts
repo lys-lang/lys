@@ -334,7 +334,7 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      const type = getTypeForIntValue(node.value);
+      const type = getTypeForIntValue(node.astNode.text);
 
       this.resolveVariableByName(node, type, target);
     } else if (node instanceof Nodes.FloatLiteral) {
@@ -431,7 +431,13 @@ export class TypeGraphBuilder {
   }
 }
 
-function getTypeForIntValue(value: number): string {
-  if (value >= -2147483648 && value <= 4294967295) return 'i32';
+function getTypeForIntValue(value: string): string {
+  if (value.startsWith('0x')) {
+    if (value.length > '0x00000000'.length) return 'i64';
+  }
+
+  const intValue = parseInt(value);
+
+  if (intValue >= -2147483648 && intValue <= 4294967295) return 'i32';
   return 'i64';
 }

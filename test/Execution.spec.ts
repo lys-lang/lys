@@ -3,6 +3,8 @@ declare var describe;
 import { test, readBytes, testFolder } from './ExecutionHelper';
 import { expect } from 'chai';
 
+const getBytes = require('utf8-bytes');
+
 describe('Execution tests', () => {
   describe('numbers', () => {
     test(
@@ -194,24 +196,78 @@ describe('Execution tests', () => {
     test(
       'keccak',
       `
-        import system::string
         import system::hash::keccak
 
-        #[export] fun someTests(ix: i32): u32 = keccak("").ptr - 4 as u32
+        var k = Keccak()
+
+        #[export] fun resultAddress(): u32 = {
+          k.result.ptr - 4 as u32
+        }
+
+        #[export] fun reset(): void = {
+          Keccak.reset(k)
+        }
+
+        #[export] fun digest(): u32 = {
+          Keccak.digest(k).ptr
+        }
+
+        #[export] fun update(address: u32, length: u32): void = {
+          Keccak.update(k, address, length)
+        }
+
+        #[export] fun topMemory(): u32 = {
+          system::memory::getMaxMemory()
+        }
       `,
       async (x, err) => {
         if (err) throw err;
 
-        const ret = x.exports.someTests(0);
+        const dataView = new DataView(x.exports.memory.buffer);
 
-        expect(ret).to.not.eq(-1);
+        const update = (data: string) => {
+          const safeOffset = x.exports.topMemory(0);
+          const bytes = getBytes(data);
+          bytes.forEach((value: number, ix: number) => {
+            dataView.setUint8(safeOffset + ix, value);
+          });
+          x.exports.update(safeOffset, bytes.length);
+        };
 
-        const bytes = readBytes(x.exports.memory.buffer, ret);
-        expect(bytes.length).to.eq(32);
+        const getResult = (finalize = true) => {
+          if (finalize) {
+            x.exports.digest();
+          }
 
-        expect(bytes.map($ => ('00' + $.toString(16)).substr(-2)).join('')).to.eq(
-          'c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470'
+          const retAddress = x.exports.resultAddress(0);
+          expect(retAddress).to.gt(0, 'retAddress must be > 0');
+          return readBytes(x.exports.memory.buffer, retAddress)
+            .map($ => ('00' + $.toString(16)).substr(-2))
+            .join('');
+        };
+
+        const bytes = getResult();
+        expect(bytes.length).to.eq(64);
+        expect(bytes).to.eq('c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470');
+
+        const testStr = (data: string, hash: string) => {
+          x.exports.reset();
+          update(data);
+          const result = getResult(true);
+          expect(result).to.eq(hash, `hash of ${JSON.stringify(data)}`);
+        };
+
+        // test asd
+        testStr('asd', '87c2d362de99f75a4f2755cdaaad2d11bf6cc65dc71356593c445535ff28f43d');
+        // test again to verify we do not let any trash behind
+        testStr('asd', '87c2d362de99f75a4f2755cdaaad2d11bf6cc65dc71356593c445535ff28f43d');
+
+        testStr(
+          ';lkja;slkdjfa;sdflasldfhaisdfiahlisdfhliasdfhasdhklfaklsdfjkashldf😂🤯🤬😱😨😥',
+          'f4cf631d11ba45c1f26071907fd75542494e6a01c24fcae7666422afe1f5ddb8'
         );
+
+        testStr('➙➛➪➸⤃⇏➳⇛⤙⤞⥇', 'ce14f15b91fe58c714ac1ce02497ea2d18d043cab566bb0425ed59531728c4f1');
       }
     );
   });
