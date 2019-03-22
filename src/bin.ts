@@ -12,6 +12,7 @@ import { CompilationPhaseResult } from './compiler/phases/compilationPhase';
 import { CodeGenerationPhaseResult } from './compiler/phases/codeGenerationPhase';
 import { dirname, basename, resolve } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
+import { getTestResults } from './utils/libs/test';
 const colors = require('colors/safe');
 
 export class LysError extends Error {}
@@ -53,6 +54,11 @@ function mkdirRecursive(dir: string) {
 }
 
 let libs: Array<(getInstance: Function) => any> = [];
+
+if (args['--test']) {
+  args['--lib'].push(resolve(__dirname, 'utils/libs/env.js'));
+  args['--lib'].push(resolve(__dirname, 'utils/libs/test.js'));
+}
 
 if (args['--lib'] && args['--lib'].length) {
   for (let libPath of args['--lib']) {
@@ -150,9 +156,11 @@ async function main() {
       testInstance.exports.test();
     }
 
-    if (testInstance.testResults.length) {
-      writeFileSync('_lys_test_results.json', JSON.stringify(testInstance.testResults, null, 2));
-      if (testInstance.testResults.some($ => !$.passed)) {
+    const testResults = getTestResults(testInstance);
+
+    if (testResults && testResults.length) {
+      writeFileSync('_lys_test_results.json', JSON.stringify(testResults, null, 2));
+      if (testResults.some($ => !$.passed)) {
         console.error(colors.red('\n\n  Some tests failed.\n\n'));
         process.exit(1);
       } else {

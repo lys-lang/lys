@@ -17,7 +17,10 @@ import path = require('path');
 import { readFileSync } from 'fs';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
 
-declare var it, WebAssembly;
+import envLib from '../dist/utils/libs/env';
+import testLib, { getTestResults } from '../dist/utils/libs/test';
+
+declare var it;
 
 const parsingContext = new ParsingContext();
 
@@ -60,7 +63,7 @@ async function testSrc(
 
     await compilationPhaseResult.validate(false, true);
 
-    const instance = await generateTestInstance(compilationPhaseResult.buffer);
+    const instance = await generateTestInstance(compilationPhaseResult.buffer, [envLib, testLib]);
 
     if (!instance) throw new Error('Invalid compilation');
 
@@ -89,9 +92,12 @@ async function testSrc(
       }
     }
 
-    for (let testResult of instance.testResults) {
-      if (!testResult.passed) {
-        throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
+    {
+      const testResults = getTestResults(instance);
+      for (let testResult of testResults) {
+        if (!testResult.passed) {
+          throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
+        }
       }
     }
 
@@ -99,12 +105,15 @@ async function testSrc(
 
     if (customTest) {
       try {
-        const newInstance = await generateTestInstance(compilationPhaseResult.buffer);
+        const newInstance = await generateTestInstance(compilationPhaseResult.buffer, [envLib, testLib]);
 
         await customTest(newInstance);
 
-        for (let testResult of newInstance.testResults) {
-          if (!testResult.passed) throw new Error('Suite ' + testResult.title + ' failed');
+        const testResults = getTestResults(newInstance);
+        for (let testResult of testResults) {
+          if (!testResult.passed) {
+            throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
+          }
         }
       } catch (e) {
         console.error('OPTIMIZED VERSION FAILED');

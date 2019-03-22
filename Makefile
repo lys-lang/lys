@@ -4,6 +4,11 @@ build:
 	node_modules/.bin/tsc -p tsconfig.test.json
 	chmod +x dist/bin.js
 
+GREP="*"
+
+test-grep:
+	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep $(GREP)
+
 just-test:
 	node ./node_modules/mocha/bin/_mocha --require source-map-support/register
 
