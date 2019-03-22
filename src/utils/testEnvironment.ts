@@ -23,7 +23,7 @@ export interface TestDescription {
   assertions?: { title: string; passed: boolean }[];
 }
 
-export async function generateTestInstance(buffer: ArrayBuffer, modules: any = {}) {
+export async function generateTestInstance(buffer: ArrayBuffer, modules: Array<(getInstance: Function) => any> = []) {
   let instance = null;
 
   const testResults: TestDescription[] = [];
@@ -48,10 +48,22 @@ export async function generateTestInstance(buffer: ArrayBuffer, modules: any = {
     return [0, 1, 2, 3].map($ => printHexByte(tmpArrayBuffer.getUint8($))).join('');
   }
 
+  const getInstance = () => instance;
+
+  let injectedModules: any = {};
+
+  modules.forEach($ => {
+    const generatedModule = $(getInstance);
+
+    if (generatedModule) {
+      injectedModules = { ...injectedModules, ...generatedModule };
+    }
+  });
+
   const lib = {
-    ...modules,
+    ...injectedModules,
     env: {
-      ...(modules.env || {}),
+      ...(injectedModules.env || {}),
       memoryBase: 0,
       tableBase: 0,
       table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' }),

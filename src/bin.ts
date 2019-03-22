@@ -22,7 +22,10 @@ const args = arg(
     '-o': '--output',
     '--no-optimize': Boolean,
     '--wast': Boolean,
-    '--test': Boolean
+    '--lib': [String],
+    '--test': Boolean,
+    '--debug': Boolean,
+    '--run': '--test'
   },
   {
     permissive: true
@@ -49,10 +52,34 @@ function mkdirRecursive(dir: string) {
   }
 }
 
+let libs: Array<(getInstance: Function) => any> = [];
+
+if (args['--lib'] && args['--lib'].length) {
+  for (let libPath of args['--lib']) {
+    const lib = resolve(libPath);
+
+    if (!existsSync(lib)) {
+      throw new LysError(`Cannot find lib: ${lib}`);
+    }
+
+    const r = require(lib);
+
+    if (!r.default) {
+      throw new LysError(`Library ${lib} has no "default" export`);
+    }
+
+    if (typeof r.default !== 'function') {
+      throw new LysError(`"default" is not a function in ${lib}`);
+    }
+
+    libs.push(r.default);
+  }
+}
+
 const parsingContext = new ParsingContext();
 
 async function main() {
-  parsingContext.paths.unshift(process.cwd());
+  parsingContext.cwd = process.cwd();
 
   const file = args._[0];
 
@@ -65,7 +92,7 @@ async function main() {
   }
 
   if (!args['--output']) {
-    args['--output'] = basename(file, '.lys');
+    args['--output'] = 'build/' + basename(file, '.lys');
   }
 
   const outFileFullWithoutExtension = resolve(parsingContext.cwd, args['--output']);
@@ -73,8 +100,6 @@ async function main() {
   mkdirRecursive(outPath);
 
   const phaseCount = 10;
-
-  console.log('File ' + file);
 
   const parsing = parsingContext.getParsingPhaseForFile(file);
   failWithErrors(`Parsing phase (1/${phaseCount})`, parsingContext);
@@ -104,7 +129,7 @@ async function main() {
 
   const optimize = !args['--no-optimize'];
 
-  await codeGen.validate(optimize, true);
+  await codeGen.validate(optimize, !optimize);
 
   if (args['--wast']) {
     writeFileSync(outFileFullWithoutExtension + '.wast', codeGen.emitText());
@@ -113,15 +138,20 @@ async function main() {
   writeFileSync(outFileFullWithoutExtension + '.wasm', codeGen.buffer);
 
   if (args['--test']) {
-    const testInstance = await generateTestInstance(codeGen.buffer);
+    const testInstance = await generateTestInstance(codeGen.buffer, libs);
 
     if (typeof testInstance.exports.test !== 'function') {
-      throw new LysError('There is no exported function named "test"');
+      if (typeof testInstance.exports.main !== 'function') {
+        throw new LysError('There is no exported function named "main" or "test"');
+      } else {
+        testInstance.exports.main();
+      }
     } else {
       testInstance.exports.test();
+    }
 
+    if (testInstance.testResults.length) {
       writeFileSync('_lys_test_results.json', JSON.stringify(testInstance.testResults, null, 2));
-
       if (testInstance.testResults.some($ => !$.passed)) {
         console.error(colors.red('\n\n  Some tests failed.\n\n'));
         process.exit(1);
@@ -135,10 +165,10 @@ async function main() {
 main()
   .then(() => process.exit(0))
   .catch($ => {
-    if ($ instanceof LysError) {
-      console.error($.toString());
-    } else {
+    if (args['--debug']) {
       console.error($);
+    } else {
+      console.error($.toString());
     }
     process.exit(1);
   });
