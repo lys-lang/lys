@@ -56,6 +56,8 @@ function mkdirRecursive(dir: string) {
 let libs: Array<(getInstance: Function) => any> = [];
 let libPaths: Array<string> = [];
 
+args['--lib'] = args['--lib'] || [];
+
 if (args['--test']) {
   args['--lib'].push(resolve(__dirname, 'utils/libs/env.js'));
   args['--lib'].push(resolve(__dirname, 'utils/libs/test.js'));
@@ -147,11 +149,12 @@ async function main() {
 
   let src = [];
 
+  src.push('Object.defineProperty(exports, "__esModule", { value: true });');
   src.push('const modules = [];');
 
   for (let i in libPaths) {
     const path = libPaths[i];
-    src.push(`modules.push(require(${JSON.stringify(relative(outFileFullWithoutExtension + '.js', path))}).default);`);
+    src.push(`modules.push(require(${JSON.stringify(relative(dirname(outFileFullWithoutExtension), path))}).default);`);
   }
 
   const values = [];
@@ -160,7 +163,7 @@ async function main() {
   src.push(`const buffer = new Uint8Array(${JSON.stringify(values)})`);
 
   src.push(`
-module.exports.default = async function() {
+exports.default = async function() {
   let instance = null;
 
   const getInstance = () => instance;
