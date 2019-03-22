@@ -10,7 +10,7 @@ import { ScopePhaseResult } from './compiler/phases/scopePhase';
 import { TypePhaseResult } from './compiler/phases/typePhase';
 import { CompilationPhaseResult } from './compiler/phases/compilationPhase';
 import { CodeGenerationPhaseResult } from './compiler/phases/codeGenerationPhase';
-import { dirname, basename, resolve } from 'path';
+import { dirname, basename, resolve, relative } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
 import { getTestResults } from './utils/libs/test';
 const colors = require('colors/safe');
@@ -54,6 +54,7 @@ function mkdirRecursive(dir: string) {
 }
 
 let libs: Array<(getInstance: Function) => any> = [];
+let libPaths: Array<string> = [];
 
 if (args['--test']) {
   args['--lib'].push(resolve(__dirname, 'utils/libs/env.js'));
@@ -78,6 +79,7 @@ if (args['--lib'] && args['--lib'].length) {
       throw new LysError(`"default" is not a function in ${lib}`);
     }
 
+    libPaths.push(lib);
     libs.push(r.default);
   }
 }
@@ -142,6 +144,46 @@ async function main() {
   }
 
   writeFileSync(outFileFullWithoutExtension + '.wasm', codeGen.buffer);
+
+  let src = [];
+
+  src.push('const modules = [];');
+
+  for (let i in libPaths) {
+    const path = libPaths[i];
+    src.push(`modules.push(require(${JSON.stringify(relative(outFileFullWithoutExtension + '.js', path))}).default);`);
+  }
+
+  const values = [];
+  codeGen.buffer.forEach($ => values.push($));
+
+  src.push(`const buffer = new Uint8Array(${JSON.stringify(values)})`);
+
+  src.push(`
+module.exports.default = async function() {
+  let instance = null;
+
+  const getInstance = () => instance;
+
+  let injectedModules = {};
+
+  modules.forEach($ => {
+    const generatedModule = $(getInstance);
+
+    if (generatedModule) {
+      injectedModules = { ...injectedModules, ...generatedModule };
+    }
+  });
+
+  const compiled = await WebAssembly.compile(buffer);
+
+  instance = new WebAssembly.Instance(compiled, injectedModules);
+
+  return instance;
+}
+  `);
+
+  writeFileSync(outFileFullWithoutExtension + '.js', src.join('\n'));
 
   if (args['--test']) {
     const testInstance = await generateTestInstance(codeGen.buffer, libs);
