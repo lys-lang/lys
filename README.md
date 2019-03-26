@@ -7,9 +7,9 @@ Read more about it [in this blog post](https://menduz.com/posts/lys-language-pro
 
 ## Where to start?
 
-- To learn what can be used so far: browse the [standard library](stdlib/system)
-- To learn how real code looks like: browse the [execution tests](test/fixtures/execution)
-- To learn how high level constructs get compiled: browse the [sugar syntax tests](test/fixtures/semantics)
+- To learn what can be used so far: browse the [standard library](https://github.com/lys-lang/lys/tree/master/stdlib/system)
+- To learn how real code looks like: browse the [execution tests](https://github.com/lys-lang/lys/tree/master/test/fixtures/execution)
+- To learn how high level constructs get compiled: browse the [sugar syntax tests](https://github.com/lys-lang/lys/tree/master/test/fixtures/semantics)
 - To start developing it locally, I do `make watch` and then I run the tests in other terminal with `make snapshot`
 
 ## Getting started
