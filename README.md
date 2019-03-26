@@ -11,6 +11,7 @@ Read more about it [in this blog post](https://menduz.com/posts/lys-language-pro
 - To learn how real code looks like: browse the [execution tests](https://github.com/lys-lang/lys/tree/master/test/fixtures/execution)
 - To learn how high level constructs get compiled: browse the [sugar syntax tests](https://github.com/lys-lang/lys/tree/master/test/fixtures/semantics)
 - To start developing it locally, I do `make watch` and then I run the tests in other terminal with `make snapshot`
+- To see an example project: browse the [keccak repo](https://github.com/lys-lang/keccak)
 
 ## Getting started
 
