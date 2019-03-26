@@ -354,6 +354,36 @@
                   |-QNameNode=u32
                     |-NameIdentifierNode="u32"
             |-StringLiteral="10" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+              |-QNameNode=verify
+                |-NameIdentifierNode="verify"
+            |-BinaryExpressionNode=(fun "==" ((alias f32) (alias f32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode=(fun "sqrt" ((alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
+                |-ReferenceNode type=(fun "sqrt" ((alias f32)) (alias f32))
+                  |-QNameNode=sqrt
+                    |-NameIdentifierNode="sqrt"
+                |-InjectedFunctionCallNode=(fun "as" ((alias i32)) (alias f32)) type=(alias f32 (native f32)) annotations=Injected
+                  |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-InjectedFunctionCallNode=(fun "as" ((alias i32)) (alias f32)) type=(alias f32 (native f32)) annotations=Injected
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-StringLiteral="sqrt(1)" type=(alias bytes (native bytes)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+              |-QNameNode=verify
+                |-NameIdentifierNode="verify"
+            |-BinaryExpressionNode=(fun "==" ((alias f32) (alias f32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-NameIdentifierNode="=="
+              |-FunctionCallNode=(fun "sqrt" ((alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
+                |-ReferenceNode type=(fun "sqrt" ((alias f32)) (alias f32))
+                  |-QNameNode=sqrt
+                    |-NameIdentifierNode="sqrt"
+                |-InjectedFunctionCallNode=(fun "as" ((alias i32)) (alias f32)) type=(alias f32 (native f32)) annotations=Injected
+                  |-IntegerLiteral=4 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-InjectedFunctionCallNode=(fun "as" ((alias i32)) (alias f32)) type=(alias f32 (native f32)) annotations=Injected
+                |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
+            |-StringLiteral="sqrt(4)" type=(alias bytes (native bytes)) annotations=IsValueNode
           |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=END

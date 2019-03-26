@@ -605,6 +605,7 @@ impl f32 {
   fun >(lhs: f32, rhs: f32): boolean = %wasm { (f32.gt (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: f32, rhs: f32): boolean = %wasm { (f32.lt (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (get_local $lhs) (get_local $rhs)) }
+  fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (get_local $lhs) (get_local $rhs)) }
 
   fun store(lhs: ref, rhs: f32): void = %wasm {
     (f32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -871,6 +872,11 @@ impl bytes {
       false
     }
   }
+}
+
+
+fun sqrt(n: f32): f32 = %wasm {
+  (f32.sqrt (local.get $n))
 }
 
 /**
