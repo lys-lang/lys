@@ -577,6 +577,15 @@ impl u64 {
       )
     )
   }
+
+  fun load8_u(lhs: ref, offset: u32): u64 = %wasm {
+    (i64.load8_u
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 impl f32 {

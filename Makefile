@@ -3,14 +3,12 @@ build:
 	node_modules/.bin/tsc -p tsconfig.json
 	node_modules/.bin/tsc -p tsconfig.test.json
 	chmod +x dist/bin.js
+	node dist/utils/packStdLib.js
 
-GREP="*"
-
-test-grep:
-	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep $(GREP)
+GREP="."
 
 just-test:
-	node ./node_modules/mocha/bin/_mocha --require source-map-support/register
+	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep $(GREP)
 
 test: | build just-test
 

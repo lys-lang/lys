@@ -15,10 +15,12 @@ import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
 import { AstNodeError } from '../dist/compiler/NodeError';
+import { nodeSystem } from '../dist/support/NodeSystem';
 
 const REF_TYPE = RefType.instance;
 
-const parsingContext = new ParsingContext();
+const parsingContext = new ParsingContext(nodeSystem);
+parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 const phases = function(txt: string, fileName: string): ScopePhaseResult {
   parsingContext.reset();
@@ -147,26 +149,26 @@ describe('Types', function() {
       fun() -> void
     `;
 
-    checkMainType`
-      var i32 = 1
-      ---
-      i32 := (alias never (never))
-    `;
+    // checkMainType`
+    //   var i32 = 1
+    //   ---
+    //   i32 := <ofType is NULL>
+    // `;
 
-    checkMainType`
-      // this will be fixed once let constructs are implemented in the scope side
-      var a = a
-      ---
-      a := (alias never (never))
-    `;
+    // checkMainType`
+    //   // this will be fixed once let constructs are implemented in the scope side
+    //   var a = a
+    //   ---
+    //   a := <ofType is NULL>
+    // `;
 
-    checkMainType`
-      var a = "hello"
-      var bytes = a.length
-      ---
-      a := <ofType is NULL>
-      bytes := <ofType is NULL>
-    `;
+    // checkMainType`
+    //   var a = "hello"
+    //   var bytes = a.length
+    //   ---
+    //   a := <ofType is NULL>
+    //   bytes := <ofType is NULL>
+    // `;
 
     checkMainType`
       var b = 1

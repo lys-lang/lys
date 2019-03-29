@@ -4,6 +4,7 @@ import { failIfErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
 import { ParsingPhaseResult } from './parsingPhase';
 import { ParsingContext } from '../ParsingContext';
+import { PositionCapableError } from '../NodeError';
 
 function binaryOpVisitor(astNode: Nodes.ASTNode) {
   let ret = visit(astNode.children[0]) as
@@ -16,20 +17,19 @@ function binaryOpVisitor(astNode: Nodes.ASTNode) {
     const oldRet = ret;
     const opertator = astNode.children[i].text;
 
-    if (opertator === 'as') {
-      ret = new Nodes.AsExpressionNode(astNode);
-    } else if (opertator === 'is') {
-      ret = new Nodes.IsExpressionNode(astNode);
-    } else if (opertator === '=') {
-      ret = new Nodes.AssignmentNode(astNode);
-    } else {
-      const op = (ret = new Nodes.BinaryExpressionNode(astNode));
-      op.operator = new Nodes.NameIdentifierNode(astNode.children[i]);
-      op.operator.name = opertator;
-    }
+    const lhs = oldRet;
+    const rhs = visit(astNode.children[i + 1]);
 
-    ret.lhs = oldRet;
-    ret.rhs = visit(astNode.children[i + 1]);
+    if (opertator === 'as') {
+      ret = new Nodes.AsExpressionNode(astNode, lhs, rhs);
+    } else if (opertator === 'is') {
+      ret = new Nodes.IsExpressionNode(astNode, lhs, rhs);
+    } else if (opertator === '=') {
+      ret = new Nodes.AssignmentNode(astNode, lhs, rhs);
+    } else {
+      const operator = new Nodes.NameIdentifierNode(astNode.children[i], opertator);
+      ret = new Nodes.BinaryExpressionNode(astNode, operator, lhs, rhs);
+    }
   }
 
   return ret;
@@ -37,25 +37,24 @@ function binaryOpVisitor(astNode: Nodes.ASTNode) {
 
 const visitor = {
   ImportDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.ImportDirectiveNode(astNode);
-    ret.module = visitChildTypeOrNull(astNode, 'QName') as Nodes.QNameNode;
+    const module = visitChildTypeOrNull(astNode, 'QName') as Nodes.QNameNode;
+    const ret = new Nodes.ImportDirectiveNode(astNode, module);
     ret.alias = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
     return ret;
   },
   VarDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.VarDirectiveNode(astNode);
+    const decl = visit(findChildrenTypeOrFail(astNode, 'VarDeclaration'));
+    const ret = new Nodes.VarDirectiveNode(astNode, decl);
 
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
-
-    ret.decl = visit(findChildrenType(astNode, 'VarDeclaration'));
 
     return ret;
   },
   ValDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.ValDirectiveNode(astNode);
+    const decl = visit(findChildrenTypeOrFail(astNode, 'ValDeclaration'));
+    const ret = new Nodes.ValDirectiveNode(astNode, decl);
 
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
-    ret.decl = visit(findChildrenType(astNode, 'ValDeclaration'));
 
     return ret;
   },
@@ -63,35 +62,45 @@ const visitor = {
     const ret = new Nodes.EffectDirectiveNode(astNode);
 
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
-    ret.effect = visit(findChildrenType(astNode, 'EffectDeclaration'));
+    ret.effect = visit(findChildrenTypeOrFail(astNode, 'EffectDeclaration'));
 
     return ret;
   },
   ImplDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.ImplDirective(astNode);
+    const reference = visit(findChildrenTypeOrFail(astNode, 'Reference'));
+
+    const directivesNode = findChildrenType(astNode, 'NamespaceElementList');
+
+    let directives: Nodes.DirectiveNode[] = directivesNode
+      ? (directivesNode.children.map(visit) as Nodes.DirectiveNode[])
+      : [];
+    // TODO: warn
+
+    const ret = new Nodes.ImplDirective(astNode, reference, directives);
 
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
-    ret.reference = visit(findChildrenType(astNode, 'Reference'));
-    const directivesNode = findChildrenType(astNode, 'NamespaceElementList');
-    ret.directives = directivesNode.children.map(visit) as Nodes.DirectiveNode[];
 
     return ret;
   },
   EffectDeclaration(astNode: Nodes.ASTNode) {
     const ret = new Nodes.EffectDeclarationNode(astNode);
 
-    ret.name = visit(findChildrenType(astNode, 'NameIdentifierNode'));
+    ret.name = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier', 'A name is required'));
 
     const list = findChildrenType(astNode, 'EffectElementList');
 
-    ret.elements = list.children.map($ => visit($));
+    if (list) {
+      ret.elements = list.children.map($ => visit($));
+    } else {
+      // TODO: warn
+    }
 
     return ret;
   },
   EffectMemberDeclaration(astNode: Nodes.ASTNode) {
     const ret = new Nodes.EffectMemberDeclarationNode(astNode);
 
-    ret.name = visit(findChildrenType(astNode, 'NameIdentifierNode'));
+    ret.name = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
 
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
@@ -104,76 +113,89 @@ const visitor = {
     return ret;
   },
   VarDeclaration(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.VarDeclarationNode(astNode);
+    const variableName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
+    const value = visitLastChild(astNode);
+    const ret = new Nodes.VarDeclarationNode(astNode, variableName, value);
 
-    ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.variableType = visit(findChildrenType(astNode, 'Type'));
-    ret.value = visitLastChild(astNode);
+    const type = findChildrenType(astNode, 'Type');
+    if (type) {
+      ret.variableType = visit(type);
+    } else {
+      // TODO: warn
+    }
 
     return ret;
   },
   ValDeclaration(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.ValDeclarationNode(astNode);
+    const variableName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
+    const value = visitLastChild(astNode);
+    const ret = new Nodes.ValDeclarationNode(astNode, variableName, value);
 
-    ret.variableName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.variableType = visit(findChildrenType(astNode, 'Type'));
-    ret.value = visitLastChild(astNode);
+    const type = findChildrenType(astNode, 'Type');
+    if (type) {
+      ret.variableType = visit(type);
+    } else {
+      // TODO: warn
+    }
 
     return ret;
   },
   TypeDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.TypeDirectiveNode(astNode);
     const children = astNode.children.slice();
 
-    let child = children.shift();
+    let isPublic = true;
+
+    let child = children.shift()!;
 
     if (child.type === 'PrivateModifier') {
-      ret.isPublic = false;
-      child = children.shift();
-    } else {
-      ret.isPublic = true;
+      isPublic = false;
+      child = children.shift()!;
     }
 
-    ret.variableName = visit(child);
+    const variableName = visit(child);
+
+    const ret = new Nodes.TypeDirectiveNode(astNode, variableName);
+
+    ret.isPublic = isPublic;
 
     if (children.length) {
       ret.valueType = visitLastChild(astNode) as Nodes.TypeNode;
-    } else {
-      ret.valueType = null;
     }
 
     return ret;
   },
   EnumDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.EnumDirectiveNode(astNode);
     const children = astNode.children.slice();
 
-    let child = children.shift();
-
+    let child = children.shift()!;
+    let isPublic = true;
     if (child.type === 'PrivateModifier') {
-      ret.isPublic = false;
-      child = children.shift();
-    } else {
-      ret.isPublic = true;
+      isPublic = false;
+      child = children.shift()!;
     }
 
-    ret.variableName = visit(child);
+    const variableName = visit(child);
 
     const typeDeclElements = findChildrenType(astNode, 'TypeDeclElements');
 
-    if (typeDeclElements) {
-      ret.declarations = typeDeclElements.children.map($ => visit($));
-    } else {
-      ret.declarations = [];
-    }
+    const declarations = typeDeclElements ? typeDeclElements.children.map($ => visit($)) : [];
+
+    const ret = new Nodes.EnumDirectiveNode(astNode, variableName, declarations);
+    ret.isPublic = isPublic;
 
     return ret;
   },
   FunDeclaration(astNode: Nodes.ASTNode) {
-    const fun = new Nodes.FunctionNode(astNode);
+    const functionName = visit(findChildrenTypeOrFail(astNode, 'FunctionName').children[0]);
+    const fun = new Nodes.FunctionNode(astNode, functionName);
 
-    fun.functionName = visit(findChildrenType(astNode, 'FunctionName').children[0]);
-    fun.functionReturnType = visit(findChildrenType(astNode, 'Type'));
+    const retType = findChildrenType(astNode, 'Type');
+
+    if (retType) {
+      fun.functionReturnType = visit(retType);
+    } else {
+      // TODO: warn
+    }
 
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
@@ -187,49 +209,52 @@ const visitor = {
     return fun;
   },
   Decorator(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.DecoratorNode(astNode);
-
     const name = astNode.children.shift();
 
-    ret.decoratorName = visit(name);
+    if (!name) {
+      throw new PositionCapableError('Missing decorator name', astNode);
+    }
 
-    ret.arguments = astNode.children.map(visit) as Nodes.LiteralNode<any>[];
+    const decoratorName = visit(name);
+
+    const args = astNode.children.map(visit) as Nodes.LiteralNode<any>[];
+
+    const ret = new Nodes.DecoratorNode(astNode, decoratorName, args);
 
     return ret;
   },
   FunctionDirective(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.FunDirectiveNode(astNode);
+    const decoratorsNode = findChildrenType(astNode, 'Decorators');
 
-    const decorators = findChildrenType(astNode, 'Decorators');
+    const decorators = decoratorsNode ? (decoratorsNode.children.map(visit) as Nodes.DecoratorNode[]) : [];
 
-    if (decorators) {
-      ret.decorators = decorators.children.map(visit) as Nodes.DecoratorNode[];
-    } else {
-      ret.decorators = [];
-    }
-
+    const functionNode = visit(findChildrenTypeOrFail(astNode, 'FunDeclaration')) as Nodes.FunctionNode;
+    const ret = new Nodes.FunDirectiveNode(astNode, functionNode, decorators);
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
-
-    ret.functionNode = visit(findChildrenType(astNode, 'FunDeclaration')) as Nodes.FunctionNode;
 
     return ret;
   },
   CodeBlock(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.BlockNode(astNode);
-    ret.statements = astNode.children.map($ => visit($)).filter($ => !!$);
-    return ret;
+    const statements = astNode.children.map($ => visit($)).filter($ => !!$);
+    return new Nodes.BlockNode(astNode, statements);
   },
   FunctionCallExpression(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.FunctionCallNode(astNode);
-    ret.functionNode = visit(astNode.children[0]);
-    ret.argumentsNode = astNode.children[1].children.map($ => visit($));
+    const functionNode = visit(astNode.children[0]);
+    const argumentsNode = astNode.children[1].children.map($ => visit($));
+    const ret = new Nodes.FunctionCallNode(astNode, functionNode, argumentsNode);
 
     return ret;
   },
   Parameter(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.ParameterNode(astNode);
-    ret.parameterName = visit(findChildrenType(astNode, 'NameIdentifier'));
-    ret.parameterType = visit(findChildrenType(astNode, 'Type'));
+    const parameterName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
+    const ret = new Nodes.ParameterNode(astNode, parameterName);
+    const type = findChildrenType(astNode, 'Type');
+
+    if (type) {
+      ret.parameterType = visit(type);
+    } else {
+      // TODO: warn
+    }
     return ret;
   },
   AssignExpression: binaryOpVisitor,
@@ -261,20 +286,15 @@ const visitor = {
       const nextNode = astNode.children[currentChildren + 1];
 
       if (currentNode.type === 'NameIdentifier') {
-        const member = new Nodes.MemberNode(astNode);
-        member.lhs = ret;
-        member.memberName = visit(currentNode);
-        member.operator = operatorNode.text;
-        ret = member;
+        ret = new Nodes.MemberNode(astNode, ret, operatorNode.text, visit(currentNode));
 
         const doesItHaveCallArguments = nextNode && nextNode.type === 'CallArguments';
 
         if (doesItHaveCallArguments) {
           currentChildren++;
-          const fnCall = new Nodes.FunctionCallNode(currentNode);
+          const argumentsNode = nextNode.children.map($ => visit($));
+          const fnCall = new Nodes.FunctionCallNode(currentNode, ret, argumentsNode);
           fnCall.isInfix = true;
-          fnCall.functionNode = ret;
-          fnCall.argumentsNode = nextNode.children.map($ => visit($));
           ret = fnCall;
         }
       } else {
@@ -285,51 +305,36 @@ const visitor = {
     return ret;
   },
   MatchExpression(astNode: Nodes.ASTNode) {
-    const match = new Nodes.PatternMatcherNode(astNode);
+    const lhs = visit(astNode.children[0]);
+    const matchingSet = astNode.children[1].children.map($ => visit($));
 
-    match.lhs = visit(astNode.children[0]);
-    match.matchingSet = astNode.children[1].children.map($ => visit($));
-
-    return match;
+    return new Nodes.PatternMatcherNode(astNode, lhs, matchingSet);
   },
   Reference(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.ReferenceNode(astNode);
-    ret.variable = visit(astNode.children[0]);
-    return ret;
+    return new Nodes.ReferenceNode(astNode, visit(astNode.children[0]));
   },
   FunOperator(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.NameIdentifierNode(astNode);
-    ret.name = astNode.text.trim();
-    return ret;
+    return new Nodes.NameIdentifierNode(astNode, astNode.text.trim());
   },
   NameIdentifier(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.NameIdentifierNode(astNode);
-    ret.name = astNode.text.trim();
-    return ret;
+    return new Nodes.NameIdentifierNode(astNode, astNode.text.trim());
   },
   QName(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.QNameNode(astNode);
-    ret.names = astNode.children.map(visit) as any;
-    return ret;
+    const names = astNode.children.map(visit) as any;
+    return new Nodes.QNameNode(astNode, names);
   },
   FunctionTypeParameter(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.FunctionParameterTypeNode(astNode);
+    const type = visitChildTypeOrFail(astNode, 'Type') as Nodes.TypeNode;
+    const ret = new Nodes.FunctionParameterTypeNode(astNode, type);
 
     ret.name = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
-    ret.parameterType = visitChildTypeOrNull(astNode, 'Type') as Nodes.TypeNode;
 
     return ret;
   },
   FunctionTypeLiteral(child: Nodes.ASTNode) {
-    const ret = new Nodes.FunctionTypeNode(child);
-
     const parametersNode = findChildrenType(child, 'FunctionTypeParameters');
 
-    if (parametersNode) {
-      ret.parameters = parametersNode.children.map($ => visit($));
-    } else {
-      ret.parameters = [];
-    }
+    const ret = new Nodes.FunctionTypeNode(child, parametersNode ? parametersNode.children.map($ => visit($)) : []);
 
     ret.returnType = visitChildTypeOrNull(child, 'Type') as Nodes.TypeNode;
 
@@ -347,22 +352,23 @@ const visitor = {
   //   return x.children.map($ => visit($));
   // },
   CaseLiteral(x: Nodes.ASTNode) {
-    const ret = new Nodes.MatchLiteralNode(x);
-    ret.literal = visit(x.children[0]);
-    ret.rhs = visit(x.children[1]);
-    return ret;
+    const literal = visit(x.children[0]);
+    const rhs = visit(x.children[1]);
+    return new Nodes.MatchLiteralNode(x, literal, rhs);
   },
   CaseCondition(x: Nodes.ASTNode) {
-    const ret = new Nodes.MatchConditionNode(x);
-    ret.declaredName = visit(x.children[0]);
-    ret.condition = visit(x.children[1]);
-    ret.rhs = visit(x.children[2]);
+    const condition = visit(x.children[1]);
+    const rhs = visit(x.children[2]);
+    const ret = new Nodes.MatchConditionNode(x, condition, rhs);
+    ret.declaredName = visit(x.children[0]) as Nodes.NameIdentifierNode;
     return ret;
   },
   CaseIs(x: Nodes.ASTNode) {
-    const ret = new Nodes.MatchCaseIsNode(x);
+    const rhs = visitLastChild(x);
+    const typeReference = visitChildTypeOrFail(x, 'Reference') as Nodes.ReferenceNode;
+    const ret = new Nodes.MatchCaseIsNode(x, typeReference, rhs);
+
     ret.declaredName = visitChildTypeOrNull(x, 'NameIdentifier') as Nodes.NameIdentifierNode;
-    ret.typeReference = visitChildTypeOrNull(x, 'Reference') as Nodes.ReferenceNode;
 
     const deconstruct = findChildrenType(x, 'DeconstructStruct');
 
@@ -370,29 +376,21 @@ const visitor = {
       ret.deconstructorNames = deconstruct.children.map($ => visit($));
     }
 
-    ret.rhs = visitLastChild(x);
     return ret;
   },
   CaseElse(x: Nodes.ASTNode) {
-    const ret = new Nodes.MatchDefaultNode(x);
-    ret.rhs = visit(x.children[0]);
-    return ret;
+    return new Nodes.MatchDefaultNode(x, visit(x.children[0]));
   },
-
   LoopExpression(x: Nodes.ASTNode) {
-    const ret = new Nodes.LoopNode(x);
-    ret.body = visit(x.children[0]);
-    return ret;
+    return new Nodes.LoopNode(x, visit(x.children[0]));
   },
 
   ContinueStatement(x: Nodes.ASTNode) {
-    const ret = new Nodes.ContinueNode(x);
-    return ret;
+    return new Nodes.ContinueNode(x);
   },
 
   BreakStatement(x: Nodes.ASTNode) {
-    const ret = new Nodes.BreakNode(x);
-    return ret;
+    return new Nodes.BreakNode(x);
   },
   PostfixNumber(x: Nodes.ASTNode) {
     const literal = visit(x.children[0]) as Nodes.IntegerLiteral | Nodes.HexLiteral | Nodes.FloatLiteral;
@@ -422,22 +420,13 @@ const visitor = {
     return ret;
   },
   BinNegExpression(x: Nodes.ASTNode) {
-    const ret = new Nodes.UnaryExpressionNode(x);
-    ret.rhs = visit(x.children[0]);
-    ret.operator = Nodes.NameIdentifierNode.fromString('~');
-    return ret;
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('~'), visit(x.children[0]));
   },
   NegExpression(x: Nodes.ASTNode) {
-    const ret = new Nodes.UnaryExpressionNode(x);
-    ret.rhs = visit(x.children[0]);
-    ret.operator = Nodes.NameIdentifierNode.fromString('!');
-    return ret;
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('!'), visit(x.children[0]));
   },
   UnaryMinus(x: Nodes.ASTNode) {
-    const ret = new Nodes.UnaryExpressionNode(x);
-    ret.rhs = visit(x.children[0]);
-    ret.operator = Nodes.NameIdentifierNode.fromString('-');
-    return ret;
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('-'), visit(x.children[0]));
   },
   BooleanLiteral(x: Nodes.ASTNode) {
     return new Nodes.BooleanLiteral(x);
@@ -445,16 +434,20 @@ const visitor = {
   Document(astNode: Nodes.ASTNode) {
     const doc = new Nodes.DocumentNode(astNode);
     doc.textContent = astNode.text;
-    doc.directives = astNode.children.map($ => visit($));
+    astNode.children.forEach($ => doc.directives.push(visit($)));
 
     return doc;
   },
   IfExpression(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.IfNode(astNode);
-    ret.condition = visit(astNode.children[0]);
-    ret.truePart = visit(astNode.children[1]);
-    ret.falsePart = visit(astNode.children[2]);
-    return ret;
+    const condition = visit(astNode.children[0]);
+    const truePart = visit(astNode.children[1]);
+
+    if (astNode.children[2]) {
+      const falsePart = visit(astNode.children[2]);
+      return new Nodes.IfNode(astNode, condition, truePart, falsePart);
+    } else {
+      return new Nodes.IfNode(astNode, condition, truePart);
+    }
   },
   SyntaxError(_: Nodes.ASTNode) {
     return null;
@@ -466,11 +459,9 @@ const visitor = {
     return new Nodes.UnknownExpressionNode(astNode);
   },
   StructLiteral(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.StructTypeNode(astNode);
-    const parameters = findChildrenType(astNode, 'StructParamsList');
-
-    ret.parameters = parameters.children.filter($ => $.type == 'Parameter').map($ => visit($));
-    return ret;
+    const parametersNode = findChildrenTypeOrFail(astNode, 'StructParamsList');
+    const parameters = parametersNode.children.filter($ => $.type == 'Parameter').map($ => visit($));
+    return new Nodes.StructTypeNode(astNode, parameters);
   },
   StackLiteral(astNode: Nodes.ASTNode) {
     const ret = new Nodes.StackTypeNode(astNode);
@@ -487,18 +478,11 @@ const visitor = {
     return ret;
   },
   StructDeclaration(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.StructDeclarationNode(astNode);
+    const declaredName = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
 
-    ret.declaredName = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
-    if (params) {
-      ret.parameters = params.children.map($ => visit($));
-    } else {
-      ret.parameters = [];
-    }
-
-    return ret;
+    return new Nodes.StructDeclarationNode(astNode, declaredName, params ? params.children.map($ => visit($)) : []);
   },
   UnionType(astNode: Nodes.ASTNode) {
     const ret = new Nodes.UnionTypeNode(astNode);
@@ -516,19 +500,16 @@ const visitor = {
     return ret;
   },
   WasmExpression(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.WasmExpressionNode(astNode);
-    ret.atoms = astNode.children.map($ => visit($));
-    return ret;
+    const atoms = astNode.children.map($ => visit($));
+    return new Nodes.WasmExpressionNode(astNode, atoms);
   },
   SExpression(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.WasmAtomNode(astNode);
     const children = astNode.children.slice();
-    const symbol = children.shift();
-
-    ret.symbol = symbol.text;
+    const symbol = children.shift() as any;
 
     const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
-    ret.arguments = ret.arguments.concat(newChildren);
+
+    const ret = new Nodes.WasmAtomNode(astNode, symbol.text, newChildren);
 
     if (
       ret.symbol == 'call' ||
@@ -537,16 +518,17 @@ const visitor = {
       ret.symbol == 'get_global' ||
       ret.symbol == 'set_global'
     ) {
-      if (ret.arguments[0] instanceof Nodes.QNameNode) {
-        const varRef = new Nodes.ReferenceNode(children[0]);
-        varRef.variable = ret.arguments[0] as Nodes.QNameNode;
+      if (ret.args[0] instanceof Nodes.QNameNode) {
+        const qname = ret.args[0] as Nodes.QNameNode;
 
-        if (varRef.variable.names[0].name.startsWith('$')) {
+        const varRef = new Nodes.ReferenceNode(children[0], qname);
+
+        if (qname.names[0].name!.startsWith('$')) {
           // TODO: fix horrible hack $
-          varRef.variable.names[0].name = varRef.variable.names[0].name.replace(/^\$/, '');
+          qname.names[0].name = qname.names[0].name.replace(/^\$/, '');
         }
 
-        ret.arguments[0] = varRef;
+        ret.args[0] = varRef;
       }
     }
 
@@ -554,13 +536,19 @@ const visitor = {
   }
 };
 
-function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T {
-  if (!astNode) return null;
-  if (visitor[astNode.type]) {
-    return visitor[astNode.type](astNode);
+function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
+  if (!astNode) throw new Error('astNode is null');
+  if ((visitor as any)[astNode.type]) {
+    return (visitor as any)[astNode.type](astNode);
   } else {
-    throw new TokenError(`Visitor not implemented for ${astNode.type}`, astNode);
+    throw new PositionCapableError(`Visitor not implemented for ${astNode.type}`, astNode);
   }
+}
+
+function findChildrenTypeOrFail(token: Nodes.ASTNode, type: string, message?: string) {
+  const ret = token.children.find($ => $.type == type);
+  if (!ret) throw new PositionCapableError(message || `Cannot find child node of type ${type}`, token);
+  return ret;
 }
 
 function findChildrenType(token: Nodes.ASTNode, type: string) {
@@ -572,13 +560,17 @@ function visitChildTypeOrNull(token: Nodes.ASTNode, type: string) {
   if (!child) return null;
   return visit(child);
 }
+function visitChildTypeOrFail(token: Nodes.ASTNode, type: string) {
+  const child = findChildrenTypeOrFail(token, type);
+  return visit(child);
+}
 
 function visitLastChild(token: Nodes.ASTNode) {
   return visit(token.children[token.children.length - 1]);
 }
 
 export class CanonicalPhaseResult extends PhaseResult {
-  document: Nodes.DocumentNode;
+  document: Nodes.DocumentNode | null = null;
 
   get parsingContext(): ParsingContext {
     return this.parsingPhaseResult.parsingContext;
@@ -590,8 +582,8 @@ export class CanonicalPhaseResult extends PhaseResult {
   }
 
   protected execute() {
-    this.document = visit(this.parsingPhaseResult.document);
-    this.document.file = this.parsingPhaseResult.fileName;
-    failIfErrors('Canonical phase', this.document, this);
+    this.document = visit(this.parsingPhaseResult.document!) as Nodes.DocumentNode;
+    this.document!.file = this.parsingPhaseResult.fileName;
+    failIfErrors('Canonical phase', this.document!, this);
   }
 }

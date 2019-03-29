@@ -5,6 +5,7 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="test" type=(fun "test" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -17,8 +18,8 @@
           |-LoopNode type=(native void) annotations=LabelId
             |-BlockNode type=(native void)
               |-BreakNode type=(native void) annotations=CurrentLoop
-    |-NameIdentifierNode="test" type=(fun "test" () (alias void))
   |-OverloadedFunctionNode type=(fun "test1" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="test1" type=(fun "test1" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -38,21 +39,21 @@
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
                 |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-NameIdentifierNode="+"
                   |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/loops.lys::x:i32#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
+                  |-NameIdentifierNode="+"
                   |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-IfNode type=(native void)
                 |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                  |-NameIdentifierNode=">"
                   |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/loops.lys::x:i32#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
+                  |-NameIdentifierNode=">"
                   |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-BreakNode type=(native void) annotations=CurrentLoop
-    |-NameIdentifierNode="test1" type=(fun "test1" () (alias void))
   |-OverloadedFunctionNode type=(fun "test2" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="test2" type=(fun "test2" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -72,14 +73,14 @@
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
                 |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-NameIdentifierNode="+"
                   |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/loops.lys::x_4:i32#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
+                  |-NameIdentifierNode="+"
                   |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-ContinueNode type=(native void) annotations=CurrentLoop
-    |-NameIdentifierNode="test2" type=(fun "test2" () (alias void))
   |-OverloadedFunctionNode type=(fun "test3" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="test3" type=(fun "test3" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -101,26 +102,25 @@
                       |-QNameNode=x
                         |-NameIdentifierNode="x"
                     |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                      |-NameIdentifierNode="+"
                       |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/loops.lys::x_7:i32#0)
                         |-QNameNode=x
                           |-NameIdentifierNode="x"
+                      |-NameIdentifierNode="+"
                       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                   |-IfNode type=(native void)
                     |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                      |-NameIdentifierNode="=="
                       |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/loops.lys::x_7:i32#0)
                         |-QNameNode=x
                           |-NameIdentifierNode="x"
+                      |-NameIdentifierNode="=="
                       |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-BreakNode type=(native void) annotations=CurrentLoop
               |-IfNode type=(native void)
                 |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                  |-NameIdentifierNode=">"
                   |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/compiler/loops.lys::x_7:i32#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
+                  |-NameIdentifierNode=">"
                   |-IntegerLiteral=100 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-BreakNode type=(native void) annotations=CurrentLoop
               |-BreakNode type=(native void) annotations=CurrentLoop
-    |-NameIdentifierNode="test3" type=(fun "test3" () (alias void))

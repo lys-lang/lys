@@ -92,7 +92,7 @@ export function folderBasedTest<T extends PhaseResult>(
             throw new Error('Test did not fail');
           }
         } else {
-          if (!resultNode.isSuccess()) {
+          if (resultNode && !resultNode.isSuccess()) {
             failWithErrors('testFile', resultNode.parsingContext);
           }
           if (err) {
@@ -109,10 +109,7 @@ export function folderBasedTest<T extends PhaseResult>(
           if (writeToFile || !compareFileExists) {
             writeFileSync(compareToFileName, result);
           }
-          expect(compareTo.trim().length > 0 || !compareFileExists).toEqual(
-            true,
-            'comparing against blank file: ' + compareToFileName
-          );
+          expect(compareTo.trim().length > 0 || !compareFileExists).toEqual(true);
           expect(result.trim()).toEqual(compareTo.trim());
         }
       },

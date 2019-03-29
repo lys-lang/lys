@@ -5,6 +5,7 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -28,18 +29,18 @@
           |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/compiler/mutability.lys::a:i32#0)
             |-QNameNode=a
               |-NameIdentifierNode="a"
-    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
   |-OverloadedFunctionNode type=(fun "main2" ((alias i32)) (alias i32)) annotations=Injected
+    |-NameIdentifierNode="main2" type=(fun "main2" ((alias i32)) (alias i32))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "main2" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="main2" annotations=Export
         |-ParameterNode annotations=Local(x:i32#0)
           |-NameIdentifierNode="x" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="main2" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -52,10 +53,10 @@
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-IfNode type=(native void)
             |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-NameIdentifierNode="=="
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
+              |-NameIdentifierNode="=="
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
             |-BlockNode type=(native void)
               |-AssignmentNode type=(native void)
@@ -67,4 +68,3 @@
           |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/compiler/mutability.lys::a_3:i32#1)
             |-QNameNode=a
               |-NameIdentifierNode="a"
-    |-NameIdentifierNode="main2" type=(fun "main2" ((alias i32)) (alias i32))

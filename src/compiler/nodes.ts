@@ -1,4 +1,4 @@
-import { IToken, TokenError } from 'ebnf';
+import { IToken } from 'ebnf';
 import { Closure } from './Closure';
 import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor, annotations } from './annotations';
@@ -12,13 +12,13 @@ export namespace Nodes {
 
   export abstract class Node {
     hasParentheses: boolean = false;
-    closure: Closure;
-    parent: Node;
-    ofType: Type = null;
+    closure?: Closure;
+    parent?: Node;
+    ofType?: Type;
 
-    private annotations: Set<Annotation>;
+    private annotations?: Set<Annotation>;
 
-    constructor(public astNode?: ASTNode) {}
+    constructor(public astNode: ASTNode | null) {}
 
     /** Name of the node constructor */
     get nodeName(): string {
@@ -26,20 +26,10 @@ export namespace Nodes {
     }
 
     get children(): Node[] {
-      let accumulator: Node[] = [];
-
-      Object.keys(this).forEach($ => {
-        if ($ == 'parent') return;
-        if (this[$] && this[$] instanceof Node) {
-          accumulator.push(this[$]);
-        }
-        if (this[$] && this[$] instanceof Array && this[$].length && this[$][0] instanceof Node) {
-          accumulator.push(...this[$]);
-        }
-      });
-
-      return accumulator;
+      return this.childrenOrEmpty.filter($ => !!$) as Node[];
     }
+
+    abstract get childrenOrEmpty(): (Node | void)[];
 
     hasAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
       if (!this.annotations) return false;
@@ -52,7 +42,7 @@ export namespace Nodes {
     }
 
     getAnnotationsByClass<T extends Annotation>(klass: IAnnotationConstructor<T>): T[] {
-      const ret = [];
+      const ret: T[] = [];
       if (this.annotations) {
         this.annotations.forEach($ => {
           if ($ instanceof klass) ret.push($);
@@ -62,7 +52,7 @@ export namespace Nodes {
     }
 
     getAnnotation<T extends Annotation>(klass: IAnnotationConstructor<T>): T {
-      const ret = [];
+      const ret: T[] = [];
       if (this.annotations) {
         this.annotations.forEach($ => {
           if ($ instanceof klass) ret.push($);
@@ -73,9 +63,10 @@ export namespace Nodes {
 
     removeAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
       if (typeof name === 'object') {
-        this.annotations.delete(name);
+        this.annotations && this.annotations.delete(name);
       } else {
-        this.getAnnotationsByClass(name).forEach($ => this.annotations.delete($));
+        this.annotations &&
+          this.getAnnotationsByClass(name).forEach($ => this.annotations && this.annotations.delete($));
       }
     }
 
@@ -87,16 +78,16 @@ export namespace Nodes {
     getAnnotations(): Annotation[];
     getAnnotations<T extends Annotation>(klass: IAnnotationConstructor<T>): T[];
     getAnnotations<T extends Annotation>(klass?: IAnnotationConstructor<T>): T[] {
-      const ret = [];
+      const ret: T[] = [];
       if (this.annotations) {
         this.annotations.forEach($ => {
-          if (!klass || $ instanceof klass) ret.push($);
+          if (!klass || $ instanceof klass) ret.push($ as T);
         });
       }
       return ret;
     }
 
-    toString(): never {
+    toString(): string {
       console.trace();
       throw new Error('Cannot print nodes with toString');
     }
@@ -105,118 +96,198 @@ export namespace Nodes {
   export abstract class ExpressionNode extends Node {}
 
   export class NameIdentifierNode extends Node {
-    internalIdentifier: string;
+    constructor(astNode: ASTNode | null, public name: string) {
+      super(astNode);
+    }
 
-    name: string;
+    internalIdentifier?: string;
 
-    namespaceNames: Map<string, NameIdentifierNode>;
+    get childrenOrEmpty(): Node[] {
+      return [];
+    }
+
+    namespaceNames?: Map<string, NameIdentifierNode>;
 
     static fromString(name: string) {
-      const r = new NameIdentifierNode();
-      r.name = name;
+      const r = new NameIdentifierNode(null, name);
       return r;
     }
 
     getSelfReference() {
       // TODO: Review this
-      return this.closure.get(this.name, false);
+      return this.closure!.get(this.name!, false);
     }
   }
 
   export class QNameNode extends Node {
-    names: NameIdentifierNode[];
+    constructor(astNode: ASTNode | null, public readonly names: NameIdentifierNode[]) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return this.names || [];
+    }
 
     deconstruct() {
-      const moduleName = this.names
-        .slice(0, -1)
+      const moduleName = this.names!.slice(0, -1)
         .map($ => $.name)
         .join('::');
-      const variable = this.names[this.names.length - 1].name;
+      const variable = this.names![this.names!.length - 1].name;
       return { moduleName, variable };
     }
 
     get text() {
-      return this.names.map($ => $.name).join('::');
+      return this.names!.map($ => $.name).join('::');
     }
 
     static fromString(name: string): QNameNode {
-      const r = new QNameNode();
-      r.names = name.split('::').map($ => NameIdentifierNode.fromString($));
+      const names = name.split('::').map($ => NameIdentifierNode.fromString($));
+      const r = new QNameNode(null, names);
       return r;
     }
   }
 
   export abstract class TypeNode extends Node {}
 
-  export class TypeReducerNode extends Node {}
+  export class TypeReducerNode extends Node {
+    get childrenOrEmpty(): Node[] {
+      return [];
+    }
+  }
 
   export class FunctionParameterTypeNode extends TypeNode {
     name?: NameIdentifierNode;
-    parameterType: TypeNode;
+
+    constructor(astNode: ASTNode, public readonly parameterType: TypeNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.name, this.parameterType];
+    }
   }
 
   export class FunctionTypeNode extends TypeNode {
-    typeParameters: string[];
-    parameters: FunctionParameterTypeNode[];
-    effect: TypeNode;
-    returnType: TypeNode;
+    typeParameters?: string[];
+    effect?: TypeNode;
+    returnType?: TypeNode;
+
+    constructor(astNode: ASTNode | null, public readonly parameters: FunctionParameterTypeNode[]) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.parameters || []), this.returnType, this.effect];
+    }
   }
 
   export class EffectMemberDeclarationNode extends TypeNode {
-    name: NameIdentifierNode;
-    typeParameters: string[];
-    parameters: FunctionParameterTypeNode[];
-    returnType: TypeNode;
+    name?: NameIdentifierNode;
+    typeParameters?: string[];
+    parameters?: FunctionParameterTypeNode[];
+    returnType?: TypeNode;
+
+    get childrenOrEmpty() {
+      return [this.name];
+    }
   }
 
   export class ReferenceNode extends ExpressionNode {
-    variable: QNameNode;
+    constructor(astNode: ASTNode | null, public readonly variable: QNameNode) {
+      super(astNode);
+    }
 
     isLocal: boolean = false;
 
-    resolvedReference: Reference;
+    resolvedReference?: Reference;
+
+    get childrenOrEmpty() {
+      return [this.variable];
+    }
   }
 
   export class BlockNode extends ExpressionNode {
-    label: string;
-    statements: Node[];
+    label?: string;
+
+    constructor(astNode: ASTNode | null, public readonly statements: Node[]) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return this.statements || [];
+    }
   }
 
   export class MemberNode extends ExpressionNode {
-    lhs: Node;
-    memberName: NameIdentifierNode;
-    operator: string;
+    constructor(
+      astNode: ASTNode | null,
+      public readonly lhs: Node,
+      public readonly operator: string,
+      public readonly memberName: NameIdentifierNode
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.lhs, this.memberName];
+    }
   }
 
   export class DecoratorNode extends Node {
-    decoratorName: NameIdentifierNode;
-    arguments: LiteralNode<any>[];
+    constructor(
+      astNode: ASTNode | null,
+      public readonly decoratorName: NameIdentifierNode,
+      public readonly args: LiteralNode<any>[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.decoratorName, ...(this.args || [])];
+    }
   }
 
   export abstract class DirectiveNode extends Node {
-    decorators: DecoratorNode[];
+    decorators?: DecoratorNode[];
     isPublic: boolean = false;
   }
 
   export class DocumentNode extends Node {
-    directives: DirectiveNode[];
-    errors: TokenError[] = [];
+    readonly directives: DirectiveNode[] = [];
     file?: string;
     moduleName?: string;
-    textContent: string;
+    textContent?: string;
+
+    get childrenOrEmpty() {
+      return this.directives;
+    }
   }
 
   export class ParameterNode extends Node {
-    parameterName: NameIdentifierNode;
-    parameterType: TypeNode;
-    defaultValue: ExpressionNode;
+    parameterType?: TypeNode;
+    defaultValue?: ExpressionNode;
+
+    constructor(astNode: ASTNode | null, public readonly parameterName: NameIdentifierNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.parameterName, this.parameterType, this.defaultValue];
+    }
   }
 
   export class FunctionNode extends ExpressionNode {
-    functionName: NameIdentifierNode;
-    functionReturnType: TypeNode;
+    functionReturnType?: TypeNode;
     parameters: ParameterNode[] = [];
-    body: ExpressionNode;
+    body?: ExpressionNode;
+
+    constructor(astNode: ASTNode | null, public readonly functionName: NameIdentifierNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.functionName, ...this.parameters, this.functionReturnType, this.body];
+    }
 
     /** Array of locals by index. */
     localsByIndex: Local[] = [];
@@ -233,20 +304,20 @@ export namespace Nodes {
       let localIndex = 0;
 
       this.parameters.forEach(parameter => {
-        let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
+        let local = new Local(localIndex++, parameter.parameterName!.name!, parameter.parameterName);
         this.localsByIndex[local.index] = local;
         parameter.annotate(new annotations.LocalIdentifier(local));
       });
     }
 
     /** Adds a local of the specified type. */
-    addLocal(type: Type, declaration: NameIdentifierNode | null = null): Local {
+    addLocal(type: Type, declaration?: NameIdentifierNode): Local {
       // if it has a name, check previously as this method will throw otherwise
       var localIndex = this.parameters.length + this.additionalLocals.length;
 
       var local = new Local(
         localIndex,
-        declaration ? declaration.internalIdentifier : 'var$' + localIndex.toString(10),
+        declaration ? declaration.internalIdentifier! : 'var$' + localIndex.toString(10),
         declaration
       );
 
@@ -285,7 +356,7 @@ export namespace Nodes {
       var local: Local;
 
       if (temps && temps.length) {
-        local = temps.pop();
+        local = temps.pop()!;
         local.type = type;
       } else {
         local = this.addLocal(type);
@@ -297,8 +368,8 @@ export namespace Nodes {
     /** Frees the temporary local for reuse. */
     freeTempLocal(local: Local): void {
       var temps: Local[];
-      if (local.type === null) throw new Error('type is null'); // internal error
-      switch (local.type.binaryenType) {
+      if (!local.type) throw new Error('type is null'); // internal error
+      switch (local.type!.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
           break;
@@ -363,34 +434,81 @@ export namespace Nodes {
   }
 
   export class ImplDirective extends DirectiveNode {
-    reference: ReferenceNode;
-    directives: DirectiveNode[];
+    constructor(
+      astNode: ASTNode | null,
+      public readonly reference: ReferenceNode,
+      public readonly directives: DirectiveNode[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.reference, ...(this.directives || [])];
+    }
   }
 
   export class ImportDirectiveNode extends DirectiveNode {
     allItems: boolean = true;
-    module: QNameNode;
     alias: NameIdentifierNode | null = null;
+
+    constructor(astNode: ASTNode | null, public readonly module: QNameNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.module, this.alias || void 0];
+    }
   }
 
   export class FunDirectiveNode extends DirectiveNode {
-    functionNode: FunctionNode;
+    constructor(
+      astNode: ASTNode | null,
+      public readonly functionNode: FunctionNode,
+      public readonly decorators: DecoratorNode[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.functionNode];
+    }
   }
 
   export class EffectDirectiveNode extends DirectiveNode {
-    effect: EffectDeclarationNode;
+    effect?: EffectDeclarationNode;
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.effect];
+    }
   }
 
   export class OverloadedFunctionNode extends DirectiveNode {
-    functionName: NameIdentifierNode;
     functions: FunDirectiveNode[] = [];
+
+    constructor(astNode: ASTNode | null, public readonly functionName: NameIdentifierNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.functionName, ...this.functions];
+    }
   }
 
   export class VarDeclarationNode extends Node {
     mutable = true;
-    variableName: NameIdentifierNode;
-    variableType: TypeNode;
-    value: ExpressionNode;
+    variableType?: TypeNode;
+
+    constructor(
+      astNode: ASTNode | null,
+      public readonly variableName: NameIdentifierNode,
+      public value: ExpressionNode
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.variableName, this.variableType, this.value];
+    }
   }
 
   export class ValDeclarationNode extends VarDeclarationNode {
@@ -398,114 +516,183 @@ export namespace Nodes {
   }
 
   export class VarDirectiveNode extends DirectiveNode {
-    decl: VarDeclarationNode;
+    constructor(astNode: ASTNode | null, public readonly decl: VarDeclarationNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.decl];
+    }
   }
 
   export class ValDirectiveNode extends VarDirectiveNode {
-    decl: ValDeclarationNode;
+    constructor(astNode: ASTNode | null, public readonly decl: ValDeclarationNode) {
+      super(astNode, decl);
+    }
   }
 
   export class AssignmentNode extends Node {
-    lhs: ExpressionNode;
-    rhs: ExpressionNode;
+    constructor(astNode: ASTNode | null, public readonly lhs: ExpressionNode, public readonly rhs: ExpressionNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.lhs, this.rhs];
+    }
   }
 
   export class TypeDirectiveNode extends DirectiveNode {
-    variableName: NameIdentifierNode;
-    valueType: TypeNode;
+    valueType?: TypeNode;
+
+    constructor(astNode: ASTNode | null, public readonly variableName: NameIdentifierNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.variableName, this.valueType];
+    }
   }
 
   export class EnumDirectiveNode extends DirectiveNode {
-    variableName: NameIdentifierNode;
-    declarations: StructDeclarationNode[];
+    constructor(
+      astNode: ASTNode | null,
+      public readonly variableName: NameIdentifierNode,
+      public readonly declarations: StructDeclarationNode[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.variableName, ...(this.declarations || [])];
+    }
   }
 
   export abstract class LiteralNode<T> extends ExpressionNode {
-    value: T;
+    value?: T;
   }
 
   export class FloatLiteral extends LiteralNode<number> {
-    suffixReference: ReferenceNode;
+    suffixReference?: ReferenceNode;
     get value(): number {
-      return parseFloat(this.astNode.text);
+      return parseFloat(this.astNode!.text);
     }
     set value(value: number) {
-      this.astNode.text = value.toString();
+      this.astNode!.text = value.toString();
+    }
+
+    get childrenOrEmpty() {
+      return [this.suffixReference];
     }
   }
 
   export class IntegerLiteral extends LiteralNode<number> {
-    suffixReference: ReferenceNode;
+    suffixReference?: ReferenceNode;
     get value(): number {
-      return parseInt(this.astNode.text);
+      return parseInt(this.astNode!.text);
     }
     set value(value: number) {
-      this.astNode.text = value.toString();
+      this.astNode!.text = value.toString();
+    }
+
+    get childrenOrEmpty() {
+      return [this.suffixReference];
     }
   }
 
-  export class UnknownExpressionNode extends ExpressionNode {}
+  export class UnknownExpressionNode extends ExpressionNode {
+    get childrenOrEmpty() {
+      return [];
+    }
+  }
 
   export class StructTypeNode extends TypeNode {
-    parameters: ParameterNode[] = [];
-
-    constructor(astNode?: ASTNode) {
+    constructor(astNode: ASTNode | null, public readonly parameters: ParameterNode[]) {
       super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return this.parameters;
     }
   }
 
   export class StackTypeNode extends TypeNode {
     metadata: Record<string, LiteralNode<any>> = {};
 
-    constructor(astNode?: ASTNode) {
-      super(astNode);
+    get childrenOrEmpty() {
+      return [];
     }
   }
 
   export class InjectedTypeNode extends TypeNode {
-    constructor(astNode?: ASTNode) {
-      super(astNode);
+    get childrenOrEmpty() {
+      return [];
     }
   }
 
   export class HexLiteral extends IntegerLiteral {
-    suffixReference: ReferenceNode;
+    suffixReference?: ReferenceNode;
     get value(): number {
-      return parseInt(this.astNode.text, 16);
+      return parseInt(this.astNode!.text, 16);
     }
     set value(value: number) {
-      this.astNode.text = value.toString(16);
+      this.astNode!.text = value.toString(16);
+    }
+
+    get childrenOrEmpty() {
+      return [this.suffixReference];
     }
   }
 
   export class BooleanLiteral extends LiteralNode<boolean> {
     get value(): boolean {
-      return this.astNode.text.trim() == 'true';
+      return this.astNode!.text.trim() == 'true';
     }
     set value(value: boolean) {
-      this.astNode.text = value.toString();
+      this.astNode!.text = value.toString();
+    }
+
+    get childrenOrEmpty() {
+      return [];
     }
   }
 
   export class StringLiteral extends LiteralNode<string> {
-    value: string;
-    offset: number;
-    length: number;
+    value?: string;
+    offset?: number;
+    length?: number;
+
+    get childrenOrEmpty() {
+      return [];
+    }
   }
 
   export abstract class AbstractFunctionCallNode extends ExpressionNode {
     abstract argumentsNode: ExpressionNode[];
-    resolvedFunctionType: FunctionType;
+    resolvedFunctionType?: FunctionType;
   }
 
   export class InjectedFunctionCallNode extends AbstractFunctionCallNode {
     argumentsNode: ExpressionNode[] = [];
+
+    get childrenOrEmpty() {
+      return this.argumentsNode;
+    }
   }
 
   export class FunctionCallNode extends AbstractFunctionCallNode {
     isInfix: boolean = false;
-    functionNode: ExpressionNode = null;
-    argumentsNode: ExpressionNode[] = [];
+
+    constructor(
+      astNode: ASTNode | null,
+      public functionNode: ExpressionNode,
+      public readonly argumentsNode: ExpressionNode[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.functionNode, ...this.argumentsNode];
+    }
   }
 
   export class BinaryExpressionNode extends AbstractFunctionCallNode {
@@ -519,12 +706,27 @@ export namespace Nodes {
     get rhs() {
       return this.argumentsNode[1];
     }
+
     set rhs(value: ExpressionNode) {
       this.argumentsNode[1] = value;
     }
 
-    operator: NameIdentifierNode = null;
     argumentsNode: ExpressionNode[] = [];
+
+    constructor(
+      astNode: ASTNode | null,
+      public readonly operator: NameIdentifierNode,
+      lhs: ExpressionNode,
+      rhs: ExpressionNode
+    ) {
+      super(astNode);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
+
+    get childrenOrEmpty() {
+      return [this.lhs, this.operator, this.rhs];
+    }
   }
 
   export class AsExpressionNode extends AbstractFunctionCallNode {
@@ -535,7 +737,17 @@ export namespace Nodes {
       this.argumentsNode[0] = value;
     }
     argumentsNode: ExpressionNode[] = [];
-    rhs: TypeNode;
+    rhs?: TypeNode;
+
+    constructor(astNode: ASTNode | null, lhs: ExpressionNode, rhs: TypeNode) {
+      super(astNode);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
+
+    get childrenOrEmpty() {
+      return [this.lhs, this.rhs];
+    }
   }
 
   export class IsExpressionNode extends AbstractFunctionCallNode {
@@ -546,7 +758,17 @@ export namespace Nodes {
       this.argumentsNode[0] = value;
     }
     argumentsNode: ExpressionNode[] = [];
-    rhs: TypeNode;
+    rhs?: TypeNode;
+
+    constructor(astNode: ASTNode | null, lhs: ExpressionNode, rhs: TypeNode) {
+      super(astNode);
+      this.lhs = lhs;
+      this.rhs = rhs;
+    }
+
+    get childrenOrEmpty() {
+      return [this.lhs, this.rhs];
+    }
   }
 
   export class UnaryExpressionNode extends AbstractFunctionCallNode {
@@ -556,108 +778,212 @@ export namespace Nodes {
     set rhs(value: ExpressionNode) {
       this.argumentsNode[0] = value;
     }
-    operator: NameIdentifierNode;
     argumentsNode: ExpressionNode[] = [];
+
+    constructor(astNode: ASTNode | null, public readonly operator: NameIdentifierNode, rhs: TypeNode) {
+      super(astNode);
+
+      this.rhs = rhs;
+    }
+
+    get childrenOrEmpty() {
+      return [this.rhs];
+    }
   }
 
   export class WasmAtomNode extends ExpressionNode {
-    arguments: ExpressionNode[] = [];
-    symbol: string;
+    constructor(astNode: ASTNode | null, public readonly symbol: string, public readonly args: ExpressionNode[]) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...this.args];
+    }
   }
 
   export class WasmExpressionNode extends ExpressionNode {
-    atoms: WasmAtomNode[];
+    constructor(astNode: ASTNode | null, public readonly atoms: WasmAtomNode[]) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return this.atoms || [];
+    }
   }
 
   export abstract class MatcherNode extends ExpressionNode {
     declaredName?: NameIdentifierNode;
 
-    rhs: ExpressionNode;
+    constructor(astNode: ASTNode | null, public readonly rhs: ExpressionNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.declaredName, this.rhs];
+    }
   }
 
   export class IfNode extends ExpressionNode {
-    condition: ExpressionNode;
-    truePart: ExpressionNode;
-    falsePart: ExpressionNode;
+    constructor(
+      astNode: ASTNode | null,
+      public readonly condition: ExpressionNode,
+      public readonly truePart: ExpressionNode,
+      public readonly falsePart?: ExpressionNode
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.condition, this.truePart, this.falsePart];
+    }
   }
 
   export class MatchConditionNode extends MatcherNode {
-    condition: ExpressionNode;
+    constructor(
+      astNode: ASTNode | null,
+      public readonly condition: ExpressionNode,
+      public readonly rhs: ExpressionNode
+    ) {
+      super(astNode, rhs);
+    }
+
+    get childrenOrEmpty() {
+      return [...super.childrenOrEmpty, this.condition];
+    }
   }
 
   export class MatchCaseIsNode extends MatcherNode {
     deconstructorNames?: NameIdentifierNode[];
-    typeReference: ReferenceNode;
-    resolvedFunctionType: FunctionType;
+    resolvedFunctionType?: FunctionType;
+
+    constructor(astNode: ASTNode | null, public readonly typeReference: ReferenceNode, public rhs: ExpressionNode) {
+      super(astNode, rhs);
+    }
+
+    get childrenOrEmpty() {
+      return [...super.childrenOrEmpty, this.typeReference, ...(this.deconstructorNames || [])];
+    }
   }
 
   export class MatchLiteralNode extends MatcherNode {
-    literal: LiteralNode<any>;
-    resolvedFunctionType: FunctionType;
+    resolvedFunctionType?: FunctionType;
+
+    constructor(
+      astNode: ASTNode | null,
+      public readonly literal: LiteralNode<any>,
+      public readonly rhs: ExpressionNode
+    ) {
+      super(astNode, rhs);
+    }
+
+    get childrenOrEmpty() {
+      return [...super.childrenOrEmpty, this.literal];
+    }
   }
 
   export class UnionTypeNode extends TypeNode {
     of: TypeNode[] = [];
+
+    get childrenOrEmpty() {
+      return this.of;
+    }
   }
 
   export class IntersectionTypeNode extends TypeNode {
-    of: TypeNode[];
+    of: TypeNode[] = [];
+
+    get childrenOrEmpty() {
+      return this.of || [];
+    }
   }
 
   export class StructDeclarationNode extends TypeNode {
-    declaredName: NameIdentifierNode;
-    parameters: ParameterNode[];
+    constructor(
+      astNode: ASTNode | null,
+      public readonly declaredName: NameIdentifierNode,
+      public readonly parameters: ParameterNode[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.declaredName, ...(this.parameters || [])];
+    }
   }
 
   export class EffectDeclarationNode extends Node {
-    name: NameIdentifierNode;
-    elements: FunctionTypeNode[];
+    name?: NameIdentifierNode;
+    elements?: FunctionTypeNode[];
+
+    get childrenOrEmpty() {
+      return [this.name, ...(this.elements || [])];
+    }
   }
 
   export class MatchDefaultNode extends MatcherNode {}
 
   export class PatternMatcherNode extends ExpressionNode {
-    lhs: ExpressionNode;
-    matchingSet: MatcherNode[];
+    constructor(
+      astNode: ASTNode | null,
+      public readonly lhs: ExpressionNode,
+      public readonly matchingSet: MatcherNode[]
+    ) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.lhs, ...(this.matchingSet || [])];
+    }
   }
 
   export class LoopNode extends ExpressionNode {
-    body: ExpressionNode;
+    constructor(astNode: ASTNode | null, public readonly body: ExpressionNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.body];
+    }
   }
 
-  export class ContinueNode extends Node {}
+  export class ContinueNode extends Node {
+    get childrenOrEmpty() {
+      return [];
+    }
+  }
 
-  export class BreakNode extends Node {}
-
-  /////// Non-grammar nodes
-
-  /** This node replaces the function body */
-  export class TailRecLoopNode extends Nodes.ExpressionNode {
-    body: Nodes.ExpressionNode;
+  export class BreakNode extends Node {
+    get childrenOrEmpty() {
+      return [];
+    }
   }
 }
 
 export interface LocalGlobalHeapReference {
-  type: Type;
+  type?: Type;
   name: string;
-  declarationNode: Nodes.Node;
+  declarationNode?: Nodes.Node;
 }
 
 export class Global implements LocalGlobalHeapReference {
-  type: Type;
+  type?: Type;
   name: string;
   constructor(public declarationNode: Nodes.NameIdentifierNode) {
-    this.name = declarationNode.internalIdentifier;
+    this.name = declarationNode.internalIdentifier!;
   }
 }
 
 export class Local implements LocalGlobalHeapReference {
-  type: Type;
+  type?: Type;
   /** index in the function */
-  constructor(public index: number, public name: string, public declarationNode: Nodes.Node) {}
+  constructor(public index: number, public name: string, public declarationNode?: Nodes.Node) {}
 }
 
-export function findNodesByType<T>(astRoot: { children: any[] }, type: { new (...args): T }, list: T[] = []): T[] {
+export function findNodesByType<T>(
+  astRoot: { children: any[] },
+  type: { new (...args: any[]): T },
+  list: T[] = []
+): T[] {
   if (astRoot instanceof type) {
     list.push(astRoot);
   }
@@ -667,7 +993,7 @@ export function findNodesByType<T>(astRoot: { children: any[] }, type: { new (..
 
 export function findNodesByTypeInChildren<T>(
   astRoot: { children: any[] },
-  type: { new (...args): T },
+  type: { new (...args: any[]): T },
   list: T[] = []
 ): T[] {
   astRoot.children.forEach($ => {

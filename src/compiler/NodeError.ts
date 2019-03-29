@@ -11,12 +11,12 @@ export type IErrorPositionCapable = {
   readonly message: string;
   readonly node?: Nodes.Node;
   readonly warning?: boolean;
-  readonly position?: IPositionCapable;
+  readonly position: IPositionCapable;
 } & Error;
 
 export class AstNodeError extends Error implements IErrorPositionCapable {
   get position() {
-    return this.node.astNode;
+    return this.node.astNode!;
   }
 
   constructor(public message: string, public node: Nodes.Node, public warning: boolean = false) {

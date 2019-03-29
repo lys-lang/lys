@@ -5,8 +5,10 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="fibo"
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="fibo"
         |-ParameterNode annotations=Local(n:<no-type>#0)
           |-NameIdentifierNode="n"
           |-ReferenceNode
@@ -22,17 +24,16 @@
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="fibo"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-IfNode annotations=IsValueNode
             |-BinaryExpressionNode annotations=IsValueNode
-              |-NameIdentifierNode=">"
               |-ReferenceNode annotations=IsValueNode
                 |-QNameNode=n
                   |-NameIdentifierNode="n"
+              |-NameIdentifierNode=">"
               |-IntegerLiteral=0 annotations=IsValueNode
             |-BlockNode annotations=IsValueNode
               |-FunctionCallNode annotations=IsValueNode
@@ -40,19 +41,19 @@
                   |-QNameNode=fibo
                     |-NameIdentifierNode="fibo"
                 |-BinaryExpressionNode annotations=IsValueNode
-                  |-NameIdentifierNode="-"
                   |-ReferenceNode annotations=IsValueNode
                     |-QNameNode=n
                       |-NameIdentifierNode="n"
+                  |-NameIdentifierNode="-"
                   |-IntegerLiteral=1 annotations=IsValueNode
                 |-ReferenceNode annotations=IsValueNode
                   |-QNameNode=x2
                     |-NameIdentifierNode="x2"
                 |-BinaryExpressionNode annotations=IsValueNode
-                  |-NameIdentifierNode="+"
                   |-ReferenceNode annotations=IsValueNode
                     |-QNameNode=x1
                       |-NameIdentifierNode="x1"
+                  |-NameIdentifierNode="+"
                   |-ReferenceNode annotations=IsValueNode
                     |-QNameNode=x2
                       |-NameIdentifierNode="x2"
@@ -60,16 +61,16 @@
               |-ReferenceNode annotations=IsValueNode
                 |-QNameNode=x1
                   |-NameIdentifierNode="x1"
-    |-NameIdentifierNode="fibo"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="fib"
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="fib"
         |-ParameterNode annotations=Local(n:<no-type>#0)
           |-NameIdentifierNode="n"
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="fib"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -83,8 +84,8 @@
                 |-NameIdentifierNode="n"
             |-IntegerLiteral=0 annotations=IsValueNode
             |-IntegerLiteral=1 annotations=IsValueNode
-    |-NameIdentifierNode="fib"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="test"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="test"
@@ -97,4 +98,3 @@
               |-QNameNode=fib
                 |-NameIdentifierNode="fib"
             |-IntegerLiteral=46 annotations=IsValueNode
-    |-NameIdentifierNode="test"

@@ -12,7 +12,7 @@ export class LiteralTypeResolver extends TypeResolver {
   constructor(public type: Type) {
     super();
   }
-  execute(_0, _1) {
+  execute() {
     return this.type;
   }
 }
@@ -21,7 +21,7 @@ export class TypeGraph {
   private _subGraph: Map<TypeGraph, string> = new Map();
   private uniqueIdCounter = 0;
 
-  constructor(public nodes: Array<TypeNode>, public parentGraph: TypeGraph) {
+  constructor(public nodes: Array<TypeNode>, public parentGraph: TypeGraph | null) {
     // Set Parent to the children
     nodes.forEach($ => ($.parentGraph = this));
 
@@ -66,7 +66,7 @@ export class TypeGraph {
   }
 
   createNameResolverFor(node: Nodes.Node): TypeGraph {
-    const nodes = [];
+    const nodes: TypeNode[] = [];
 
     function traverseUp(base: TypeNode) {
       if (!nodes.includes(base)) {
@@ -128,7 +128,7 @@ export class TypeNode {
   public readonly MAX_ATTEMPTS = 50;
   private _outgoingEdges: Array<Edge> = [];
   private _incomingEdges: Array<Edge> = [];
-  private succeed: boolean;
+  private succeed: boolean = false;
 
   amount: number = 0;
 
@@ -144,16 +144,19 @@ export class TypeNode {
 
           if (!(newType instanceof Type)) {
             console.log(this.typeResolver.constructor.name + ' did not return a type', newType);
+            return;
           }
 
-          if (!this.resultType() || !newType.equals(this.resultType())) {
-            if (this.resultType()) {
+          const currentType = this.resultType();
+
+          if (!currentType || !newType.equals(currentType)) {
+            if (currentType) {
               ctx.parsingContext.messageCollector.error(
-                `${this.typeResolver.constructor.name}: Mutating type ${this.resultType().inspect(
+                `${this.typeResolver.constructor.name}: Mutating type ${currentType.inspect(10)} -> ${newType.inspect(
                   10
-                )} -> ${newType.inspect(10)} .equals = ${this.resultType().equals(newType)} .equals2 = ${newType.equals(
-                  this.resultType()
-                )} == = ${this.resultType() == newType}`,
+                )} .equals = ${currentType.equals(newType)} .equals2 = ${newType.equals(
+                  currentType
+                )} == = ${currentType == newType}`,
                 this.astNode
               );
             }
@@ -164,9 +167,11 @@ export class TypeNode {
           }
         }
 
-        this._outgoingEdges.forEach(edge => {
-          edge.propagateType(this.astNode.ofType, ctx);
-        });
+        if (this.succeed) {
+          this._outgoingEdges.forEach(edge => {
+            edge.propagateType(this.resultType()!, ctx);
+          });
+        }
       } else {
         ctx.parsingContext.messageCollector.warning(
           `Unable to infer type as recursion didn't stabilize after ${this.MAX_ATTEMPTS} attempts.`,
@@ -285,7 +290,7 @@ export class Edge {
    * @return
    */
   error(): boolean {
-    return this._error;
+    return this._error || false;
   }
 
   /**

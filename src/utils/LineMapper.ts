@@ -22,13 +22,13 @@ export interface ITextPosition {
 export class LineMapper implements ILineMapper {
   constructor(private content: string, private absPath: string) {}
 
-  private mapping: number[];
+  private mapping: number[] | null = null;
 
   position(_pos: number): ITextPosition {
     let pos = _pos;
     this.initMapping();
-    for (let i = 0; i < this.mapping.length; i++) {
-      let lineLength = this.mapping[i];
+    for (let i = 0; i < this.mapping!.length; i++) {
+      let lineLength = this.mapping![i];
       if (pos < lineLength) {
         return {
           line: i,
@@ -40,8 +40,8 @@ export class LineMapper implements ILineMapper {
     }
     if (pos == 0) {
       return {
-        line: this.mapping.length - 1,
-        column: this.mapping[this.mapping.length - 1],
+        line: this.mapping!.length - 1,
+        column: this.mapping![this.mapping!.length - 1],
         position: this.content.length
       };
     }
@@ -50,8 +50,8 @@ export class LineMapper implements ILineMapper {
       // sometimes YAML library reports an error at a position of document length + 1, no idea what they want
       // to tell us that way
       return {
-        line: this.mapping.length - 1,
-        column: this.mapping[this.mapping.length - 1] - 1,
+        line: this.mapping!.length - 1,
+        column: this.mapping![this.mapping!.length - 1] - 1,
         position: _pos - 1
       };
     }

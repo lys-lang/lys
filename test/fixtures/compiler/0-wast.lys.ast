@@ -5,6 +5,7 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "xx" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "xx" () (alias void)) annotations=IsOverloaded
         |-NameIdentifierNode="xx"
@@ -12,10 +13,11 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-    |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
   |-OverloadedFunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
+    |-NameIdentifierNode="add" type=(fun "add" ((alias i32) (alias i32)) (alias i32))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="add"
         |-ParameterNode annotations=Local(a:i32#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
@@ -26,7 +28,6 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="add"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -65,8 +66,8 @@
             |-WasmAtomNode
               |-QNameNode=$t
                 |-NameIdentifierNode="$t"
-    |-NameIdentifierNode="add" type=(fun "add" ((alias i32) (alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -81,4 +82,3 @@
               |-NameIdentifierNode="add"
           |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))

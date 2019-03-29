@@ -22,32 +22,27 @@ const setDocument = (document: string) =>
   });
 
 export class ParsingPhaseResult extends PhaseResult {
-  document: Nodes.ASTNode;
+  document?: Nodes.ASTNode;
 
   get parsingContext(): ParsingContext {
     return this._parsingContext;
   }
 
-  constructor(
-    public fileName: string,
-    public content: string,
-    private _parsingContext: ParsingContext = new ParsingContext(),
-    doNotExecute = false
-  ) {
+  constructor(public fileName: string, public content: string, private _parsingContext: ParsingContext) {
     super();
-    if (!doNotExecute) this.execute();
   }
 
   execute() {
     this.document = parser.getAST(this.content, 'Document') as any;
-    setDocument(this.fileName)(this.document, this);
 
-    process(this.document, this);
+    setDocument(this.fileName)(this.document!, this);
+
+    process(this.document!, this);
 
     failWithErrors('Parsing phase', this.parsingContext);
   }
 
-  static fromString(code: string) {
-    return new ParsingPhaseResult('(injected code)', code);
+  static fromString(code: string, parsingContext: ParsingContext) {
+    return new ParsingPhaseResult('(injected code)', code, parsingContext);
   }
 }

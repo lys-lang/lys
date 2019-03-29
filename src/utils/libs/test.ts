@@ -1,5 +1,5 @@
 import { hexDump, readString } from '../execution';
-const colors = require('colors/safe');
+import { ForegroundColors, formatColorAndReset } from '../colors';
 
 /**
  * Description of a single test's results.
@@ -81,13 +81,15 @@ export default function(getInstance: () => any) {
       popTest: () => {
         if (getTestStack().length) {
           const suite = getTestStack().pop();
-          if (
-            (suite.tests && suite.tests.some($ => !$.passed)) ||
-            (suite.assertions && suite.assertions.some($ => !$.passed))
-          ) {
-            suite.passed = false;
+          if (suite) {
+            if (
+              (suite.tests && suite.tests.some($ => !$.passed)) ||
+              (suite.assertions && suite.assertions.some($ => !$.passed))
+            ) {
+              suite.passed = false;
+            }
+            suite.endTime = Date.now();
           }
-          suite.endTime = Date.now();
         }
       },
       registerAssertion: (passed: number, nameOffset: number) => {
@@ -109,9 +111,17 @@ export default function(getInstance: () => any) {
         const indentation = '  '.repeat(level + 1);
 
         if (didPass) {
-          console.log(indentation + colors.green('✓ ') + colors.grey(title));
+          console.log(
+            indentation +
+              formatColorAndReset('✓ ', ForegroundColors.Green) +
+              formatColorAndReset(title, ForegroundColors.Grey)
+          );
         } else {
-          console.log(indentation + colors.red('X ') + colors.grey(title));
+          console.log(
+            indentation +
+              formatColorAndReset('X ', ForegroundColors.Red) +
+              formatColorAndReset(title, ForegroundColors.Grey)
+          );
         }
       },
       printNumber: (x: number) => {

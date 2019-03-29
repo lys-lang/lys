@@ -8,7 +8,9 @@
     "lys": "dist/bin.js",
     "lys-compiler": "dist/bin.js"
   },
-  "scripts": {},
+  "scripts": {
+    "prepublish": "make build"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/menduz/aureum.git"
@@ -30,24 +32,22 @@
     "@webassemblyjs/wast-printer": "^1.8.5",
     "arg": "^4.1.0",
     "binaryen": "^73.0.0",
-    "colors": "^1.3.3",
     "ebnf": "^1.6.3",
     "utf8-bytes": "0.0.1",
     "wabt": "^1.0.10"
   },
   "devDependencies": {
-    "source-map-support": "^0.5.10",
+    "@types/chai": "^4.1.7",
+    "@types/glob": "^7.1.1",
     "@types/node": "^10.9.2",
-    "@types/chai": "^4.1.4",
-    "@types/expect": "^1.20.3",
-    "@types/glob": "^5.0.35",
     "chai": "^4.2.0",
-    "expect": "^24.0.0",
+    "expect": "^24.5.0",
     "glob": "^7.1.3",
     "istanbul": "^0.4.5",
     "mocha": "^5.2.0",
     "mocha-performance": "^0.1.1",
-    "tslint": "^5.12.1",
-    "typescript": "^3.2.4"
+    "source-map-support": "^0.5.11",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
   }
 }

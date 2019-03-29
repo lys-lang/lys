@@ -8,7 +8,7 @@ export abstract class Annotation {
     return this.name;
   }
 }
-export type IAnnotationConstructor<T extends Annotation> = { new (...args): T };
+export type IAnnotationConstructor<T extends Annotation> = { new (...args: any[]): T };
 
 export namespace annotations {
   export class IsTailRec extends Annotation {}
@@ -64,7 +64,10 @@ export namespace annotations {
     }
 
     toString() {
-      return super.toString() + this.implicitCall.resolvedFunctionType.inspect(1);
+      return (
+        super.toString() +
+        (this.implicitCall.resolvedFunctionType ? this.implicitCall.resolvedFunctionType.inspect(1) : 'not-resolved')
+      );
     }
   }
 

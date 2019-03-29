@@ -5,14 +5,15 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "malloc" ((alias i32)) (alias i32)) annotations=Injected
+    |-NameIdentifierNode="malloc" type=(fun "malloc" ((alias i32)) (alias i32))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "malloc" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="malloc"
         |-ParameterNode annotations=Local(size:i32#0)
           |-NameIdentifierNode="size" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="malloc"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -20,8 +21,8 @@
           |-WasmAtomNode
             |-QNameNode=$size
               |-NameIdentifierNode="$size"
-    |-NameIdentifierNode="malloc" type=(fun "malloc" ((alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
         |-NameIdentifierNode="main"
@@ -33,4 +34,3 @@
             |-QNameNode=malloc
               |-NameIdentifierNode="malloc"
           |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))

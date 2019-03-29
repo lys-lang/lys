@@ -13,8 +13,10 @@ import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGeneratio
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
+import { nodeSystem } from '../dist/support/NodeSystem';
 
-const compilerTestParsingContext = new ParsingContext();
+const compilerTestParsingContext = new ParsingContext(nodeSystem);
+compilerTestParsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 const compilationPhases = function(txt: string, fileName: string): CompilationPhaseResult {
   compilerTestParsingContext.reset();

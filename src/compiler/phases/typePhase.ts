@@ -22,7 +22,9 @@ import {
 import { AstNodeError } from '../NodeError';
 
 const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
-  node.parent = parent;
+  if (parent) {
+    node.parent = parent;
+  }
 });
 
 const initializeTypes = walkPreOrder<Nodes.Node>(
@@ -31,9 +33,9 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
     if (node instanceof Nodes.TypeDirectiveNode) {
       if (node.valueType instanceof Nodes.StructTypeNode) {
         node.valueType.ofType = TypeType.of(
-          phase.createTypeAlias(node.variableName, new StructType(node.valueType.parameters))
+          phase.createTypeAlias(node.variableName!, new StructType(node.valueType.parameters))
         );
-        node.variableName.ofType = node.valueType.ofType;
+        node.variableName!.ofType = node.valueType.ofType;
       } else if (node.valueType instanceof Nodes.StackTypeNode) {
         const lowLevelType = node.valueType.metadata['lowLevelType'];
         const byteSize = node.valueType.metadata['byteSize'];
@@ -42,20 +44,20 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
 
         if (!lowLevelType) {
           phase.parsingContext.messageCollector.error(`Missing lowLevelType schema`, node.valueType);
-          node.variableName.ofType = InjectableTypes.never;
+          node.variableName!.ofType = InjectableTypes.never;
           hasError = true;
         } else if (!(lowLevelType instanceof Nodes.StringLiteral)) {
-          node.variableName.ofType = InjectableTypes.never;
+          node.variableName!.ofType = InjectableTypes.never;
           phase.parsingContext.messageCollector.error(`lowLevelType must be a string`, lowLevelType);
           hasError = true;
         }
 
         if (!byteSize) {
           phase.parsingContext.messageCollector.error(`Missing byteSize schema`, node.valueType);
-          node.variableName.ofType = InjectableTypes.never;
+          node.variableName!.ofType = InjectableTypes.never;
           return;
         } else if (!(byteSize instanceof Nodes.IntegerLiteral)) {
-          node.variableName.ofType = InjectableTypes.never;
+          node.variableName!.ofType = InjectableTypes.never;
           phase.parsingContext.messageCollector.error(`byteSize must be a number`, lowLevelType);
           hasError = true;
         }
@@ -64,29 +66,29 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
           const type: NativeTypes = lowLevelType.value as any;
 
           if (type in NativeTypes) {
-            node.variableName.ofType = TypeType.of(
-              phase.createTypeAlias(node.variableName, StackType.of(node.variableName.name, type, byteSize.value))
+            node.variableName!.ofType = TypeType.of(
+              phase.createTypeAlias(node.variableName!, StackType.of(node.variableName!.name!, type, byteSize.value))
             );
           } else {
-            node.variableName.ofType = InjectableTypes.never;
+            node.variableName!.ofType = InjectableTypes.never;
             phase.parsingContext.messageCollector.error(`Unknown lowLevelType ${lowLevelType.value}`, lowLevelType);
           }
         }
       } else if (node.valueType instanceof Nodes.InjectedTypeNode) {
-        if (node.variableName.name in InjectableTypes) {
-          node.variableName.ofType = TypeType.of(
-            phase.createTypeAlias(node.variableName, InjectableTypes[node.variableName.name])
+        if (node.variableName!.name! in InjectableTypes) {
+          node.variableName!.ofType = TypeType.of(
+            phase.createTypeAlias(node.variableName!, (InjectableTypes as any)[node.variableName!.name!])
           );
         } else {
           phase.parsingContext.messageCollector.error(`Unknown injectable type`, node.valueType);
-          node.variableName.ofType = TypeType.of(phase.createTypeAlias(node.variableName, InjectableTypes.never));
+          node.variableName!.ofType = TypeType.of(phase.createTypeAlias(node.variableName!, InjectableTypes.never));
         }
       } else if (node.valueType instanceof Nodes.UnionTypeNode) {
-        node.variableName.ofType = TypeType.of(phase.createTypeAlias(node.variableName, new UnionType()));
+        node.variableName!.ofType = TypeType.of(phase.createTypeAlias(node.variableName!, new UnionType()));
       } else if (node.valueType instanceof Nodes.IntersectionTypeNode) {
-        node.variableName.ofType = TypeType.of(phase.createTypeAlias(node.variableName, new IntersectionType()));
+        node.variableName!.ofType = TypeType.of(phase.createTypeAlias(node.variableName!, new IntersectionType()));
       } else if (node.valueType instanceof Nodes.ReferenceNode) {
-        node.variableName.ofType = TypeType.of(phase.createTypeAlias(node.variableName, new UnionType()));
+        node.variableName!.ofType = TypeType.of(phase.createTypeAlias(node.variableName!, new UnionType()));
       } else if (!node.valueType) {
         phase.parsingContext.messageCollector.error(`Missing type`, node);
       }
@@ -104,11 +106,11 @@ const validateTypes = walkPreOrder<Nodes.Node>(
 );
 
 export class TypePhaseResult extends PhaseResult {
-  typeGraph: TypeGraph;
-  typeResolutionContext: TypeResolutionContext;
+  typeGraph!: TypeGraph;
+  typeResolutionContext!: TypeResolutionContext;
 
   get document(): Nodes.DocumentNode {
-    return this.scopePhaseResult.document;
+    return this.scopePhaseResult.document!;
   }
 
   get parsingContext(): ParsingContext {
@@ -116,7 +118,7 @@ export class TypePhaseResult extends PhaseResult {
   }
 
   createTypeAlias(name: Nodes.NameIdentifierNode, value: Type) {
-    const discriminant = this.parsingContext.getTypeDiscriminant(this.document.moduleName, name.name);
+    const discriminant = this.parsingContext.getTypeDiscriminant(this.document.moduleName!, name.name!);
     const alias = new TypeAlias(name, value);
     alias.discriminant = discriminant;
     return alias;
@@ -152,7 +154,7 @@ export class TypePhaseResult extends PhaseResult {
 
   execute(printGraph = false) {
     const executor = this.typeResolutionContext.newExecutorWithContext(
-      this.document.closure,
+      this.document.closure!,
       this.typeGraph,
       this.scopePhaseResult.semanticPhaseResult.parsingContext
     );

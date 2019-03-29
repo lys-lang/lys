@@ -6,7 +6,7 @@ import { ParsingContext } from './ParsingContext';
 import { AstNodeError } from './NodeError';
 import { indent } from '../utils/astPrinter';
 
-declare var console;
+declare var console: any;
 
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {

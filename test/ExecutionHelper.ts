@@ -19,12 +19,18 @@ import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 import envLib from '../dist/utils/libs/env';
 import testLib, { getTestResults } from '../dist/utils/libs/test';
+import { nodeSystem } from '../dist/support/NodeSystem';
+import { System } from '../dist/compiler/System';
 
 declare var it;
 
-const parsingContext = new ParsingContext();
+const newSystem: System = {
+  ...nodeSystem,
+  getCurrentDirectory: () => path.resolve(__dirname, 'fixtures', 'execution')
+};
 
-parsingContext.cwd = path.resolve(__dirname, 'fixtures', 'execution');
+const parsingContext = new ParsingContext(newSystem);
+parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 const phases = function(txt: string, filename = 'test.lys'): CodeGenerationPhaseResult {
   parsingContext.reset();
@@ -133,7 +139,7 @@ export function testFolder() {
   function testFile(fileName: string) {
     const content = readFileSync(fileName).toString();
 
-    it(fileName.replace(parsingContext.cwd, ''), async function() {
+    it(fileName.replace(parsingContext.system.getCurrentDirectory(), ''), async function() {
       this.timeout(10000);
 
       await testSrc(
@@ -146,7 +152,7 @@ export function testFolder() {
       );
     });
   }
-  glob.sync(parsingContext.cwd + '/**/*.lys').map(testFile);
+  glob.sync(parsingContext.system.getCurrentDirectory() + '/**/*.lys').map(testFile);
 }
 
 export function test(name: string, src: string, customTest?: (document: any, error?: Error) => Promise<any>) {

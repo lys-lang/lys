@@ -2,7 +2,6 @@
 
 import * as arg from 'arg';
 import { ParsingContext } from './compiler/ParsingContext';
-import { existsSync, writeFileSync, mkdirSync, statSync } from 'fs';
 import { failWithErrors } from './compiler/findAllErrors';
 import { CanonicalPhaseResult } from './compiler/phases/canonicalPhase';
 import { SemanticPhaseResult } from './compiler/phases/semanticPhase';
@@ -10,10 +9,12 @@ import { ScopePhaseResult } from './compiler/phases/scopePhase';
 import { TypePhaseResult } from './compiler/phases/typePhase';
 import { CompilationPhaseResult } from './compiler/phases/compilationPhase';
 import { CodeGenerationPhaseResult } from './compiler/phases/codeGenerationPhase';
-import { dirname, basename, resolve, relative } from 'path';
+import { dirname, basename, relative } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
 import { getTestResults } from './utils/libs/test';
-const colors = require('colors/safe');
+import { nodeSystem } from './support/NodeSystem';
+import { writeFileSync } from 'fs';
+import { ForegroundColors, formatColorAndReset } from './utils/colors';
 
 export class LysError extends Error {}
 
@@ -43,12 +44,7 @@ function mkdirRecursive(dir: string) {
 
   while (i < segments.length) {
     current = current + sep + segments[i];
-    try {
-      statSync(current);
-    } catch (e) {
-      mkdirSync(current);
-    }
-
+    nodeSystem.createDirectory(current);
     i++;
   }
 }
@@ -59,15 +55,15 @@ let libPaths: Array<string> = [];
 args['--lib'] = args['--lib'] || [];
 
 if (args['--test']) {
-  args['--lib'].push(resolve(__dirname, 'utils/libs/env.js'));
-  args['--lib'].push(resolve(__dirname, 'utils/libs/test.js'));
+  args['--lib'].push(nodeSystem.resolvePath(__dirname, 'utils/libs/env.js'));
+  args['--lib'].push(nodeSystem.resolvePath(__dirname, 'utils/libs/test.js'));
 }
 
 if (args['--lib'] && args['--lib'].length) {
   for (let libPath of args['--lib']) {
-    const lib = resolve(libPath);
+    const lib = nodeSystem.resolvePath(libPath);
 
-    if (!existsSync(lib)) {
+    if (!nodeSystem.fileExists(lib)) {
       throw new LysError(`Cannot find lib: ${lib}`);
     }
 
@@ -86,18 +82,17 @@ if (args['--lib'] && args['--lib'].length) {
   }
 }
 
-const parsingContext = new ParsingContext();
+const parsingContext = new ParsingContext(nodeSystem);
+parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 async function main() {
-  parsingContext.cwd = process.cwd();
-
   const file = args._[0];
 
   if (!file) {
     throw new LysError('Error: You did not specify an input file. \n\n  Usage: $ lys mainFile.lys');
   }
 
-  if (!existsSync(file)) {
+  if (!nodeSystem.fileExists(file)) {
     throw new LysError(`Error: File ${file} does not exist.`);
   }
 
@@ -105,7 +100,7 @@ async function main() {
     args['--output'] = 'build/' + basename(file, '.lys');
   }
 
-  const outFileFullWithoutExtension = resolve(parsingContext.cwd, args['--output']);
+  const outFileFullWithoutExtension = nodeSystem.resolvePath(nodeSystem.getCurrentDirectory(), args['--output']);
   const outPath = dirname(outFileFullWithoutExtension);
   mkdirRecursive(outPath);
 
@@ -114,7 +109,7 @@ async function main() {
   const parsing = parsingContext.getParsingPhaseForFile(file);
   failWithErrors(`Parsing phase (1/${phaseCount})`, parsingContext);
 
-  if (!parsing.document) {
+  if (!parsing || !parsing.document) {
     throw new LysError(`The document ${file} is empty`);
   }
 
@@ -142,7 +137,11 @@ async function main() {
   await codeGen.validate(optimize, !optimize);
 
   if (args['--wast']) {
-    writeFileSync(outFileFullWithoutExtension + '.wast', codeGen.emitText());
+    nodeSystem.writeFile(outFileFullWithoutExtension + '.wast', codeGen.emitText());
+  }
+
+  if (!codeGen.buffer) {
+    throw new LysError('Could not generate WASM binary');
   }
 
   writeFileSync(outFileFullWithoutExtension + '.wasm', codeGen.buffer);
@@ -157,7 +156,7 @@ async function main() {
     src.push(`modules.push(require(${JSON.stringify(relative(dirname(outFileFullWithoutExtension), path))}).default);`);
   }
 
-  const values = [];
+  const values: number[] = [];
   codeGen.buffer.forEach($ => values.push($));
 
   src.push(`const buffer = new Uint8Array(${JSON.stringify(values)})`);
@@ -186,7 +185,7 @@ exports.default = async function() {
 }
   `);
 
-  writeFileSync(outFileFullWithoutExtension + '.js', src.join('\n'));
+  nodeSystem.writeFile(outFileFullWithoutExtension + '.js', src.join('\n'));
 
   if (args['--test']) {
     const testInstance = await generateTestInstance(codeGen.buffer, libs);
@@ -204,12 +203,12 @@ exports.default = async function() {
     const testResults = getTestResults(testInstance);
 
     if (testResults && testResults.length) {
-      writeFileSync('_lys_test_results.json', JSON.stringify(testResults, null, 2));
+      nodeSystem.writeFile('_lys_test_results.json', JSON.stringify(testResults, null, 2));
       if (testResults.some($ => !$.passed)) {
-        console.error(colors.red('\n\n  Some tests failed.\n\n'));
+        console.error(formatColorAndReset('\n\n  Some tests failed.\n\n', ForegroundColors.Red));
         process.exit(1);
       } else {
-        console.error(colors.green('\n\n  All tests passed.\n\n'));
+        console.error(formatColorAndReset('\n\n  All tests passed.\n\n', ForegroundColors.Green));
       }
     }
   }
