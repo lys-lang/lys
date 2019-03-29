@@ -51,7 +51,7 @@ describe('Types', function() {
     function test(program: string, expectedType: string, expectedError: string) {
       const number = n++;
       it(`type inference test #${number}`, async function() {
-        this.timeout(5000);
+        this.timeout(10000);
 
         const phaseResult = phases(program, `types_${number}.lys`);
 
