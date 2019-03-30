@@ -155,15 +155,15 @@ function printErrors_(
 
     let line = lines[i] as string | void;
 
-    if (typeof line !== 'string') {
-      return;
-    }
-
     if (i !== lastLine) {
       printLines.push(formatColorAndReset('  ...' + gutterSeparator, gutterStyleSequence));
     }
 
     lastLine = i + 1;
+
+    if (typeof line !== 'string') {
+      return;
+    }
 
     if (errorOnLines[i] && errorOnLines[i].size) {
       printLines.push(
