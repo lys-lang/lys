@@ -9,7 +9,10 @@ import { SemanticPhaseResult } from './phases/semanticPhase';
 import { System } from './System';
 
 export class ParsingContext {
-  messageCollector = new MessageCollector();
+  public messageCollector = new MessageCollector();
+  public paths: string[] = [];
+  public registeredParsingPhase = new Map<string, ParsingPhaseResult>();
+  public typeGraph = new TypeGraph([], null);
 
   private typeNumbers = new Map<string, number>();
   private programTakenNames = new Set<string>();
@@ -17,20 +20,6 @@ export class ParsingContext {
   private moduleScopes = new Map<string, ScopePhaseResult>();
   private moduleTypes = new Map<string, TypePhaseResult>();
   private moduleCompilation = new Map<string, CompilationPhaseResult>();
-
-  public paths: string[] = [];
-  // resolve(__dirname, '../../stdlib')
-
-  public registeredParsingPhase = new Map<string, ParsingPhaseResult>();
-
-  public typeGraph = new TypeGraph([], null);
-
-  private ensureModule(moduleName: string) {
-    if (!this.modulesInContext.includes(moduleName)) {
-      this.modulesInContext.push(moduleName);
-      this.parseModule(moduleName);
-    }
-  }
 
   constructor(public system: System) {
     // stub
@@ -40,24 +29,6 @@ export class ParsingContext {
     this.typeNumbers.clear();
     this.programTakenNames.clear();
     this.messageCollector.errors.length = 0;
-  }
-
-  private resolveModule(moduleName: string) {
-    const relative = moduleName.replace(/::/g, '/') + '.lys';
-
-    const paths = [this.system.getCurrentDirectory(), ...this.paths];
-
-    for (let path of paths) {
-      if (path) {
-        let x = this.system.resolvePath(path, relative);
-
-        if (this.system.fileExists(x)) {
-          return x;
-        }
-      }
-    }
-
-    return null;
   }
 
   getUnusedName(prefix: string): string {
@@ -74,15 +45,15 @@ export class ParsingContext {
 
   getTypeDiscriminant(module: string, typeName: string): number {
     const fqn = module + '::' + typeName;
-    let number = this.typeNumbers.get(fqn);
+    let typeNumber = this.typeNumbers.get(fqn);
 
-    if (!number) {
-      number = this.typeNumbers.size + 1;
+    if (!typeNumber) {
+      typeNumber = this.typeNumbers.size + 1;
 
-      this.typeNumbers.set(fqn, number);
+      this.typeNumbers.set(fqn, typeNumber);
     }
 
-    return number;
+    return typeNumber;
   }
 
   parseModule(moduleName: string) {
@@ -143,7 +114,7 @@ export class ParsingContext {
       typePhaseResult.execute();
     }
 
-    return typePhaseResult!;
+    return typePhaseResult;
   }
 
   getCompilationPhase(moduleName: string): CompilationPhaseResult {
@@ -156,6 +127,30 @@ export class ParsingContext {
       this.moduleCompilation.set(moduleName, compilationPhaseResult);
     }
 
-    return compilationPhaseResult!;
+    return compilationPhaseResult;
+  }
+
+  private resolveModule(moduleName: string) {
+    const relative = moduleName.replace(/::/g, '/') + '.lys';
+
+    const paths = [this.system.getCurrentDirectory(), ...this.paths];
+
+    for (let path of paths) {
+      if (path) {
+        let x = this.system.resolvePath(path, relative);
+
+        if (this.system.fileExists(x)) {
+          return x;
+        }
+      }
+    }
+
+    return null;
+  }
+  private ensureModule(moduleName: string) {
+    if (!this.modulesInContext.includes(moduleName)) {
+      this.modulesInContext.push(moduleName);
+      this.parseModule(moduleName);
+    }
   }
 }

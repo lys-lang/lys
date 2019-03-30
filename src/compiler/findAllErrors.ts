@@ -10,9 +10,9 @@ declare var console: any;
 
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
-    token.astNode.errors.forEach($ => {
-      if ($ && !doc.parsingContext.messageCollector.errors.includes($ as any)) {
-        doc.parsingContext.messageCollector.error($ as any);
+    token.astNode.errors.forEach(($: any) => {
+      if ($ && !doc.parsingContext.messageCollector.errors.includes($)) {
+        doc.parsingContext.messageCollector.error($);
       }
     });
   }

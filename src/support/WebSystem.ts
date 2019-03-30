@@ -20,7 +20,7 @@ export class WebSystem implements System {
     return false;
   }
 
-  readFile(path: string): string | undefined {
+  readFile(path: string): string | void {
     const file = this.files.get(this.resolvePath(path));
     if (file) {
       return file.content;
@@ -45,7 +45,7 @@ export class WebSystem implements System {
         content: data
       });
     }
-    return undefined;
+    return;
   }
 
   resolvePath(...path: string[]): string {

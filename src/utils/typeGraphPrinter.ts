@@ -76,7 +76,7 @@ function printDocument(
       $ => (!$.astNode.astNode && !document) || ($.astNode.astNode && $.astNode.astNode.document === document)
     );
 
-    if (nodesToPrint.length == 0 && graph.subGraphs.size == 0) return;
+    if (nodesToPrint.length === 0 && graph.subGraphs.size === 0) return;
 
     writer.printIndent();
     writer.println(`subgraph ${JSON.stringify('cluster_' + (document || '<no-document>') + '_' + i)} { rankdir=TB;`);
@@ -127,7 +127,7 @@ function printEdges(
 
       writer.printIndent();
       writer.print(`${id(edge.source, rootGraph)} -> ${id(edge.target, rootGraph)}`);
-      const color = edge.error() == null ? 'blue' : edge.error() == true ? 'red' : 'black';
+      const color = edge.error() === null ? 'blue' : edge.error() === true ? 'red' : 'black';
 
       writer.println(
         '[taillabel=' +
@@ -177,29 +177,29 @@ export function edgeLabel(edge: Edge): string {
 
 function nodeLabel(node: TypeNode): string {
   if (node.astNode instanceof Nodes.ReferenceNode) {
-    return `Ref: ${node.astNode.variable!.text}`;
+    return `Ref: ${node.astNode.variable.text}`;
   } else if (node.astNode instanceof Nodes.NameIdentifierNode) {
     return `Name: ${node.astNode.name}`;
   } else if (node.astNode instanceof Nodes.BinaryExpressionNode) {
-    return `BinOp: ${node.astNode.operator!.name}`;
+    return `BinOp: ${node.astNode.operator.name}`;
   } else if (node.astNode instanceof Nodes.UnaryExpressionNode) {
-    return `Unary: ${node.astNode.operator!.name}`;
+    return `Unary: ${node.astNode.operator.name}`;
   } else if (node.astNode instanceof Nodes.IntegerLiteral) {
     return `Int: ${node.astNode.value}`;
   } else if (node.astNode instanceof Nodes.FloatLiteral) {
     return `Float: ${node.astNode.value.toFixed(5)}`;
   } else if (node.astNode instanceof Nodes.ValDeclarationNode) {
-    return `ValDecl: ${node.astNode.variableName!.name}`;
+    return `ValDecl: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.VarDeclarationNode) {
-    return `VarDecl: ${node.astNode.variableName!.name}`;
+    return `VarDecl: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.OverloadedFunctionNode) {
-    return `FunOverload: ${node.astNode.functionName!.name}`;
+    return `FunOverload: ${node.astNode.functionName.name}`;
   } else if (node.astNode instanceof Nodes.FunctionNode) {
-    return `FunNode: ${node.astNode.functionName!.name}`;
+    return `FunNode: ${node.astNode.functionName.name}`;
   } else if (node.astNode instanceof Nodes.TypeDirectiveNode) {
-    return `TypeDirective: ${node.astNode.variableName!.name}`;
+    return `TypeDirective: ${node.astNode.variableName.name}`;
   } else if (node.astNode instanceof Nodes.FunDirectiveNode) {
-    return `!!! FunDirective: ${node.astNode.functionNode!.functionName!.name}`;
+    return `!!! FunDirective: ${node.astNode.functionNode.functionName.name}`;
   }
   return node.astNode ? node.astNode.nodeName : '<no node>';
 }
@@ -208,27 +208,27 @@ const idSymbol = Symbol('id');
 const printedSymbol = Symbol('printed');
 
 export function resetPrint(typeGraph: TypeGraph) {
-  typeGraph = typeGraph.rootGraph;
+  const parentTypeGraph = typeGraph.rootGraph as any;
 
-  (typeGraph as any)[idSymbol] = new Map();
-  (typeGraph as any)[printedSymbol] = new Set();
+  parentTypeGraph[idSymbol] = new Map();
+  parentTypeGraph[printedSymbol] = new Set();
 }
 
 export function getPrintedNodes(typeGraph: TypeGraph): Set<TypeNode> {
-  typeGraph = typeGraph.rootGraph;
+  const parentTypeGraph = typeGraph.rootGraph as any;
 
-  return (typeGraph as any)[printedSymbol] || ((typeGraph as any)[printedSymbol] = new Set());
+  return parentTypeGraph[printedSymbol] || (parentTypeGraph[printedSymbol] = new Set());
 }
 
 export function id(node: TypeNode, typeGraph: TypeGraph): string {
-  typeGraph = typeGraph.rootGraph;
+  const parentTypeGraph = typeGraph.rootGraph as any;
 
   let map: Map<TypeNode, string>;
 
-  if ((typeGraph as any)[idSymbol]) {
-    map = (typeGraph as any)[idSymbol];
+  if (parentTypeGraph[idSymbol]) {
+    map = parentTypeGraph[idSymbol];
   } else {
-    map = (typeGraph as any)[idSymbol] = new Map();
+    map = parentTypeGraph[idSymbol] = new Map();
   }
 
   if (!map.has(node)) {

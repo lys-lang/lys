@@ -60,7 +60,9 @@ function printErrors_(
 
   try {
     parsing = parsingContext.getParsingPhaseForFile(fileName);
-  } catch {}
+  } catch {
+    // stub
+  }
 
   if (!parsing) {
     errors.forEach((err: IErrorPositionCapable & Error) => {
@@ -81,7 +83,7 @@ function printErrors_(
 
   let lineMapper = new LineMapper(source, Math.random().toString());
 
-  if (errors.length == 0) return '';
+  if (errors.length === 0) return '';
 
   lineMapper.initMapping();
 
@@ -151,15 +153,19 @@ function printErrors_(
   printableLines.forEach((printable, i) => {
     if (!printable) return;
 
-    let line = lines[i];
+    let line = lines[i] as string | void;
 
-    if (i != lastLine) {
+    if (typeof line !== 'string') {
+      return;
+    }
+
+    if (i !== lastLine) {
       printLines.push(formatColorAndReset('  ...' + gutterSeparator, gutterStyleSequence));
     }
 
     lastLine = i + 1;
 
-    if (typeof line == 'string' && errorOnLines[i] && errorOnLines[i].size) {
+    if (errorOnLines[i] && errorOnLines[i].size) {
       printLines.push(
         ln(i) +
           formatColorAndReset(line, ForegroundColors.ErrorLine) +
@@ -169,8 +175,8 @@ function printErrors_(
             const color = x.warning ? ForegroundColors.Yellow : ForegroundColors.Red;
 
             if (x.end && x.start) {
-              if (i == x.end.line || x.end.line == x.start.line) {
-                if (x.start.column <= x.end.column && x.end.line == x.start.line) {
+              if (i === x.end.line || x.end.line === x.start.line) {
+                if (x.start.column <= x.end.column && x.end.line === x.start.line) {
                   message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
                   message =
                     message + formatColorAndReset(new Array(x.end.column + 1 - x.start.column).join('^'), color) + ' ';
@@ -188,21 +194,18 @@ function printErrors_(
             return message;
           }).join('')
       );
-    } else if (typeof line == 'string') {
+    } else {
       printLines.push(ln(i) + line);
     }
   });
 
-  if (lines.length != lastLine - 1) {
+  if (lines.length !== lastLine - 1) {
     printLines.push(formatColorAndReset('  ...' + gutterSeparator, gutterStyleSequence));
   }
 
   printableErrors.forEach(err => {
     if (!printedErrors.has(err)) {
       printLines.push(formatColorAndReset(err.message, ForegroundColors.Red));
-      // if (err.stack) {
-      //   printLines.push(indent(colors.gray(err.stack), '  '));
-      // }
     }
   });
 

@@ -10,14 +10,14 @@ export class MessageCollector {
     if (error instanceof AstNodeError || error instanceof PositionCapableError) {
       if (
         error instanceof PositionCapableError ||
-        !this.errors.some($ => $.message == error.message && $.node == error.node)
+        !this.errors.some($ => $.message === error.message && $.node === error.node)
       ) {
         this.errors.push(error);
       }
     } else {
       const message = error instanceof Error ? error.message : error;
       if (node) {
-        if (!this.errors.some($ => $.message == message && $.node == node)) {
+        if (!this.errors.some($ => $.message === message && $.node === node)) {
           const err = new AstNodeError(message, node);
           if (error instanceof Error && error.stack) {
             err.stack = error.stack;
@@ -34,7 +34,7 @@ export class MessageCollector {
   }
 
   warning(message: string, node: Nodes.Node) {
-    if (!this.errors.some($ => $.message == message && $.node == node)) {
+    if (!this.errors.some($ => $.message === message && $.node === node)) {
       this.errors.push(new AstNodeError(message, node, true));
     }
   }

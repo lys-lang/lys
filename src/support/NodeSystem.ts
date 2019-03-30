@@ -3,6 +3,14 @@ import _os = require('os');
 import _fs = require('fs');
 import _path = require('path');
 
+const enum FileSystemEntryKind {
+  File,
+  Directory
+}
+
+const platform: string = _os.platform();
+const useCaseSensitiveFileNames = isFileSystemCaseSensitive();
+
 // NodeJS detects "\uFEFF" at the start of the string and *replaces* it with the actual
 // byte order mark from the specified encoding. Using any other byte order mark does
 // not actually work.
@@ -40,6 +48,7 @@ function readFile(fileName: string, _encoding?: string): string | undefined {
 function writeFile(fileName: string, data: string, writeByteOrderMark?: boolean): void {
   // If a BOM is required, emit one
   if (writeByteOrderMark) {
+    // tslint:disable-next-line:no-parameter-reassignment
     data = byteOrderMarkIndicator + data;
   }
 
@@ -101,14 +110,6 @@ function fileSystemEntryExists(path: string, entryKind: FileSystemEntryKind): bo
     return false;
   }
 }
-
-const enum FileSystemEntryKind {
-  File,
-  Directory
-}
-
-const platform: string = _os.platform();
-const useCaseSensitiveFileNames = isFileSystemCaseSensitive();
 
 export interface FileSystemEntries {
   readonly files: ReadonlyArray<string>;

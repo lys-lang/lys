@@ -20,9 +20,8 @@ export interface ITextPosition {
 }
 
 export class LineMapper implements ILineMapper {
-  constructor(private content: string, private absPath: string) {}
-
   private mapping: number[] | null = null;
+  constructor(private content: string, private absPath: string) {}
 
   position(_pos: number): ITextPosition {
     let pos = _pos;
@@ -38,7 +37,7 @@ export class LineMapper implements ILineMapper {
       }
       pos -= lineLength;
     }
-    if (pos == 0) {
+    if (pos === 0) {
       return {
         line: this.mapping!.length - 1,
         column: this.mapping![this.mapping!.length - 1],
@@ -46,7 +45,7 @@ export class LineMapper implements ILineMapper {
       };
     }
 
-    if (pos == 1) {
+    if (pos === 1) {
       // sometimes YAML library reports an error at a position of document length + 1, no idea what they want
       // to tell us that way
       return {
@@ -62,22 +61,20 @@ export class LineMapper implements ILineMapper {
   }
 
   initMapping() {
-    if (this.mapping != null) {
+    if (this.mapping !== null) {
       return;
     }
 
-    if (this.content == null) {
-      throw new Error(
-        `Line Mapper has been given null content${this.absPath != null ? '. Path: ' + this.absPath : ' and null path.'}`
-      );
+    if (!this.content) {
+      throw new Error(`Line Mapper has been given null content. Path: '${this.absPath || 'and null path.'}`);
     }
     this.mapping = [];
 
     let ind = 0;
     let l = this.content.length;
     for (let i = 0; i < l; i++) {
-      if (this.content.charAt(i) == '\r') {
-        if (i < l - 1 && this.content.charAt(i + 1) == '\n') {
+      if (this.content.charAt(i) === '\r') {
+        if (i < l - 1 && this.content.charAt(i + 1) === '\n') {
           this.mapping.push(i - ind + 2);
           ind = i + 2;
           i++;
@@ -85,7 +82,7 @@ export class LineMapper implements ILineMapper {
           this.mapping.push(i - ind + 1);
           ind = i + 1;
         }
-      } else if (this.content.charAt(i) == '\n') {
+      } else if (this.content.charAt(i) === '\n') {
         this.mapping.push(i - ind + 1);
         ind = i + 1;
       }

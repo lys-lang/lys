@@ -54,7 +54,7 @@ export namespace annotations {
   export class CurrentLoop extends Annotation {
     constructor(public loop: Nodes.LoopNode) {
       super();
-      //stub
+      // stub
     }
   }
 

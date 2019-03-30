@@ -83,9 +83,8 @@ const visitor = {
     return ret;
   },
   EffectDeclaration(astNode: Nodes.ASTNode) {
-    const ret = new Nodes.EffectDeclarationNode(astNode);
-
-    ret.name = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier', 'A name is required'));
+    const name = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier', 'A name is required'));
+    const ret = new Nodes.EffectDeclarationNode(astNode, name);
 
     const list = findChildrenType(astNode, 'EffectElementList');
 
@@ -342,15 +341,12 @@ const visitor = {
   },
   Type(astNode: Nodes.ASTNode) {
     const ret = visit(astNode.children[0]);
-    if (false === ret instanceof Nodes.TypeNode && false == ret instanceof Nodes.ReferenceNode) {
+    if (false === ret instanceof Nodes.TypeNode && false === ret instanceof Nodes.ReferenceNode) {
       console.error('Node ' + astNode.type + ' did not yield a type node');
       console.log(ret);
     }
     return ret;
   },
-  // MatchBody(x: Nodes.ASTNode) {
-  //   return x.children.map($ => visit($));
-  // },
   CaseLiteral(x: Nodes.ASTNode) {
     const literal = visit(x.children[0]);
     const rhs = visit(x.children[1]);
@@ -460,7 +456,7 @@ const visitor = {
   },
   StructLiteral(astNode: Nodes.ASTNode) {
     const parametersNode = findChildrenTypeOrFail(astNode, 'StructParamsList');
-    const parameters = parametersNode.children.filter($ => $.type == 'Parameter').map($ => visit($));
+    const parameters = parametersNode.children.filter($ => $.type === 'Parameter').map($ => visit($));
     return new Nodes.StructTypeNode(astNode, parameters);
   },
   StackLiteral(astNode: Nodes.ASTNode) {
@@ -512,11 +508,11 @@ const visitor = {
     const ret = new Nodes.WasmAtomNode(astNode, symbol.text, newChildren);
 
     if (
-      ret.symbol == 'call' ||
-      ret.symbol == 'global.get' ||
-      ret.symbol == 'global.set' ||
-      ret.symbol == 'get_global' ||
-      ret.symbol == 'set_global'
+      ret.symbol === 'call' ||
+      ret.symbol === 'global.get' ||
+      ret.symbol === 'global.set' ||
+      ret.symbol === 'get_global' ||
+      ret.symbol === 'set_global'
     ) {
       if (ret.args[0] instanceof Nodes.QNameNode) {
         const qname = ret.args[0] as Nodes.QNameNode;
@@ -546,13 +542,13 @@ function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
 }
 
 function findChildrenTypeOrFail(token: Nodes.ASTNode, type: string, message?: string) {
-  const ret = token.children.find($ => $.type == type);
+  const ret = token.children.find($ => $.type === type);
   if (!ret) throw new PositionCapableError(message || `Cannot find child node of type ${type}`, token);
   return ret;
 }
 
 function findChildrenType(token: Nodes.ASTNode, type: string) {
-  return token.children.find($ => $.type == type);
+  return token.children.find($ => $.type === type);
 }
 
 function visitChildTypeOrNull(token: Nodes.ASTNode, type: string) {

@@ -4,6 +4,26 @@ import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor, annotations } from './annotations';
 import { Reference } from './Reference';
 
+export interface LocalGlobalHeapReference {
+  type?: Type;
+  name: string;
+  declarationNode?: Nodes.Node;
+}
+
+export class Global implements LocalGlobalHeapReference {
+  type?: Type;
+  name: string;
+  constructor(public declarationNode: Nodes.NameIdentifierNode) {
+    this.name = declarationNode.internalIdentifier!;
+  }
+}
+
+export class Local implements LocalGlobalHeapReference {
+  type?: Type;
+  /** index in the function */
+  constructor(public index: number, public name: string, public declarationNode?: Nodes.Node) {}
+}
+
 export namespace Nodes {
   export interface ASTNode extends IToken {
     document: string;
@@ -96,17 +116,16 @@ export namespace Nodes {
   export abstract class ExpressionNode extends Node {}
 
   export class NameIdentifierNode extends Node {
-    constructor(astNode: ASTNode | null, public name: string) {
-      super(astNode);
-    }
-
     internalIdentifier?: string;
+    namespaceNames?: Map<string, NameIdentifierNode>;
 
     get childrenOrEmpty(): Node[] {
       return [];
     }
 
-    namespaceNames?: Map<string, NameIdentifierNode>;
+    constructor(astNode: ASTNode | null, public name: string) {
+      super(astNode);
+    }
 
     static fromString(name: string) {
       const r = new NameIdentifierNode(null, name);
@@ -115,7 +134,7 @@ export namespace Nodes {
 
     getSelfReference() {
       // TODO: Review this
-      return this.closure!.get(this.name!, false);
+      return this.closure!.get(this.name, false);
     }
   }
 
@@ -124,26 +143,27 @@ export namespace Nodes {
       super(astNode);
     }
 
+    static fromString(name: string): QNameNode {
+      const names = name.split('::').map($ => NameIdentifierNode.fromString($));
+      const r = new QNameNode(null, names);
+      return r;
+    }
+
     get childrenOrEmpty() {
       return this.names || [];
     }
 
     deconstruct() {
-      const moduleName = this.names!.slice(0, -1)
+      const moduleName = this.names
+        .slice(0, -1)
         .map($ => $.name)
         .join('::');
-      const variable = this.names![this.names!.length - 1].name;
+      const variable = this.names[this.names.length - 1].name;
       return { moduleName, variable };
     }
 
     get text() {
-      return this.names!.map($ => $.name).join('::');
-    }
-
-    static fromString(name: string): QNameNode {
-      const names = name.split('::').map($ => NameIdentifierNode.fromString($));
-      const r = new QNameNode(null, names);
-      return r;
+      return this.names.map($ => $.name).join('::');
     }
   }
 
@@ -193,13 +213,12 @@ export namespace Nodes {
   }
 
   export class ReferenceNode extends ExpressionNode {
+    isLocal: boolean = false;
+    resolvedReference?: Reference;
+
     constructor(astNode: ASTNode | null, public readonly variable: QNameNode) {
       super(astNode);
     }
-
-    isLocal: boolean = false;
-
-    resolvedReference?: Reference;
 
     get childrenOrEmpty() {
       return [this.variable];
@@ -281,10 +300,6 @@ export namespace Nodes {
     parameters: ParameterNode[] = [];
     body?: ExpressionNode;
 
-    constructor(astNode: ASTNode | null, public readonly functionName: NameIdentifierNode) {
-      super(astNode);
-    }
-
     get childrenOrEmpty() {
       return [this.functionName, ...this.parameters, this.functionReturnType, this.body];
     }
@@ -300,11 +315,15 @@ export namespace Nodes {
     private tempF32s: Local[] | null = null;
     private tempF64s: Local[] | null = null;
 
+    constructor(astNode: ASTNode | null, public readonly functionName: NameIdentifierNode) {
+      super(astNode);
+    }
+
     processParameters() {
       let localIndex = 0;
 
       this.parameters.forEach(parameter => {
-        let local = new Local(localIndex++, parameter.parameterName!.name!, parameter.parameterName);
+        let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
         this.localsByIndex[local.index] = local;
         parameter.annotate(new annotations.LocalIdentifier(local));
       });
@@ -313,9 +332,8 @@ export namespace Nodes {
     /** Adds a local of the specified type. */
     addLocal(type: Type, declaration?: NameIdentifierNode): Local {
       // if it has a name, check previously as this method will throw otherwise
-      var localIndex = this.parameters.length + this.additionalLocals.length;
-
-      var local = new Local(
+      let localIndex = this.parameters.length + this.additionalLocals.length;
+      let local = new Local(
         localIndex,
         declaration ? declaration.internalIdentifier! : 'var$' + localIndex.toString(10),
         declaration
@@ -330,7 +348,7 @@ export namespace Nodes {
 
     /** Gets a free temporary local of the specified type. */
     getTempLocal(type: Type): Local {
-      var temps: Local[] | null;
+      let temps: Local[] | null;
       switch (type.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s;
@@ -353,7 +371,7 @@ export namespace Nodes {
           throw new Error('concrete type expected');
       }
 
-      var local: Local;
+      let local: Local;
 
       if (temps && temps.length) {
         local = temps.pop()!;
@@ -367,9 +385,9 @@ export namespace Nodes {
 
     /** Frees the temporary local for reuse. */
     freeTempLocal(local: Local): void {
-      var temps: Local[];
+      let temps: Local[];
       if (!local.type) throw new Error('type is null'); // internal error
-      switch (local.type!.binaryenType) {
+      switch (local.type.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
           break;
@@ -396,7 +414,7 @@ export namespace Nodes {
 
     /** Gets and immediately frees a temporary local of the specified type. */
     getAndFreeTempLocal(type: Type): Local {
-      var temps: Local[];
+      let temps: Local[];
       switch (type.binaryenType) {
         case NativeTypes.i32: {
           temps = this.tempI32s || (this.tempI32s = []);
@@ -419,7 +437,7 @@ export namespace Nodes {
           throw new Error('concrete type expected');
       }
 
-      var local: Local;
+      let local: Local;
 
       if (temps.length) {
         local = temps[temps.length - 1];
@@ -588,7 +606,7 @@ export namespace Nodes {
   export class IntegerLiteral extends LiteralNode<number> {
     suffixReference?: ReferenceNode;
     get value(): number {
-      return parseInt(this.astNode!.text);
+      return parseInt(this.astNode!.text, 10);
     }
     set value(value: number) {
       this.astNode!.text = value.toString();
@@ -645,7 +663,7 @@ export namespace Nodes {
 
   export class BooleanLiteral extends LiteralNode<boolean> {
     get value(): boolean {
-      return this.astNode!.text.trim() == 'true';
+      return this.astNode!.text.trim() === 'true';
     }
     set value(value: boolean) {
       this.astNode!.text = value.toString();
@@ -737,7 +755,7 @@ export namespace Nodes {
       this.argumentsNode[0] = value;
     }
     argumentsNode: ExpressionNode[] = [];
-    rhs?: TypeNode;
+    rhs: TypeNode;
 
     constructor(astNode: ASTNode | null, lhs: ExpressionNode, rhs: TypeNode) {
       super(astNode);
@@ -758,7 +776,7 @@ export namespace Nodes {
       this.argumentsNode[0] = value;
     }
     argumentsNode: ExpressionNode[] = [];
-    rhs?: TypeNode;
+    rhs: TypeNode;
 
     constructor(astNode: ASTNode | null, lhs: ExpressionNode, rhs: TypeNode) {
       super(astNode);
@@ -912,8 +930,11 @@ export namespace Nodes {
   }
 
   export class EffectDeclarationNode extends Node {
-    name?: NameIdentifierNode;
     elements?: FunctionTypeNode[];
+
+    constructor(astNode: ASTNode | null, public readonly name: NameIdentifierNode) {
+      super(astNode);
+    }
 
     get childrenOrEmpty() {
       return [this.name, ...(this.elements || [])];
@@ -957,26 +978,6 @@ export namespace Nodes {
       return [];
     }
   }
-}
-
-export interface LocalGlobalHeapReference {
-  type?: Type;
-  name: string;
-  declarationNode?: Nodes.Node;
-}
-
-export class Global implements LocalGlobalHeapReference {
-  type?: Type;
-  name: string;
-  constructor(public declarationNode: Nodes.NameIdentifierNode) {
-    this.name = declarationNode.internalIdentifier!;
-  }
-}
-
-export class Local implements LocalGlobalHeapReference {
-  type?: Type;
-  /** index in the function */
-  constructor(public index: number, public name: string, public declarationNode?: Nodes.Node) {}
 }
 
 export function findNodesByType<T>(

@@ -2,7 +2,7 @@ export function readString(memory: ArrayBuffer, offset: number) {
   const dv = new DataView(memory, offset);
   let len = dv.getUint32(0, true);
 
-  if (len == 0) {
+  if (len === 0) {
     return '';
   }
 
@@ -24,7 +24,7 @@ export function readBytes(memory: ArrayBuffer, offset: number) {
   const dv = new DataView(memory, offset);
   let len = dv.getUint32(0, true);
 
-  if (len == 0) return [];
+  if (len === 0) return [];
 
   let currentOffset = 4;
   len += 4;
@@ -58,7 +58,6 @@ export function hexDump(memory: ArrayBuffer, max = DUMP_LIMIT, start = 0) {
 
   for (let i = start; i < buffer.byteLength && i < max; i += BLOCK_SIZE) {
     let address = padStart8(i.toString(16)); // address
-    // let block = buffer.slice(i, i + BLOCK_SIZE); // cut buffer into blocks of 16
     let hexArray = [];
     let asciiArray = [];
 

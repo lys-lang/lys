@@ -77,18 +77,17 @@ export abstract class Type {
 
 export class FunctionType extends Type {
   nativeType: NativeTypes = NativeTypes.func;
+  parameterTypes?: Type[];
+  parameterNames?: string[];
+  returnType?: Type;
 
   constructor(public name: Nodes.NameIdentifierNode) {
     super();
   }
 
-  parameterTypes?: Type[];
-  parameterNames?: string[];
-  returnType?: Type;
-
   equals(type: Type) {
     if (!(type instanceof FunctionType)) return false;
-    if (this.parameterTypes!.length != type.parameterTypes!.length) return false;
+    if (this.parameterTypes!.length !== type.parameterTypes!.length) return false;
     if (!this.returnType!.equals(type.returnType!)) return false;
     if (this.parameterTypes!.some(($, $$) => !$.equals(type.parameterTypes![$$]))) return false;
     return true;
@@ -161,9 +160,9 @@ export class StructType extends Type {
             .map(
               $ =>
                 ' ' +
-                $.parameterName!.name +
+                $.parameterName.name +
                 ':' +
-                ($.parameterType!.ofType ? $.parameterType!.ofType.inspect(level - 1) : '<null>')
+                ($.parameterType && $.parameterType.ofType ? $.parameterType.ofType.inspect(level - 1) : '<null>')
             )
             .join('')
         : '';
@@ -185,12 +184,12 @@ export class StructType extends Type {
 }
 
 export class StackType extends Type {
-  static of(name: string, nativeType: NativeTypes, byteSize: number): any {
-    return new StackType(name, nativeType, byteSize);
-  }
-
   private constructor(public typeName: string, public nativeType: NativeTypes, public byteSize: number) {
     super();
+  }
+
+  static of(name: string, nativeType: NativeTypes, byteSize: number): any {
+    return new StackType(name, nativeType, byteSize);
   }
 
   equals(other: Type): boolean {
@@ -202,11 +201,12 @@ export class StackType extends Type {
 
     if (
       otherType instanceof StackType &&
-      otherType.nativeType == this.nativeType &&
-      otherType.typeName == this.typeName &&
-      otherType.byteSize == this.byteSize
-    )
+      otherType.nativeType === this.nativeType &&
+      otherType.typeName === this.typeName &&
+      otherType.byteSize === this.byteSize
+    ) {
       return true;
+    }
 
     return super.canBeAssignedTo(other);
   }
@@ -240,9 +240,8 @@ const u32 = StackType.of('u32', NativeTypes.i32, 4);
 const voidType = StackType.of('void', NativeTypes.void, 0);
 
 export class RefType extends Type {
-  nativeType: NativeTypes = NativeTypes.i64;
-
   static instance: RefType = new RefType();
+  nativeType: NativeTypes = NativeTypes.i64;
 
   readonly byteSize = 8;
 
@@ -359,11 +358,11 @@ export class UnionType extends Type {
       nativeTypes.add($.binaryenType as Valtype);
     });
 
-    if (nativeTypes.size == 0) {
+    if (nativeTypes.size === 0) {
       throw new Error('Cannot find a suitable low level type for ' + this.toString() + ' (0)');
     }
 
-    if (nativeTypes.size == 1) {
+    if (nativeTypes.size === 1) {
       return nativeTypes.values().next().value;
     } else {
       throw new Error('Cannot find a suitable low level type for ' + this.toString());
@@ -386,12 +385,12 @@ export class UnionType extends Type {
   }
 
   toString() {
-    if (this.of.length == 0) return '(empty union)';
+    if (this.of.length === 0) return '(empty union)';
     return this.of.map($ => $.toString()).join(' | ');
   }
 
   inspect(levels: number = 0) {
-    if (this.of.length == 0) return `(union EMPTY)`;
+    if (this.of.length === 0) return `(union EMPTY)`;
     return '(union ' + this.of.map($ => $.inspect(levels - 1)).join(' ') + ')';
   }
 
@@ -461,13 +460,13 @@ export class UnionType extends Type {
       }
     }
 
-    if (newSet.size == 0) {
+    if (newSet.size === 0) {
       return InjectableTypes.never;
     }
 
     const newTypes = Array.from(newSet.values());
 
-    if (newTypes.length == 1) {
+    if (newTypes.length === 1) {
       return newTypes[0];
     }
 
@@ -502,7 +501,7 @@ export class UnionType extends Type {
       }
     });
 
-    if (newTypes.length == 0) {
+    if (newTypes.length === 0) {
       return InjectableTypes.never;
     }
 
@@ -533,7 +532,7 @@ export class UnionType extends Type {
     unions.forEach((union, ix) => {
       const expanded = UnionType.of(union.expand());
 
-      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ != ix && atom.canBeAssignedTo($)));
+      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ !== ix && atom.canBeAssignedTo($)));
       if (hasConflict) {
         blackListedUnionAtoms.push(...expanded.of);
 
@@ -593,11 +592,11 @@ export class UnionType extends Type {
         nativeTypes.add($.getSchemaValue('byteSize'));
       });
 
-      if (nativeTypes.size == 0) {
+      if (nativeTypes.size === 0) {
         throw new Error('Cannot find a consistent byteSize in ' + this.inspect(100) + ' (0)');
       }
 
-      if (nativeTypes.size == 1) {
+      if (nativeTypes.size === 1) {
         return nativeTypes.values().next().value;
       } else {
         throw new Error('Cannot find a consistent byteSize in ' + this.inspect(100));
@@ -610,18 +609,17 @@ export class UnionType extends Type {
 }
 
 export class TypeAlias extends Type {
-  discriminant: number | null = null;
-
-  constructor(public name: Nodes.NameIdentifierNode, public readonly of: Type) {
-    super();
-  }
-
   get binaryenType() {
     return this.of.binaryenType;
   }
 
   get nativeType(): NativeTypes {
     return this.of.nativeType as NativeTypes;
+  }
+  discriminant: number | null = null;
+
+  constructor(public name: Nodes.NameIdentifierNode, public readonly of: Type) {
+    super();
   }
 
   canBeAssignedTo(other: Type) {
@@ -633,7 +631,7 @@ export class TypeAlias extends Type {
   }
 
   toString(): string {
-    return this.name.name!;
+    return this.name.name;
   }
 
   inspect(levels: number = 0) {
@@ -662,28 +660,6 @@ export class TypeAlias extends Type {
     return result;
   }
 
-  private getOrderedProperties() {
-    const properties: Array<{ index: number; name: Nodes.NameIdentifierNode }> = [];
-
-    this.name.namespaceNames &&
-      this.name.namespaceNames.forEach((nameIdentifierNode, name) => {
-        if (name.startsWith('property$')) {
-          const index = parseInt(name.substr('property$'.length));
-          properties.push({ index, name: nameIdentifierNode });
-        }
-      });
-
-    properties.sort((a, b) => {
-      if (a.index > b.index) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
-
-    return properties;
-  }
-
   getSchemaValue(name: string) {
     if (name === 'discriminant') {
       if (this.discriminant === null) {
@@ -706,7 +682,7 @@ export class TypeAlias extends Type {
           return offset;
         } else if (name.startsWith('property$')) {
           const properties = this.getOrderedProperties();
-          const index = parseInt(name.substr('property$'.length));
+          const index = parseInt(name.substr('property$'.length), 10);
           const property = properties.find($ => $.index === index);
 
           if (!property) {
@@ -734,6 +710,28 @@ export class TypeAlias extends Type {
     }
     return this.of.getSchemaValue(name);
   }
+
+  private getOrderedProperties() {
+    const properties: Array<{ index: number; name: Nodes.NameIdentifierNode }> = [];
+
+    this.name.namespaceNames &&
+      this.name.namespaceNames.forEach((nameIdentifierNode, name) => {
+        if (name.startsWith('property$')) {
+          const index = parseInt(name.substr('property$'.length), 10);
+          properties.push({ index, name: nameIdentifierNode });
+        }
+      });
+
+    properties.sort((a, b) => {
+      if (a.index > b.index) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    return properties;
+  }
 }
 
 function getNonVoidFunction(type: IntersectionType): FunctionType | null {
@@ -747,11 +745,10 @@ function getNonVoidFunction(type: IntersectionType): FunctionType | null {
 }
 
 export class TypeType extends Type {
+  static memMap = new WeakMap<Type, TypeType>();
   private constructor(public readonly of: Type) {
     super();
   }
-
-  static memMap = new WeakMap<Type, TypeType>();
 
   static of(of: Type) {
     let ret = this.memMap.get(of);
@@ -816,10 +813,10 @@ export class NeverType extends Type {
       return true;
     }
     if (other instanceof UnionType) {
-      if (other.of.length == 0) {
+      if (other.of.length === 0) {
         return true;
       }
-      if (other.of.length == 1 && this.equals(other.of[0])) {
+      if (other.of.length === 1 && this.equals(other.of[0])) {
         return true;
       }
     }

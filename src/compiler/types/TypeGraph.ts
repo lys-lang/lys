@@ -55,7 +55,7 @@ export class TypeGraph {
 
   removeSubGraph(subGraph: TypeGraph, name: string): void {
     this._subGraph.forEach(($, $$) => {
-      if ($ == name && $$ == subGraph) {
+      if ($ === name && $$ === subGraph) {
         this._subGraph.delete($$);
       }
     });
@@ -94,14 +94,14 @@ export class TypeGraph {
 
   findNode(astNode: Nodes.Node): TypeNode | null {
     return (
-      this.nodes.find(node => node.astNode == astNode) ||
+      this.nodes.find(node => node.astNode === astNode) ||
       (this.parentGraph && this.parentGraph.findNode(astNode)) ||
       null
     );
   }
 
   findNodeInAllGraphs(astNode: Nodes.Node): [TypeNode, TypeGraph] | null {
-    const local = this.nodes.find(node => node.astNode == astNode);
+    const local = this.nodes.find(node => node.astNode === astNode);
 
     if (local) {
       return [local, this];
@@ -119,20 +119,19 @@ export class TypeGraph {
 }
 
 export class TypeNode {
+  public readonly MAX_ATTEMPTS = 50;
+
+  amount: number = 0;
+
+  parentGraph: TypeGraph | null = null;
+  private _outgoingEdges: Array<Edge> = [];
+  private _incomingEdges: Array<Edge> = [];
+  private succeed: boolean = false;
   constructor(public astNode: Nodes.Node, public typeResolver: TypeResolver) {
     if (!astNode) {
       throw new Error('empty astNode');
     }
   }
-
-  public readonly MAX_ATTEMPTS = 50;
-  private _outgoingEdges: Array<Edge> = [];
-  private _incomingEdges: Array<Edge> = [];
-  private succeed: boolean = false;
-
-  amount: number = 0;
-
-  parentGraph: TypeGraph | null = null;
 
   execute(ctx: TypeResolutionContext): void {
     if (this.allDependenciesResolved()) {
@@ -156,7 +155,7 @@ export class TypeNode {
                   10
                 )} .equals = ${currentType.equals(newType)} .equals2 = ${newType.equals(
                   currentType
-                )} == = ${currentType == newType}`,
+                )} == = ${currentType === newType}`,
                 this.astNode
               );
             }
@@ -182,16 +181,16 @@ export class TypeNode {
   }
 
   removeOutputEdge(edge: Edge): void {
-    this._outgoingEdges = this._outgoingEdges.filter($ => $ != edge);
+    this._outgoingEdges = this._outgoingEdges.filter($ => $ !== edge);
   }
 
   removeIncomingEdge(edge: Edge): void {
-    this._incomingEdges = this._incomingEdges.filter($ => $ != edge);
+    this._incomingEdges = this._incomingEdges.filter($ => $ !== edge);
   }
 
   allDependenciesResolved(): boolean {
     return (
-      this.incomingEdges().length == 0 ||
+      this.incomingEdges().length === 0 ||
       this.typeResolver instanceof LiteralTypeResolver ||
       !this.incomingEdges().some($ => !$.incomingTypeDefined())
     );
@@ -222,7 +221,7 @@ export class TypeNode {
   }
 
   incomingEdgesByName(label: string): Array<Edge> {
-    return this._incomingEdges.filter(edge => edge.label == label);
+    return this._incomingEdges.filter(edge => edge.label === label);
   }
 }
 
@@ -230,23 +229,29 @@ export class Edge {
   private _incomingType: Type | null = null;
   private _error: boolean | null = null;
 
+  private constructor(public source: TypeNode, public target: TypeNode, public label: string = '') {
+    source.addOutgoingEdge(this);
+    target.addIncomingEdge(this);
+  }
+
   static addEdge(ctx: ParsingContext, source: TypeNode, target: TypeNode, label: string = '') {
-    if (source.outgoingEdges().some($ => $.target == target)) {
+    if (source.outgoingEdges().some($ => $.target === target)) {
       ctx.messageCollector.error(new AstNodeError('duplicated edge in source', source.astNode));
     }
 
-    if (target.incomingEdges().some($ => $.source == source)) {
+    if (target.incomingEdges().some($ => $.source === source)) {
       ctx.messageCollector.error(new AstNodeError('duplicated edge in target', target.astNode));
     }
 
-    if (source.incomingEdges().some($ => $.source == target)) {
+    if (source.incomingEdges().some($ => $.source === target)) {
       ctx.messageCollector.error(new AstNodeError('crossed edges are not allowed 1', source.astNode));
     }
 
-    if (target.outgoingEdges().some($ => $.target == source)) {
+    if (target.outgoingEdges().some($ => $.target === source)) {
       ctx.messageCollector.error(new AstNodeError('crossed edges are not allowed 2', target.astNode));
     }
 
+    // tslint:disable-next-line:no-unused-expression
     new Edge(source, target, label);
 
     const recStack: TypeNode[] = [];
@@ -257,11 +262,6 @@ export class Edge {
       ctx.messageCollector.error(new AstNodeError(`Cyclic dependency #${id} origin`, source.astNode));
       ctx.messageCollector.error(new AstNodeError(`Cyclic dependency #${id} target`, target.astNode));
     }
-  }
-
-  private constructor(public source: TypeNode, public target: TypeNode, public label: string = '') {
-    source.addOutgoingEdge(this);
-    target.addIncomingEdge(this);
   }
 
   private static isCyclic(node: TypeNode, visited: Set<TypeNode>, recStack: Array<TypeNode>) {
@@ -289,8 +289,8 @@ export class Edge {
    * If this node has an error or not
    * @return
    */
-  error(): boolean {
-    return this._error || false;
+  error(): boolean | null {
+    return this._error;
   }
 
   /**
@@ -299,7 +299,7 @@ export class Edge {
    * @return
    */
   crossGraphEdge(): boolean {
-    return this.source.parentGraph != this.target.parentGraph;
+    return this.source.parentGraph !== this.target.parentGraph;
   }
 
   remove(): void {

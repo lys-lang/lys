@@ -67,10 +67,10 @@ export class Closure {
     this.incrementUsage(name.text);
   }
 
-  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType) {
+  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType): Reference | null {
     const localName = nameNode.name;
 
-    if (localName === '_') return;
+    if (localName === '_') return null;
 
     if (this.localScopeDeclares.has(localName)) {
       throw new AstNodeError(`"${localName}" is already declared`, nameNode);
@@ -110,7 +110,7 @@ export class Closure {
         const moduleName = parts.slice(0, -1).join('::');
         const name = parts[parts.length - 1];
         const module = this.parsingContext.getScopePhase(moduleName) as ScopePhaseResult;
-        const ref = module.document!.closure!.get(name, recurseParent);
+        const ref = module.document.closure!.get(name, recurseParent);
 
         return ref.withModule(moduleName);
       }
@@ -123,11 +123,11 @@ export class Closure {
         const module = this.parsingContext.getScopePhase(moduleName) as ScopePhaseResult;
 
         if (importsSet.has(localName)) {
-          const ref = module.document!.closure!.get(localName, recurseParent);
+          const ref = module.document.closure!.get(localName, recurseParent);
 
           return ref.withModule(moduleName);
-        } else if (importsSet.has('*') && module.document!.closure!.canResolveName(localName, recurseParent)) {
-          const ref = module.document!.closure!.get(localName, recurseParent);
+        } else if (importsSet.has('*') && module.document.closure!.canResolveName(localName, recurseParent)) {
+          const ref = module.document.closure!.get(localName, recurseParent);
 
           return ref.withModule(moduleName);
         }

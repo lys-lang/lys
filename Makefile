@@ -21,7 +21,7 @@ watch: build
 	node_modules/.bin/tsc -p tsconfig.json --watch & node_modules/.bin/tsc -p tsconfig.test.json --watch
 
 lint:
-	node_modules/.bin/tslint -t msbuild src/**/*.ts
+	node_modules/.bin/tslint src/**/*.ts --project tsconfig.json
 
 snapshot: export UPDATE_AST=true
 snapshot: just-test

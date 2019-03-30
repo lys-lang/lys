@@ -4,7 +4,7 @@ export interface System {
   useCaseSensitiveFileNames: boolean;
   write(s: string): void;
   writeOutputIsTTY?(): boolean;
-  readFile(path: string, encoding?: string): string | undefined;
+  readFile(path: string, encoding?: string): string | void;
   getFileSize?(path: string): number;
   writeFile(path: string, data: string, writeByteOrderMark?: boolean): void;
   resolvePath(...path: string[]): string;
