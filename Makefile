@@ -7,12 +7,14 @@ build:
 
 GREP="."
 
+
+
 just-test:
 	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep $(GREP) --timeout 10000
 
 test: | build just-test
 
-ci-test: test lint
+ci-test: test lint e2e
 
 inspect: build
 	node --inspect ./node_modules/mocha/bin/_mocha --require source-map-support/register
@@ -22,6 +24,10 @@ watch: build
 
 lint:
 	node_modules/.bin/tslint src/**/*.ts --project tsconfig.json
+
+e2e:
+	cd test/fixtures/cli/smoke && ../../../../dist/bin.js main.lys --test --debug --wast
+	cd test/fixtures/cli/custom-lib && ../../../../dist/bin.js main.lys --test --debug --wast --lib lib.js
 
 snapshot: export UPDATE_AST=true
 snapshot: just-test
