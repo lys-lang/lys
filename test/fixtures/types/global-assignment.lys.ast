@@ -9,6 +9,7 @@
       |-NameIdentifierNode="x" type=(alias i32 (native i32))
       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
   |-OverloadedFunctionNode type=(fun "addOne" () (alias i32)) annotations=Injected
+    |-NameIdentifierNode="addOne" type=(fun "addOne" () (alias i32))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "addOne" () (alias i32)) annotations=IsOverloaded
         |-NameIdentifierNode="addOne"
@@ -26,10 +27,10 @@
               |-QNameNode=y
                 |-NameIdentifierNode="y"
             |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-              |-NameIdentifierNode="+"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
+              |-NameIdentifierNode="+"
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
             |-ReferenceNode type=(alias i32 (native i32))
@@ -38,8 +39,8 @@
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=y
                 |-NameIdentifierNode="y"
-    |-NameIdentifierNode="addOne" type=(fun "addOne" () (alias i32))
   |-OverloadedFunctionNode type=(fun "addOneNoReturn" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="addOneNoReturn" type=(fun "addOneNoReturn" () (alias void))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "addOneNoReturn" () (alias void)) annotations=IsOverloaded
         |-NameIdentifierNode="addOneNoReturn"
@@ -52,9 +53,8 @@
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-              |-NameIdentifierNode="+"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
+              |-NameIdentifierNode="+"
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="addOneNoReturn" type=(fun "addOneNoReturn" () (alias void))

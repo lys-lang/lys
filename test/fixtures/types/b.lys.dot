@@ -26,24 +26,24 @@ digraph LYS {
     subgraph "cluster_test/fixtures/types/b.lys_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       23 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/b.lys::innerFunctionArgs(i32)";
+      label="test/fixtures/types/b.lys::innerFunctionArgs_1(i32)";
     }
     subgraph "cluster_test/fixtures/types/b.lys_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       24 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       25 [label="Ref: innerFunctionArgs\n(fun 'innerFunctionArgs' ((alias i32)) (alias i32))", fillcolor=grey];
       26 [label="Int: 3\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/b.lys::innerFunction()";
+      label="test/fixtures/types/b.lys::innerFunction_1()";
     }
     subgraph "cluster_test/fixtures/types/b.lys_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       27 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/b.lys::over()";
+      label="test/fixtures/types/b.lys::over_1()";
     }
     subgraph "cluster_test/fixtures/types/b.lys_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       28 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/b.lys::over_1(i32)";
+      label="test/fixtures/types/b.lys::over_2(i32)";
     }
     subgraph "cluster_test/fixtures/types/b.lys_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -52,7 +52,7 @@ digraph LYS {
       31 [label="Ref: innerFunction\n(fun 'innerFunction' () (alias i32))", fillcolor=grey];
       32 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       33 [label="Ref: over\n(intersection (fun 'over' () (alias i32)) (fun 'over' ((alias i32)) (alias i32)))", fillcolor=grey];
-      label="test/fixtures/types/b.lys::outerFunction()";
+      label="test/fixtures/types/b.lys::outerFunction_1()";
     }
     label="test/fixtures/types/b.lys";
   }

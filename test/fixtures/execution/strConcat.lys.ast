@@ -13,6 +13,7 @@
       |-NameIdentifierNode="support"
       |-NameIdentifierNode="test"
   |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -350,7 +351,6 @@
             |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/strConcat.lys::x:String#5)
               |-NameIdentifierNode="x" type=(alias String (struct data:<null>))
               |-BinaryExpressionNode=(fun "+" ((alias String) (alias String)) (alias String)) type=(alias String (struct data:<null>)) annotations=IsValueNode
-                |-NameIdentifierNode="+"
                 |-FunctionCallNode=(fun "apply" ((alias bytes)) (alias String)) type=(alias String (struct data:<null>)) annotations=IsValueNode
                   |-MemberNode type=(fun "apply" ((alias bytes)) (alias String))
                     |-ReferenceNode type=(type (alias String (struct data:<null>)))
@@ -358,6 +358,7 @@
                         |-NameIdentifierNode="String"
                     |-NameIdentifierNode="apply"
                   |-StringLiteral="ds" type=(alias bytes (native bytes)) annotations=IsValueNode
+                |-NameIdentifierNode="+"
                 |-FunctionCallNode=(fun "apply" ((alias bytes)) (alias String)) type=(alias String (struct data:<null>)) annotations=IsValueNode
                   |-MemberNode type=(fun "apply" ((alias bytes)) (alias String))
                     |-ReferenceNode type=(type (alias String (struct data:<null>)))
@@ -410,7 +411,6 @@
             |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/strConcat.lys::x_3:String#6)
               |-NameIdentifierNode="x" type=(alias String (struct data:<null>))
               |-BinaryExpressionNode=(fun "+" ((alias String) (alias String)) (alias String)) type=(alias String (struct data:<null>)) annotations=IsValueNode
-                |-NameIdentifierNode="+"
                 |-FunctionCallNode=(fun "apply" ((alias bytes)) (alias String)) type=(alias String (struct data:<null>)) annotations=IsValueNode
                   |-MemberNode type=(fun "apply" ((alias bytes)) (alias String))
                     |-ReferenceNode type=(type (alias String (struct data:<null>)))
@@ -418,6 +418,7 @@
                         |-NameIdentifierNode="String"
                     |-NameIdentifierNode="apply"
                   |-StringLiteral="ab" type=(alias bytes (native bytes)) annotations=IsValueNode
+                |-NameIdentifierNode="+"
                 |-FunctionCallNode=(fun "apply" ((alias bytes)) (alias String)) type=(alias String (struct data:<null>)) annotations=IsValueNode
                   |-MemberNode type=(fun "apply" ((alias bytes)) (alias String))
                     |-ReferenceNode type=(type (alias String (struct data:<null>)))
@@ -549,4 +550,3 @@
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=END
                 |-NameIdentifierNode="END"
-    |-NameIdentifierNode="main" type=(fun "main" () (alias void))

@@ -4,14 +4,14 @@ import { AstNodeError } from './NodeError';
 import { Nodes } from './nodes';
 
 export function walkPreOrder<T extends { children: any[] } = IToken, D extends PhaseResult = any>(
-  cbEnter?: (node: T, phaseResult: D, parent: T) => void,
-  cbLeave?: (node: T, phaseResult: D, parent: T) => void
+  cbEnter?: (node: T, phaseResult: D, parent: T | null) => void,
+  cbLeave?: (node: T, phaseResult: D, parent: T | null) => void
 ) {
-  const leFn = function(node: T, phaseResult?: D, parent: T = null) {
+  const leFn = function(node: T, phaseResult: D, parent: T | null = null) {
     if (node) {
       if (cbEnter) {
         try {
-          cbEnter.call(this, node, phaseResult, parent);
+          cbEnter.call(null, node, phaseResult, parent);
         } catch (e) {
           if (phaseResult.parsingContext.messageCollector && e instanceof AstNodeError) {
             phaseResult.parsingContext.messageCollector.error(e);
@@ -25,14 +25,14 @@ export function walkPreOrder<T extends { children: any[] } = IToken, D extends P
       if (node.children) {
         for (let i = 0; i < node.children.length; i++) {
           if (node.children[i]) {
-            leFn.call(this, node.children[i], phaseResult, node);
+            leFn.call(null, node.children[i], phaseResult, node);
           }
         }
       }
 
       if (cbLeave) {
         try {
-          cbLeave.call(this, node, phaseResult, parent);
+          cbLeave.call(null, node, phaseResult, parent);
         } catch (e) {
           if (phaseResult.parsingContext.messageCollector && e instanceof AstNodeError) {
             phaseResult.parsingContext.messageCollector.error(e);

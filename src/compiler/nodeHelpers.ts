@@ -1,7 +1,10 @@
 import { Nodes } from './nodes';
 
-export function findParentType<T extends Nodes.Node>(node: Nodes.Node, desiredClass: { new (...args): T }): T {
-  let parent: T | Nodes.Node = node.parent;
+export function findParentType<T extends Nodes.Node>(
+  node: Nodes.Node,
+  desiredClass: { new (...args: any[]): T }
+): T | null {
+  let parent: T | Nodes.Node | void = node.parent;
 
   while (parent && !(parent instanceof desiredClass)) {
     parent = parent.parent;
@@ -14,7 +17,7 @@ export function findParentType<T extends Nodes.Node>(node: Nodes.Node, desiredCl
 }
 
 export function findParentDelegate(node: Nodes.Node, delegate: (current: Nodes.Node) => boolean): Nodes.Node | null {
-  let parent: Nodes.Node = node.parent;
+  let parent: Nodes.Node | void = node.parent;
 
   while (parent && !delegate(parent)) {
     parent = parent.parent;

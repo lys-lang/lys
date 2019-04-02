@@ -1,1 +1,13 @@
-{}
+{
+  "extends": "dcl-tslint-config-standard",
+  "rules": {
+    "semicolon": true,
+    "no-use-before-declare": false,
+    "quotemark": false,
+    "ban-types": [true, "Number", "Boolean", "String", "Object"],
+    "no-parameter-reassignment": true
+  },
+  "linterOptions": {
+    "exclude": ["test/**", "types/**"]
+  }
+}

@@ -18,12 +18,6 @@ export class StringCodeWriter {
     return this;
   }
 
-  private callNewLineCallbacks() {
-    const buffer = this._newLineCallBacks.slice();
-    this._newLineCallBacks.length = 0;
-    buffer.forEach(callback => callback(this));
-  }
-
   indent(): StringCodeWriter {
     this._indent += 1;
     return this;
@@ -53,14 +47,6 @@ export class StringCodeWriter {
     return this;
   }
 
-  private append(code: string): StringCodeWriter {
-    if (!!this._content && this._content.endsWith('\n')) {
-      this.printIndent();
-    }
-    this._content = this._content + code;
-    return this;
-  }
-
   printForeachWithSeparator<A>(separator: string, elements: A[], code: (a: A) => void): StringCodeWriter {
     elements.forEach((element, index) => {
       if (index >= 1) {
@@ -82,7 +68,7 @@ export class StringCodeWriter {
   }
 
   hasNewLineListener(): boolean {
-    return this._newLineCallBacks.length != 0;
+    return this._newLineCallBacks.length !== 0;
   }
 
   codeContent(): string {
@@ -91,5 +77,19 @@ export class StringCodeWriter {
 
   toString() {
     return this.codeContent();
+  }
+
+  private append(code: string): StringCodeWriter {
+    if (this._content && this._content.endsWith('\n')) {
+      this.printIndent();
+    }
+    this._content = this._content + code;
+    return this;
+  }
+
+  private callNewLineCallbacks() {
+    const buffer = this._newLineCallBacks.slice();
+    this._newLineCallBacks.length = 0;
+    buffer.forEach(callback => callback(this));
   }
 }

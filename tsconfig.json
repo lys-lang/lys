@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": { "*": ["types/*"] },
     "module": "commonjs",
     "target": "es2018",
     "diagnostics": false,
@@ -16,7 +18,12 @@
     "forceConsistentCasingInFileNames": true,
     "noUnusedParameters": true,
     "noUnusedLocals": true,
-    "lib": ["es2018"]
+    "strict": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "resolveJsonModule": true,
+    "lib": ["es2018"],
+    "plugins": [{ "name": "tslint-language-service" }]
   },
   "exclude": ["node_modules", "test", "dist"],
   "include": ["src/**/*"]

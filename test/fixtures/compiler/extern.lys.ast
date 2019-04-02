@@ -5,12 +5,14 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "printf" ((alias u32) (alias i32)) (alias void)) annotations=Injected
+    |-NameIdentifierNode="printf" type=(fun "printf" ((alias u32) (alias i32)) (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="extern"
         |-StringLiteral="env"
         |-StringLiteral="printf"
       |-FunctionNode type=(fun "printf" ((alias u32) (alias i32)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="printf" annotations=Extern
         |-ParameterNode annotations=Local(str:u32#0)
           |-NameIdentifierNode="str" type=(alias u32 (native u32))
           |-ReferenceNode type=(type (alias u32 (native u32)))
@@ -21,7 +23,6 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="printf" annotations=Extern
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -29,20 +30,20 @@
           |-ReferenceNode type=(fun "panic" () (alias never))
             |-QNameNode=panic
               |-NameIdentifierNode="panic"
-    |-NameIdentifierNode="printf" type=(fun "printf" ((alias u32) (alias i32)) (alias void))
   |-OverloadedFunctionNode type=(fun "putchar" ((alias u32)) (alias void)) annotations=Injected
+    |-NameIdentifierNode="putchar" type=(fun "putchar" ((alias u32)) (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="extern"
         |-StringLiteral="env"
         |-StringLiteral="putchar"
       |-FunctionNode type=(fun "putchar" ((alias u32)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="putchar" annotations=Extern
         |-ParameterNode annotations=Local(char:u32#0)
           |-NameIdentifierNode="char" type=(alias u32 (native u32))
           |-ReferenceNode type=(type (alias u32 (native u32)))
             |-QNameNode=u32
               |-NameIdentifierNode="u32"
-        |-NameIdentifierNode="putchar" annotations=Extern
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -50,8 +51,8 @@
           |-ReferenceNode type=(fun "panic" () (alias never))
             |-QNameNode=panic
               |-NameIdentifierNode="panic"
-    |-NameIdentifierNode="putchar" type=(fun "putchar" ((alias u32)) (alias void))
   |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -80,4 +81,3 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="main" type=(fun "main" () (alias void))

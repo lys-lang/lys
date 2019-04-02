@@ -13,17 +13,16 @@
         |-NameIdentifierNode="String"
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="property_length"
         |-ParameterNode
           |-NameIdentifierNode="str"
           |-ReferenceNode
             |-QNameNode=String
               |-NameIdentifierNode="String"
-        |-NameIdentifierNode="property_length"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BinaryExpressionNode
-          |-NameIdentifierNode="/"
           |-MemberNode
             |-MemberNode
               |-ReferenceNode
@@ -31,9 +30,11 @@
                   |-NameIdentifierNode="str"
               |-NameIdentifierNode="data"
             |-NameIdentifierNode="length"
+          |-NameIdentifierNode="/"
           |-IntegerLiteral=2
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="+"
         |-ParameterNode
           |-NameIdentifierNode="lhs"
           |-ReferenceNode
@@ -44,7 +45,6 @@
           |-ReferenceNode
             |-QNameNode=String
               |-NameIdentifierNode="String"
-        |-NameIdentifierNode="+"
         |-ReferenceNode
           |-QNameNode=String
             |-NameIdentifierNode="String"
@@ -86,10 +86,10 @@
                   |-NameIdentifierNode="memory"
                   |-NameIdentifierNode="allocBytes"
               |-BinaryExpressionNode
-                |-NameIdentifierNode="+"
                 |-ReferenceNode
                   |-QNameNode=lhsLen
                     |-NameIdentifierNode="lhsLen"
+                |-NameIdentifierNode="+"
                 |-ReferenceNode
                   |-QNameNode=rhsLen
                     |-NameIdentifierNode="rhsLen"
@@ -119,12 +119,12 @@
                 |-NameIdentifierNode="memory"
                 |-NameIdentifierNode="memcpy"
             |-BinaryExpressionNode
-              |-NameIdentifierNode="+"
               |-MemberNode
                 |-ReferenceNode
                   |-QNameNode=newData
                     |-NameIdentifierNode="newData"
                 |-NameIdentifierNode="ptr"
+              |-NameIdentifierNode="+"
               |-ReferenceNode
                 |-QNameNode=lhsLen
                   |-NameIdentifierNode="lhsLen"
@@ -147,6 +147,7 @@
                 |-NameIdentifierNode="newData"
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="charAt"
         |-ParameterNode
           |-NameIdentifierNode="str"
           |-ReferenceNode
@@ -157,17 +158,16 @@
           |-ReferenceNode
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="charAt"
         |-ReferenceNode
           |-QNameNode=u16
             |-NameIdentifierNode="u16"
         |-BlockNode
           |-IfNode
             |-BinaryExpressionNode
-              |-NameIdentifierNode=">"
               |-ReferenceNode
                 |-QNameNode=at
                   |-NameIdentifierNode="at"
+              |-NameIdentifierNode=">"
               |-MemberNode
                 |-ReferenceNode
                   |-QNameNode=str
@@ -196,8 +196,8 @@
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
             |-BinaryExpressionNode
-              |-NameIdentifierNode="*"
               |-ReferenceNode
                 |-QNameNode=at
                   |-NameIdentifierNode="at"
+              |-NameIdentifierNode="*"
               |-IntegerLiteral=2

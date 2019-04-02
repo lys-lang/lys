@@ -18,8 +18,10 @@
       |-QNameNode=Maybe
         |-NameIdentifierNode="Maybe"
     |-OverloadedFunctionNode type=(fun "is" ((union (alias Maybe) (alias ref))) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="is" type=(fun "is" ((union (alias Maybe) (alias ref))) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "is" ((union (alias Maybe) (alias ref))) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="is"
           |-ParameterNode annotations=Local(a:Maybe | ref#0)
             |-NameIdentifierNode="a" type=(union (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))) (alias ref (ref ?)))
             |-UnionTypeNode type=(type (union (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))) (alias ref (ref ?))))
@@ -29,13 +31,11 @@
               |-ReferenceNode type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="is"
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
             |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-              |-NameIdentifierNode="||"
               |-IsExpressionNode=(fun "is" ((union (alias None) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-ReferenceNode type=(union (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))) (alias ref (ref ?))) annotations=IsValueNode,Local(a:Maybe | ref#0)
                   |-QNameNode=a
@@ -43,6 +43,7 @@
                 |-ReferenceNode type=(type (alias None (struct)))
                   |-QNameNode=None
                     |-NameIdentifierNode="None"
+              |-NameIdentifierNode="||"
               |-IsExpressionNode=(fun "is" ((union (alias Some) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-ReferenceNode type=(union (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))) (alias ref (ref ?))) annotations=IsValueNode,Local(a:Maybe | ref#0)
                   |-QNameNode=a
@@ -50,18 +51,18 @@
                 |-ReferenceNode type=(type (alias Some (struct value:<null>)))
                   |-QNameNode=Some
                     |-NameIdentifierNode="Some"
-      |-NameIdentifierNode="is" type=(fun "is" ((union (alias Maybe) (alias ref))) (alias boolean))
     |-OverloadedFunctionNode type=(fun "as" ((alias Maybe)) (alias ref)) annotations=Injected
+      |-NameIdentifierNode="as" type=(fun "as" ((alias Maybe)) (alias ref))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode type=(fun "as" ((alias Maybe)) (alias ref)) annotations=IsOverloaded
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(a:Maybe#0)
             |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>))))
             |-ReferenceNode type=(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))
               |-QNameNode=Maybe
                 |-NameIdentifierNode="Maybe"
-          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -69,10 +70,11 @@
             |-WasmAtomNode
               |-QNameNode=$a
                 |-NameIdentifierNode="$a"
-      |-NameIdentifierNode="as" type=(fun "as" ((alias Maybe)) (alias ref))
     |-OverloadedFunctionNode type=(fun "==" ((alias ref) (alias ref)) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="==" type=(fun "==" ((alias ref) (alias ref)) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "==" ((alias ref) (alias ref)) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -83,22 +85,22 @@
             |-ReferenceNode type=(type (alias ref (ref ?)))
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="=="
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-            |-NameIdentifierNode="=="
             |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:ref#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
+            |-NameIdentifierNode="=="
             |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode,Local(rhs:ref#1)
               |-QNameNode=rhs
                 |-NameIdentifierNode="rhs"
-      |-NameIdentifierNode="==" type=(fun "==" ((alias ref) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias ref) (alias ref)) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -109,22 +111,22 @@
             |-ReferenceNode type=(type (alias ref (ref ?)))
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="!="
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BinaryExpressionNode=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-            |-NameIdentifierNode="!="
             |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:ref#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
+            |-NameIdentifierNode="!="
             |-ReferenceNode type=(alias ref (ref ?)) annotations=IsValueNode,Local(rhs:ref#1)
               |-QNameNode=rhs
                 |-NameIdentifierNode="rhs"
-      |-NameIdentifierNode="!=" type=(fun "!=" ((alias ref) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias Maybe) (alias u32)) (alias void)) annotations=Injected
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Maybe) (alias u32)) (alias void))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "store" ((alias ref) (alias Maybe) (alias u32)) (alias void)) annotations=IsOverloaded
+          |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -140,7 +142,6 @@
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="store"
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -160,10 +161,11 @@
               |-WasmAtomNode
                 |-QNameNode=$rhs
                   |-NameIdentifierNode="$rhs"
-      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Maybe) (alias u32)) (alias void))
     |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias u32)) (alias Maybe)) annotations=Injected
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias Maybe))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "load" ((alias ref) (alias u32)) (alias Maybe)) annotations=IsOverloaded
+          |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -174,7 +176,6 @@
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="load"
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
@@ -191,20 +192,20 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias Maybe))
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=None
         |-NameIdentifierNode="None"
     |-OverloadedFunctionNode type=(intersection (fun "as" ((alias None)) (alias Maybe)) (fun "as" ((alias None)) (alias ref))) annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias None)) (alias Maybe)) (fun "as" ((alias None)) (alias ref)))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "as" ((alias None)) (alias Maybe)) annotations=IsOverloaded
+          |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:None#0)
             |-NameIdentifierNode="lhs" type=(alias None (struct))
             |-ReferenceNode type=(type (alias None (struct)))
               |-QNameNode=None
                 |-NameIdentifierNode="None"
-          |-NameIdentifierNode="as"
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
@@ -216,12 +217,12 @@
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode type=(fun "as" ((alias None)) (alias ref)) annotations=IsOverloaded
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:None#0)
             |-NameIdentifierNode="lhs" type=(alias None (struct))
             |-ReferenceNode type=(type (alias None (struct)))
               |-QNameNode=None
                 |-NameIdentifierNode="None"
-          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -229,8 +230,8 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias None)) (alias Maybe)) (fun "as" ((alias None)) (alias ref)))
     |-OverloadedFunctionNode type=(fun "None$discriminant" () (alias i64)) annotations=Injected
+      |-NameIdentifierNode="None$discriminant" type=(fun "None$discriminant" () (alias i64))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
@@ -251,7 +252,6 @@
                     |-NameIdentifierNode="None"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-NameIdentifierNode="<<"
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/patternMatching.lys::discriminant:u32#0)
                   |-QNameNode=discriminant
@@ -259,9 +259,10 @@
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
+              |-NameIdentifierNode="<<"
               |-IntegerLiteral=32 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="None$discriminant" type=(fun "None$discriminant" () (alias i64))
     |-OverloadedFunctionNode type=(fun "apply" () (alias None)) annotations=Injected
+      |-NameIdentifierNode="apply" type=(fun "apply" () (alias None))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "apply" () (alias None)) annotations=IsOverloaded
           |-NameIdentifierNode="apply"
@@ -273,10 +274,11 @@
               |-ReferenceNode type=(fun "None$discriminant" () (alias i64))
                 |-QNameNode=None$discriminant
                   |-NameIdentifierNode="None$discriminant"
-      |-NameIdentifierNode="apply" type=(fun "apply" () (alias None))
     |-OverloadedFunctionNode type=(fun "is" ((union (alias None) (alias ref))) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="is" type=(fun "is" ((union (alias None) (alias ref))) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "is" ((union (alias None) (alias ref))) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="is"
           |-ParameterNode annotations=Local(a:None | ref#0)
             |-NameIdentifierNode="a" type=(union (alias None (struct)) (alias ref (ref ?)))
             |-UnionTypeNode type=(type (union (alias None (struct)) (alias ref (ref ?))))
@@ -286,7 +288,6 @@
               |-ReferenceNode type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="is"
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
@@ -302,10 +303,11 @@
                 |-ReferenceNode type=(fun "None$discriminant" () (alias i64))
                   |-QNameNode=None$discriminant
                     |-NameIdentifierNode="None$discriminant"
-      |-NameIdentifierNode="is" type=(fun "is" ((union (alias None) (alias ref))) (alias boolean))
     |-OverloadedFunctionNode type=(fun "==" ((alias None) (alias ref)) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="==" type=(fun "==" ((alias None) (alias ref)) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "==" ((alias None) (alias ref)) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:None#0)
             |-NameIdentifierNode="a" type=(alias None (struct))
             |-ReferenceNode type=(type (alias None (struct)))
@@ -316,7 +318,6 @@
             |-ReferenceNode type=(type (alias ref (ref ?)))
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="=="
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
@@ -328,10 +329,11 @@
               |-WasmAtomNode
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
-      |-NameIdentifierNode="==" type=(fun "==" ((alias None) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "!=" ((alias None) (alias ref)) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias None) (alias ref)) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "!=" ((alias None) (alias ref)) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:None#0)
             |-NameIdentifierNode="a" type=(alias None (struct))
             |-ReferenceNode type=(type (alias None (struct)))
@@ -342,7 +344,6 @@
             |-ReferenceNode type=(type (alias ref (ref ?)))
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="!="
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
@@ -354,10 +355,11 @@
               |-WasmAtomNode
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
-      |-NameIdentifierNode="!=" type=(fun "!=" ((alias None) (alias ref)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias None) (alias u32)) (alias void)) annotations=Injected
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias None) (alias u32)) (alias void))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "store" ((alias ref) (alias None) (alias u32)) (alias void)) annotations=IsOverloaded
+          |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -373,7 +375,6 @@
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="store"
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -393,10 +394,11 @@
               |-WasmAtomNode
                 |-QNameNode=$rhs
                   |-NameIdentifierNode="$rhs"
-      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias None) (alias u32)) (alias void))
     |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias u32)) (alias None)) annotations=Injected
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias None))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "load" ((alias ref) (alias u32)) (alias None)) annotations=IsOverloaded
+          |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -407,7 +409,6 @@
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="load"
           |-ReferenceNode type=(type (alias None (struct)))
             |-QNameNode=None
               |-NameIdentifierNode="None"
@@ -424,20 +425,20 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias None))
   |-ImplDirective
     |-ReferenceNode
       |-QNameNode=Some
         |-NameIdentifierNode="Some"
     |-OverloadedFunctionNode type=(intersection (fun "as" ((alias Some)) (alias Maybe)) (fun "as" ((alias Some)) (alias ref))) annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Some)) (alias Maybe)) (fun "as" ((alias Some)) (alias ref)))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "as" ((alias Some)) (alias Maybe)) annotations=IsOverloaded
+          |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:Some#0)
             |-NameIdentifierNode="lhs" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="as"
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
@@ -449,12 +450,12 @@
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode type=(fun "as" ((alias Some)) (alias ref)) annotations=IsOverloaded
+          |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:Some#0)
             |-NameIdentifierNode="lhs" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="as" annotations=Explicit
           |-ReferenceNode type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -462,8 +463,8 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Some)) (alias Maybe)) (fun "as" ((alias Some)) (alias ref)))
     |-OverloadedFunctionNode type=(fun "Some$discriminant" () (alias u64)) annotations=Injected
+      |-NameIdentifierNode="Some$discriminant" type=(fun "Some$discriminant" () (alias u64))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
@@ -484,7 +485,6 @@
                     |-NameIdentifierNode="Some"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
-              |-NameIdentifierNode="<<"
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
                 |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/patternMatching.lys::discriminant_3:u32#0)
                   |-QNameNode=discriminant
@@ -492,17 +492,18 @@
                 |-ReferenceNode type=(type (alias u64 (native u64)))
                   |-QNameNode=u64
                     |-NameIdentifierNode="u64"
+              |-NameIdentifierNode="<<"
               |-IntegerLiteral=32 type=(alias i32 (native i32)) annotations=IsValueNode
-      |-NameIdentifierNode="Some$discriminant" type=(fun "Some$discriminant" () (alias u64))
     |-OverloadedFunctionNode type=(fun "apply" ((alias i32)) (alias Some)) annotations=Injected
+      |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32)) (alias Some))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "apply" ((alias i32)) (alias Some)) annotations=IsOverloaded
+          |-NameIdentifierNode="apply"
           |-ParameterNode annotations=Local(value:i32#0)
             |-NameIdentifierNode="value" type=(alias i32 (native i32))
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="apply"
           |-ReferenceNode type=(type (alias Some (struct value:<null>)))
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
@@ -542,16 +543,16 @@
             |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/compiler/patternMatching.lys::$ref:Some#1)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
-      |-NameIdentifierNode="apply" type=(fun "apply" ((alias i32)) (alias Some))
     |-OverloadedFunctionNode type=(fun "fromPointer" ((alias u32)) (alias Some)) annotations=Injected
+      |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((alias u32)) (alias Some))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "fromPointer" ((alias u32)) (alias Some)) annotations=IsOverloaded
+          |-NameIdentifierNode="fromPointer"
           |-ParameterNode annotations=Local(ptr:u32#0)
             |-NameIdentifierNode="ptr" type=(alias u32 (native u32))
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="fromPointer"
           |-ReferenceNode type=(type (alias Some (struct value:<null>)))
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
@@ -565,10 +566,11 @@
                 |-WasmAtomNode
                   |-QNameNode=$ptr
                     |-NameIdentifierNode="$ptr"
-      |-NameIdentifierNode="fromPointer" type=(fun "fromPointer" ((alias u32)) (alias Some))
     |-OverloadedFunctionNode type=(fun "==" ((alias Some) (alias Some)) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="==" type=(fun "==" ((alias Some) (alias Some)) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "==" ((alias Some) (alias Some)) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:Some#0)
             |-NameIdentifierNode="a" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
@@ -579,7 +581,6 @@
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="=="
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
@@ -591,10 +592,11 @@
               |-WasmAtomNode
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
-      |-NameIdentifierNode="==" type=(fun "==" ((alias Some) (alias Some)) (alias boolean))
     |-OverloadedFunctionNode type=(fun "!=" ((alias Some) (alias Some)) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="!=" type=(fun "!=" ((alias Some) (alias Some)) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "!=" ((alias Some) (alias Some)) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:Some#0)
             |-NameIdentifierNode="a" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
@@ -605,7 +607,6 @@
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="!="
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
@@ -617,16 +618,16 @@
               |-WasmAtomNode
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
-      |-NameIdentifierNode="!=" type=(fun "!=" ((alias Some) (alias Some)) (alias boolean))
     |-OverloadedFunctionNode type=(intersection (fun "property_value" ((alias Some)) (alias i32)) (fun "property_value" ((alias Some) (alias i32)) (alias void))) annotations=Injected
+      |-NameIdentifierNode="property_value" type=(intersection (fun "property_value" ((alias Some)) (alias i32)) (fun "property_value" ((alias Some) (alias i32)) (alias void)))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "property_value" ((alias Some)) (alias i32)) annotations=IsOverloaded
+          |-NameIdentifierNode="property_value"
           |-ParameterNode annotations=Local(self:Some#0)
             |-NameIdentifierNode="self" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="property_value"
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -639,6 +640,7 @@
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
         |-FunctionNode type=(fun "property_value" ((alias Some) (alias i32)) (alias void)) annotations=IsOverloaded
+          |-NameIdentifierNode="property_value"
           |-ParameterNode annotations=Local(self:Some#0)
             |-NameIdentifierNode="self" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
@@ -649,7 +651,6 @@
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property_value"
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -663,18 +664,18 @@
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#1)
               |-QNameNode=value
                 |-NameIdentifierNode="value"
-      |-NameIdentifierNode="property_value" type=(intersection (fun "property_value" ((alias Some)) (alias i32)) (fun "property_value" ((alias Some) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(intersection (fun "property$0" ((alias Some)) (alias i32)) (fun "property$0" ((alias Some) (alias i32)) (alias void))) annotations=Injected
+      |-NameIdentifierNode="property$0" type=(intersection (fun "property$0" ((alias Some)) (alias i32)) (fun "property$0" ((alias Some) (alias i32)) (alias void)))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$0" ((alias Some)) (alias i32)) annotations=IsOverloaded
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:Some#0)
             |-NameIdentifierNode="self" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -696,6 +697,7 @@
         |-DecoratorNode
           |-NameIdentifierNode="inline"
         |-FunctionNode type=(fun "property$0" ((alias Some) (alias i32)) (alias void)) annotations=IsOverloaded
+          |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:Some#0)
             |-NameIdentifierNode="self" type=(alias Some (struct value:<null>))
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
@@ -706,7 +708,6 @@
             |-ReferenceNode type=(type (alias i32 (native i32)))
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-NameIdentifierNode="property$0" annotations=Inline
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -727,10 +728,11 @@
                 |-QNameNode=Some
                   |-NameIdentifierNode="Some"
               |-NameIdentifierNode="property$0_offset"
-      |-NameIdentifierNode="property$0" type=(intersection (fun "property$0" ((alias Some)) (alias i32)) (fun "property$0" ((alias Some) (alias i32)) (alias void)))
     |-OverloadedFunctionNode type=(fun "is" ((union (alias Some) (alias ref))) (alias boolean)) annotations=Injected
+      |-NameIdentifierNode="is" type=(fun "is" ((union (alias Some) (alias ref))) (alias boolean))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "is" ((union (alias Some) (alias ref))) (alias boolean)) annotations=IsOverloaded
+          |-NameIdentifierNode="is"
           |-ParameterNode annotations=Local(a:Some | ref#0)
             |-NameIdentifierNode="a" type=(union (alias Some (struct value:<null>)) (alias ref (ref ?)))
             |-UnionTypeNode type=(type (union (alias Some (struct value:<null>)) (alias ref (ref ?))))
@@ -740,7 +742,6 @@
               |-ReferenceNode type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-NameIdentifierNode="is"
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
@@ -756,10 +757,11 @@
                 |-ReferenceNode type=(fun "Some$discriminant" () (alias u64))
                   |-QNameNode=Some$discriminant
                     |-NameIdentifierNode="Some$discriminant"
-      |-NameIdentifierNode="is" type=(fun "is" ((union (alias Some) (alias ref))) (alias boolean))
     |-OverloadedFunctionNode type=(fun "store" ((alias ref) (alias Some) (alias u32)) (alias void)) annotations=Injected
+      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Some) (alias u32)) (alias void))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "store" ((alias ref) (alias Some) (alias u32)) (alias void)) annotations=IsOverloaded
+          |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -775,7 +777,6 @@
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="store"
           |-ReferenceNode type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
@@ -795,10 +796,11 @@
               |-WasmAtomNode
                 |-QNameNode=$rhs
                   |-NameIdentifierNode="$rhs"
-      |-NameIdentifierNode="store" type=(fun "store" ((alias ref) (alias Some) (alias u32)) (alias void))
     |-OverloadedFunctionNode type=(fun "load" ((alias ref) (alias u32)) (alias Some)) annotations=Injected
+      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias Some))
       |-FunDirectiveNode
         |-FunctionNode type=(fun "load" ((alias ref) (alias u32)) (alias Some)) annotations=IsOverloaded
+          |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:ref#0)
             |-NameIdentifierNode="lhs" type=(alias ref (ref ?))
             |-ReferenceNode type=(type (alias ref (ref ?)))
@@ -809,7 +811,6 @@
             |-ReferenceNode type=(type (alias u32 (native u32)))
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-NameIdentifierNode="load"
           |-ReferenceNode type=(type (alias Some (struct value:<null>)))
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
@@ -826,7 +827,6 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-      |-NameIdentifierNode="load" type=(fun "load" ((alias ref) (alias u32)) (alias Some))
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="None" type=(type (alias None (struct)))
     |-StructTypeNode type=(type (alias None (struct)))
@@ -839,16 +839,17 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
   |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias boolean)) annotations=Injected
+    |-NameIdentifierNode="test" type=(fun "test" ((alias i32)) (alias boolean))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test" ((alias i32)) (alias boolean)) annotations=IsOverloaded
+        |-NameIdentifierNode="test" annotations=Export
         |-ParameterNode annotations=Local(a:i32#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="test" annotations=Export
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
@@ -857,22 +858,22 @@
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-MatchLiteralNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=1 type=(alias i32 (native i32))
             |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=1 type=(alias i32 (native i32))
           |-MatchDefaultNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:i32#1)
             |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-    |-NameIdentifierNode="test" type=(fun "test" ((alias i32)) (alias boolean))
   |-OverloadedFunctionNode type=(fun "test2" ((alias i32)) (alias i32)) annotations=Injected
+    |-NameIdentifierNode="test2" type=(fun "test2" ((alias i32)) (alias i32))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test2" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="test2" annotations=Export
         |-ParameterNode annotations=Local(a:i32#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="test2" annotations=Export
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -881,46 +882,46 @@
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=10 type=(alias i32 (native i32))
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=10 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=20 type=(alias i32 (native i32))
             |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=20 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=30 type=(alias i32 (native i32))
             |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=30 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=40 type=(alias i32 (native i32))
             |-IntegerLiteral=4 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=40 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=50 type=(alias i32 (native i32))
             |-IntegerLiteral=5 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=50 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=60 type=(alias i32 (native i32))
             |-IntegerLiteral=6 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=60 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=70 type=(alias i32 (native i32))
             |-IntegerLiteral=7 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=70 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=80 type=(alias i32 (native i32))
             |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=80 type=(alias i32 (native i32))
           |-MatchLiteralNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-            |-IntegerLiteral=90 type=(alias i32 (native i32))
             |-IntegerLiteral=9 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+            |-IntegerLiteral=90 type=(alias i32 (native i32))
           |-MatchDefaultNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-    |-NameIdentifierNode="test2" type=(fun "test2" ((alias i32)) (alias i32))
   |-OverloadedFunctionNode type=(fun "test3" ((alias Maybe)) (alias boolean)) annotations=Injected
+    |-NameIdentifierNode="test3" type=(fun "test3" ((alias Maybe)) (alias boolean))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test3" ((alias Maybe)) (alias boolean)) annotations=IsOverloaded
+        |-NameIdentifierNode="test3" annotations=Export
         |-ParameterNode annotations=Local(a:Maybe#0)
           |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>))))
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
-        |-NameIdentifierNode="test3" annotations=Export
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
@@ -930,28 +931,28 @@
               |-NameIdentifierNode="a"
           |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:Maybe#1)
             |-NameIdentifierNode="$" type=(alias Some (struct value:<null>))
+            |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
             |-ReferenceNode type=(type (alias Some (struct value:<null>)))
               |-QNameNode=Some
                 |-NameIdentifierNode="Some"
-            |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
           |-MatchCaseIsNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(var$1:Maybe#1)
             |-NameIdentifierNode="$" type=(alias None (struct))
+            |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
             |-ReferenceNode type=(type (alias None (struct)))
               |-QNameNode=None
                 |-NameIdentifierNode="None"
-            |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-    |-NameIdentifierNode="test3" type=(fun "test3" ((alias Maybe)) (alias boolean))
   |-OverloadedFunctionNode type=(fun "test4" ((alias Maybe)) (alias Some)) annotations=Injected
+    |-NameIdentifierNode="test4" type=(fun "test4" ((alias Maybe)) (alias Some))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test4" ((alias Maybe)) (alias Some)) annotations=IsOverloaded
+        |-NameIdentifierNode="test4" annotations=Export
         |-ParameterNode annotations=Local(a:Maybe#0)
           |-NameIdentifierNode="a" type=(alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>))))
           |-ReferenceNode type=(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))
             |-QNameNode=Maybe
               |-NameIdentifierNode="Maybe"
-        |-NameIdentifierNode="test4" annotations=Export
         |-ReferenceNode type=(type (alias Some (struct value:<null>)))
           |-QNameNode=Some
             |-NameIdentifierNode="Some"
@@ -961,17 +962,14 @@
               |-NameIdentifierNode="a"
           |-MatchCaseIsNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,Local(var$1:Maybe#1)
             |-NameIdentifierNode="x" type=(alias Some (struct value:<null>))
-            |-ReferenceNode type=(type (alias Some (struct value:<null>)))
-              |-QNameNode=Some
-                |-NameIdentifierNode="Some"
             |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,IsReturnExpression,Local(var$1:Maybe#1)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
+            |-ReferenceNode type=(type (alias Some (struct value:<null>)))
+              |-QNameNode=Some
+                |-NameIdentifierNode="Some"
           |-MatchCaseIsNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,Local(var$1:Maybe#1)
             |-NameIdentifierNode="$" type=(alias None (struct))
-            |-ReferenceNode type=(type (alias None (struct)))
-              |-QNameNode=None
-                |-NameIdentifierNode="None"
             |-FunctionCallNode=(fun "apply" ((alias i32)) (alias Some)) type=(alias Some (struct value:<null>)) annotations=IsValueNode,IsReturnExpression
               |-MemberNode type=(fun "apply" ((alias i32)) (alias Some))
                 |-ReferenceNode type=(type (alias Some (struct value:<null>)))
@@ -979,4 +977,6 @@
                     |-NameIdentifierNode="Some"
                 |-NameIdentifierNode="apply"
               |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="test4" type=(fun "test4" ((alias Maybe)) (alias Some))
+            |-ReferenceNode type=(type (alias None (struct)))
+              |-QNameNode=None
+                |-NameIdentifierNode="None"

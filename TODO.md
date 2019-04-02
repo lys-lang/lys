@@ -69,18 +69,6 @@ https://en.wikipedia.org/wiki/Nullary_constructor
 
 grammar changes:
 
-```
-#[...]
-
-""
-
-.^
-
-as <type>
-
-- is now unary
-```
-
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
 
 immutable parameters, immutable `val`

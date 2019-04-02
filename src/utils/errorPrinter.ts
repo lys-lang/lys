@@ -1,24 +1,25 @@
-declare var require;
-const colors = require('colors/safe');
 import { LineMapper, ITextPosition } from './LineMapper';
 import { IErrorPositionCapable } from '../compiler/NodeError';
 import { ParsingContext } from '../compiler/ParsingContext';
 import { ParsingPhaseResult } from '../compiler/phases/parsingPhase';
 import { indent } from './astPrinter';
+import { gutterStyleSequence, formatColorAndReset, ForegroundColors, gutterSeparator } from './colors';
 
 function mapSet<T, V>(set: Set<T>, fn: (x: T) => V): V[] {
-  const out = [];
+  const out: V[] = [];
   set.forEach($ => out.push(fn($)));
   return out;
 }
 
 interface ILocalError {
   message: string;
-  start: ITextPosition;
-  end: ITextPosition;
+  start: ITextPosition | null;
+  end: ITextPosition | null;
   stack?: string;
   warning?: boolean;
 }
+
+export class LysError extends Error {}
 
 const ansiRegex = new RegExp(
   [
@@ -36,17 +37,22 @@ export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
     if (!errorByFile.has(document)) {
       errorByFile.set(document, []);
     }
-    errorByFile.get(document).push($);
+    errorByFile.get(document)!.push($);
   });
 
-  const out = [];
+  const out: string[] = [];
 
   errorByFile.forEach((errors, fileName) => {
     out.push(printErrors_(fileName, parsingContext, errors, stripAnsi));
   });
 
-  return out.join('\n');
+  const ret = out.join('\n');
+
+  parsingContext.system.write(ret);
+
+  return ret;
 }
+
 function printErrors_(
   fileName: string,
   parsingContext: ParsingContext,
@@ -55,19 +61,21 @@ function printErrors_(
 ) {
   const printLines = [];
 
-  printLines.push(colors.cyan(fileName || '(no file)'));
+  printLines.push(formatColorAndReset(fileName || '(no file)', gutterStyleSequence));
 
-  let parsing: ParsingPhaseResult;
+  let parsing: ParsingPhaseResult | void;
 
   try {
     parsing = parsingContext.getParsingPhaseForFile(fileName);
-  } catch {}
+  } catch {
+    // stub
+  }
 
   if (!parsing) {
     errors.forEach((err: IErrorPositionCapable & Error) => {
-      printLines.push(colors.red(err.message));
+      printLines.push(formatColorAndReset(err.message, ForegroundColors.Red));
       if (err.stack) {
-        printLines.push(indent(colors.gray(err.stack), '  '));
+        printLines.push(indent(formatColorAndReset(err.stack, ForegroundColors.Grey), '  '));
       }
     });
 
@@ -82,7 +90,7 @@ function printErrors_(
 
   let lineMapper = new LineMapper(source, Math.random().toString());
 
-  if (errors.length == 0) return '';
+  if (errors.length === 0) return '';
 
   lineMapper.initMapping();
 
@@ -121,12 +129,13 @@ function printErrors_(
     }
   });
 
-  const blackPadding = colors.white(colors.bgBlack('     │'));
+  const blackPadding = formatColorAndReset('     ' + gutterSeparator, gutterStyleSequence);
 
-  const ln = n => colors.bgBlack(colors.gray(('    ' + (n + 1).toString()).substr(-5)) + '│') + ' ';
+  const ln = (n: number) =>
+    formatColorAndReset(('    ' + (n + 1).toString()).substr(-5) + '' + gutterSeparator, gutterStyleSequence);
   const printedErrors: Set<ILocalError> = new Set();
 
-  const printableLines = [];
+  const printableLines: boolean[] = [];
   const linesAbove = 10;
 
   let lastLine = 0;
@@ -151,59 +160,59 @@ function printErrors_(
   printableLines.forEach((printable, i) => {
     if (!printable) return;
 
-    let line = lines[i];
+    let line = lines[i] as string | void;
 
-    if (i != lastLine) {
-      printLines.push(colors.cyan('  …'));
+    if (i !== lastLine) {
+      printLines.push(formatColorAndReset('  ...' + gutterSeparator, gutterStyleSequence));
     }
 
     lastLine = i + 1;
 
-    if (typeof line == 'string' && errorOnLines[i] && errorOnLines[i].size) {
+    if (typeof line !== 'string') {
+      return;
+    }
+
+    if (errorOnLines[i] && errorOnLines[i].size) {
       printLines.push(
         ln(i) +
-          colors.bgRed(line) +
+          formatColorAndReset(line, ForegroundColors.ErrorLine) +
           mapSet(errorOnLines[i], x => {
             let message = '';
 
-            if (i == x.end.line || x.end.line == x.start.line) {
-              if (x.start.column <= x.end.column && x.end.line == x.start.line) {
-                message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
-                message = message + ' ' + new Array(x.end.column + 1 - x.start.column).join('^') + ' ';
-              } else {
-                message = '\n' + blackPadding + new Array(x.end.column).join(' ');
-                message = message + ' ^ ';
+            const color = x.warning ? ForegroundColors.Yellow : ForegroundColors.Red;
+
+            if (x.end && x.start) {
+              if (i === x.end.line || x.end.line === x.start.line) {
+                if (x.start.column <= x.end.column && x.end.line === x.start.line) {
+                  message = '\n' + blackPadding + new Array(x.start.column + 1).join(' ');
+                  message =
+                    message + formatColorAndReset(new Array(x.end.column + 1 - x.start.column).join('^'), color) + ' ';
+                } else {
+                  message = '\n' + blackPadding + new Array(x.end.column).join(' ');
+                  message = message + formatColorAndReset('^ ', color);
+                }
+
+                message = message + formatColorAndReset(x.message, color);
               }
 
-              message = message + x.message;
-
-              if (x.warning) {
-                message = colors.yellow(message);
-              } else {
-                message = colors.red(message);
-              }
+              printedErrors.add(x);
             }
-
-            printedErrors.add(x);
 
             return message;
           }).join('')
       );
-    } else if (typeof line == 'string') {
+    } else {
       printLines.push(ln(i) + line);
     }
   });
 
-  if (lines.length != lastLine - 1) {
-    printLines.push(colors.cyan('… ' + (lines.length + 1)));
+  if (lines.length !== lastLine - 1) {
+    printLines.push(formatColorAndReset('  ...' + gutterSeparator, gutterStyleSequence));
   }
 
   printableErrors.forEach(err => {
     if (!printedErrors.has(err)) {
-      printLines.push(colors.red(err.message));
-      // if (err.stack) {
-      //   printLines.push(indent(colors.gray(err.stack), '  '));
-      // }
+      printLines.push(formatColorAndReset(err.message, ForegroundColors.Red));
     }
   });
 

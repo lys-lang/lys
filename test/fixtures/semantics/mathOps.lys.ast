@@ -12,6 +12,7 @@
       |-QNameNode=test
         |-NameIdentifierNode="test"
     |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="x"
       |-FunDirectiveNode
         |-FunctionNode
           |-NameIdentifierNode="x"
@@ -19,19 +20,19 @@
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
           |-IntegerLiteral=1 annotations=IsValueNode
-      |-NameIdentifierNode="x"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x"
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="x"
         |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
-        |-NameIdentifierNode="x"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 annotations=IsValueNode
-    |-NameIdentifierNode="x"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x1"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x1"
@@ -39,42 +40,26 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BinaryExpressionNode annotations=IsValueNode
-          |-NameIdentifierNode="-"
           |-BinaryExpressionNode annotations=IsValueNode
-            |-NameIdentifierNode="+"
             |-IntegerLiteral=1 annotations=IsValueNode
+            |-NameIdentifierNode="+"
             |-BinaryExpressionNode annotations=IsValueNode
-              |-NameIdentifierNode="*"
               |-BinaryExpressionNode annotations=IsValueNode
-                |-NameIdentifierNode="/"
                 |-IntegerLiteral=2 annotations=IsValueNode
+                |-NameIdentifierNode="/"
                 |-IntegerLiteral=3 annotations=IsValueNode
+              |-NameIdentifierNode="*"
               |-IntegerLiteral=4 annotations=IsValueNode
+          |-NameIdentifierNode="-"
           |-UnaryExpressionNode annotations=IsValueNode
             |-IntegerLiteral=5
-            |-NameIdentifierNode="-"
-    |-NameIdentifierNode="x1"
   |-OverloadedFunctionNode annotations=Injected
-    |-FunDirectiveNode
-      |-FunctionNode
-        |-ParameterNode annotations=Local(x:<no-type>#0)
-          |-NameIdentifierNode="x"
-        |-NameIdentifierNode="x2"
-        |-ReferenceNode
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
-        |-UnaryExpressionNode annotations=IsValueNode
-          |-ReferenceNode
-            |-QNameNode=x
-              |-NameIdentifierNode="x"
-          |-NameIdentifierNode="~"
     |-NameIdentifierNode="x2"
-  |-OverloadedFunctionNode annotations=Injected
     |-FunDirectiveNode
       |-FunctionNode
+        |-NameIdentifierNode="x2"
         |-ParameterNode annotations=Local(x:<no-type>#0)
           |-NameIdentifierNode="x"
-        |-NameIdentifierNode="x3"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -82,9 +67,22 @@
           |-ReferenceNode
             |-QNameNode=x
               |-NameIdentifierNode="x"
-          |-NameIdentifierNode="-"
-    |-NameIdentifierNode="x3"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x3"
+    |-FunDirectiveNode
+      |-FunctionNode
+        |-NameIdentifierNode="x3"
+        |-ParameterNode annotations=Local(x:<no-type>#0)
+          |-NameIdentifierNode="x"
+        |-ReferenceNode
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+        |-UnaryExpressionNode annotations=IsValueNode
+          |-ReferenceNode
+            |-QNameNode=x
+              |-NameIdentifierNode="x"
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x4"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x4"
@@ -93,9 +91,8 @@
             |-NameIdentifierNode="i32"
         |-UnaryExpressionNode annotations=IsValueNode
           |-IntegerLiteral=99
-          |-NameIdentifierNode="~"
-    |-NameIdentifierNode="x4"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x5"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x5"
@@ -109,9 +106,8 @@
                 |-QNameNode=test
                   |-NameIdentifierNode="test"
               |-NameIdentifierNode="x"
-          |-NameIdentifierNode="~"
-    |-NameIdentifierNode="x5"
   |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x6"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x6"
@@ -120,5 +116,3 @@
             |-NameIdentifierNode="boolean"
         |-UnaryExpressionNode annotations=IsValueNode
           |-BooleanLiteral=true
-          |-NameIdentifierNode="!"
-    |-NameIdentifierNode="x6"

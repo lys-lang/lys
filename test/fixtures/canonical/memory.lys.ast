@@ -14,8 +14,8 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
-        |-NameIdentifierNode="<<"
         |-IntegerLiteral=1
+        |-NameIdentifierNode="<<"
         |-ReferenceNode
           |-QNameNode=AL_BITS
             |-NameIdentifierNode="AL_BITS"
@@ -26,10 +26,10 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
-        |-NameIdentifierNode="-"
         |-ReferenceNode
           |-QNameNode=AL_SIZE
             |-NameIdentifierNode="AL_SIZE"
+        |-NameIdentifierNode="-"
         |-IntegerLiteral=1
   |-ValDirectiveNode
     |-ValDeclarationNode
@@ -38,8 +38,8 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
-        |-NameIdentifierNode="<<"
         |-IntegerLiteral=1
+        |-NameIdentifierNode="<<"
         |-IntegerLiteral=30
   |-ValDirectiveNode
     |-ValDeclarationNode
@@ -52,20 +52,19 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
-        |-NameIdentifierNode="&"
         |-BinaryExpressionNode
-          |-NameIdentifierNode="+"
           |-ReferenceNode
             |-QNameNode=HEAP_BASE
               |-NameIdentifierNode="HEAP_BASE"
+          |-NameIdentifierNode="+"
           |-ReferenceNode
             |-QNameNode=AL_MASK
               |-NameIdentifierNode="AL_MASK"
+        |-NameIdentifierNode="&"
         |-UnaryExpressionNode
           |-ReferenceNode
             |-QNameNode=AL_MASK
               |-NameIdentifierNode="AL_MASK"
-          |-NameIdentifierNode="~"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="offset"
@@ -84,12 +83,12 @@
       |-IntegerLiteral=0
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="growMemory"
       |-ParameterNode
         |-NameIdentifierNode="pages"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="growMemory"
       |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
@@ -108,6 +107,7 @@
         |-WasmAtomNode
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="max"
       |-ParameterNode
         |-NameIdentifierNode="a"
         |-ReferenceNode
@@ -118,16 +118,15 @@
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="max"
       |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-IfNode
         |-BinaryExpressionNode
-          |-NameIdentifierNode=">"
           |-ReferenceNode
             |-QNameNode=a
               |-NameIdentifierNode="a"
+          |-NameIdentifierNode=">"
           |-ReferenceNode
             |-QNameNode=b
               |-NameIdentifierNode="b"
@@ -139,12 +138,12 @@
             |-NameIdentifierNode="b"
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="allocBytes"
       |-ParameterNode
         |-NameIdentifierNode="size"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="allocBytes"
       |-ReferenceNode
         |-QNameNode=bytes
           |-NameIdentifierNode="bytes"
@@ -184,6 +183,7 @@
               |-IntegerLiteral=32
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="calloc"
       |-ParameterNode
         |-NameIdentifierNode="itemCount"
         |-ReferenceNode
@@ -194,7 +194,6 @@
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="calloc"
       |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
@@ -202,10 +201,10 @@
         |-ValDeclarationNode
           |-NameIdentifierNode="size"
           |-BinaryExpressionNode
-            |-NameIdentifierNode="*"
             |-ReferenceNode
               |-QNameNode=itemCount
                 |-NameIdentifierNode="itemCount"
+            |-NameIdentifierNode="*"
             |-ReferenceNode
               |-QNameNode=itemSize
                 |-NameIdentifierNode="itemSize"
@@ -234,30 +233,30 @@
             |-NameIdentifierNode="$ret"
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="malloc"
       |-ParameterNode
         |-NameIdentifierNode="size"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="malloc"
       |-ReferenceNode
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode
         |-IfNode
           |-BinaryExpressionNode
-            |-NameIdentifierNode=">"
             |-ReferenceNode
               |-QNameNode=size
                 |-NameIdentifierNode="size"
+            |-NameIdentifierNode=">"
             |-IntegerLiteral=0
           |-BlockNode
             |-IfNode
               |-BinaryExpressionNode
-                |-NameIdentifierNode=">"
                 |-ReferenceNode
                   |-QNameNode=size
                     |-NameIdentifierNode="size"
+                |-NameIdentifierNode=">"
                 |-ReferenceNode
                   |-QNameNode=MAX_SIZE_32
                     |-NameIdentifierNode="MAX_SIZE_32"
@@ -274,25 +273,24 @@
             |-ValDeclarationNode
               |-NameIdentifierNode="newPtr"
               |-BinaryExpressionNode
-                |-NameIdentifierNode="&"
                 |-BinaryExpressionNode
-                  |-NameIdentifierNode="+"
                   |-BinaryExpressionNode
-                    |-NameIdentifierNode="+"
                     |-ReferenceNode
                       |-QNameNode=ptr
                         |-NameIdentifierNode="ptr"
+                    |-NameIdentifierNode="+"
                     |-ReferenceNode
                       |-QNameNode=size
                         |-NameIdentifierNode="size"
+                  |-NameIdentifierNode="+"
                   |-ReferenceNode
                     |-QNameNode=AL_MASK
                       |-NameIdentifierNode="AL_MASK"
+                |-NameIdentifierNode="&"
                 |-UnaryExpressionNode
                   |-ReferenceNode
                     |-QNameNode=AL_MASK
                       |-NameIdentifierNode="AL_MASK"
-                  |-NameIdentifierNode="~"
             |-ValDeclarationNode
               |-NameIdentifierNode="pagesBefore"
               |-FunctionCallNode
@@ -301,37 +299,36 @@
                     |-NameIdentifierNode="currentMemory"
             |-IfNode
               |-BinaryExpressionNode
-                |-NameIdentifierNode=">"
                 |-ReferenceNode
                   |-QNameNode=newPtr
                     |-NameIdentifierNode="newPtr"
+                |-NameIdentifierNode=">"
                 |-BinaryExpressionNode
-                  |-NameIdentifierNode="<<"
                   |-ReferenceNode
                     |-QNameNode=pagesBefore
                       |-NameIdentifierNode="pagesBefore"
+                  |-NameIdentifierNode="<<"
                   |-IntegerLiteral=16
               |-BlockNode
                 |-ValDeclarationNode
                   |-NameIdentifierNode="pagesNeeded"
                   |-BinaryExpressionNode
-                    |-NameIdentifierNode=">>>"
                     |-BinaryExpressionNode
-                      |-NameIdentifierNode="&"
                       |-BinaryExpressionNode
-                        |-NameIdentifierNode="+"
                         |-BinaryExpressionNode
-                          |-NameIdentifierNode="-"
                           |-ReferenceNode
                             |-QNameNode=newPtr
                               |-NameIdentifierNode="newPtr"
+                          |-NameIdentifierNode="-"
                           |-ReferenceNode
                             |-QNameNode=ptr
                               |-NameIdentifierNode="ptr"
+                        |-NameIdentifierNode="+"
                         |-HexLiteral=65535
+                      |-NameIdentifierNode="&"
                       |-UnaryExpressionNode
                         |-HexLiteral=65535
-                        |-NameIdentifierNode="~"
+                    |-NameIdentifierNode=">>>"
                     |-IntegerLiteral=16
                 |-ValDeclarationNode
                   |-NameIdentifierNode="pagesWanted"
@@ -347,7 +344,6 @@
                         |-NameIdentifierNode="pagesNeeded"
                 |-IfNode
                   |-BinaryExpressionNode
-                    |-NameIdentifierNode="<"
                     |-FunctionCallNode
                       |-ReferenceNode
                         |-QNameNode=growMemory
@@ -355,11 +351,11 @@
                       |-ReferenceNode
                         |-QNameNode=pagesWanted
                           |-NameIdentifierNode="pagesWanted"
+                    |-NameIdentifierNode="<"
                     |-IntegerLiteral=0
                   |-BlockNode
                     |-IfNode
                       |-BinaryExpressionNode
-                        |-NameIdentifierNode="<"
                         |-FunctionCallNode
                           |-ReferenceNode
                             |-QNameNode=growMemory
@@ -367,6 +363,7 @@
                           |-ReferenceNode
                             |-QNameNode=pagesNeeded
                               |-NameIdentifierNode="pagesNeeded"
+                        |-NameIdentifierNode="<"
                         |-IntegerLiteral=0
                       |-BlockNode
                         |-FunctionCallNode
@@ -387,24 +384,24 @@
             |-IntegerLiteral=0
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="free"
       |-ParameterNode
         |-NameIdentifierNode="ptr"
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="free"
       |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-BlockNode
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="discriminant"
       |-ParameterNode
         |-NameIdentifierNode="v"
         |-ReferenceNode
           |-QNameNode=ref
             |-NameIdentifierNode="ref"
-      |-NameIdentifierNode="discriminant"
       |-ReferenceNode
         |-QNameNode=u64
           |-NameIdentifierNode="u64"
@@ -417,6 +414,7 @@
               |-NameIdentifierNode="$v"
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="memcpy"
       |-ParameterNode
         |-NameIdentifierNode="to"
         |-ReferenceNode
@@ -432,7 +430,6 @@
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="memcpy"
       |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"
@@ -499,6 +496,7 @@
                 |-NameIdentifierNode="$cont"
   |-FunDirectiveNode
     |-FunctionNode
+      |-NameIdentifierNode="memset"
       |-ParameterNode
         |-NameIdentifierNode="ptr"
         |-ReferenceNode
@@ -514,7 +512,6 @@
         |-ReferenceNode
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-NameIdentifierNode="memset"
       |-ReferenceNode
         |-QNameNode=void
           |-NameIdentifierNode="void"

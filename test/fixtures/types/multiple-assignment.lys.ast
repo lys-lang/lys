@@ -9,14 +9,15 @@
       |-NameIdentifierNode="z" type=(alias i32 (native i32))
       |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode
   |-OverloadedFunctionNode type=(fun "flashero" ((alias i32)) (alias i32)) annotations=Injected
+    |-NameIdentifierNode="flashero" type=(fun "flashero" ((alias i32)) (alias i32))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "flashero" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="flashero"
         |-ParameterNode annotations=Local(a:i32#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="flashero"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -42,9 +43,8 @@
                       |-QNameNode=z
                         |-NameIdentifierNode="z"
                     |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                      |-NameIdentifierNode="+"
                       |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
                         |-QNameNode=a
                           |-NameIdentifierNode="a"
+                      |-NameIdentifierNode="+"
                       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="flashero" type=(fun "flashero" ((alias i32)) (alias i32))

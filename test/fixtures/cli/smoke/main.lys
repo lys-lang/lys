@@ -1,0 +1,12 @@
+import support::env
+import support::test
+
+#[export]
+fun test(): void = {
+  START("This is a test suite")
+
+  printf("    Hello world %X", 0xDEADFACE)
+  mustEqual(3 as u8, 3 as u16, "assertion name")
+
+  END()
+}

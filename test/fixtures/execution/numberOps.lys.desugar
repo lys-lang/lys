@@ -42,7 +42,7 @@ fun main(): void = {
   verify(-1 == 0xFFFFFFFF, "8")
   verify(-1 as u32 == 0xFFFFFFFF as u32, "9")
   verify((-(-1)) as u32 == 1 as u32, "10")
-  verify(sqrt(1) == 1, "sqrt(1)")
-  verify(sqrt(4) == 2, "sqrt(4)")
+  verify(f64.sqrt(1) == 1, "sqrt(1)")
+  verify(f32.sqrt(4) == 2, "sqrt(4)")
   END()
 }

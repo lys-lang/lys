@@ -8,7 +8,7 @@ function printDecorators(node: Nodes.DirectiveNode) {
   return '';
 }
 
-function privatePrint(node: Nodes.Node) {
+function privatePrint(node: Nodes.Node): string {
   if (!node) {
     throw new Error('Trying to print a null node');
   }
@@ -24,11 +24,11 @@ function privatePrint(node: Nodes.Node) {
       return `${printNode(node.parameterType)}`;
     }
   } else if (node instanceof Nodes.FunctionTypeNode) {
-    return `fun(${node.parameters.map(printNode).join(', ')}) -> ${printNode(node.returnType)}`;
+    return `fun(${node.parameters.map(printNode).join(', ')}) -> ${printNode(node.returnType!)}`;
   } else if (node instanceof Nodes.ReferenceNode) {
     return printNode(node.variable);
   } else if (node instanceof Nodes.DecoratorNode) {
-    return '#[' + printNode(node.decoratorName) + node.arguments.map($ => ' ' + printNode($)).join('') + ']\n';
+    return '#[' + printNode(node.decoratorName) + node.args.map($ => ' ' + printNode($)).join('') + ']\n';
   } else if (node instanceof Nodes.BlockNode) {
     if (!node.statements.length) return '{}';
     return '{\n' + indent(node.statements.map(printNode).join('\n')) + '\n}';
@@ -43,7 +43,7 @@ function privatePrint(node: Nodes.Node) {
   } else if (node instanceof Nodes.DocumentNode) {
     return node.directives.map(printNode).join('\n\n');
   } else if (node instanceof Nodes.FunctionNode) {
-    const bodyText = printNode(node.body);
+    const bodyText = printNode(node.body!);
 
     const body =
       node.body instanceof Nodes.BlockNode || node.body instanceof Nodes.WasmExpressionNode || !bodyText.includes('\n')
@@ -77,13 +77,13 @@ function privatePrint(node: Nodes.Node) {
   } else if (node instanceof Nodes.FunDirectiveNode) {
     return printDecorators(node) + (node.isPublic ? '' : 'private ') + printNode(node.functionNode);
   } else if (node instanceof Nodes.EffectDirectiveNode) {
-    return printDecorators(node) + (node.isPublic ? '' : 'private ') + printNode(node.effect);
+    return printDecorators(node) + (node.isPublic ? '' : 'private ') + printNode(node.effect!);
   } else if (node instanceof Nodes.OverloadedFunctionNode) {
     return node.functions.map(printNode).join('\n');
   } else if (node instanceof Nodes.AssignmentNode) {
     return `${printNode(node.lhs)} = ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.LiteralNode) {
-    return `${node.astNode.text}`;
+    return `${node.astNode!.text}`;
   } else if (node instanceof Nodes.InjectedFunctionCallNode) {
     return `/* <Injected function call> */\n${indent(
       node.argumentsNode.map(printNode).join('\n')
@@ -99,7 +99,7 @@ function privatePrint(node: Nodes.Node) {
   } else if (node instanceof Nodes.UnaryExpressionNode) {
     return `${node.operator.name}${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.WasmAtomNode) {
-    return `(${node.symbol}${node.arguments.map($ => ' ' + printNode($)).join('')})`;
+    return `(${node.symbol}${node.args.map($ => ' ' + printNode($)).join('')})`;
   } else if (node instanceof Nodes.WasmExpressionNode) {
     return `%wasm {\n${indent(node.atoms.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.StructTypeNode) {
@@ -125,7 +125,7 @@ function privatePrint(node: Nodes.Node) {
       } else if (node.falsePart instanceof Nodes.BlockNode) {
         return ' ' + printNode(node.falsePart);
       } else {
-        return '\n' + indent(printNode(node.falsePart)) + '\n';
+        return '\n' + indent(printNode(node.falsePart!)) + '\n';
       }
     };
 
@@ -143,7 +143,7 @@ function privatePrint(node: Nodes.Node) {
   } else if (node instanceof Nodes.StructDeclarationNode) {
     return `struct ${printNode(node.declaredName)}(${node.parameters.map(printNode).join(', ')})`;
   } else if (node instanceof Nodes.EffectDeclarationNode) {
-    return `effect ${printNode(node.name)} {\n${indent(node.elements.map(printNode).join('\n'))}\n}`;
+    return `effect ${printNode(node.name)} {\n${indent(node.elements!.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.PatternMatcherNode) {
     return `match ${printNode(node.lhs)} {\n${indent(node.matchingSet.map(printNode).join('\n'))}\n}`;
   } else if (node instanceof Nodes.MatchConditionNode) {
@@ -185,7 +185,10 @@ function privatePrint(node: Nodes.Node) {
   } else if (node instanceof Nodes.ParameterNode) {
     if (node.defaultValue) {
       return (
-        printNode(node.parameterName) + ': ' + printNode(node.parameterType) + ' = ' + printNode(node.defaultValue)
+        printNode(node.parameterName) +
+        (node.parameterType ? ': ' + printNode(node.parameterType) : '') +
+        ' = ' +
+        printNode(node.defaultValue)
       );
     }
 

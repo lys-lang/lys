@@ -1,0 +1,7 @@
+test/fixtures/type-error/scope-error.lys
+    1│ // this will be fixed once let constructs are implemented in the scope side
+    2│ var a = a
+     │     ^ crossed edges are not allowed 1
+     │         ^ crossed edges are not allowed 2
+     │     ^ Cyclic dependency #2 origin
+     │         ^ Cyclic dependency #2 target

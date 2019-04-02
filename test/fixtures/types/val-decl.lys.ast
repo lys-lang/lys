@@ -5,6 +5,7 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" () (alias i32)) annotations=Injected
+    |-NameIdentifierNode="test" type=(fun "test" () (alias i32))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "test" () (alias i32)) annotations=IsOverloaded
         |-NameIdentifierNode="test"
@@ -16,9 +17,8 @@
             |-NameIdentifierNode="test" type=(alias i32 (native i32))
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-            |-NameIdentifierNode="+"
             |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=test
                 |-NameIdentifierNode="test"
+            |-NameIdentifierNode="+"
             |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="test" type=(fun "test" () (alias i32))

@@ -5,13 +5,16 @@ import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
 import { expect } from 'chai';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
+import { nodeSystem } from '../dist/support/NodeSystem';
 
 describe('Parser', () => {
   const phases = function(txt: string, fileName: string): CanonicalPhaseResult {
-    const parsingContext = new ParsingContext();
-    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+    const parsingContext = new ParsingContext(nodeSystem);
 
-    return new CanonicalPhaseResult(parsing);
+    parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
+    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+    const ret = new CanonicalPhaseResult(parsing);
+    return ret;
   };
   describe('Failing examples', () => {
     folderBasedTest(

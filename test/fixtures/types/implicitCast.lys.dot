@@ -26,14 +26,14 @@ digraph LYS {
     subgraph "cluster_test/fixtures/types/implicitCast.lys_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       23 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::test1(i32)";
+      label="test/fixtures/types/implicitCast.lys::test1_1(i32)";
     }
     subgraph "cluster_test/fixtures/types/implicitCast.lys_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       24 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       25 [label="Ref: test1\n(fun 'test1' ((alias i32)) (alias i32))", fillcolor=grey];
       26 [label="Ref: x\n(alias u8 (native u8))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::main2(u8)";
+      label="test/fixtures/types/implicitCast.lys::main2_1(u8)";
     }
     subgraph "cluster_test/fixtures/types/implicitCast.lys_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -45,7 +45,7 @@ digraph LYS {
       32 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
       33 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
       34 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::testMatchWithDifferentTypes(i32)";
+      label="test/fixtures/types/implicitCast.lys::testMatchWithDifferentTypes_1(i32)";
     }
     subgraph "cluster_test/fixtures/types/implicitCast.lys_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -101,7 +101,7 @@ digraph LYS {
       84 [label="StringLiteral\n(alias bytes (native bytes))", fillcolor=grey];
       85 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
       86 [label="Ref: END\n(fun 'END' () (alias void))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::main()";
+      label="test/fixtures/types/implicitCast.lys::main_1()";
     }
     label="test/fixtures/types/implicitCast.lys";
   }
@@ -110,7 +110,7 @@ digraph LYS {
       node [style=filled, fillcolor=grey];
       87 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
       88 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::testMatchWithDifferentTypes(i32)";
+      label="test/fixtures/types/implicitCast.lys::testMatchWithDifferentTypes_1(i32)";
     }
     label="<no-document>";
   }

@@ -577,6 +577,15 @@ impl u64 {
       )
     )
   }
+
+  fun load8_u(lhs: ref, offset: u32): u64 = %wasm {
+    (i64.load8_u
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
 }
 
 impl f32 {
@@ -606,6 +615,8 @@ impl f32 {
   fun <(lhs: f32, rhs: f32): boolean = %wasm { (f32.lt (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (get_local $lhs) (get_local $rhs)) }
+
+  fun sqrt(n: f32): f32 = %wasm { (f32.sqrt (local.get $n)) }
 
   fun store(lhs: ref, rhs: f32): void = %wasm {
     (f32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -662,6 +673,8 @@ impl f64 {
   fun >(lhs: f64, rhs: f64): boolean = %wasm { (f64.gt (get_local $lhs) (get_local $rhs)) }
   fun <(lhs: f64, rhs: f64): boolean = %wasm { (f64.lt (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: f64, rhs: f64): boolean = %wasm { (f64.ne (get_local $lhs) (get_local $rhs)) }
+
+  fun sqrt(n: f64): f64 = %wasm { (f64.sqrt (local.get $n)) }
 
   fun store(lhs: ref, rhs: f64): void = %wasm {
     (f64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
@@ -872,11 +885,6 @@ impl bytes {
       false
     }
   }
-}
-
-
-fun sqrt(n: f32): f32 = %wasm {
-  (f32.sqrt (local.get $n))
 }
 
 /**
