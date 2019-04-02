@@ -46,11 +46,7 @@ export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
     out.push(printErrors_(fileName, parsingContext, errors, stripAnsi));
   });
 
-  const ret = out.join('\n');
-
-  parsingContext.system.write(ret);
-
-  return ret;
+  return out.join('\n');
 }
 
 function printErrors_(

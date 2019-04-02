@@ -31,7 +31,7 @@ export function failWithErrors(phaseName: string, pc: ParsingContext) {
   if (!pc.messageCollector.hasErrors()) return;
 
   if (pc && pc.messageCollector.errors.length) {
-    printErrors(pc);
+    pc.system.write(printErrors(pc));
   }
 
   throw Object.assign(
