@@ -2061,7 +2061,8 @@ describe('Types', function() {
     });
 
     describe('UnionType', () => {
-      const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
+      const aliasOf = (name: string, type: Type) =>
+        new TypeAlias(Nodes.NameIdentifierNode.fromString(name, null as any), type);
       const struct = (name: string) => new StructType([]);
       const union = (...of: Type[]) => new UnionType(of);
       const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));

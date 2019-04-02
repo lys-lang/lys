@@ -1,6 +1,6 @@
 import { IToken } from 'ebnf';
 import { PhaseResult } from './phases/PhaseResult';
-import { AstNodeError } from './NodeError';
+import { PositionCapableError } from './NodeError';
 import { Nodes } from './nodes';
 
 export function walkPreOrder<T extends { children: any[] } = IToken, D extends PhaseResult = any>(
@@ -13,7 +13,7 @@ export function walkPreOrder<T extends { children: any[] } = IToken, D extends P
         try {
           cbEnter.call(null, node, phaseResult, parent);
         } catch (e) {
-          if (phaseResult.parsingContext.messageCollector && e instanceof AstNodeError) {
+          if (phaseResult.parsingContext.messageCollector && e instanceof PositionCapableError) {
             phaseResult.parsingContext.messageCollector.error(e);
           } else if (phaseResult.parsingContext.messageCollector && node instanceof Nodes.Node) {
             phaseResult.parsingContext.messageCollector.error(e, node);
@@ -34,7 +34,7 @@ export function walkPreOrder<T extends { children: any[] } = IToken, D extends P
         try {
           cbLeave.call(null, node, phaseResult, parent);
         } catch (e) {
-          if (phaseResult.parsingContext.messageCollector && e instanceof AstNodeError) {
+          if (phaseResult.parsingContext.messageCollector && e instanceof PositionCapableError) {
             phaseResult.parsingContext.messageCollector.error(e);
           } else if (phaseResult.parsingContext.messageCollector && node instanceof Nodes.Node) {
             phaseResult.parsingContext.messageCollector.error(e, node);

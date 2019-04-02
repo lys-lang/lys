@@ -14,25 +14,29 @@ export type IErrorPositionCapable = {
   readonly position: IPositionCapable;
 } & Error;
 
-export class AstNodeError extends Error implements IErrorPositionCapable {
-  get position() {
-    return this.node.astNode!;
-  }
-
-  constructor(public message: string, public node: Nodes.Node, public warning: boolean = false) {
-    super(message);
-    if (!node) {
-      throw new Error('node is required');
-    }
-  }
-}
-
 export class PositionCapableError extends Error implements IErrorPositionCapable {
   constructor(public message: string, public readonly position: IPositionCapable, public warning: boolean = false) {
     super(message);
     if (!position) {
+      console.trace();
       throw new Error('position is required');
     }
+  }
+}
+
+export class AstNodeError extends PositionCapableError implements IErrorPositionCapable {
+  constructor(public message: string, public node: Nodes.Node, public warning: boolean = false) {
+    super(message, AstNodeError.ensureNodePosition(node), warning);
+  }
+  private static ensureNodePosition(node: Nodes.Node): IPositionCapable {
+    if (!node) {
+      throw new Error('node is required');
+    }
+    if (!node.astNode) {
+      console.dir(node);
+      throw new Error('node.astNode is required');
+    }
+    return node.astNode;
   }
 }
 

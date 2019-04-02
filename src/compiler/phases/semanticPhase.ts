@@ -163,8 +163,8 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
   const args = node.parameters.map($ => printNode($)).join(', ');
   const typeName = node.declaredName.name;
 
-  const typeDirective = new Nodes.TypeDirectiveNode(null, node.declaredName);
-  const signature = new Nodes.StructTypeNode(null, []);
+  const typeDirective = new Nodes.TypeDirectiveNode(node.astNode, node.declaredName);
+  const signature = new Nodes.StructTypeNode(node.astNode, []);
   typeDirective.valueType = signature;
 
   typeDirective.annotate(new annotations.Injected());
@@ -407,7 +407,7 @@ const preprocessStructs = function(
   document.directives.slice().forEach((node: Nodes.Node) => {
     if (node instanceof Nodes.EnumDirectiveNode) {
       const newTypeNode = new Nodes.TypeDirectiveNode(node.astNode, node.variableName);
-      const union = (newTypeNode.valueType = new Nodes.UnionTypeNode(null));
+      const union = (newTypeNode.valueType = new Nodes.UnionTypeNode(node.astNode));
       union.of = [];
 
       const newDirectives: Nodes.DirectiveNode[] = [newTypeNode];
@@ -419,7 +419,7 @@ const preprocessStructs = function(
         implDirectives.push(...impl);
         const refNode = new Nodes.ReferenceNode(
           $.declaredName.astNode,
-          Nodes.QNameNode.fromString($.declaredName.name)
+          Nodes.QNameNode.fromString($.declaredName.name, $.declaredName.astNode)
         );
         union.of.push(refNode);
       });
@@ -556,7 +556,7 @@ const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
 const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _parent: Nodes.Node | null) => {
   if (node instanceof Nodes.MatchCaseIsNode) {
     if (!node.declaredName) {
-      node.declaredName = Nodes.NameIdentifierNode.fromString('$');
+      node.declaredName = Nodes.NameIdentifierNode.fromString('$', node.astNode);
     }
 
     if (node.deconstructorNames && node.deconstructorNames.length) {
@@ -584,11 +584,11 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResul
         if ($.name !== '_') {
           const ref = new Nodes.ReferenceNode(
             node.declaredName!.astNode,
-            Nodes.QNameNode.fromString(node.declaredName!.name)
+            Nodes.QNameNode.fromString(node.declaredName!.name, node.declaredName!.astNode)
           );
           const rhs = new Nodes.NameIdentifierNode($.astNode, $.name);
           const member = new Nodes.MemberNode($.astNode, ref, '.', rhs);
-          const decl = new Nodes.ValDeclarationNode(null, $, member);
+          const decl = new Nodes.ValDeclarationNode($.astNode, $, member);
 
           newBlock.statements.unshift(decl);
         }

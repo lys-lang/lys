@@ -14,30 +14,6 @@ function top<T>(stack: Array<T>): T | null {
 }
 
 export class TypeResolutionContext {
-  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) {}
-
-  private _executors = new Array<{
-    dataGraph: TypeGraph;
-    propagator: TypePropagator;
-    scope: Closure;
-    parsingContext: ParsingContext;
-  }>();
-
-  private _functionSubGraphs = new Array<{
-    functionNode: Nodes.FunctionNode;
-    list: Array<{ seq: Array<Type>; graph: TypeGraph }>;
-  }>();
-
-  newExecutorWithContext(scope: Closure, dataGraph: TypeGraph, parsingContext: ParsingContext): TypePropagator {
-    const propagator: TypePropagator = new TypePropagator(this);
-    this._executors.push({ dataGraph, propagator, scope, parsingContext });
-    return propagator;
-  }
-
-  endContext(): void {
-    this._executors.pop();
-  }
-
   /**
    * Returns the current executor that is being used for execution of the graph
    *
@@ -68,6 +44,29 @@ export class TypeResolutionContext {
   get currentParsingContext(): ParsingContext {
     return top(this._executors)!.parsingContext;
   }
+  private _executors = new Array<{
+    dataGraph: TypeGraph;
+    propagator: TypePropagator;
+    scope: Closure;
+    parsingContext: ParsingContext;
+  }>();
+
+  private _functionSubGraphs = new Array<{
+    functionNode: Nodes.FunctionNode;
+    list: Array<{ seq: Array<Type>; graph: TypeGraph }>;
+  }>();
+
+  constructor(public rootGraph: TypeGraph, public parsingContext: ParsingContext) {}
+
+  newExecutorWithContext(scope: Closure, dataGraph: TypeGraph, parsingContext: ParsingContext): TypePropagator {
+    const propagator: TypePropagator = new TypePropagator(this);
+    this._executors.push({ dataGraph, propagator, scope, parsingContext });
+    return propagator;
+  }
+
+  endContext(): void {
+    this._executors.pop();
+  }
 
   getFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>): TypeGraph | null {
     const x = this.getFunctionGraph(functionNode);
@@ -80,24 +79,16 @@ export class TypeResolutionContext {
   }
 
   getFunctionGraph(functionNode: Nodes.FunctionNode): null | Array<{ seq: Array<Type>; graph: TypeGraph }> {
-    const ret = this._functionSubGraphs.find($ => $.functionNode == functionNode);
+    const ret = this._functionSubGraphs.find($ => $.functionNode === functionNode);
     if (!ret) return null;
     return ret.list;
-  }
-
-  private matches(expected: Array<Type>, actual: Array<Type>): boolean {
-    if (expected.length == actual.length) {
-      return !expected.some((type, $$) => !type.equals(actual[$$]));
-    } else {
-      return false;
-    }
   }
 
   removeFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>, _graph: TypeGraph): void {
     const x = this.getFunctionGraph(functionNode);
     if (x) {
       const theFn = x.findIndex(graph => graph.graph === _graph || this.matches(graph.seq, parameterTypes));
-      if (theFn == -1) {
+      if (theFn === -1) {
         throw new Error('Could not delete function subgraph');
       }
       x.splice(theFn, 1);
@@ -116,6 +107,14 @@ export class TypeResolutionContext {
       });
     }
   }
+
+  private matches(expected: Array<Type>, actual: Array<Type>): boolean {
+    if (expected.length === actual.length) {
+      return !expected.some((type, $$) => !type.equals(actual[$$]));
+    } else {
+      return false;
+    }
+  }
 }
 
 export class TypePropagator {
@@ -123,8 +122,17 @@ export class TypePropagator {
   constructor(public ctx: TypeResolutionContext) {}
 
   scheduleNode(node: TypeNode): void {
-    if (!this.executionStack.some(n => n == node)) {
+    if (!this.executionStack.some(n => n === node)) {
       this.executionStack.push(node);
+    }
+  }
+
+  run(): void {
+    try {
+      this.scheduleNodes();
+      this.start();
+    } finally {
+      this.ctx.endContext();
     }
   }
 
@@ -154,14 +162,14 @@ export class TypePropagator {
     if (!edge.incomingTypeDefined()) {
       if (edge.source.resultType()) {
         edge.propagateType(edge.source.resultType()!, this.ctx);
-      } else if (edge.source.incomingEdges().length == 0) {
+      } else if (edge.source.incomingEdges().length === 0) {
         this.scheduleNode(edge.source);
       } else {
         if (!stack.includes(edge.source)) {
           stack.push(edge.source);
           edge.source.incomingEdges().forEach(incomingEdge => {
             // Avoid self reference loop
-            if (incomingEdge.source != edge.target) {
+            if (incomingEdge.source !== edge.target) {
               this.scheduleDependencies(incomingEdge, stack);
             }
           });
@@ -170,15 +178,6 @@ export class TypePropagator {
       }
     } else {
       this.ctx.currentExecutor.scheduleNode(edge.target);
-    }
-  }
-
-  run(): void {
-    try {
-      this.scheduleNodes();
-      this.start();
-    } finally {
-      this.ctx.endContext();
     }
   }
 }

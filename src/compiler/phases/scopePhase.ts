@@ -269,8 +269,8 @@ function injectCoreImport(document: Nodes.DocumentNode) {
 
   if (document.file && document.file.endsWith('stdlib/system/core.lys')) return;
 
-  const module = Nodes.QNameNode.fromString('system::core');
-  const coreModuleImport = new Nodes.ImportDirectiveNode(null, module);
+  const module = Nodes.QNameNode.fromString('system::core', document.astNode);
+  const coreModuleImport = new Nodes.ImportDirectiveNode(document.astNode, module);
 
   coreModuleImport.allItems = true;
 

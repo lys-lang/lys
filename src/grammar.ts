@@ -217,8 +217,6 @@ KEYWORD           ::= TRUE_KEYWORD
                     | STRUCT_KEYWORD
                     | PRIVATE_KEYWORD
                     | MATCH_KEYWORD
-                    | AndKeyword
-                    | OrKeyword
                     | LOOP_KEYWORD
                     | CONTINUE_KEYWORD
                     | BREAK_KEYWORD

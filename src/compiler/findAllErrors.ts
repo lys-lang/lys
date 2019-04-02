@@ -3,7 +3,7 @@ import { walkPreOrder } from './walker';
 import { PhaseResult } from './phases/PhaseResult';
 import { printErrors } from '../utils/errorPrinter';
 import { ParsingContext } from './ParsingContext';
-import { AstNodeError } from './NodeError';
+import { PositionCapableError } from './NodeError';
 import { indent } from '../utils/astPrinter';
 
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
@@ -40,8 +40,7 @@ export function failWithErrors(phaseName: string, pc: ParsingContext) {
         indent(
           pc.messageCollector.errors
             .map(($: Error, $$) => {
-              let msg = $ instanceof AstNodeError ? $.message : $.toString() + '\n';
-
+              let msg = $ instanceof PositionCapableError ? '' + $.message : $.toString() + '\n';
               return indent(msg, '    ').replace(/^\s+(.*)/m, ($$ + 1).toString() + ')  $1');
             })
             .join('\n')

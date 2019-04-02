@@ -88,7 +88,7 @@ function printDocument(
       printNode(writer, node, printedNodes, rootGraph);
     });
     writer.printIndent();
-    writer.println('label="' + str.replace(/"/g, "'") + '";');
+    writer.println('label="' + (str || '').replace(/"/g, "'") + '";');
     writer.dedent();
     writer.printIndent();
     writer.println('}');

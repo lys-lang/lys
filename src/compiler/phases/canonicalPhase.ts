@@ -1,4 +1,3 @@
-import { TokenError } from 'ebnf';
 import { Nodes } from '../nodes';
 import { failIfErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
@@ -104,7 +103,7 @@ const visitor = {
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
     if (!params) {
-      throw new TokenError('Missing param list in function declaration', astNode);
+      throw new PositionCapableError('Missing param list in function declaration', astNode);
     }
 
     ret.parameters = params.children.map($ => visit($));
@@ -199,7 +198,7 @@ const visitor = {
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
     if (!params) {
-      throw new TokenError('Missing param list in function declaration', astNode);
+      throw new PositionCapableError('Missing param list in function declaration', astNode);
     }
 
     fun.parameters = params.children.map($ => visit($));
@@ -208,7 +207,8 @@ const visitor = {
     return fun;
   },
   Decorator(astNode: Nodes.ASTNode) {
-    const name = astNode.children.shift();
+    const children = astNode.children.slice();
+    const name = children.shift();
 
     if (!name) {
       throw new PositionCapableError('Missing decorator name', astNode);
@@ -216,7 +216,7 @@ const visitor = {
 
     const decoratorName = visit(name);
 
-    const args = astNode.children.map(visit) as Nodes.LiteralNode<any>[];
+    const args = children.map(visit) as Nodes.LiteralNode<any>[];
 
     const ret = new Nodes.DecoratorNode(astNode, decoratorName, args);
 
@@ -416,13 +416,13 @@ const visitor = {
     return ret;
   },
   BinNegExpression(x: Nodes.ASTNode) {
-    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('~'), visit(x.children[0]));
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('~', x), visit(x.children[0]));
   },
   NegExpression(x: Nodes.ASTNode) {
-    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('!'), visit(x.children[0]));
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('!', x), visit(x.children[0]));
   },
   UnaryMinus(x: Nodes.ASTNode) {
-    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('-'), visit(x.children[0]));
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('-', x), visit(x.children[0]));
   },
   BooleanLiteral(x: Nodes.ASTNode) {
     return new Nodes.BooleanLiteral(x);
@@ -517,7 +517,7 @@ const visitor = {
       if (ret.args[0] instanceof Nodes.QNameNode) {
         const qname = ret.args[0] as Nodes.QNameNode;
 
-        const varRef = new Nodes.ReferenceNode(children[0], qname);
+        const varRef = new Nodes.ReferenceNode(ret.args[0].astNode, qname);
 
         if (qname.names[0].name!.startsWith('$')) {
           // TODO: fix horrible hack $

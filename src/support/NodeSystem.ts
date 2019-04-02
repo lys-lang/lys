@@ -135,6 +135,9 @@ export const nodeSystem: System = {
     return process.cwd();
   },
   getDirectories,
+  relative(from: string, to: string): string {
+    return _path.relative(from, to);
+  },
   createDirectory(directoryName: string) {
     if (!nodeSystem.directoryExists(directoryName)) {
       _fs.mkdirSync(directoryName);

@@ -7,11 +7,8 @@ export class MessageCollector {
   error(error: IErrorPositionCapable): void;
   error(message: string, node: Nodes.Node): void;
   error(error: string | Error, node?: Nodes.Node): void {
-    if (error instanceof AstNodeError || error instanceof PositionCapableError) {
-      if (
-        error instanceof PositionCapableError ||
-        !this.errors.some($ => $.message === error.message && $.node === error.node)
-      ) {
+    if (error instanceof PositionCapableError) {
+      if (!this.errors.some($ => $.message === error.message && $.position === error.position)) {
         this.errors.push(error);
       }
     } else {

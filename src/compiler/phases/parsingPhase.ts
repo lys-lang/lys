@@ -5,21 +5,50 @@ import { failWithErrors } from '../findAllErrors';
 import { ParsingContext } from '../ParsingContext';
 import { Nodes } from '../nodes';
 import { PositionCapableError } from '../NodeError';
+import { IToken, TokenError } from 'ebnf';
 
-const process = walkPreOrder((token: Nodes.ASTNode, result: PhaseResult) => {
+const process = walkPreOrder((token: IToken, result: PhaseResult) => {
   if (token.errors && token.errors.length) {
-    token.errors.forEach(($: any) => {
-      if ($ && !result.parsingContext.messageCollector.errors.includes($)) {
-        result.parsingContext.messageCollector.error(new PositionCapableError($, token as any));
+    token.errors.forEach(($: TokenError) => {
+      if ($) {
+        result.parsingContext.messageCollector.error(new PositionCapableError($.message, token as any));
       }
     });
   }
 });
 
 const setDocument = (document: string) =>
-  walkPreOrder((token: Nodes.ASTNode) => {
+  walkPreOrder((token: any) => {
     token.document = document;
   });
+
+const parsingCache = new Map<string /** hash */, IToken>();
+
+function DJB2(input: string) {
+  let hash = 5381;
+
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash << 5) + hash + input.charCodeAt(i);
+  }
+
+  return hash;
+}
+
+function getParsingTree(salt: string, fileName: string, content: string) {
+  const hash = salt + '_' + content.length.toString(16) + DJB2(content).toString(16);
+
+  let ret = parsingCache.get(hash);
+
+  if (!ret) {
+    ret = parser.getAST(content, 'Document');
+    parsingCache.set(hash, ret);
+    setDocument(fileName)(ret as any, null);
+  } else {
+    console.log(hash);
+  }
+
+  return (ret as any) as Nodes.ASTNode;
+}
 
 export class ParsingPhaseResult extends PhaseResult {
   document?: Nodes.ASTNode;
@@ -37,11 +66,14 @@ export class ParsingPhaseResult extends PhaseResult {
   }
 
   execute() {
-    this.document = parser.getAST(this.content, 'Document') as any;
+    const salt = this.parsingContext.system.relative(
+      this.parsingContext.system.getCurrentDirectory(),
+      this.parsingContext.system.resolvePath(this.fileName)
+    );
 
-    setDocument(this.fileName)(this.document!, this);
+    this.document = getParsingTree(salt, this.fileName, this.content);
 
-    process(this.document!, this);
+    process(this.document as any, this);
 
     failWithErrors('Parsing phase', this.parsingContext);
   }
