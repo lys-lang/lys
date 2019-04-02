@@ -4,20 +4,23 @@ import { testParseToken, folderBasedTest } from './TestHelpers';
 import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
 import { printAST } from '../dist/utils/astPrinter';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
+import { nodeSystem } from '../dist/support/NodeSystem';
 
 const phases = function(txt: string): CanonicalPhaseResult {
-  const parsingContext = new ParsingContext();
+  const parsingContext = new ParsingContext(nodeSystem);
+  parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
+
   const parsing = parsingContext.getParsingPhaseForContent('test.lys', txt);
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
 };
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/canonical/*.lys', phases, result => printAST(result.document), '.ast');
+  folderBasedTest('test/fixtures/canonical/*.lys', phases, async result => printAST(result.document!), '.ast');
 });
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/canonical/*.lys', phases, result => printAST(result.document), '.ast');
+  folderBasedTest('test/fixtures/canonical/*.lys', phases, async result => printAST(result.document!), '.ast');
 });
 
 describe('Canonical', function() {

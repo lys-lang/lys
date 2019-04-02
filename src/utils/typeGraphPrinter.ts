@@ -3,7 +3,7 @@ import { TypeGraph, Edge, TypeNode } from '../compiler/types/TypeGraph';
 import { Nodes } from '../compiler/nodes';
 
 export function print(rootGraph: TypeGraph): string {
-  const documents = new Set<string>();
+  const documents = new Set<string | void>();
 
   function findDocuments(graph: TypeGraph) {
     graph.nodes.forEach(node => {
@@ -51,7 +51,7 @@ export function print(rootGraph: TypeGraph): string {
 function printDocument(
   writer: StringCodeWriter,
   graph: TypeGraph,
-  document: string,
+  document: string | void,
   printedNodes: Set<TypeNode>,
   rootGraph: TypeGraph
 ) {
@@ -76,7 +76,7 @@ function printDocument(
       $ => (!$.astNode.astNode && !document) || ($.astNode.astNode && $.astNode.astNode.document === document)
     );
 
-    if (nodesToPrint.length == 0 && graph.subGraphs.size == 0) return;
+    if (nodesToPrint.length === 0 && graph.subGraphs.size === 0) return;
 
     writer.printIndent();
     writer.println(`subgraph ${JSON.stringify('cluster_' + (document || '<no-document>') + '_' + i)} { rankdir=TB;`);
@@ -127,7 +127,7 @@ function printEdges(
 
       writer.printIndent();
       writer.print(`${id(edge.source, rootGraph)} -> ${id(edge.target, rootGraph)}`);
-      const color = edge.error() == null ? 'blue' : edge.error() == true ? 'red' : 'black';
+      const color = edge.error() === null ? 'blue' : edge.error() === true ? 'red' : 'black';
 
       writer.println(
         '[taillabel=' +
@@ -145,7 +145,7 @@ function printEdges(
 function printNode(writer: StringCodeWriter, node: TypeNode, printedNodes: Set<TypeNode>, rootGraph: TypeGraph) {
   if (!printedNodes.has(node)) {
     writer.printIndent();
-    let label = nodeLabel(node) + (node.resultType() ? '\\n' + node.resultType().inspect(100) : '');
+    let label = nodeLabel(node) + (node.resultType() ? '\\n' + node.resultType()!.inspect(100) : '');
 
     let color = 'grey';
 
@@ -208,32 +208,32 @@ const idSymbol = Symbol('id');
 const printedSymbol = Symbol('printed');
 
 export function resetPrint(typeGraph: TypeGraph) {
-  typeGraph = typeGraph.rootGraph;
+  const parentTypeGraph = typeGraph.rootGraph as any;
 
-  typeGraph[idSymbol] = new Map();
-  typeGraph[printedSymbol] = new Set();
+  parentTypeGraph[idSymbol] = new Map();
+  parentTypeGraph[printedSymbol] = new Set();
 }
 
-export function getPrintedNodes(typeGraph: TypeGraph) {
-  typeGraph = typeGraph.rootGraph;
+export function getPrintedNodes(typeGraph: TypeGraph): Set<TypeNode> {
+  const parentTypeGraph = typeGraph.rootGraph as any;
 
-  return typeGraph[printedSymbol] || (typeGraph[printedSymbol] = new Set());
+  return parentTypeGraph[printedSymbol] || (parentTypeGraph[printedSymbol] = new Set());
 }
 
 export function id(node: TypeNode, typeGraph: TypeGraph): string {
-  typeGraph = typeGraph.rootGraph;
+  const parentTypeGraph = typeGraph.rootGraph as any;
 
   let map: Map<TypeNode, string>;
 
-  if (typeGraph[idSymbol]) {
-    map = typeGraph[idSymbol];
+  if (parentTypeGraph[idSymbol]) {
+    map = parentTypeGraph[idSymbol];
   } else {
-    map = typeGraph[idSymbol] = new Map();
+    map = parentTypeGraph[idSymbol] = new Map();
   }
 
   if (!map.has(node)) {
     map.set(node, (map.size + 1).toString());
   }
 
-  return map.get(node);
+  return map.get(node)!;
 }

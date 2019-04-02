@@ -1,6 +1,8 @@
 import * as t from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
 
+declare var global: any;
+
 global['Binaryen'] = {
   TOTAL_MEMORY: 16777216 * 8
 };
@@ -17,7 +19,6 @@ import { CompilationPhaseResult } from './compilationPhase';
 import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
-import { assert } from 'console';
 import { printAST } from '../../utils/astPrinter';
 
 type CompilationModuleResult = {
@@ -31,7 +32,9 @@ type CompilationModuleResult = {
 const wabt: typeof _wabt = (_wabt as any)();
 
 const starterName = t.identifier('%%START%%');
-declare var WebAssembly, console;
+
+declare var WebAssembly: any;
+declare var console: any;
 
 (binaryen as any).setOptimizeLevel(3);
 (binaryen as any).setShrinkLevel(0);
@@ -39,14 +42,14 @@ declare var WebAssembly, console;
 const secSymbol = Symbol('secuentialId');
 
 function restartFunctionSeqId(node: Nodes.FunctionNode) {
-  node[secSymbol] = 0;
+  (node as any)[secSymbol] = 0;
 }
 
 function getFunctionSeqId(node: Nodes.Node) {
   let fun = findParentType(node, Nodes.FunctionNode) || findParentType(node, Nodes.DocumentNode);
-  let num = fun[secSymbol] || 0;
+  let num = (fun as any)[secSymbol] || 0;
   num++;
-  fun[secSymbol] = num;
+  (fun as any)[secSymbol] = num;
   return num;
 }
 
@@ -55,7 +58,7 @@ function getStarterFunction(statements: any[]) {
 
   return t.func(
     starterName, // name
-    fnType, //signature
+    fnType, // signature
     statements // body
   );
 }
@@ -64,17 +67,20 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
   const fnType = fn.ofType;
 
   if (fnType && fnType instanceof FunctionType) {
-    const ret = fnType.returnType;
+    if (fnType.returnType) {
+      const ret = fnType.returnType;
 
-    const retType = ret.binaryenType ? [ret.binaryenType] : [];
+      const retType = ret.binaryenType ? [ret.binaryenType] : [];
 
-    return t.signature(
-      fn.parameters.map(($, $$) => ({
-        id: $.parameterName.name,
-        valtype: fnType.parameterTypes[$$].binaryenType
-      })),
-      retType
-    );
+      return t.signature(
+        fn.parameters.map(($, $$) => ({
+          id: $.parameterName.name,
+          valtype: fnType.parameterTypes![$$].binaryenType
+        })),
+        retType
+      );
+    }
+    throw new Error(fnType + ' has no return type');
   } else {
     throw new Error(fnType + ' is not afunction');
   }
@@ -86,8 +92,10 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   restartFunctionSeqId(fn);
 
   const locals = fn.additionalLocals.map($ =>
-    t.instruction('local', [t.identifier($.name), t.valtypeLiteral($.type.binaryenType)])
+    t.instruction('local', [t.identifier($.name), t.valtypeLiteral($.type!.binaryenType)])
   );
+
+  if (!fn.body) throw new AstNodeError('Function has no body', fn);
 
   const moduleFun = t.func(
     t.identifier(fn.functionName.internalIdentifier), // name
@@ -125,12 +133,14 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
   }
 
   const blocks = matchers
-    .map(function emitNode(node: Nodes.MatcherNode): { condition; body } {
+    .map(function emitNode(node: Nodes.MatcherNode): { condition: any; body: any } {
       if (node instanceof Nodes.MatchDefaultNode) {
         const body = emit(node.rhs, document);
         return { condition: null, body };
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
+
+        if (!ofType) throw new AstNodeError('resolvedFunctionType is not resolved', node);
 
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
@@ -146,6 +156,9 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
         };
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
+
+        if (!ofType) throw new AstNodeError('resolvedFunctionType is not resolved', node);
+
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
@@ -158,6 +171,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
           body
         };
       }
+      throw new AstNodeError("I don't know how handle this", node);
     })
     .filter($ => !!$);
   const exitBlock = 'B' + getFunctionSeqId(match);
@@ -179,6 +193,8 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
     return ret;
   }, breaks);
 
+  if (!match.ofType) throw new AstNodeError('ofType not defined', match);
+
   return t.blockInstruction(t.identifier(exitBlock), flatten([lhs, ret]), match.ofType.binaryenType);
 }
 
@@ -190,7 +206,7 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
   }
 }
 
-function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
+function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode): any {
   if (node instanceof Nodes.ReferenceNode) {
     const ofType = node.ofType as FunctionType | Type;
 
@@ -206,7 +222,7 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
   }
 
   if (node instanceof Nodes.HexLiteral) {
-    return t.numberLiteralFromRaw(node.astNode.text);
+    return t.numberLiteralFromRaw(node.astNode!.text);
   }
 
   if (node instanceof Nodes.IntegerLiteral) {
@@ -217,7 +233,7 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode) {
     return t.numberLiteralFromRaw(node.value);
   }
 
-  return t.instruction(node.symbol, (node.arguments || []).map($ => emitWast($ as any, document)));
+  return t.instruction(node.symbol, (node.args || []).map($ => emitWast($ as any, document)));
 }
 
 function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
@@ -225,7 +241,8 @@ function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
 
   const ofType = implicitCallData.implicitCall.resolvedFunctionType;
 
-  assert(ofType instanceof FunctionType, 'implicit call is not a function');
+  if (!ofType) throw new AstNodeError('ofType not defined', node);
+  if (false === ofType instanceof FunctionType) throw new AstNodeError('implicit call is not a function', node);
 
   return t.callInstruction(
     t.identifier(ofType.name.internalIdentifier),
@@ -245,11 +262,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       }
 
       if (!funType) {
-        assert(!funType, `funType is falsy`);
-        return t.instruction('unreachable', []);
+        throw new AstNodeError(`funType is falsy`, node);
       }
 
-      assert(funType.name.internalIdentifier, `${funType}.internalIdentifier is falsy`);
+      if (!funType.name.internalIdentifier) throw new AstNodeError(`${funType}.internalIdentifier is falsy`, node);
 
       return t.callInstruction(
         t.identifier(funType.name.internalIdentifier),
@@ -264,13 +280,13 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
       return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      const type = node.ofType.binaryenType;
-      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.astNode.text)]);
+      const type = node.ofType!.binaryenType;
+      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.astNode!.text)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
-      const size = '00000000'; // node.length.toString(16);
-      const offset = ('00000000' + node.offset.toString(16)).substr(-8);
+      const size = '00000000';
+      const offset = ('00000000' + node.offset!.toString(16)).substr(-8);
       return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + size + offset, 'i64')]);
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
@@ -299,7 +315,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
                 t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]),
                 t.instruction('global.get', [t.identifier(local.name)])
               ],
-              node.rhs.ofType.binaryenType
+              node.rhs.ofType!.binaryenType
             );
           } else {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
@@ -310,10 +326,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         throw new Error('Error emiting AssignmentNode');
       }
     } else if (node instanceof Nodes.BlockNode) {
-      // if (!node.label) throw new Error('Block node without label');
+      // a if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'B' + getFunctionSeqId(node));
-      const type = node.ofType.binaryenType;
-      let instr = [];
+      const type = node.ofType!.binaryenType;
+      let instr: any[] = [];
 
       node.statements.forEach($ => {
         // TODO: Drop here things
@@ -321,7 +337,6 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
         if ($.ofType && $.ofType.binaryenType !== undefined && !$.hasAnnotation(annotations.IsValueNode)) {
           if (emited instanceof Array) {
-            // console.log(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`);
             throw new AstNodeError(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`, $);
           } else {
             emited = t.instruction('drop', [emited]);
@@ -331,7 +346,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         instr = instr.concat(emited);
       });
 
-      if (instr.length == 0) {
+      if (instr.length === 0) {
         instr.push(t.instruction('nop'));
       }
 
@@ -340,36 +355,29 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.ifInstruction(
         t.identifier('IF' + getFunctionSeqId(node)),
         [emit(node.condition, document)],
-        node.ofType.binaryenType,
+        node.ofType!.binaryenType,
         emitList(node.truePart, document),
         node.falsePart ? emitList(node.falsePart, document) : []
       );
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
+      if (!ofType) throw new AstNodeError('ofType not defined', node);
+
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
         emit(node.lhs, document),
         emit(node.rhs, document)
       ]);
-      // } else if (node instanceof Nodes.AsExpressionNode) {
-      //   const ofType = node.resolvedFunctionType;
-
-      //   return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
-      // } else if (node instanceof Nodes.IsExpressionNode) {
-      //   const ofType = node.resolvedFunctionType;
-
-      //   return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.lhs, document)]);
-      // } else if (node instanceof Nodes.UnaryExpressionNode) {
-      //   const ofType = node.resolvedFunctionType;
-
-      //   return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [emit(node.rhs, document)]);
     } else if (node instanceof Nodes.ReferenceNode) {
       const instr = node.isLocal ? 'local.get' : 'global.get';
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
       return t.instruction(instr, [t.identifier(local.name)]);
     } else if (node instanceof Nodes.MemberNode) {
-      if (node.operator == '.^') {
+      if (node.operator === '.^') {
         const schemaType = node.lhs.ofType;
+
+        if (!schemaType) throw new AstNodeError('schemaType not defined', node);
+
         const type = schemaType.schema()[node.memberName.name];
         try {
           const value = schemaType.getSchemaValue(node.memberName.name);
@@ -397,7 +405,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
 export class CodeGenerationPhaseResult extends PhaseResult {
   programAST: any;
-  buffer: Uint8Array;
+  buffer?: Uint8Array;
 
   get document() {
     return this.compilationPhaseResult.document;
@@ -438,7 +446,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
-      console.log(text);
+      this.parsingContext.system.write(text);
       this.parsingContext.messageCollector.error(e, this.document);
       throw e;
     }
@@ -452,19 +460,8 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       module.runPasses(['duplicate-function-elimination']);
       module.runPasses(['remove-unused-module-elements']);
 
-      if (module.validate() == 0) {
+      if (module.validate() === 0) {
         this.parsingContext.messageCollector.error(new AstNodeError('binaryen validation failed', this.document));
-      }
-
-      let callGraph: string = void 0;
-
-      if (debug) {
-        //   const old = (binaryen as any).print;
-        //   (binaryen as any).print = (x: string) => {
-        //     callGraph += x + '\n';
-        //   };
-        //   module.runPasses(['print-call-graph']);
-        //   (binaryen as any).print = old;
       }
 
       if (optimize) {
@@ -475,7 +472,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       module.dispose();
 
-      return { callGraph };
+      return {};
     } catch (e) {
       if (e instanceof Error) throw e;
       throw new Error(e);
@@ -494,7 +491,9 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     throw new Error('Impossible to emitText');
   }
 
-  optimize() {}
+  optimize() {
+    // stub
+  }
 
   /** This method only exists for test porpuses */
   async toInstance(extra: Record<string, Record<string, any>> = {}) {
@@ -521,17 +520,17 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
     const bytesLiterals = findNodesByType(compilationPhase.document, Nodes.StringLiteral);
 
-    const starters = [];
-    const imports = [];
-    const exportedElements = [];
-    const createdFunctions = [];
-    const dataSection = [];
+    const starters: any[] = [];
+    const imports: any[] = [];
+    const exportedElements: any[] = [];
+    const createdFunctions: any[] = [];
+    const dataSection: any[] = [];
 
     const endMemory = bytesLiterals.reduce<number>((offset, literal) => {
       if (literal.parent instanceof Nodes.DecoratorNode) {
         return offset;
       } else {
-        const str = literal.value;
+        const str = literal.value as string;
         const bytes: number[] = [];
         const byteSize = str.length * 2;
 
@@ -564,20 +563,16 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     const createdGlobals = globals.map($ => {
       // TODO: If the value is a literal, do not defer initialization to starters
 
-      const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
-      const binaryenType = $.decl.variableName.ofType.binaryenType;
+      const mut = 'var'; // TODO: $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
+      const binaryenType = $.decl.variableName.ofType!.binaryenType;
       const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
       const identifier = t.identifier(local.name);
 
       starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 
-      // if ($.isExported) {
-      //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));
-      // }
-
       return t.global(
         t.globalType(binaryenType, mut),
-        [t.objectInstruction('const', binaryenType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, compilationPhase.document),
+        [t.objectInstruction('const', binaryenType, [t.numberLiteralFromRaw(0)])], // emitList($.decl.value, compilationPhase.document),
         identifier
       );
     });
@@ -635,12 +630,14 @@ export class CodeGenerationPhaseResult extends PhaseResult {
 
       moduleList.forEach($ => {
         const scope = this.parsingContext.getScopePhase($);
-        scope.importedModules.forEach($ => {
-          if (!moduleList.has($)) {
-            added = true;
-            moduleList.add($);
-          }
-        });
+        if (scope) {
+          scope.importedModules.forEach($ => {
+            if (!moduleList.has($)) {
+              added = true;
+              moduleList.add($);
+            }
+          });
+        }
       });
     }
 
@@ -663,7 +660,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       return ret;
     });
 
-    const starters = [];
+    const starters: any[] = [];
 
     const memory = t.memory(t.limit(1), t.identifier('mem'));
 
@@ -680,8 +677,6 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       moduleParts.push(starter);
       moduleParts.push(t.start(starterName));
     }
-
-    // moduleParts.unshift(memory);
 
     const module = t.module(null, moduleParts);
 

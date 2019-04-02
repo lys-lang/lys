@@ -44,7 +44,7 @@ export class TypeResolutionContext {
    * @return
    */
   get currentExecutor(): TypePropagator {
-    return top(this._executors).propagator;
+    return top(this._executors)!.propagator;
   }
 
   /**
@@ -53,7 +53,7 @@ export class TypeResolutionContext {
    * @return
    */
   get currentGraph(): TypeGraph {
-    return top(this._executors).dataGraph;
+    return top(this._executors)!.dataGraph;
   }
 
   /**
@@ -62,11 +62,11 @@ export class TypeResolutionContext {
    * @return
    */
   get currentScopeNavigator(): Closure {
-    return top(this._executors).scope;
+    return top(this._executors)!.scope;
   }
 
   get currentParsingContext(): ParsingContext {
-    return top(this._executors).parsingContext;
+    return top(this._executors)!.parsingContext;
   }
 
   getFunctionSubGraph(functionNode: Nodes.FunctionNode, parameterTypes: Array<Type>): TypeGraph | null {
@@ -131,7 +131,7 @@ export class TypePropagator {
   private start(): void {
     while (this.executionStack.length !== 0) {
       const nodeToExecute = this.executionStack.shift();
-      nodeToExecute.execute(this.ctx);
+      nodeToExecute!.execute(this.ctx);
     }
   }
 
@@ -153,7 +153,7 @@ export class TypePropagator {
   private scheduleDependencies(edge: Edge, stack: Array<TypeNode>): void {
     if (!edge.incomingTypeDefined()) {
       if (edge.source.resultType()) {
-        edge.propagateType(edge.source.resultType(), this.ctx);
+        edge.propagateType(edge.source.resultType()!, this.ctx);
       } else if (edge.source.incomingEdges().length == 0) {
         this.scheduleNode(edge.source);
       } else {
@@ -189,10 +189,10 @@ export function resolveReturnType(
   argTypes: Type[],
   ctx: TypeResolutionContext
 ): Type | null {
-  const subGraph: TypeGraph = ctx.getFunctionSubGraph(functionNode, argTypes);
+  const subGraph = ctx.getFunctionSubGraph(functionNode, argTypes);
 
   if (subGraph) {
-    const result = subGraph.findNode(functionNode.body).resultType();
+    const result = subGraph.findNode(functionNode.body!)!.resultType();
 
     if (!result) {
       // THIS SHOULD NOT HAPPEN
@@ -210,9 +210,9 @@ export function resolveReturnType(
     );
 
     ctx.addFunctionSubGraph(functionNode, argTypes, dataGraph);
-    const functionName = functionNode.functionName.internalIdentifier + '(' + argTypes.join(',') + ')';
+    const functionName = functionNode.functionName!.internalIdentifier + '(' + argTypes.join(',') + ')';
     ctx.rootGraph.addSubGraph(dataGraph, functionName);
-    const propagator = ctx.newExecutorWithContext(functionNode.closure, dataGraph, context);
+    const propagator = ctx.newExecutorWithContext(functionNode.closure!, dataGraph, context);
 
     try {
       propagator.run();
@@ -220,18 +220,21 @@ export function resolveReturnType(
       context.messageCollector.error(e, functionNode);
     }
 
-    const value = dataGraph.findNode(functionNode.body);
+    const value = dataGraph.findNode(functionNode.body!);
 
-    const result = value.resultType();
+    if (value) {
+      const result = value.resultType();
 
-    if (!result && messageCollector.hasErrors()) {
-      ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
-      ctx.rootGraph.removeSubGraph(dataGraph, functionName);
-    } else {
-      context.messageCollector.mergeWith(messageCollector);
+      if (!result && messageCollector.hasErrors()) {
+        ctx.removeFunctionSubGraph(functionNode, argTypes, dataGraph);
+        ctx.rootGraph.removeSubGraph(dataGraph, functionName);
+      } else {
+        context.messageCollector.mergeWith(messageCollector);
+      }
+      return result;
     }
 
-    return result;
+    return null;
   }
 }
 
@@ -247,18 +250,22 @@ export function resolveNode(node: Nodes.Node, ctx: TypeResolutionContext): Type 
   const dataGraph: TypeGraph = ctx.currentGraph.createNameResolverFor(node);
 
   ctx.rootGraph.addSubGraph(dataGraph, graphName);
-  const propagator = ctx.newExecutorWithContext(node.closure, dataGraph, context);
+  const propagator = ctx.newExecutorWithContext(node.closure!, dataGraph, context);
   propagator.run();
 
   const value = dataGraph.findNode(node);
 
-  const result = value.resultType();
+  if (value) {
+    const result = value.resultType();
 
-  if (!result && messageCollector.hasErrors()) {
-    ctx.rootGraph.removeSubGraph(dataGraph, graphName);
-  } else {
-    context.messageCollector.mergeWith(messageCollector);
+    if (!result && messageCollector.hasErrors()) {
+      ctx.rootGraph.removeSubGraph(dataGraph, graphName);
+    } else {
+      context.messageCollector.mergeWith(messageCollector);
+    }
+
+    return result;
   }
 
-  return result;
+  return null;
 }

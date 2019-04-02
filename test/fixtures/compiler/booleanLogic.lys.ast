@@ -5,10 +5,12 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean)) annotations=Injected
+    |-NameIdentifierNode="test" type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
       |-FunctionNode type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean)) annotations=IsOverloaded
+        |-NameIdentifierNode="test" annotations=Export
         |-ParameterNode annotations=Local(a:boolean#0)
           |-NameIdentifierNode="a" type=(alias boolean (native boolean))
           |-ReferenceNode type=(type (alias boolean (native boolean)))
@@ -19,16 +21,14 @@
           |-ReferenceNode type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-        |-NameIdentifierNode="test" annotations=Export
         |-ReferenceNode type=(type (alias boolean (native boolean)))
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
         |-BinaryExpressionNode=(fun "&&" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-          |-NameIdentifierNode="&&"
           |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(a:boolean#0)
             |-QNameNode=a
               |-NameIdentifierNode="a"
+          |-NameIdentifierNode="&&"
           |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(b:boolean#1)
             |-QNameNode=b
               |-NameIdentifierNode="b"
-    |-NameIdentifierNode="test" type=(fun "test" ((alias boolean) (alias boolean)) (alias boolean))

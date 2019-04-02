@@ -2,6 +2,7 @@ import { Nodes } from './nodes';
 import { Reference } from './Reference';
 import { ParsingContext } from './ParsingContext';
 import { AstNodeError } from './NodeError';
+import { ScopePhaseResult } from './phases/scopePhase';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
@@ -18,8 +19,8 @@ export class Closure {
 
   constructor(
     public parsingContext: ParsingContext,
-    public parent: Closure = null,
-    public readonly moduleName: string = null,
+    public parent: Closure | null = null,
+    public readonly moduleName: string | null = null,
     public nameHint: string = ''
   ) {
     this.name = this.parsingContext.getUnusedName(nameHint + '_scope');
@@ -34,6 +35,7 @@ export class Closure {
 
   registerImport(moduleName: string, names: Set<string>) {
     const mod = this.registerForeginModule(moduleName);
+    if (!mod) throw new Error('ModuleNotFound:' + moduleName);
     names.forEach($ => mod.add($));
   }
 
@@ -65,10 +67,10 @@ export class Closure {
     this.incrementUsage(name.text);
   }
 
-  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType) {
+  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType): Reference | null {
     const localName = nameNode.name;
 
-    if (localName === '_') return;
+    if (localName === '_') return null;
 
     if (this.localScopeDeclares.has(localName)) {
       throw new AstNodeError(`"${localName}" is already declared`, nameNode);
@@ -107,7 +109,8 @@ export class Closure {
         const parts = localName.split('::');
         const moduleName = parts.slice(0, -1).join('::');
         const name = parts[parts.length - 1];
-        const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(name, recurseParent);
+        const module = this.parsingContext.getScopePhase(moduleName) as ScopePhaseResult;
+        const ref = module.document.closure!.get(name, recurseParent);
 
         return ref.withModule(moduleName);
       }
@@ -117,15 +120,14 @@ export class Closure {
       }
 
       for (let [moduleName, importsSet] of this.importedModules) {
+        const module = this.parsingContext.getScopePhase(moduleName) as ScopePhaseResult;
+
         if (importsSet.has(localName)) {
-          const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(localName, recurseParent);
+          const ref = module.document.closure!.get(localName, recurseParent);
 
           return ref.withModule(moduleName);
-        } else if (
-          importsSet.has('*') &&
-          this.parsingContext.getScopePhase(moduleName).document.closure.canResolveName(localName, recurseParent)
-        ) {
-          const ref = this.parsingContext.getScopePhase(moduleName).document.closure.get(localName, recurseParent);
+        } else if (importsSet.has('*') && module.document.closure!.canResolveName(localName, recurseParent)) {
+          const ref = module.document.closure!.get(localName, recurseParent);
 
           return ref.withModule(moduleName);
         }
@@ -148,7 +150,7 @@ export class Closure {
     return localContent + '\n}';
   }
 
-  deepInspect() {
+  deepInspect(): string {
     return this.inspect(this.childrenScopes.map($ => $.deepInspect()).join('\n'));
   }
 

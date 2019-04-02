@@ -5,14 +5,15 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-OverloadedFunctionNode type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32))) annotations=Injected
+    |-NameIdentifierNode="x" type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32)))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "x" ((alias i32)) (alias i32)) annotations=IsOverloaded
+        |-NameIdentifierNode="x"
         |-ParameterNode annotations=Local(a:i32#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="x"
         |-ReferenceNode type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
@@ -26,4 +27,3 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-    |-NameIdentifierNode="x" type=(intersection (fun "x" ((alias i32)) (alias i32)) (fun "x" () (alias i32)))

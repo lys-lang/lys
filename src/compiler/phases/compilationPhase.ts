@@ -10,13 +10,15 @@ import { annotations } from '../annotations';
 import { FunctionType } from '../types';
 import { last } from '../helpers';
 
-const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node) => {
-  node.parent = parent;
+const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node | null) => {
+  if (parent) {
+    node.parent = parent;
+  }
   return node;
 });
 
 const resolveLocals = walkPreOrder(
-  (node: Nodes.Node, _: PhaseResult, _parent: Nodes.Node) => {
+  (node: Nodes.Node, _: PhaseResult, _parent: Nodes.Node | null) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // create a local for lhs of MatchNode
 
@@ -25,12 +27,16 @@ const resolveLocals = walkPreOrder(
        *         ^^^^^^^^^^^^^^ this part will get its own local
        */
       const fn = findParentType(node, Nodes.FunctionNode);
-      const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType));
-      node.annotate(localAnnotation);
+      if (fn) {
+        const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType!));
+        node.annotate(localAnnotation);
 
-      node.matchingSet.forEach($ => {
-        $.annotate(localAnnotation);
-      });
+        node.matchingSet.forEach($ => {
+          $.annotate(localAnnotation);
+        });
+      } else {
+        // TODO: what if we reach here?
+      }
     }
   },
   (node: Nodes.Node) => {
@@ -41,7 +47,11 @@ const resolveLocals = walkPreOrder(
 
       if (nodeLocal && nodeLocal.local instanceof Local) {
         const fn = findParentType(node, Nodes.FunctionNode);
-        fn.freeTempLocal(nodeLocal.local);
+        if (fn) {
+          fn.freeTempLocal(nodeLocal.local);
+        } else {
+          // TODO: error
+        }
       }
     }
   }
@@ -49,8 +59,8 @@ const resolveLocals = walkPreOrder(
 
 const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: CompilationPhaseResult) => {
   if (node instanceof Nodes.ReferenceNode) {
-    if (node.resolvedReference.type === 'VALUE') {
-      const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
+    if (node.resolvedReference!.type === 'VALUE') {
+      const decl = node.resolvedReference!.referencedNode.parent; // NameIdentifierNode#parent
       if (
         decl instanceof Nodes.ParameterNode ||
         decl instanceof Nodes.VarDeclarationNode ||
@@ -65,7 +75,7 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: Compilati
 
         node.annotate(declLocal);
       } else {
-        throw new AstNodeError(`Value node has no local`, decl);
+        throw new AstNodeError(`Value node has no local`, decl!);
       }
     }
   }
@@ -79,7 +89,7 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
       const fn = findParentType(node, Nodes.FunctionNode);
 
       if (fn) {
-        node.annotate(new annotations.LocalIdentifier(fn.addLocal(node.value.ofType, node.variableName)));
+        node.annotate(new annotations.LocalIdentifier(fn.addLocal(node.value.ofType!, node.variableName)));
       }
     }
   }
@@ -87,7 +97,7 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
 
 export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
   if (node instanceof Nodes.FunctionNode) {
-    const isTailRec = isRecursiveCallExpression(node, node.body);
+    const isTailRec = isRecursiveCallExpression(node, node.body!);
 
     if (isTailRec) {
       node.annotate(new annotations.IsTailRec());
@@ -107,7 +117,9 @@ function annotateReturnExpressions(node: Nodes.Node) {
   } else if (node instanceof Nodes.IfNode) {
     node.annotate(new annotations.IsReturnExpression());
     annotateReturnExpressions(node.truePart);
-    annotateReturnExpressions(node.falsePart);
+    if (node.falsePart) {
+      annotateReturnExpressions(node.falsePart);
+    }
   } else {
     node.annotate(new annotations.IsReturnExpression());
   }
@@ -115,7 +127,7 @@ function annotateReturnExpressions(node: Nodes.Node) {
 
 // find the last expression of every function body and mark the return expressions
 const detectReturnExpressions = walkPreOrder((node: Nodes.Node) => {
-  if (node instanceof Nodes.FunctionNode) {
+  if (node instanceof Nodes.FunctionNode && node.body) {
     annotateReturnExpressions(node.body);
   }
 });
@@ -133,12 +145,12 @@ function isRecursiveCallExpression(functionNode: Nodes.FunctionNode, node: Nodes
   }
 
   if (node instanceof Nodes.BlockNode) {
-    return node.statements.length && isRecursiveCallExpression(functionNode, last(node.statements));
+    return node.statements.length > 0 && isRecursiveCallExpression(functionNode, last(node.statements));
   }
 
   if (node instanceof Nodes.IfNode) {
     const truePart = isRecursiveCallExpression(functionNode, node.truePart);
-    const falsePart = isRecursiveCallExpression(functionNode, node.falsePart);
+    const falsePart = !!node.falsePart && isRecursiveCallExpression(functionNode, node.falsePart);
     return truePart || falsePart;
   }
 
@@ -158,7 +170,7 @@ function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.F
 
     const functionNode = findParentType(fcn, Nodes.FunctionNode);
 
-    if (referencedType instanceof FunctionType) {
+    if (functionNode && referencedType instanceof FunctionType) {
       const isTailRec = referencedType.name.internalIdentifier === functionNode.functionName.internalIdentifier;
 
       if (isTailRec) {

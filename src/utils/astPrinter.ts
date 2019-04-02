@@ -1,6 +1,6 @@
 import { Nodes } from '../compiler/nodes';
 
-export function printAST(token: Nodes.Node, level = 0) {
+export function printAST(token: Nodes.Node, level = 0): string {
   if (!token) return '<no token was provided>';
   const ofType = token.ofType ? ' type=' + token.ofType.inspect(100) : '';
   let text = '';
@@ -14,7 +14,10 @@ export function printAST(token: Nodes.Node, level = 0) {
     token instanceof Nodes.HexLiteral ||
     token instanceof Nodes.FloatLiteral
   ) {
-    text = '=' + JSON.stringify(token.value) + (token.suffixReference ? token.suffixReference.variable.text : '');
+    text =
+      '=' +
+      JSON.stringify(token.value) +
+      (token.suffixReference && token.suffixReference.variable ? token.suffixReference.variable.text : '');
   } else if (token instanceof Nodes.LiteralNode) {
     text = '=' + JSON.stringify(token.value);
   } else if (token instanceof Nodes.AbstractFunctionCallNode) {

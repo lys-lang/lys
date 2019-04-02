@@ -1,0 +1,19 @@
+import support::env
+import support::test
+
+// in order to load this library, we must tell the compiler `--lib lib.js`
+
+#[extern "myLib" "getNumber"]
+fun getNumber(): i32 = panic()
+
+#[export]
+fun test(): void = {
+  START("Testing custom lib")
+
+  val num = getNumber()
+
+  printf("    myLib.getNumber() = %d", num)
+  mustEqual(num, 1337, "1337 assertion name")
+
+  END()
+}

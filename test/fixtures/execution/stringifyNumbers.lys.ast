@@ -13,8 +13,10 @@
       |-NameIdentifierNode="support"
       |-NameIdentifierNode="test"
   |-OverloadedFunctionNode type=(intersection (fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i32) (alias bytes)) (alias void)) (fun "assertNumber" ((alias u32) (alias bytes)) (alias void))) annotations=Injected
+    |-NameIdentifierNode="assertNumber" type=(intersection (fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i32) (alias bytes)) (alias void)) (fun "assertNumber" ((alias u32) (alias bytes)) (alias void)))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="assertNumber"
         |-ParameterNode annotations=Local(numberToSerialize:u64#0)
           |-NameIdentifierNode="numberToSerialize" type=(alias u64 (native u64))
           |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -25,7 +27,6 @@
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="assertNumber"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -47,6 +48,7 @@
               |-NameIdentifierNode="expected"
     |-FunDirectiveNode
       |-FunctionNode type=(fun "assertNumber" ((alias i64) (alias bytes)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="assertNumber"
         |-ParameterNode annotations=Local(numberToSerialize:i64#0)
           |-NameIdentifierNode="numberToSerialize" type=(alias i64 (native i64))
           |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -57,7 +59,6 @@
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="assertNumber"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -79,6 +80,7 @@
               |-NameIdentifierNode="expected"
     |-FunDirectiveNode
       |-FunctionNode type=(fun "assertNumber" ((alias i32) (alias bytes)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="assertNumber"
         |-ParameterNode annotations=Local(numberToSerialize:i32#0)
           |-NameIdentifierNode="numberToSerialize" type=(alias i32 (native i32))
           |-ReferenceNode type=(type (alias i32 (native i32)))
@@ -89,7 +91,6 @@
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="assertNumber"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -109,6 +110,7 @@
               |-NameIdentifierNode="expected"
     |-FunDirectiveNode
       |-FunctionNode type=(fun "assertNumber" ((alias u32) (alias bytes)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="assertNumber"
         |-ParameterNode annotations=Local(numberToSerialize:u32#0)
           |-NameIdentifierNode="numberToSerialize" type=(alias u32 (native u32))
           |-ReferenceNode type=(type (alias u32 (native u32)))
@@ -119,7 +121,6 @@
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="assertNumber"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -137,10 +138,11 @@
           |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(expected:bytes#1)
             |-QNameNode=expected
               |-NameIdentifierNode="expected"
-    |-NameIdentifierNode="assertNumber" type=(intersection (fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i32) (alias bytes)) (alias void)) (fun "assertNumber" ((alias u32) (alias bytes)) (alias void)))
   |-OverloadedFunctionNode type=(fun "assertNumberLength" ((alias i64) (alias i32)) (alias void)) annotations=Injected
+    |-NameIdentifierNode="assertNumberLength" type=(fun "assertNumberLength" ((alias i64) (alias i32)) (alias void))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "assertNumberLength" ((alias i64) (alias i32)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="assertNumberLength"
         |-ParameterNode annotations=Local(numberToSerialize:i64#0)
           |-NameIdentifierNode="numberToSerialize" type=(alias i64 (native i64))
           |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -151,7 +153,6 @@
           |-ReferenceNode type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-NameIdentifierNode="assertNumberLength"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -170,7 +171,6 @@
           |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result:boolean#3)
             |-NameIdentifierNode="result" type=(alias boolean (native boolean))
             |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-NameIdentifierNode="=="
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                 |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::size:u32#2)
                   |-QNameNode=size
@@ -178,6 +178,7 @@
                 |-ReferenceNode type=(type (alias i32 (native i32)))
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
+              |-NameIdentifierNode="=="
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(expected:i32#1)
                 |-QNameNode=expected
                   |-NameIdentifierNode="expected"
@@ -186,7 +187,6 @@
               |-ReferenceNode type=(alias boolean (native boolean)) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result:boolean#3)
                 |-QNameNode=result
                   |-NameIdentifierNode="result"
-              |-NameIdentifierNode="!"
             |-BlockNode type=(native void)
               |-FunctionCallNode=(fun "printf" ((alias bytes) (alias i32)) (alias void)) type=(alias void (native void))
                 |-ReferenceNode type=(intersection (fun "printf" ((alias u32) (alias i32)) (alias void)) (fun "printf" ((alias u32) (alias u32)) (alias void)) (fun "printf" ((alias u32) (alias f32)) (alias void)) (fun "printf" ((alias u32) (alias f64)) (alias void)) (fun "printf" ((alias u32) (alias u16)) (alias void)) (fun "printf" ((alias u32) (alias i16)) (alias void)) (fun "printf" ((alias u32) (alias u8)) (alias void)) (fun "printf" ((alias bytes) (alias i32)) (alias void)) (fun "printf" ((alias bytes) (alias u32)) (alias void)) (fun "printf" ((alias bytes) (alias f32)) (alias void)) (fun "printf" ((alias bytes) (alias f64)) (alias void)) (fun "printf" ((alias bytes) (alias i16)) (alias void)) (fun "printf" ((alias bytes) (alias u16)) (alias void)) (fun "printf" ((alias bytes) (alias u8)) (alias void)) (fun "printf" ((alias bytes)) (alias void)))
@@ -234,10 +234,11 @@
               |-QNameNode=result
                 |-NameIdentifierNode="result"
             |-StringLiteral="assertNumberLength" type=(alias bytes (native bytes)) annotations=IsValueNode
-    |-NameIdentifierNode="assertNumberLength" type=(fun "assertNumberLength" ((alias i64) (alias i32)) (alias void))
   |-OverloadedFunctionNode type=(fun "assertEquals" ((alias bytes) (alias bytes)) (alias void)) annotations=Injected
+    |-NameIdentifierNode="assertEquals" type=(fun "assertEquals" ((alias bytes) (alias bytes)) (alias void))
     |-FunDirectiveNode
       |-FunctionNode type=(fun "assertEquals" ((alias bytes) (alias bytes)) (alias void)) annotations=IsOverloaded
+        |-NameIdentifierNode="assertEquals"
         |-ParameterNode annotations=Local(given:bytes#0)
           |-NameIdentifierNode="given" type=(alias bytes (native bytes))
           |-ReferenceNode type=(type (alias bytes (native bytes)))
@@ -248,7 +249,6 @@
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="assertEquals"
         |-ReferenceNode type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
@@ -283,10 +283,10 @@
           |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result_3:boolean#3)
             |-NameIdentifierNode="result" type=(alias boolean (native boolean))
             |-BinaryExpressionNode=(fun "==" ((alias bytes) (alias bytes)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-NameIdentifierNode="=="
               |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(given:bytes#0)
                 |-QNameNode=given
                   |-NameIdentifierNode="given"
+              |-NameIdentifierNode="=="
               |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(expected:bytes#1)
                 |-QNameNode=expected
                   |-NameIdentifierNode="expected"
@@ -295,7 +295,6 @@
               |-ReferenceNode type=(alias boolean (native boolean)) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result_3:boolean#3)
                 |-QNameNode=result
                   |-NameIdentifierNode="result"
-              |-NameIdentifierNode="!"
             |-BlockNode type=(native void)
               |-FunctionCallNode=(fun "printf" ((alias bytes)) (alias void)) type=(alias void (native void))
                 |-ReferenceNode type=(intersection (fun "printf" ((alias u32) (alias i32)) (alias void)) (fun "printf" ((alias u32) (alias u32)) (alias void)) (fun "printf" ((alias u32) (alias f32)) (alias void)) (fun "printf" ((alias u32) (alias f64)) (alias void)) (fun "printf" ((alias u32) (alias u16)) (alias void)) (fun "printf" ((alias u32) (alias i16)) (alias void)) (fun "printf" ((alias u32) (alias u8)) (alias void)) (fun "printf" ((alias bytes) (alias i32)) (alias void)) (fun "printf" ((alias bytes) (alias u32)) (alias void)) (fun "printf" ((alias bytes) (alias f32)) (alias void)) (fun "printf" ((alias bytes) (alias f64)) (alias void)) (fun "printf" ((alias bytes) (alias i16)) (alias void)) (fun "printf" ((alias bytes) (alias u16)) (alias void)) (fun "printf" ((alias bytes) (alias u8)) (alias void)) (fun "printf" ((alias bytes)) (alias void)))
@@ -339,8 +338,8 @@
             |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::msg:bytes#2)
               |-QNameNode=msg
                 |-NameIdentifierNode="msg"
-    |-NameIdentifierNode="assertEquals" type=(fun "assertEquals" ((alias bytes) (alias bytes)) (alias void))
   |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias void))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
@@ -404,7 +403,6 @@
               |-AsExpressionNode=(fun "as" ((alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-UnaryExpressionNode=(fun "-" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                   |-IntegerLiteral=2 type=(alias i32 (native i32))
-                  |-NameIdentifierNode="-"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
@@ -416,7 +414,6 @@
               |-AsExpressionNode=(fun "as" ((alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-UnaryExpressionNode=(fun "-" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                   |-IntegerLiteral=33 type=(alias i32 (native i32))
-                  |-NameIdentifierNode="-"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
@@ -428,7 +425,6 @@
               |-AsExpressionNode=(fun "as" ((alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-UnaryExpressionNode=(fun "-" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                   |-IntegerLiteral=1 type=(alias i32 (native i32))
-                  |-NameIdentifierNode="-"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
@@ -470,7 +466,6 @@
               |-AsExpressionNode=(fun "as" ((alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-UnaryExpressionNode=(fun "-" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                   |-IntegerLiteral=444444 type=(alias i32 (native i32))
-                  |-NameIdentifierNode="-"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
@@ -536,7 +531,6 @@
               |-AsExpressionNode=(fun "as" ((alias f32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-UnaryExpressionNode=(fun "-" ((alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
                   |-FloatLiteral=4000 type=(alias f32 (native f32))
-                  |-NameIdentifierNode="-"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
@@ -563,7 +557,6 @@
                   |-NameIdentifierNode="assertNumber"
               |-UnaryExpressionNode=(fun "-" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                 |-IntegerLiteral=1 type=(alias i32 (native i32))
-                |-NameIdentifierNode="-"
               |-StringLiteral="-1" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-FunctionCallNode=(fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) type=(alias void (native void))
               |-ReferenceNode type=(intersection (fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i32) (alias bytes)) (alias void)) (fun "assertNumber" ((alias u32) (alias bytes)) (alias void)))
@@ -587,7 +580,6 @@
                   |-NameIdentifierNode="assertNumber"
               |-UnaryExpressionNode=(fun "-" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
                 |-IntegerLiteral=444444 type=(alias i32 (native i32))
-                |-NameIdentifierNode="-"
               |-StringLiteral="-444444" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-FunctionCallNode=(fun "assertNumber" ((alias u32) (alias bytes)) (alias void)) type=(alias void (native void))
               |-ReferenceNode type=(intersection (fun "assertNumber" ((alias u64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i64) (alias bytes)) (alias void)) (fun "assertNumber" ((alias i32) (alias bytes)) (alias void)) (fun "assertNumber" ((alias u32) (alias bytes)) (alias void)))
@@ -647,4 +639,3 @@
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=END
                 |-NameIdentifierNode="END"
-    |-NameIdentifierNode="main" type=(fun "main" () (alias void))

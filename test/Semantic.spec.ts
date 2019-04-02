@@ -9,8 +9,10 @@ import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
+import { nodeSystem } from '../dist/support/NodeSystem';
 
-const parsingContext = new ParsingContext();
+const parsingContext = new ParsingContext(nodeSystem);
+parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 describe('Semantic', function() {
   const phases = function(txt: string, fileName: string): ScopePhaseResult {
@@ -92,7 +94,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.isSuccess()).toEqual(true, 'Phase did not succeed');
+        expect(result.isSuccess()).toEqual(true);
       },
       phases
     );
@@ -120,7 +122,7 @@ describe('Semantic', function() {
           console.log(printAST(phaseResult.document));
           console.log(phaseResult.document.closure.deepInspect());
         }
-        expect(didFail).toEqual(true, 'It must have failed');
+        expect(didFail).toEqual(true);
       },
       phases,
       false

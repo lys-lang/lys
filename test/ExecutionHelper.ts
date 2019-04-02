@@ -17,11 +17,20 @@ import path = require('path');
 import { readFileSync } from 'fs';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
 
-declare var it, WebAssembly;
+import envLib from '../dist/utils/libs/env';
+import testLib, { getTestResults } from '../dist/utils/libs/test';
+import { nodeSystem } from '../dist/support/NodeSystem';
+import { System } from '../dist/compiler/System';
 
-const parsingContext = new ParsingContext();
+declare var it;
 
-parsingContext.cwd = path.resolve(__dirname, 'fixtures', 'execution');
+const newSystem: System = {
+  ...nodeSystem,
+  getCurrentDirectory: () => path.resolve(__dirname, 'fixtures', 'execution')
+};
+
+const parsingContext = new ParsingContext(newSystem);
+parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 const phases = function(txt: string, filename = 'test.lys'): CodeGenerationPhaseResult {
   parsingContext.reset();
@@ -60,7 +69,7 @@ async function testSrc(
 
     await compilationPhaseResult.validate(false, true);
 
-    const instance = await generateTestInstance(compilationPhaseResult.buffer);
+    const instance = await generateTestInstance(compilationPhaseResult.buffer, [envLib, testLib]);
 
     if (!instance) throw new Error('Invalid compilation');
 
@@ -89,9 +98,12 @@ async function testSrc(
       }
     }
 
-    for (let testResult of instance.testResults) {
-      if (!testResult.passed) {
-        throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
+    {
+      const testResults = getTestResults(instance);
+      for (let testResult of testResults) {
+        if (!testResult.passed) {
+          throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
+        }
       }
     }
 
@@ -99,12 +111,15 @@ async function testSrc(
 
     if (customTest) {
       try {
-        const newInstance = await generateTestInstance(compilationPhaseResult.buffer);
+        const newInstance = await generateTestInstance(compilationPhaseResult.buffer, [envLib, testLib]);
 
         await customTest(newInstance);
 
-        for (let testResult of newInstance.testResults) {
-          if (!testResult.passed) throw new Error('Suite ' + testResult.title + ' failed');
+        const testResults = getTestResults(newInstance);
+        for (let testResult of testResults) {
+          if (!testResult.passed) {
+            throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
+          }
         }
       } catch (e) {
         console.error('OPTIMIZED VERSION FAILED');
@@ -124,7 +139,7 @@ export function testFolder() {
   function testFile(fileName: string) {
     const content = readFileSync(fileName).toString();
 
-    it(fileName.replace(parsingContext.cwd, ''), async function() {
+    it(fileName.replace(parsingContext.system.getCurrentDirectory(), ''), async function() {
       this.timeout(10000);
 
       await testSrc(
@@ -137,7 +152,7 @@ export function testFolder() {
       );
     });
   }
-  glob.sync(parsingContext.cwd + '/**/*.lys').map(testFile);
+  glob.sync(parsingContext.system.getCurrentDirectory() + '/**/*.lys').map(testFile);
 }
 
 export function test(name: string, src: string, customTest?: (document: any, error?: Error) => Promise<any>) {

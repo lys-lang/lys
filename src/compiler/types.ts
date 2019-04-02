@@ -14,9 +14,9 @@ export enum NativeTypes {
 }
 
 export abstract class Type {
-  nativeType: NativeTypes;
+  nativeType?: NativeTypes;
 
-  get binaryenType(): Valtype {
+  get binaryenType(): Valtype | void {
     switch (this.nativeType) {
       case NativeTypes.i32:
         return 'i32';
@@ -47,7 +47,7 @@ export abstract class Type {
     return otherType === this;
   }
 
-  canBeAssignedTo(otherType: Type) {
+  canBeAssignedTo(otherType: Type): boolean {
     if (this.equals(otherType)) {
       return true;
     }
@@ -72,44 +72,41 @@ export abstract class Type {
   abstract toString(): string;
   abstract inspect(levels: number): string;
   abstract schema(): Record<string, Type>;
-  abstract getSchemaValue(name: string);
+  abstract getSchemaValue(name: string): any;
 }
 
 export class FunctionType extends Type {
   nativeType: NativeTypes = NativeTypes.func;
+  parameterTypes?: Type[];
+  parameterNames?: string[];
+  returnType?: Type;
 
   constructor(public name: Nodes.NameIdentifierNode) {
     super();
   }
 
-  parameterTypes: Type[];
-  parameterNames: string[];
-  returnType: Type;
-
   equals(type: Type) {
     if (!(type instanceof FunctionType)) return false;
-    if (this.parameterTypes.length != type.parameterTypes.length) return false;
-    if (!this.returnType.equals(type.returnType)) return false;
-    if (this.parameterTypes.some(($, $$) => !$.equals(type.parameterTypes[$$]))) return false;
+    if (this.parameterTypes!.length !== type.parameterTypes!.length) return false;
+    if (!this.returnType!.equals(type.returnType!)) return false;
+    if (this.parameterTypes!.some(($, $$) => !$.equals(type.parameterTypes![$$]))) return false;
     return true;
   }
 
   toString() {
-    return `fun(${this.parameterTypes
-      .map(($, $$) => {
-        if (this.parameterNames[$$]) {
-          return this.parameterNames[$$] + ': ' + $;
-        } else {
-          return $;
-        }
-      })
-      .join(', ')}) -> ${this.returnType}`;
+    return `fun(${this.parameterTypes!.map(($, $$) => {
+      if (this.parameterNames![$$]) {
+        return this.parameterNames![$$] + ': ' + $;
+      } else {
+        return $;
+      }
+    }).join(', ')}) -> ${this.returnType}`;
   }
 
   inspect(_depth: number) {
-    return `(fun ${JSON.stringify(this.name.name)} (${this.parameterTypes
-      .map($ => $.inspect(0))
-      .join(' ')}) ${this.returnType.inspect(0)})`;
+    return `(fun ${JSON.stringify(this.name.name)} (${this.parameterTypes!.map($ => $.inspect(0)).join(
+      ' '
+    )}) ${this.returnType!.inspect(0)})`;
   }
 
   schema() {
@@ -128,7 +125,7 @@ export class StructType extends Type {
     super();
   }
 
-  equals(type: Type) {
+  equals(type: Type): boolean {
     return type === this;
   }
 
@@ -165,7 +162,7 @@ export class StructType extends Type {
                 ' ' +
                 $.parameterName.name +
                 ':' +
-                ($.parameterType.ofType ? $.parameterType.ofType.inspect(level - 1) : '<null>')
+                ($.parameterType && $.parameterType.ofType ? $.parameterType.ofType.inspect(level - 1) : '<null>')
             )
             .join('')
         : '';
@@ -187,15 +184,15 @@ export class StructType extends Type {
 }
 
 export class StackType extends Type {
-  static of(name: string, nativeType: NativeTypes, byteSize: number): any {
-    return new StackType(name, nativeType, byteSize);
-  }
-
   private constructor(public typeName: string, public nativeType: NativeTypes, public byteSize: number) {
     super();
   }
 
-  equals(other: Type) {
+  static of(name: string, nativeType: NativeTypes, byteSize: number): any {
+    return new StackType(name, nativeType, byteSize);
+  }
+
+  equals(other: Type): boolean {
     return other === this;
   }
 
@@ -204,11 +201,12 @@ export class StackType extends Type {
 
     if (
       otherType instanceof StackType &&
-      otherType.nativeType == this.nativeType &&
-      otherType.typeName == this.typeName &&
-      otherType.byteSize == this.byteSize
-    )
+      otherType.nativeType === this.nativeType &&
+      otherType.typeName === this.typeName &&
+      otherType.byteSize === this.byteSize
+    ) {
       return true;
+    }
 
     return super.canBeAssignedTo(other);
   }
@@ -242,9 +240,8 @@ const u32 = StackType.of('u32', NativeTypes.i32, 4);
 const voidType = StackType.of('void', NativeTypes.void, 0);
 
 export class RefType extends Type {
-  nativeType: NativeTypes = NativeTypes.i64;
-
   static instance: RefType = new RefType();
+  nativeType: NativeTypes = NativeTypes.i64;
 
   readonly byteSize = 8;
 
@@ -265,7 +262,7 @@ export class RefType extends Type {
     return '(ref ?)';
   }
 
-  canBeAssignedTo(otherType: Type) {
+  canBeAssignedTo(otherType: Type): boolean {
     return RefType.isRefTypeStrict(otherType);
   }
 
@@ -277,7 +274,7 @@ export class RefType extends Type {
     return 0;
   }
 
-  equals(otherType: Type) {
+  equals(otherType: Type): boolean {
     if (!otherType) return false;
     return RefType.isRefTypeStrict(otherType);
   }
@@ -329,7 +326,7 @@ export class IntersectionType extends Type {
     }
   }
 
-  equals(other: Type) {
+  equals(other: Type): boolean {
     if (!other) return false;
     // TODO: flatMap
     return other instanceof IntersectionType && other.of.every($ => this.of.includes($));
@@ -358,14 +355,14 @@ export class UnionType extends Type {
 
     this.of.forEach($ => {
       if (NeverType.isNeverType($)) return;
-      nativeTypes.add($.binaryenType);
+      nativeTypes.add($.binaryenType as Valtype);
     });
 
-    if (nativeTypes.size == 0) {
+    if (nativeTypes.size === 0) {
       throw new Error('Cannot find a suitable low level type for ' + this.toString() + ' (0)');
     }
 
-    if (nativeTypes.size == 1) {
+    if (nativeTypes.size === 1) {
       return nativeTypes.values().next().value;
     } else {
       throw new Error('Cannot find a suitable low level type for ' + this.toString());
@@ -388,12 +385,12 @@ export class UnionType extends Type {
   }
 
   toString() {
-    if (this.of.length == 0) return '(empty union)';
+    if (this.of.length === 0) return '(empty union)';
     return this.of.map($ => $.toString()).join(' | ');
   }
 
   inspect(levels: number = 0) {
-    if (this.of.length == 0) return `(union EMPTY)`;
+    if (this.of.length === 0) return `(union EMPTY)`;
     return '(union ' + this.of.map($ => $.inspect(levels - 1)).join(' ') + ')';
   }
 
@@ -401,7 +398,7 @@ export class UnionType extends Type {
     return this.of.every($ => $.canBeAssignedTo(otherType));
   }
 
-  equals(other: Type) {
+  equals(other: Type): boolean {
     if (!other) return false;
 
     return (
@@ -463,13 +460,13 @@ export class UnionType extends Type {
       }
     }
 
-    if (newSet.size == 0) {
+    if (newSet.size === 0) {
       return InjectableTypes.never;
     }
 
     const newTypes = Array.from(newSet.values());
 
-    if (newTypes.length == 1) {
+    if (newTypes.length === 1) {
       return newTypes[0];
     }
 
@@ -504,7 +501,7 @@ export class UnionType extends Type {
       }
     });
 
-    if (newTypes.length == 0) {
+    if (newTypes.length === 0) {
       return InjectableTypes.never;
     }
 
@@ -535,7 +532,7 @@ export class UnionType extends Type {
     unions.forEach((union, ix) => {
       const expanded = UnionType.of(union.expand());
 
-      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ != ix && atom.canBeAssignedTo($)));
+      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ !== ix && atom.canBeAssignedTo($)));
       if (hasConflict) {
         blackListedUnionAtoms.push(...expanded.of);
 
@@ -557,7 +554,7 @@ export class UnionType extends Type {
       const candidate = getUnderlyingTypeFromAlias(newType);
 
       if (unionsToRemove.includes(candidate as any)) {
-        newTypes[i] = null;
+        (newTypes as any)[i] = null;
         return;
       }
 
@@ -566,7 +563,7 @@ export class UnionType extends Type {
       }
 
       if (unions.some(union => !union.equals(candidate) && candidate.canBeAssignedTo(union))) {
-        newTypes[i] = null;
+        (newTypes as any)[i] = null;
       }
     });
 
@@ -595,11 +592,11 @@ export class UnionType extends Type {
         nativeTypes.add($.getSchemaValue('byteSize'));
       });
 
-      if (nativeTypes.size == 0) {
+      if (nativeTypes.size === 0) {
         throw new Error('Cannot find a consistent byteSize in ' + this.inspect(100) + ' (0)');
       }
 
-      if (nativeTypes.size == 1) {
+      if (nativeTypes.size === 1) {
         return nativeTypes.values().next().value;
       } else {
         throw new Error('Cannot find a consistent byteSize in ' + this.inspect(100));
@@ -612,29 +609,28 @@ export class UnionType extends Type {
 }
 
 export class TypeAlias extends Type {
+  get binaryenType() {
+    return this.of.binaryenType;
+  }
+
+  get nativeType(): NativeTypes {
+    return this.of.nativeType as NativeTypes;
+  }
   discriminant: number | null = null;
 
   constructor(public name: Nodes.NameIdentifierNode, public readonly of: Type) {
     super();
   }
 
-  get binaryenType() {
-    return this.of.binaryenType;
-  }
-
-  get nativeType(): NativeTypes {
-    return this.of.nativeType;
-  }
-
   canBeAssignedTo(other: Type) {
     return this.of.canBeAssignedTo(other);
   }
 
-  equals(other: Type) {
+  equals(other: Type): boolean {
     return other === this;
   }
 
-  toString() {
+  toString(): string {
     return this.name.name;
   }
 
@@ -643,7 +639,7 @@ export class TypeAlias extends Type {
   }
 
   schema() {
-    const result = {
+    const result: Record<string, Type> = {
       ...this.of.schema(),
       discriminant: u32
     };
@@ -664,28 +660,6 @@ export class TypeAlias extends Type {
     return result;
   }
 
-  private getOrderedProperties() {
-    const properties: Array<{ index: number; name: Nodes.NameIdentifierNode }> = [];
-
-    this.name.namespaceNames &&
-      this.name.namespaceNames.forEach((nameIdentifierNode, name) => {
-        if (name.startsWith('property$')) {
-          const index = parseInt(name.substr('property$'.length));
-          properties.push({ index, name: nameIdentifierNode });
-        }
-      });
-
-    properties.sort((a, b) => {
-      if (a.index > b.index) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
-
-    return properties;
-  }
-
   getSchemaValue(name: string) {
     if (name === 'discriminant') {
       if (this.discriminant === null) {
@@ -702,13 +676,13 @@ export class TypeAlias extends Type {
 
           for (let prop of properties) {
             const fn = getNonVoidFunction(prop.name.ofType as IntersectionType);
-            offset += fn.returnType.getSchemaValue('byteSize');
+            offset += fn!.returnType!.getSchemaValue('byteSize');
           }
 
           return offset;
         } else if (name.startsWith('property$')) {
           const properties = this.getOrderedProperties();
-          const index = parseInt(name.substr('property$'.length));
+          const index = parseInt(name.substr('property$'.length), 10);
           const property = properties.find($ => $.index === index);
 
           if (!property) {
@@ -723,36 +697,58 @@ export class TypeAlias extends Type {
                 break;
               }
               const fn = getNonVoidFunction(prop.name.ofType as IntersectionType);
-              offset += fn.returnType.getSchemaValue('allocationSize');
+              offset += fn!.returnType!.getSchemaValue('allocationSize');
             }
 
             return offset;
           } else if (name.endsWith('_allocationSize')) {
             const fn = getNonVoidFunction(property.name.ofType as IntersectionType);
-            return fn.returnType.getSchemaValue('allocationSize');
+            return fn!.returnType!.getSchemaValue('allocationSize');
           }
         }
       }
     }
     return this.of.getSchemaValue(name);
   }
+
+  private getOrderedProperties() {
+    const properties: Array<{ index: number; name: Nodes.NameIdentifierNode }> = [];
+
+    this.name.namespaceNames &&
+      this.name.namespaceNames.forEach((nameIdentifierNode, name) => {
+        if (name.startsWith('property$')) {
+          const index = parseInt(name.substr('property$'.length), 10);
+          properties.push({ index, name: nameIdentifierNode });
+        }
+      });
+
+    properties.sort((a, b) => {
+      if (a.index > b.index) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    return properties;
+  }
 }
 
-function getNonVoidFunction(type: IntersectionType): FunctionType {
+function getNonVoidFunction(type: IntersectionType): FunctionType | null {
   const functions = type.of as FunctionType[];
   for (let fn of functions) {
     if (!voidType.canBeAssignedTo(fn.returnType)) {
       return fn;
     }
   }
+  return null;
 }
 
 export class TypeType extends Type {
+  static memMap = new WeakMap<Type, TypeType>();
   private constructor(public readonly of: Type) {
     super();
   }
-
-  static memMap = new WeakMap<Type, TypeType>();
 
   static of(of: Type) {
     let ret = this.memMap.get(of);
@@ -763,7 +759,7 @@ export class TypeType extends Type {
     return ret;
   }
 
-  canBeAssignedTo(other: Type) {
+  canBeAssignedTo(other: Type): boolean {
     const otherType = getUnderlyingTypeFromAlias(other);
     if (otherType instanceof TypeType) {
       return this.of.canBeAssignedTo(otherType.of);
@@ -771,7 +767,7 @@ export class TypeType extends Type {
     return false;
   }
 
-  equals(other: Type) {
+  equals(other: Type): boolean {
     if (!other) return false;
     return other instanceof TypeType && other.of.equals(this.of);
   }
@@ -817,10 +813,10 @@ export class NeverType extends Type {
       return true;
     }
     if (other instanceof UnionType) {
-      if (other.of.length == 0) {
+      if (other.of.length === 0) {
         return true;
       }
-      if (other.of.length == 1 && this.equals(other.of[0])) {
+      if (other.of.length === 1 && this.equals(other.of[0])) {
         return true;
       }
     }

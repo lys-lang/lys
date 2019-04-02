@@ -75,46 +75,46 @@ digraph LYS {
       67 [label="Ref: discriminant\n(alias u32 (native u32))", fillcolor=grey];
       68 [label="Ref: i64\n(type (alias i64 (native i64)))", fillcolor=grey];
       69 [label="Int: 32\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.Simple$discriminant()";
+      label="test/fixtures/types/struct.lys::Simple.Simple$discriminant_1()";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       70 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       71 [label="Ref: Simple$discriminant\n(fun 'Simple$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.apply()";
+      label="test/fixtures/types/struct.lys::Simple.apply_1()";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       72 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       73 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.load(ref,u32)";
+      label="test/fixtures/types/struct.lys::Simple.load_1(ref,u32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       74 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.==(Simple,ref)";
+      label="test/fixtures/types/struct.lys::Simple.==_1(Simple,ref)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       75 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.!=(Simple,ref)";
+      label="test/fixtures/types/struct.lys::Simple.!=_1(Simple,ref)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       76 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       77 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.store(ref,Simple,u32)";
+      label="test/fixtures/types/struct.lys::Simple.store_1(ref,Simple,u32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       78 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.as(Simple)";
+      label="test/fixtures/types/struct.lys::Simple.as_1(Simple)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#Simple_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       79 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       80 [label="Ref: Simple$discriminant\n(fun 'Simple$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::Simple.is(Simple | ref)";
+      label="test/fixtures/types/struct.lys::Simple.is_1(Simple | ref)";
     }
     label="test/fixtures/types/struct.lys#Simple";
   }
@@ -220,7 +220,7 @@ digraph LYS {
       177 [label="Ref: discriminant\n(alias u32 (native u32))", fillcolor=grey];
       178 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
       179 [label="Int: 32\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.WithInt$discriminant()";
+      label="test/fixtures/types/struct.lys::WithInt.WithInt$discriminant_1()";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -241,13 +241,13 @@ digraph LYS {
       194 [label="Ref: $ref\n(alias WithInt (struct a:<null>))", fillcolor=grey];
       195 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
       196 [label="Ref: $ref\n(alias WithInt (struct a:<null>))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.apply(i32)";
+      label="test/fixtures/types/struct.lys::WithInt.apply_1(i32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       197 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       198 [label="Ref: WithInt$discriminant\n(fun 'WithInt$discriminant' () (alias u64))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.fromPointer(u32)";
+      label="test/fixtures/types/struct.lys::WithInt.fromPointer_1(u32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -257,7 +257,7 @@ digraph LYS {
       202 [label="Ref: self\n(alias WithInt (struct a:<null>))", fillcolor=grey];
       203 [label="MemberNode\n(native u32)", fillcolor=grey];
       204 [label="Ref: WithInt\n(type (alias WithInt (struct a:<null>)))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.property$0(WithInt)";
+      label="test/fixtures/types/struct.lys::WithInt.property$0_1(WithInt)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -268,30 +268,30 @@ digraph LYS {
       209 [label="Ref: value\n(alias i32 (native i32))", fillcolor=grey];
       210 [label="MemberNode\n(native u32)", fillcolor=grey];
       211 [label="Ref: WithInt\n(type (alias WithInt (struct a:<null>)))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.property$0_1(WithInt,i32)";
+      label="test/fixtures/types/struct.lys::WithInt.property$0_2(WithInt,i32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       212 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       213 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.load(ref,u32)";
+      label="test/fixtures/types/struct.lys::WithInt.load_1(ref,u32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       214 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.==(WithInt,WithInt)";
+      label="test/fixtures/types/struct.lys::WithInt.==_1(WithInt,WithInt)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       215 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.!=(WithInt,WithInt)";
+      label="test/fixtures/types/struct.lys::WithInt.!=_1(WithInt,WithInt)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_8" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       216 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       217 [label="Ref: property$0\n(intersection (fun 'property$0' ((alias WithInt)) (alias i32)) (fun 'property$0' ((alias WithInt) (alias i32)) (alias void)))", fillcolor=grey];
       218 [label="Ref: self\n(alias WithInt (struct a:<null>))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.property_a(WithInt)";
+      label="test/fixtures/types/struct.lys::WithInt.property_a_1(WithInt)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_9" { rankdir=TB;
       node [style=filled, fillcolor=grey];
@@ -299,24 +299,24 @@ digraph LYS {
       220 [label="Ref: property$0\n(intersection (fun 'property$0' ((alias WithInt)) (alias i32)) (fun 'property$0' ((alias WithInt) (alias i32)) (alias void)))", fillcolor=grey];
       221 [label="Ref: self\n(alias WithInt (struct a:<null>))", fillcolor=grey];
       222 [label="Ref: value\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.property_a_1(WithInt,i32)";
+      label="test/fixtures/types/struct.lys::WithInt.property_a_2(WithInt,i32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_10" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       223 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       224 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.store(ref,WithInt,u32)";
+      label="test/fixtures/types/struct.lys::WithInt.store_1(ref,WithInt,u32)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_11" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       225 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.as(WithInt)";
+      label="test/fixtures/types/struct.lys::WithInt.as_1(WithInt)";
     }
     subgraph "cluster_test/fixtures/types/struct.lys#WithInt_12" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       226 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       227 [label="Ref: WithInt$discriminant\n(fun 'WithInt$discriminant' () (alias u64))", fillcolor=grey];
-      label="test/fixtures/types/struct.lys::WithInt.is(WithInt | ref)";
+      label="test/fixtures/types/struct.lys::WithInt.is_1(WithInt | ref)";
     }
     label="test/fixtures/types/struct.lys#WithInt";
   }

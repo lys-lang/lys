@@ -19,17 +19,18 @@
               |-NameIdentifierNode="Keccak"
           |-NameIdentifierNode="apply"
   |-OverloadedFunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=Injected
+    |-NameIdentifierNode="keccak" type=(fun "keccak" ((alias bytes)) (alias bytes))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
         |-StringLiteral="keccak"
       |-FunctionNode type=(fun "keccak" ((alias bytes)) (alias bytes)) annotations=IsOverloaded
+        |-NameIdentifierNode="keccak" annotations=Export
         |-ParameterNode annotations=Local(input:bytes#0)
           |-NameIdentifierNode="input" type=(alias bytes (native bytes))
           |-ReferenceNode type=(type (alias bytes (native bytes)))
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
-        |-NameIdentifierNode="keccak" annotations=Export
         |-ReferenceNode type=(type (alias bytes (native bytes)))
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
@@ -64,4 +65,3 @@
             |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
               |-QNameNode=k
                 |-NameIdentifierNode="k"
-    |-NameIdentifierNode="keccak" type=(fun "keccak" ((alias bytes)) (alias bytes))
