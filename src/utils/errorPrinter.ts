@@ -19,6 +19,8 @@ interface ILocalError {
   warning?: boolean;
 }
 
+export class LysError extends Error {}
+
 const ansiRegex = new RegExp(
   [
     '[\\u001B\\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\\u0007)',
@@ -44,8 +46,13 @@ export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
     out.push(printErrors_(fileName, parsingContext, errors, stripAnsi));
   });
 
-  return out.join('\n');
+  const ret = out.join('\n');
+
+  parsingContext.system.write(ret);
+
+  return ret;
 }
+
 function printErrors_(
   fileName: string,
   parsingContext: ParsingContext,

@@ -2,21 +2,14 @@
 
 import * as arg from 'arg';
 import { ParsingContext } from './compiler/ParsingContext';
-import { failWithErrors } from './compiler/findAllErrors';
-import { CanonicalPhaseResult } from './compiler/phases/canonicalPhase';
-import { SemanticPhaseResult } from './compiler/phases/semanticPhase';
-import { ScopePhaseResult } from './compiler/phases/scopePhase';
-import { TypePhaseResult } from './compiler/phases/typePhase';
-import { CompilationPhaseResult } from './compiler/phases/compilationPhase';
-import { CodeGenerationPhaseResult } from './compiler/phases/codeGenerationPhase';
 import { dirname, basename, relative } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
 import { getTestResults } from './utils/libs/test';
 import { nodeSystem } from './support/NodeSystem';
 import { writeFileSync } from 'fs';
 import { ForegroundColors, formatColorAndReset } from './utils/colors';
-
-export class LysError extends Error {}
+import { LysError } from './utils/errorPrinter';
+import { compile } from './index';
 
 const args = arg(
   {
@@ -36,11 +29,11 @@ const args = arg(
 
 function mkdirRecursive(dir: string) {
   // we explicitly don't use `path.sep` to have it platform independent;
-  var sep = '/';
+  let sep = '/';
 
-  var segments = dir.split(sep);
-  var current = '';
-  var i = 0;
+  let segments = dir.split(sep);
+  let current = '';
+  let i = 0;
 
   while (i < segments.length) {
     current = current + sep + segments[i];
@@ -104,33 +97,7 @@ async function main() {
   const outPath = dirname(outFileFullWithoutExtension);
   mkdirRecursive(outPath);
 
-  const phaseCount = 10;
-
-  const parsing = parsingContext.getParsingPhaseForFile(file);
-  failWithErrors(`Parsing phase (1/${phaseCount})`, parsingContext);
-
-  if (!parsing || !parsing.document) {
-    throw new LysError(`The document ${file} is empty`);
-  }
-
-  const canonical = new CanonicalPhaseResult(parsing);
-  failWithErrors(`Canonical phase (2/${phaseCount})`, parsingContext);
-
-  const semantic = new SemanticPhaseResult(canonical, 'test');
-  failWithErrors(`Semantic phase (3/${phaseCount})`, parsingContext);
-
-  const scope = new ScopePhaseResult(semantic);
-  failWithErrors(`Scope phase (4/${phaseCount})`, parsingContext);
-
-  const types = new TypePhaseResult(scope);
-  types.execute();
-  failWithErrors(`Type phase (5/${phaseCount})`, parsingContext);
-
-  const compilation = new CompilationPhaseResult(types);
-  failWithErrors(`Compilation phase (6/${phaseCount})`, parsingContext);
-
-  const codeGen = new CodeGenerationPhaseResult(compilation);
-  failWithErrors(`Code generation phase (7/${phaseCount})`, parsingContext);
+  const codeGen = compile(parsingContext, file);
 
   const optimize = !args['--no-optimize'];
 

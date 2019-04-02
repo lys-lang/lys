@@ -10,7 +10,7 @@ import { ParsingContext } from '../ParsingContext';
 import { printNode } from '../../utils/nodePrinter';
 
 function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
-  if (decorator.args.length != 2) {
+  if (decorator.args.length !== 2) {
     phase.parsingContext.messageCollector.error(
       '"extern" requires two arguments, module and function name',
       decorator.decoratorName
@@ -66,7 +66,7 @@ function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
 }
 
 function inlineDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
-  if (decorator.args.length != 0) {
+  if (decorator.args.length !== 0) {
     phase.parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName);
   }
 
@@ -74,7 +74,7 @@ function inlineDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
 }
 
 function explicitDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
-  if (decorator.args.length != 0) {
+  if (decorator.args.length !== 0) {
     phase.parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName);
   }
 
@@ -450,7 +450,7 @@ const processUnions = function(
       if (valueType instanceof Nodes.UnionTypeNode) {
         const referenceTypes = valueType.of.filter($ => $ instanceof Nodes.ReferenceNode) as Nodes.ReferenceNode[];
 
-        if (valueType.of.length != referenceTypes.length) {
+        if (valueType.of.length !== referenceTypes.length) {
           // error?
         }
 
@@ -518,7 +518,7 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseRes
   if (node instanceof Nodes.FunctionNode) {
     let used: string[] = [];
     node.parameters.forEach(param => {
-      if (used.indexOf(param.parameterName.name) == -1) {
+      if (used.indexOf(param.parameterName.name) === -1) {
         used.push(param.parameterName.name);
       } else {
         ctx.parsingContext.messageCollector.error(`Duplicated parameter "${param.parameterName.name}"`, param);
@@ -531,10 +531,10 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseRes
   }
 
   if (node instanceof Nodes.PatternMatcherNode) {
-    if (node.matchingSet.length == 0) {
+    if (node.matchingSet.length === 0) {
       throw new AstNodeError(`Invalid match expression, there are no matchers`, node);
     }
-    if (node.matchingSet.length == 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
+    if (node.matchingSet.length === 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
       throw new AstNodeError(`This match is useless`, node);
     }
   }
@@ -542,11 +542,11 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseRes
 
 const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node | null) => {
   if (node instanceof Nodes.WasmAtomNode) {
-    if (node.symbol == 'call' || node.symbol == 'global.get' || node.symbol == 'global.set') {
+    if (node.symbol === 'call' || node.symbol === 'global.get' || node.symbol === 'global.set') {
       if (!node.args[0]) {
         throw new AstNodeError(`Missing name`, node);
       }
-      if (node.args[0] instanceof Nodes.ReferenceNode == false) {
+      if (node.args[0] instanceof Nodes.ReferenceNode === false) {
         throw new AstNodeError(`Here you need a fully qualified name starting with $`, node.args[0]);
       }
     }

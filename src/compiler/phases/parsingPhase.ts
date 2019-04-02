@@ -32,6 +32,10 @@ export class ParsingPhaseResult extends PhaseResult {
     super();
   }
 
+  static fromString(code: string, parsingContext: ParsingContext) {
+    return new ParsingPhaseResult('(injected code)', code, parsingContext);
+  }
+
   execute() {
     this.document = parser.getAST(this.content, 'Document') as any;
 
@@ -40,9 +44,5 @@ export class ParsingPhaseResult extends PhaseResult {
     process(this.document!, this);
 
     failWithErrors('Parsing phase', this.parsingContext);
-  }
-
-  static fromString(code: string, parsingContext: ParsingContext) {
-    return new ParsingPhaseResult('(injected code)', code, parsingContext);
   }
 }

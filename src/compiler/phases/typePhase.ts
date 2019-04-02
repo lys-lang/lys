@@ -28,7 +28,9 @@ const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
 });
 
 const initializeTypes = walkPreOrder<Nodes.Node>(
-  (_node, _phase) => {},
+  (_node, _phase) => {
+    // stub
+  },
   (node, phase: TypePhaseResult) => {
     if (node instanceof Nodes.TypeDirectiveNode) {
       if (node.valueType instanceof Nodes.StructTypeNode) {
@@ -117,13 +119,6 @@ export class TypePhaseResult extends PhaseResult {
     return this.scopePhaseResult.parsingContext;
   }
 
-  createTypeAlias(name: Nodes.NameIdentifierNode, value: Type) {
-    const discriminant = this.parsingContext.getTypeDiscriminant(this.document.moduleName!, name.name!);
-    const alias = new TypeAlias(name, value);
-    alias.discriminant = discriminant;
-    return alias;
-  }
-
   constructor(public scopePhaseResult: ScopePhaseResult) {
     super();
 
@@ -146,6 +141,13 @@ export class TypePhaseResult extends PhaseResult {
         throw e;
       }
     }
+  }
+
+  createTypeAlias(name: Nodes.NameIdentifierNode, value: Type) {
+    const discriminant = this.parsingContext.getTypeDiscriminant(this.document.moduleName!, name.name!);
+    const alias = new TypeAlias(name, value);
+    alias.discriminant = discriminant;
+    return alias;
   }
 
   ensureIsValid() {

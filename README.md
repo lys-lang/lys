@@ -334,3 +334,5 @@ impl Node {
   }
 }
 ```
+
+[![Build Status](https://travis-ci.org/lys-lang/lys.svg?branch=master)](https://travis-ci.org/lys-lang/lys)

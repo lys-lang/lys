@@ -6,8 +6,6 @@ import { ParsingContext } from './ParsingContext';
 import { AstNodeError } from './NodeError';
 import { indent } from '../utils/astPrinter';
 
-declare var console: any;
-
 const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
     token.astNode.errors.forEach(($: any) => {
@@ -33,7 +31,7 @@ export function failWithErrors(phaseName: string, pc: ParsingContext) {
   if (!pc.messageCollector.hasErrors()) return;
 
   if (pc && pc.messageCollector.errors.length) {
-    console.log(printErrors(pc));
+    printErrors(pc);
   }
 
   throw Object.assign(

@@ -32,7 +32,9 @@ type CompilationModuleResult = {
 const wabt: typeof _wabt = (_wabt as any)();
 
 const starterName = t.identifier('%%START%%');
-declare var WebAssembly: any, console: any;
+
+declare var WebAssembly: any;
+declare var console: any;
 
 (binaryen as any).setOptimizeLevel(3);
 (binaryen as any).setShrinkLevel(0);
@@ -56,7 +58,7 @@ function getStarterFunction(statements: any[]) {
 
   return t.func(
     starterName, // name
-    fnType, //signature
+    fnType, // signature
     statements // body
   );
 }
@@ -283,7 +285,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
-      const size = '00000000'; // node.length.toString(16);
+      const size = '00000000';
       const offset = ('00000000' + node.offset!.toString(16)).substr(-8);
       return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + size + offset, 'i64')]);
     } else if (node instanceof Nodes.FloatLiteral) {
@@ -324,7 +326,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         throw new Error('Error emiting AssignmentNode');
       }
     } else if (node instanceof Nodes.BlockNode) {
-      // if (!node.label) throw new Error('Block node without label');
+      // a if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'B' + getFunctionSeqId(node));
       const type = node.ofType!.binaryenType;
       let instr: any[] = [];
@@ -344,7 +346,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         instr = instr.concat(emited);
       });
 
-      if (instr.length == 0) {
+      if (instr.length === 0) {
         instr.push(t.instruction('nop'));
       }
 
@@ -371,7 +373,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
       return t.instruction(instr, [t.identifier(local.name)]);
     } else if (node instanceof Nodes.MemberNode) {
-      if (node.operator == '.^') {
+      if (node.operator === '.^') {
         const schemaType = node.lhs.ofType;
 
         if (!schemaType) throw new AstNodeError('schemaType not defined', node);
@@ -444,7 +446,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
-      console.log(text);
+      this.parsingContext.system.write(text);
       this.parsingContext.messageCollector.error(e, this.document);
       throw e;
     }
@@ -458,7 +460,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       module.runPasses(['duplicate-function-elimination']);
       module.runPasses(['remove-unused-module-elements']);
 
-      if (module.validate() == 0) {
+      if (module.validate() === 0) {
         this.parsingContext.messageCollector.error(new AstNodeError('binaryen validation failed', this.document));
       }
 
@@ -489,7 +491,9 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     throw new Error('Impossible to emitText');
   }
 
-  optimize() {}
+  optimize() {
+    // stub
+  }
 
   /** This method only exists for test porpuses */
   async toInstance(extra: Record<string, Record<string, any>> = {}) {
@@ -559,20 +563,16 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     const createdGlobals = globals.map($ => {
       // TODO: If the value is a literal, do not defer initialization to starters
 
-      const mut = 'var'; // $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
+      const mut = 'var'; // TODO: $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
       const binaryenType = $.decl.variableName.ofType!.binaryenType;
       const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
       const identifier = t.identifier(local.name);
 
       starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
 
-      // if ($.isExported) {
-      //   exportedElements.push(t.moduleExport($.decl.variableName.name, t.moduleExportDescr('Global', identifier)));
-      // }
-
       return t.global(
         t.globalType(binaryenType, mut),
-        [t.objectInstruction('const', binaryenType, [t.numberLiteralFromRaw(0)])], //emitList($.decl.value, compilationPhase.document),
+        [t.objectInstruction('const', binaryenType, [t.numberLiteralFromRaw(0)])], // emitList($.decl.value, compilationPhase.document),
         identifier
       );
     });

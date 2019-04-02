@@ -224,7 +224,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult:
       throw new AstNodeError(`Cannot resolve reference "${node.variable.text}"`, node.variable);
     }
     const resolved = node.closure!.getQName(node.variable, true);
-    const isGlobal = !resolved.isLocalReference || resolved.scope == phaseResult.document.closure;
+    const isGlobal = !resolved.isLocalReference || resolved.scope === phaseResult.document.closure;
     node.isLocal = !isGlobal;
     node.resolvedReference = resolved;
     node.closure!.incrementUsageQName(node.variable);
@@ -251,7 +251,7 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: Sc
 
 const injectImplicitCalls = walkPreOrder((node: Nodes.Node, _scopePhaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.FunctionCallNode && node.functionNode instanceof Nodes.ReferenceNode) {
-    if (node.functionNode.resolvedReference && node.functionNode.resolvedReference.type == 'TYPE') {
+    if (node.functionNode.resolvedReference && node.functionNode.resolvedReference.type === 'TYPE') {
       const member = new Nodes.MemberNode(
         node.functionNode.astNode,
         node.functionNode,
@@ -344,16 +344,6 @@ export class ScopePhaseResult extends PhaseResult {
     this.execute();
   }
 
-  private registerImportedModules() {
-    (this.document.directives.filter(
-      $ => $ instanceof Nodes.ImportDirectiveNode
-    ) as Nodes.ImportDirectiveNode[]).forEach($ => {
-      const importAll = $.allItems ? new Set(['*']) : new Set();
-      this.importedModules.add($.module.text);
-      this.document.closure!.registerImport($.module.text, importAll);
-    });
-  }
-
   protected execute() {
     injectCoreImport(this.document);
 
@@ -371,5 +361,15 @@ export class ScopePhaseResult extends PhaseResult {
     validateLoops(this.document, this);
 
     failIfErrors('Scope phase', this.document, this);
+  }
+
+  private registerImportedModules() {
+    (this.document.directives.filter(
+      $ => $ instanceof Nodes.ImportDirectiveNode
+    ) as Nodes.ImportDirectiveNode[]).forEach($ => {
+      const importAll = $.allItems ? new Set(['*']) : new Set();
+      this.importedModules.add($.module.text);
+      this.document.closure!.registerImport($.module.text, importAll);
+    });
   }
 }
