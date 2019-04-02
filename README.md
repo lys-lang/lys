@@ -52,7 +52,7 @@ impl Vector3 {
     )
 
   fun property_length(this: Vector3): f32 =
-    system::math::sqrt(
+    f32.sqrt(
       this.x * this.x +
       this.y * this.y +
       this.z * this.z
