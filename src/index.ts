@@ -11,7 +11,6 @@ import { System } from './compiler/System';
 export { ParsingContext, System };
 
 export function compile(parsingContext: ParsingContext, moduleName: string) {
-  // TODO: module
   const parsing = parsingContext.getParsingPhaseForModule(moduleName);
   failWithErrors(`Parsing phase`, parsingContext);
 
