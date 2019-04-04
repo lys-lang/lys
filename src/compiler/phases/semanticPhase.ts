@@ -250,7 +250,8 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(
-        phase.moduleName + '#' + typeName,
+        phase.canonicalPhaseResult.parsingPhaseResult.fileName + '#' + typeName,
+        phase.document.moduleName + '#' + typeName,
         `
             impl ${typeName} {
               #[inline]
@@ -333,7 +334,8 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
   } else {
     const canonical = new CanonicalPhaseResult(
       phase.parsingContext.getParsingPhaseForContent(
-        phase.moduleName + '#' + typeName,
+        phase.canonicalPhaseResult.parsingPhaseResult.fileName + '#' + typeName,
+        phase.document.moduleName + '#' + typeName,
         `
           impl ${typeName} {
             #[inline]
@@ -467,7 +469,8 @@ const processUnions = function(
 
         const canonical = new CanonicalPhaseResult(
           phase.parsingContext.getParsingPhaseForContent(
-            phase.moduleName + '#' + variableName.name,
+            phase.canonicalPhaseResult.parsingPhaseResult.fileName + '#' + variableName.name,
+            phase.document.moduleName + '#' + variableName.name,
             `
               // Union type ${variableName.name}
               impl ${variableName.name} {
@@ -613,14 +616,18 @@ export class SemanticPhaseResult extends PhaseResult {
     return this.canonicalPhaseResult.parsingContext;
   }
 
-  constructor(public canonicalPhaseResult: CanonicalPhaseResult, public readonly moduleName: string) {
+  constructor(public canonicalPhaseResult: CanonicalPhaseResult) {
     super();
     this.execute();
-    this.document.moduleName = moduleName;
   }
 
   protected execute() {
-    this.document.closure = new Closure(this.parsingContext, null, this.moduleName, 'document_' + this.moduleName);
+    this.document.closure = new Closure(
+      this.parsingContext,
+      null,
+      this.document.moduleName,
+      'document_' + this.document.moduleName
+    );
 
     preprocessStructs(this.document, this);
     processUnions(this.document, this);

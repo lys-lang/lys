@@ -4,7 +4,7 @@ import { Type, IntersectionType } from './types';
 export interface IPositionCapable {
   readonly start: number;
   readonly end: number;
-  readonly document: string;
+  readonly moduleName: string;
 }
 
 export type IErrorPositionCapable = {

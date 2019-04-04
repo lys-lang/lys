@@ -144,7 +144,7 @@ export class TypePhaseResult extends PhaseResult {
   }
 
   createTypeAlias(name: Nodes.NameIdentifierNode, value: Type) {
-    const discriminant = this.parsingContext.getTypeDiscriminant(this.document.moduleName!, name.name!);
+    const discriminant = this.parsingContext.getTypeDiscriminant(this.document.moduleName, name.name!);
     const alias = new TypeAlias(name, value);
     alias.discriminant = discriminant;
     return alias;

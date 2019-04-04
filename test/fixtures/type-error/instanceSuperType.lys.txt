@@ -1,4 +1,4 @@
-test/fixtures/type-error/instanceSuperType.lys
+/Users/menduz/code/lys/test/fixtures/type-error/instanceSuperType.lys
     1│ enum x {
     2│   Nila
     3│   Custom(r: i32)
@@ -9,16 +9,16 @@ test/fixtures/type-error/instanceSuperType.lys
     8│ fun qq(x: Custom): i32 = ???
     9│ 
    10│ fun a(): void = x(Custom(1))
-     │                 ^ Cannot find member "apply" in (alias x)
+     │                 ^ Cannot find name 'apply' in (alias x)
    11│ fun b(t: Custom): void = x(t)
-     │                          ^ Cannot find member "apply" in (alias x)
+     │                          ^ Cannot find name 'apply' in (alias x)
    12│ fun c(t: x): void = x(t)
-     │                     ^ Cannot find member "apply" in (alias x)
+     │                     ^ Cannot find name 'apply' in (alias x)
    13│ fun d(i: i32): void = x(Custom(i))
-     │                       ^ Cannot find member "apply" in (alias x)
+     │                       ^ Cannot find name 'apply' in (alias x)
    14│ fun d(t: Nila): void = x(t)
-     │                        ^ Cannot find member "apply" in (alias x)
+     │                        ^ Cannot find name 'apply' in (alias x)
    15│ fun d(): void = x(Nila)
-     │                 ^ Cannot find member "apply" in (alias x)
+     │                 ^ Cannot find name 'apply' in (alias x)
    16│ fun e(): void = x()
-     │                 ^ Cannot find member "apply" in (alias x)
+     │                 ^ Cannot find name 'apply' in (alias x)

@@ -533,7 +533,10 @@ const visitor = {
 };
 
 function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
-  if (!astNode) throw new Error('astNode is null');
+  if (!astNode) {
+    console.trace();
+    throw new Error('astNode is null');
+  }
   if ((visitor as any)[astNode.type]) {
     return (visitor as any)[astNode.type](astNode);
   } else {
@@ -566,7 +569,7 @@ function visitLastChild(token: Nodes.ASTNode) {
 }
 
 export class CanonicalPhaseResult extends PhaseResult {
-  document: Nodes.DocumentNode | null = null;
+  document: Nodes.DocumentNode;
 
   get parsingContext(): ParsingContext {
     return this.parsingPhaseResult.parsingContext;
@@ -574,12 +577,14 @@ export class CanonicalPhaseResult extends PhaseResult {
 
   constructor(public parsingPhaseResult: ParsingPhaseResult) {
     super();
-    this.execute();
-  }
 
-  protected execute() {
-    this.document = visit(this.parsingPhaseResult.document!) as Nodes.DocumentNode;
-    this.document!.file = this.parsingPhaseResult.fileName;
-    failIfErrors('Canonical phase', this.document!, this);
+    if (!this.parsingPhaseResult.document) {
+      throw new Error('parsing phase did not run or failed');
+    }
+
+    this.document = visit(this.parsingPhaseResult.document) as Nodes.DocumentNode;
+    this.document.fileName = this.parsingPhaseResult.fileName;
+    this.document.moduleName = this.parsingPhaseResult.moduleName;
+    failIfErrors('Canonical phase', this.document, this);
   }
 }

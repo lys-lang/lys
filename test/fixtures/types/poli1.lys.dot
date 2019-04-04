@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/poli1.lys" {
+  subgraph "cluster_test::fixtures::types::poli1" {
     1 [label="Name: True\n(type (alias True (struct)))", fillcolor=grey];
     2 [label="Name: False\n(type (alias False (struct)))", fillcolor=grey];
     3 [label="Name: Boolean\n(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))", fillcolor=grey];
@@ -19,7 +19,7 @@ digraph LYS {
     16 [label="Ref: Boolean\n(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))", fillcolor=grey];
     17 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
     18 [label="Name: isTrue\n(fun 'isTrue' ((alias Boolean)) (alias boolean))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/poli1.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       19 [label="IfNode\n(union (alias True (struct)) (alias False (struct)))", fillcolor=grey];
       20 [label="FunctionCallNode\n(alias True (struct))", fillcolor=grey];
@@ -31,9 +31,9 @@ digraph LYS {
       26 [label="FunctionCallNode\n(alias False (struct))", fillcolor=grey];
       27 [label="MemberNode\n(fun 'apply' () (alias False))", fillcolor=grey];
       28 [label="Ref: False\n(type (alias False (struct)))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::gt0_1(i32)";
+      label="test::fixtures::types::poli1::gt0_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       29 [label="PatternMatcherNode\n(alias boolean (native boolean))", fillcolor=grey];
       30 [label="Ref: a\n(alias Boolean (union (alias True (struct)) (alias False (struct))))", fillcolor=grey];
@@ -45,11 +45,11 @@ digraph LYS {
       36 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
       37 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
       38 [label="TypeReducerNode\n(alias False (struct))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::isTrue_1(Boolean)";
+      label="test::fixtures::types::poli1::isTrue_1(Boolean)";
     }
-    label="test/fixtures/types/poli1.lys";
+    label="test::fixtures::types::poli1";
   }
-  subgraph "cluster_test/fixtures/types/poli1.lys#True" {
+  subgraph "cluster_test::fixtures::types::poli1#True" {
     39 [label="FunOverload: True$discriminant\n(fun 'True$discriminant' () (alias i64))", fillcolor=grey];
     40 [label="FunNode: True$discriminant\n(fun 'True$discriminant' () (alias i64))", fillcolor=grey];
     41 [label="Ref: i64\n(type (alias i64 (native i64)))", fillcolor=grey];
@@ -106,7 +106,7 @@ digraph LYS {
     92 [label="Ref: True\n(type (alias True (struct)))", fillcolor=grey];
     93 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
     94 [label="Name: as\n(intersection (fun 'as' ((alias True)) (alias ref)) (fun 'as' ((alias True)) (alias Boolean)))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       95 [label="BlockNode\n(alias i64 (native i64))", fillcolor=grey];
       96 [label="ValDecl: discriminant\n(native void)", fillcolor=grey];
@@ -119,50 +119,50 @@ digraph LYS {
       103 [label="Ref: discriminant\n(alias u32 (native u32))", fillcolor=grey];
       104 [label="Ref: i64\n(type (alias i64 (native i64)))", fillcolor=grey];
       105 [label="Int: 32\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.True$discriminant_1()";
+      label="test::fixtures::types::poli1::True.True$discriminant_1()";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       106 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       107 [label="Ref: True$discriminant\n(fun 'True$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.apply_1()";
+      label="test::fixtures::types::poli1::True.apply_1()";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       108 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       109 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.load_1(ref,u32)";
+      label="test::fixtures::types::poli1::True.load_1(ref,u32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       110 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.==_1(True,ref)";
+      label="test::fixtures::types::poli1::True.==_1(True,ref)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       111 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.!=_1(True,ref)";
+      label="test::fixtures::types::poli1::True.!=_1(True,ref)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       112 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       113 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.store_1(ref,True,u32)";
+      label="test::fixtures::types::poli1::True.store_1(ref,True,u32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       114 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.as_1(True)";
+      label="test::fixtures::types::poli1::True.as_1(True)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#True_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#True_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       115 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       116 [label="Ref: True$discriminant\n(fun 'True$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.is_1(True | ref)";
+      label="test::fixtures::types::poli1::True.is_1(True | ref)";
     }
-    label="test/fixtures/types/poli1.lys#True";
+    label="test::fixtures::types::poli1#True";
   }
-  subgraph "cluster_test/fixtures/types/poli1.lys#Boolean" {
+  subgraph "cluster_test::fixtures::types::poli1#Boolean" {
     117 [label="FunNode: as\n(fun 'as' ((alias True)) (alias Boolean))", fillcolor=grey];
     118 [label="Name: lhs\n(alias True (struct))", fillcolor=grey];
     119 [label="Ref: True\n(type (alias True (struct)))", fillcolor=grey];
@@ -219,48 +219,48 @@ digraph LYS {
     170 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
     171 [label="Ref: Boolean\n(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))", fillcolor=grey];
     172 [label="Name: load\n(fun 'load' ((alias ref) (alias u32)) (alias Boolean))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       173 [label="BinOp: ==\n(alias boolean (native boolean))", fillcolor=grey];
       174 [label="Ref: lhs\n(alias ref (ref ?))", fillcolor=grey];
       175 [label="Ref: rhs\n(alias ref (ref ?))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::Boolean.==_1(ref,ref)";
+      label="test::fixtures::types::poli1::Boolean.==_1(ref,ref)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       176 [label="BinOp: !=\n(alias boolean (native boolean))", fillcolor=grey];
       177 [label="Ref: lhs\n(alias ref (ref ?))", fillcolor=grey];
       178 [label="Ref: rhs\n(alias ref (ref ?))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::Boolean.!=_1(ref,ref)";
+      label="test::fixtures::types::poli1::Boolean.!=_1(ref,ref)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       179 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::True.as_2(True)";
+      label="test::fixtures::types::poli1::True.as_2(True)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       180 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.as_2(False)";
+      label="test::fixtures::types::poli1::False.as_2(False)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       181 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       182 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::Boolean.load_1(ref,u32)";
+      label="test::fixtures::types::poli1::Boolean.load_1(ref,u32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       183 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::Boolean.as_1(Boolean)";
+      label="test::fixtures::types::poli1::Boolean.as_1(Boolean)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       184 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       185 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::Boolean.store_1(ref,Boolean,u32)";
+      label="test::fixtures::types::poli1::Boolean.store_1(ref,Boolean,u32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#Boolean_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#Boolean_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       186 [label="BlockNode\n(alias boolean (native boolean))", fillcolor=grey];
       187 [label="BinOp: ||\n(alias boolean (native boolean))", fillcolor=grey];
@@ -270,11 +270,11 @@ digraph LYS {
       191 [label="IsExpressionNode\n(alias boolean (native boolean))", fillcolor=grey];
       192 [label="Ref: a\n(union (alias Boolean (union (alias True (struct)) (alias False (struct)))) (alias ref (ref ?)))", fillcolor=grey];
       193 [label="Ref: False\n(type (alias False (struct)))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::Boolean.is_1(Boolean | ref)";
+      label="test::fixtures::types::poli1::Boolean.is_1(Boolean | ref)";
     }
-    label="test/fixtures/types/poli1.lys#Boolean";
+    label="test::fixtures::types::poli1#Boolean";
   }
-  subgraph "cluster_test/fixtures/types/poli1.lys#False" {
+  subgraph "cluster_test::fixtures::types::poli1#False" {
     194 [label="FunOverload: False$discriminant\n(fun 'False$discriminant' () (alias i64))", fillcolor=grey];
     195 [label="FunNode: False$discriminant\n(fun 'False$discriminant' () (alias i64))", fillcolor=grey];
     196 [label="Ref: i64\n(type (alias i64 (native i64)))", fillcolor=grey];
@@ -331,7 +331,7 @@ digraph LYS {
     247 [label="Ref: False\n(type (alias False (struct)))", fillcolor=grey];
     248 [label="Ref: ref\n(type (alias ref (ref ?)))", fillcolor=grey];
     249 [label="Name: as\n(intersection (fun 'as' ((alias False)) (alias ref)) (fun 'as' ((alias False)) (alias Boolean)))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       250 [label="BlockNode\n(alias i64 (native i64))", fillcolor=grey];
       251 [label="ValDecl: discriminant\n(native void)", fillcolor=grey];
@@ -344,48 +344,48 @@ digraph LYS {
       258 [label="Ref: discriminant\n(alias u32 (native u32))", fillcolor=grey];
       259 [label="Ref: i64\n(type (alias i64 (native i64)))", fillcolor=grey];
       260 [label="Int: 32\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.False$discriminant_1()";
+      label="test::fixtures::types::poli1::False.False$discriminant_1()";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       261 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       262 [label="Ref: False$discriminant\n(fun 'False$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.apply_1()";
+      label="test::fixtures::types::poli1::False.apply_1()";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       263 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       264 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.load_1(ref,u32)";
+      label="test::fixtures::types::poli1::False.load_1(ref,u32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       265 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.==_1(False,ref)";
+      label="test::fixtures::types::poli1::False.==_1(False,ref)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       266 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.!=_1(False,ref)";
+      label="test::fixtures::types::poli1::False.!=_1(False,ref)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       267 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       268 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.store_1(ref,False,u32)";
+      label="test::fixtures::types::poli1::False.store_1(ref,False,u32)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       269 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.as_1(False)";
+      label="test::fixtures::types::poli1::False.as_1(False)";
     }
-    subgraph "cluster_test/fixtures/types/poli1.lys#False_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::poli1#False_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       270 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       271 [label="Ref: False$discriminant\n(fun 'False$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/poli1.lys::False.is_1(False | ref)";
+      label="test::fixtures::types::poli1::False.is_1(False | ref)";
     }
-    label="test/fixtures/types/poli1.lys#False";
+    label="test::fixtures::types::poli1#False";
   }
   1 -> 45[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   1 -> 51[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];

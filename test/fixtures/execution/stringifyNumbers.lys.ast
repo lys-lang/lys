@@ -157,7 +157,7 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::size:u32#2)
+          |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::stringifyNumbers::size:u32#2)
             |-NameIdentifierNode="size" type=(alias u32 (native u32))
             |-FunctionCallNode=(fun "charLength" ((alias i64)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
               |-MemberNode type=(intersection (fun "charLength" ((alias i64)) (alias u32)) (fun "charLength" ((alias u64)) (alias u32)))
@@ -168,11 +168,11 @@
               |-ReferenceNode type=(alias i64 (native i64)) annotations=IsValueNode,Local(numberToSerialize:i64#0)
                 |-QNameNode=numberToSerialize
                   |-NameIdentifierNode="numberToSerialize"
-          |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result:boolean#3)
+          |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::stringifyNumbers::result:boolean#3)
             |-NameIdentifierNode="result" type=(alias boolean (native boolean))
             |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::size:u32#2)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::stringifyNumbers::size:u32#2)
                   |-QNameNode=size
                     |-NameIdentifierNode="size"
                 |-ReferenceNode type=(type (alias i32 (native i32)))
@@ -184,7 +184,7 @@
                   |-NameIdentifierNode="expected"
           |-IfNode type=(native void)
             |-UnaryExpressionNode=(fun "!" ((alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias boolean (native boolean)) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result:boolean#3)
+              |-ReferenceNode type=(alias boolean (native boolean)) annotations=Local(test::fixtures::execution::stringifyNumbers::result:boolean#3)
                 |-QNameNode=result
                   |-NameIdentifierNode="result"
             |-BlockNode type=(native void)
@@ -210,7 +210,7 @@
                     |-NameIdentifierNode="printf"
                 |-StringLiteral="     given: %d" type=(alias bytes (native bytes)) annotations=IsValueNode
                 |-AsExpressionNode=(fun "as" ((alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::size:u32#2)
+                  |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::stringifyNumbers::size:u32#2)
                     |-QNameNode=size
                       |-NameIdentifierNode="size"
                   |-ReferenceNode type=(type (alias i32 (native i32)))
@@ -230,7 +230,7 @@
             |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
-            |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::result:boolean#3)
+            |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(test::fixtures::execution::stringifyNumbers::result:boolean#3)
               |-QNameNode=result
                 |-NameIdentifierNode="result"
             |-StringLiteral="assertNumberLength" type=(alias bytes (native bytes)) annotations=IsValueNode
@@ -253,7 +253,7 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::msg:bytes#2)
+          |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::stringifyNumbers::msg:bytes#2)
             |-NameIdentifierNode="msg" type=(alias bytes (native bytes))
             |-FunctionCallNode=(fun "concatBytes" ((alias bytes) (alias bytes)) (alias bytes)) type=(alias bytes (native bytes)) annotations=IsValueNode
               |-ReferenceNode type=(fun "concatBytes" ((alias bytes) (alias bytes)) (alias bytes))
@@ -280,7 +280,7 @@
                   |-QNameNode=expected
                     |-NameIdentifierNode="expected"
               |-StringLiteral="'" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result_3:boolean#3)
+          |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::stringifyNumbers::result_3:boolean#3)
             |-NameIdentifierNode="result" type=(alias boolean (native boolean))
             |-BinaryExpressionNode=(fun "==" ((alias bytes) (alias bytes)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
               |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(given:bytes#0)
@@ -292,7 +292,7 @@
                   |-NameIdentifierNode="expected"
           |-IfNode type=(native void)
             |-UnaryExpressionNode=(fun "!" ((alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias boolean (native boolean)) annotations=Local(test/fixtures/execution/stringifyNumbers.lys::result_3:boolean#3)
+              |-ReferenceNode type=(alias boolean (native boolean)) annotations=Local(test::fixtures::execution::stringifyNumbers::result_3:boolean#3)
                 |-QNameNode=result
                   |-NameIdentifierNode="result"
             |-BlockNode type=(native void)
@@ -332,10 +332,10 @@
             |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
-            |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::result_3:boolean#3)
+            |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(test::fixtures::execution::stringifyNumbers::result_3:boolean#3)
               |-QNameNode=result
                 |-NameIdentifierNode="result"
-            |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(test/fixtures/execution/stringifyNumbers.lys::msg:bytes#2)
+            |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(test::fixtures::execution::stringifyNumbers::msg:bytes#2)
               |-QNameNode=msg
                 |-NameIdentifierNode="msg"
   |-OverloadedFunctionNode type=(fun "main" () (alias void)) annotations=Injected

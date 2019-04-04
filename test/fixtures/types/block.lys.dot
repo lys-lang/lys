@@ -1,13 +1,13 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/block.lys" {
+  subgraph "cluster_test::fixtures::types::block" {
     1 [label="FunOverload: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
     2 [label="FunNode: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
     3 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
     4 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     5 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     6 [label="Name: gte\n(fun 'gte' ((alias i32)) (alias i32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/block.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::block_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       7 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       8 [label="VarDecl: ttt\n(native void)", fillcolor=grey];
@@ -19,9 +19,9 @@ digraph LYS {
       14 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
       15 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
       16 [label="Ref: ttt\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/block.lys::gte_1(i32)";
+      label="test::fixtures::types::block::gte_1(i32)";
     }
-    label="test/fixtures/types/block.lys";
+    label="test::fixtures::types::block";
   }
   1 -> 6[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

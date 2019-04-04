@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/heavyGraph.lys" {
+  subgraph "cluster_test::fixtures::types::heavyGraph" {
     1 [label="FunOverload: AL_BITS\n(fun 'AL_BITS' () (alias u32))", fillcolor=grey];
     2 [label="FunNode: AL_BITS\n(fun 'AL_BITS' () (alias u32))", fillcolor=grey];
     3 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
@@ -53,14 +53,14 @@ digraph LYS {
     50 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
     51 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
     52 [label="Name: malloc\n(fun 'malloc' ((alias u32)) (alias u32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       53 [label="AsExpressionNode\n(alias u32 (native u32))", fillcolor=grey];
       54 [label="Int: 3\n(alias i32 (native i32))", fillcolor=grey];
       55 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::AL_BITS_1()";
+      label="test::fixtures::types::heavyGraph::AL_BITS_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       56 [label="BinOp: <<\n(alias u32 (native u32))", fillcolor=grey];
       57 [label="AsExpressionNode\n(alias u32 (native u32))", fillcolor=grey];
@@ -70,9 +70,9 @@ digraph LYS {
       61 [label="FunctionCallNode\n(alias u32 (native u32))", fillcolor=grey];
       62 [label="Ref: AL_BITS\n(fun 'AL_BITS' () (alias u32))", fillcolor=grey];
       63 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::AL_SIZE_1()";
+      label="test::fixtures::types::heavyGraph::AL_SIZE_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       64 [label="BinOp: -\n(alias u32 (native u32))", fillcolor=grey];
       65 [label="FunctionCallNode\n(alias u32 (native u32))", fillcolor=grey];
@@ -80,25 +80,25 @@ digraph LYS {
       67 [label="AsExpressionNode\n(alias u32 (native u32))", fillcolor=grey];
       68 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       69 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::AL_MASK_1()";
+      label="test::fixtures::types::heavyGraph::AL_MASK_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       70 [label="BinOp: <<\n(alias u32 (native u32))", fillcolor=grey];
       71 [label="AsExpressionNode\n(alias u32 (native u32))", fillcolor=grey];
       72 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       73 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
       74 [label="Int: 30\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::MAX_SIZE_32_1()";
+      label="test::fixtures::types::heavyGraph::MAX_SIZE_32_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       75 [label="AsExpressionNode\n(alias u32 (native u32))", fillcolor=grey];
       76 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
       77 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::HEAP_BASE_1()";
+      label="test::fixtures::types::heavyGraph::HEAP_BASE_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       78 [label="BinOp: &\n(alias u32 (native u32))", fillcolor=grey];
       79 [label="BinOp: +\n(alias u32 (native u32))", fillcolor=grey];
@@ -109,15 +109,15 @@ digraph LYS {
       84 [label="Unary: ~\n(alias u32 (native u32))", fillcolor=grey];
       85 [label="FunctionCallNode\n(alias u32 (native u32))", fillcolor=grey];
       86 [label="Ref: AL_MASK\n(fun 'AL_MASK' () (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::startOffset_1()";
+      label="test::fixtures::types::heavyGraph::startOffset_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       87 [label="FunctionCallNode\n(alias u32 (native u32))", fillcolor=grey];
       88 [label="Ref: startOffset\n(fun 'startOffset' () (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::offset_1()";
+      label="test::fixtures::types::heavyGraph::offset_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       89 [label="IfNode\n(alias u32 (native u32))", fillcolor=grey];
       90 [label="Ref: a\n(alias u32 (native u32))", fillcolor=grey];
@@ -125,19 +125,19 @@ digraph LYS {
       92 [label="Ref: a\n(alias u32 (native u32))", fillcolor=grey];
       93 [label="Ref: b\n(alias u32 (native u32))", fillcolor=grey];
       94 [label="Ref: b\n(alias u32 (native u32))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::max_1(u32,u32)";
+      label="test::fixtures::types::heavyGraph::max_1(u32,u32)";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_8" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_8" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       95 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::currentMemory_1()";
+      label="test::fixtures::types::heavyGraph::currentMemory_1()";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_9" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_9" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       96 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::growMemory_1(u32)";
+      label="test::fixtures::types::heavyGraph::growMemory_1(u32)";
     }
-    subgraph "cluster_test/fixtures/types/heavyGraph.lys_10" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::heavyGraph_10" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       97 [label="BlockNode\n(alias u32 (native u32))
 Amount: 12", fillcolor=magenta];
@@ -307,9 +307,9 @@ Amount: 9", fillcolor=magenta];
       242 [label="AsExpressionNode\n(alias u32 (native u32))", fillcolor=grey];
       243 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
       244 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
-      label="test/fixtures/types/heavyGraph.lys::malloc_1(u32)";
+      label="test::fixtures::types::heavyGraph::malloc_1(u32)";
     }
-    label="test/fixtures/types/heavyGraph.lys";
+    label="test::fixtures::types::heavyGraph";
   }
   1 -> 4[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

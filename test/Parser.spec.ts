@@ -12,7 +12,11 @@ describe('Parser', () => {
     const parsingContext = new ParsingContext(nodeSystem);
 
     parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
-    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+    const parsing = parsingContext.getParsingPhaseForContent(
+      fileName,
+      parsingContext.getModuleFQNForFile(fileName),
+      txt
+    );
     const ret = new CanonicalPhaseResult(parsing);
     return ret;
   };

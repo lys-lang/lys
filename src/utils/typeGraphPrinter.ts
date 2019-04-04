@@ -3,19 +3,19 @@ import { TypeGraph, Edge, TypeNode } from '../compiler/types/TypeGraph';
 import { Nodes } from '../compiler/nodes';
 
 export function print(rootGraph: TypeGraph): string {
-  const documents = new Set<string | void>();
+  const modules = new Set<string | void>();
 
-  function findDocuments(graph: TypeGraph) {
+  function findModulesInGraph(graph: TypeGraph) {
     graph.nodes.forEach(node => {
-      const document = (node.astNode.astNode && node.astNode.astNode.document) || void 0;
-      documents.add(document);
+      const moduleName = (node.astNode.astNode && node.astNode.astNode.moduleName) || void 0;
+      modules.add(moduleName);
     });
     graph.subGraphs.forEach((_, graph) => {
-      findDocuments(graph);
+      findModulesInGraph(graph);
     });
   }
 
-  findDocuments(rootGraph);
+  findModulesInGraph(rootGraph);
 
   const writer: StringCodeWriter = new StringCodeWriter();
 
@@ -25,8 +25,8 @@ export function print(rootGraph: TypeGraph): string {
 
   const printedNodes = getPrintedNodes(rootGraph);
 
-  documents.forEach(document => {
-    printDocument(writer, rootGraph, document, printedNodes, rootGraph);
+  modules.forEach(moduleName => {
+    printModule(writer, rootGraph, moduleName, printedNodes, rootGraph);
   });
 
   function printGraphEdges(graph: TypeGraph) {
@@ -48,21 +48,21 @@ export function print(rootGraph: TypeGraph): string {
   return writer.codeContent();
 }
 
-function printDocument(
+function printModule(
   writer: StringCodeWriter,
   graph: TypeGraph,
-  document: string | void,
+  moduleName: string | void,
   printedNodes: Set<TypeNode>,
   rootGraph: TypeGraph
 ) {
-  const cluster = JSON.stringify('cluster_' + (document || '<no-document>'));
-  const label = JSON.stringify(document || '<no-document>');
+  const cluster = JSON.stringify('cluster_' + (moduleName || '<no-module>'));
+  const label = JSON.stringify(moduleName || '<no-module>');
   writer.printIndent();
   writer.println(`subgraph ${cluster} {`);
   writer.indent();
 
   const nodesToPrint = graph.nodes.filter(
-    $ => (!$.astNode.astNode && !document) || ($.astNode.astNode && $.astNode.astNode.document === document)
+    $ => (!$.astNode.astNode && !moduleName) || ($.astNode.astNode && $.astNode.astNode.moduleName === moduleName)
   );
 
   nodesToPrint.forEach(node => {
@@ -73,13 +73,13 @@ function printDocument(
 
   function printSubGraph(str: string, graph: TypeGraph) {
     const nodesToPrint = graph.nodes.filter(
-      $ => (!$.astNode.astNode && !document) || ($.astNode.astNode && $.astNode.astNode.document === document)
+      $ => (!$.astNode.astNode && !moduleName) || ($.astNode.astNode && $.astNode.astNode.moduleName === moduleName)
     );
 
     if (nodesToPrint.length === 0 && graph.subGraphs.size === 0) return;
 
     writer.printIndent();
-    writer.println(`subgraph ${JSON.stringify('cluster_' + (document || '<no-document>') + '_' + i)} { rankdir=TB;`);
+    writer.println(`subgraph ${JSON.stringify('cluster_' + (moduleName || '<no-document>') + '_' + i)} { rankdir=TB;`);
     i++;
     writer.indent();
     writer.printIndent();

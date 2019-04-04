@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/patternMatching.lys" {
+  subgraph "cluster_test::fixtures::types::patternMatching" {
     1 [label="Name: Maybe\n(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))", fillcolor=grey];
     2 [label="UnionTypeNode\n(type (union (alias None (struct)) (alias Some (struct value:<null>))))", fillcolor=grey];
     3 [label="Ref: None\n(type (alias None (struct)))", fillcolor=grey];
@@ -31,7 +31,7 @@ digraph LYS {
     28 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))", fillcolor=grey];
     29 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
     30 [label="Name: test4\n(fun 'test4' ((alias Maybe)) (alias Some))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/patternMatching.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       31 [label="PatternMatcherNode\n(alias boolean (native boolean))", fillcolor=grey];
       32 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
@@ -42,9 +42,9 @@ digraph LYS {
       37 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
       38 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
       39 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test_1(i32)";
+      label="test::fixtures::types::patternMatching::test_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       40 [label="PatternMatcherNode\n(alias i32 (native i32))", fillcolor=grey];
       41 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
@@ -87,9 +87,9 @@ digraph LYS {
       78 [label="MatchDefaultNode\n(alias i32 (native i32))", fillcolor=grey];
       79 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
       80 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test2_1(i32)";
+      label="test::fixtures::types::patternMatching::test2_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       81 [label="PatternMatcherNode\n(alias boolean (native boolean))", fillcolor=grey];
       82 [label="Ref: a\n(alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>))))", fillcolor=grey];
@@ -104,9 +104,9 @@ digraph LYS {
       91 [label="Name: $\n(alias None (struct))", fillcolor=grey];
       92 [label="TypeReducerNode\n(alias None (struct))", fillcolor=grey];
       93 [label="TypeReducerNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test3_1(Maybe)";
+      label="test::fixtures::types::patternMatching::test3_1(Maybe)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       94 [label="PatternMatcherNode\n(alias Some (struct value:<null>))", fillcolor=grey];
       95 [label="Ref: a\n(alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>))))", fillcolor=grey];
@@ -124,11 +124,11 @@ digraph LYS {
       107 [label="Name: $\n(alias None (struct))", fillcolor=grey];
       108 [label="TypeReducerNode\n(alias None (struct))", fillcolor=grey];
       109 [label="TypeReducerNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test4_1(Maybe)";
+      label="test::fixtures::types::patternMatching::test4_1(Maybe)";
     }
-    label="test/fixtures/types/patternMatching.lys";
+    label="test::fixtures::types::patternMatching";
   }
-  subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe" {
+  subgraph "cluster_test::fixtures::types::patternMatching#Maybe" {
     110 [label="FunOverload: is\n(fun 'is' ((union (alias Maybe) (alias ref))) (alias boolean))", fillcolor=grey];
     111 [label="FunNode: is\n(fun 'is' ((union (alias Maybe) (alias ref))) (alias boolean))", fillcolor=grey];
     112 [label="Name: a\n(union (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))) (alias ref (ref ?)))", fillcolor=grey];
@@ -189,52 +189,52 @@ digraph LYS {
     167 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
     168 [label="Ref: Maybe\n(type (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))))", fillcolor=grey];
     169 [label="Name: as\n(intersection (fun 'as' ((alias Some)) (alias Maybe)) (fun 'as' ((alias Some)) (alias ref)))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       170 [label="BinOp: ==\n(alias boolean (native boolean))", fillcolor=grey];
       171 [label="Ref: lhs\n(alias ref (ref ?))", fillcolor=grey];
       172 [label="Ref: rhs\n(alias ref (ref ?))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Maybe.==_1(ref,ref)";
+      label="test::fixtures::types::patternMatching::Maybe.==_1(ref,ref)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       173 [label="BinOp: !=\n(alias boolean (native boolean))", fillcolor=grey];
       174 [label="Ref: lhs\n(alias ref (ref ?))", fillcolor=grey];
       175 [label="Ref: rhs\n(alias ref (ref ?))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Maybe.!=_1(ref,ref)";
+      label="test::fixtures::types::patternMatching::Maybe.!=_1(ref,ref)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       176 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       177 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Maybe.load_1(ref,u32)";
+      label="test::fixtures::types::patternMatching::Maybe.load_1(ref,u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       178 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.as_1(None)";
+      label="test::fixtures::types::patternMatching::None.as_1(None)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       179 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.as_1(Some)";
+      label="test::fixtures::types::patternMatching::Some.as_1(Some)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       180 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Maybe.as_1(Maybe)";
+      label="test::fixtures::types::patternMatching::Maybe.as_1(Maybe)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       181 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       182 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Maybe.store_1(ref,Maybe,u32)";
+      label="test::fixtures::types::patternMatching::Maybe.store_1(ref,Maybe,u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test3_1(Maybe)";
+      label="test::fixtures::types::patternMatching::test3_1(Maybe)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Maybe_8" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Maybe_8" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       183 [label="BlockNode\n(alias boolean (native boolean))", fillcolor=grey];
       184 [label="BinOp: ||\n(alias boolean (native boolean))", fillcolor=grey];
@@ -244,11 +244,11 @@ digraph LYS {
       188 [label="IsExpressionNode\n(alias boolean (native boolean))", fillcolor=grey];
       189 [label="Ref: a\n(union (alias Maybe (union (alias None (struct)) (alias Some (struct value:<null>)))) (alias ref (ref ?)))", fillcolor=grey];
       190 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Maybe.is_1(Maybe | ref)";
+      label="test::fixtures::types::patternMatching::Maybe.is_1(Maybe | ref)";
     }
-    label="test/fixtures/types/patternMatching.lys#Maybe";
+    label="test::fixtures::types::patternMatching#Maybe";
   }
-  subgraph "cluster_test/fixtures/types/patternMatching.lys#None" {
+  subgraph "cluster_test::fixtures::types::patternMatching#None" {
     191 [label="FunNode: as\n(fun 'as' ((alias None)) (alias ref))", fillcolor=grey];
     192 [label="Name: lhs\n(alias None (struct))", fillcolor=grey];
     193 [label="Ref: None\n(type (alias None (struct)))", fillcolor=grey];
@@ -303,7 +303,7 @@ digraph LYS {
     242 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
     243 [label="Ref: None\n(type (alias None (struct)))", fillcolor=grey];
     244 [label="Name: load\n(fun 'load' ((alias ref) (alias u32)) (alias None))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       245 [label="BlockNode\n(alias i64 (native i64))", fillcolor=grey];
       246 [label="ValDecl: discriminant\n(native void)", fillcolor=grey];
@@ -316,62 +316,62 @@ digraph LYS {
       253 [label="Ref: discriminant\n(alias u32 (native u32))", fillcolor=grey];
       254 [label="Ref: i64\n(type (alias i64 (native i64)))", fillcolor=grey];
       255 [label="Int: 32\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.None$discriminant_1()";
+      label="test::fixtures::types::patternMatching::None.None$discriminant_1()";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       256 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       257 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.load_1(ref,u32)";
+      label="test::fixtures::types::patternMatching::None.load_1(ref,u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       258 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       259 [label="Ref: None$discriminant\n(fun 'None$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.apply_1()";
+      label="test::fixtures::types::patternMatching::None.apply_1()";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       260 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.as_2(None)";
+      label="test::fixtures::types::patternMatching::None.as_2(None)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       261 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.==_1(None,ref)";
+      label="test::fixtures::types::patternMatching::None.==_1(None,ref)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       262 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.!=_1(None,ref)";
+      label="test::fixtures::types::patternMatching::None.!=_1(None,ref)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       263 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       264 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.store_1(ref,None,u32)";
+      label="test::fixtures::types::patternMatching::None.store_1(ref,None,u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       265 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       266 [label="Ref: None$discriminant\n(fun 'None$discriminant' () (alias i64))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::None.is_1(None | ref)";
+      label="test::fixtures::types::patternMatching::None.is_1(None | ref)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_8" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_8" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test3_1(Maybe)";
+      label="test::fixtures::types::patternMatching::test3_1(Maybe)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_9" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_9" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       label="child";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#None_10" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#None_10" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       label="expression";
     }
-    label="test/fixtures/types/patternMatching.lys#None";
+    label="test::fixtures::types::patternMatching#None";
   }
-  subgraph "cluster_test/fixtures/types/patternMatching.lys#Some" {
+  subgraph "cluster_test::fixtures::types::patternMatching#Some" {
     267 [label="FunNode: as\n(fun 'as' ((alias Some)) (alias ref))", fillcolor=grey];
     268 [label="Name: lhs\n(alias Some (struct value:<null>))", fillcolor=grey];
     269 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
@@ -458,7 +458,7 @@ digraph LYS {
     350 [label="Ref: u32\n(type (alias u32 (native u32)))", fillcolor=grey];
     351 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
     352 [label="Name: load\n(fun 'load' ((alias ref) (alias u32)) (alias Some))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       353 [label="BlockNode\n(alias u64 (native u64))", fillcolor=grey];
       354 [label="ValDecl: discriminant\n(native void)", fillcolor=grey];
@@ -471,9 +471,9 @@ digraph LYS {
       361 [label="Ref: discriminant\n(alias u32 (native u32))", fillcolor=grey];
       362 [label="Ref: u64\n(type (alias u64 (native u64)))", fillcolor=grey];
       363 [label="Int: 32\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.Some$discriminant_1()";
+      label="test::fixtures::types::patternMatching::Some.Some$discriminant_1()";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       364 [label="BlockNode\n(alias Some (struct value:<null>))", fillcolor=grey];
       365 [label="VarDecl: $ref\n(native void)", fillcolor=grey];
@@ -492,15 +492,15 @@ digraph LYS {
       378 [label="Ref: $ref\n(alias Some (struct value:<null>))", fillcolor=grey];
       379 [label="Ref: value\n(alias i32 (native i32))", fillcolor=grey];
       380 [label="Ref: $ref\n(alias Some (struct value:<null>))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.apply_1(i32)";
+      label="test::fixtures::types::patternMatching::Some.apply_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       381 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       382 [label="Ref: Some$discriminant\n(fun 'Some$discriminant' () (alias u64))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.fromPointer_1(u32)";
+      label="test::fixtures::types::patternMatching::Some.fromPointer_1(u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       383 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       384 [label="MemberNode\n(intersection (fun 'load' ((alias ref)) (alias i32)) (fun 'load' ((alias ref) (alias u32)) (alias i32)))", fillcolor=grey];
@@ -508,9 +508,9 @@ digraph LYS {
       386 [label="Ref: self\n(alias Some (struct value:<null>))", fillcolor=grey];
       387 [label="MemberNode\n(native u32)", fillcolor=grey];
       388 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.property$0_1(Some)";
+      label="test::fixtures::types::patternMatching::Some.property$0_1(Some)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       389 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
       390 [label="MemberNode\n(intersection (fun 'store' ((alias ref) (alias i32)) (alias void)) (fun 'store' ((alias ref) (alias i32) (alias u32)) (alias void)))", fillcolor=grey];
@@ -519,69 +519,69 @@ digraph LYS {
       393 [label="Ref: value\n(alias i32 (native i32))", fillcolor=grey];
       394 [label="MemberNode\n(native u32)", fillcolor=grey];
       395 [label="Ref: Some\n(type (alias Some (struct value:<null>)))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.property$0_2(Some,i32)";
+      label="test::fixtures::types::patternMatching::Some.property$0_2(Some,i32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       396 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       397 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.load_1(ref,u32)";
+      label="test::fixtures::types::patternMatching::Some.load_1(ref,u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       398 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.as_2(Some)";
+      label="test::fixtures::types::patternMatching::Some.as_2(Some)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_7" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_7" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       399 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.==_1(Some,Some)";
+      label="test::fixtures::types::patternMatching::Some.==_1(Some,Some)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_8" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_8" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       400 [label="WasmExpressionNode\n(never)", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.!=_1(Some,Some)";
+      label="test::fixtures::types::patternMatching::Some.!=_1(Some,Some)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_9" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_9" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       401 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       402 [label="Ref: property$0\n(intersection (fun 'property$0' ((alias Some)) (alias i32)) (fun 'property$0' ((alias Some) (alias i32)) (alias void)))", fillcolor=grey];
       403 [label="Ref: self\n(alias Some (struct value:<null>))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.property_value_1(Some)";
+      label="test::fixtures::types::patternMatching::Some.property_value_1(Some)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_10" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_10" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       404 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
       405 [label="Ref: property$0\n(intersection (fun 'property$0' ((alias Some)) (alias i32)) (fun 'property$0' ((alias Some) (alias i32)) (alias void)))", fillcolor=grey];
       406 [label="Ref: self\n(alias Some (struct value:<null>))", fillcolor=grey];
       407 [label="Ref: value\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.property_value_2(Some,i32)";
+      label="test::fixtures::types::patternMatching::Some.property_value_2(Some,i32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_11" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_11" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       408 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       409 [label="Ref: addressFromRef\n(fun 'addressFromRef' ((alias ref)) (alias u32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.store_1(ref,Some,u32)";
+      label="test::fixtures::types::patternMatching::Some.store_1(ref,Some,u32)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_12" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_12" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       410 [label="WasmExpressionNode\n(never)", fillcolor=grey];
       411 [label="Ref: Some$discriminant\n(fun 'Some$discriminant' () (alias u64))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::Some.is_1(Some | ref)";
+      label="test::fixtures::types::patternMatching::Some.is_1(Some | ref)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_13" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_13" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      label="test/fixtures/types/patternMatching.lys::test3_1(Maybe)";
+      label="test::fixtures::types::patternMatching::test3_1(Maybe)";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_14" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_14" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       label="child";
     }
-    subgraph "cluster_test/fixtures/types/patternMatching.lys#Some_15" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching#Some_15" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       label="expression";
     }
-    label="test/fixtures/types/patternMatching.lys#Some";
+    label="test::fixtures::types::patternMatching#Some";
   }
   1 -> 114[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   1 -> 121[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];

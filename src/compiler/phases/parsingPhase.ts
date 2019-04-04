@@ -17,9 +17,9 @@ const process = walkPreOrder((token: IToken, result: PhaseResult) => {
   }
 });
 
-const setDocument = (document: string) =>
+const setModuleName = (moduleName: string) =>
   walkPreOrder((token: any) => {
-    token.document = document;
+    token.moduleName = moduleName;
   });
 
 const parsingCache = new Map<string /** hash */, IToken>();
@@ -34,17 +34,15 @@ function DJB2(input: string) {
   return hash;
 }
 
-function getParsingTree(salt: string, fileName: string, content: string) {
-  const hash = salt + '_' + content.length.toString(16) + DJB2(content).toString(16);
+function getParsingTree(moduleName: string, content: string) {
+  const hash = moduleName + '+' + content.length.toString(16) + '_' + DJB2(content).toString(16);
 
   let ret = parsingCache.get(hash);
 
   if (!ret) {
     ret = parser.getAST(content, 'Document');
     parsingCache.set(hash, ret);
-    setDocument(fileName)(ret as any, null);
-  } else {
-    console.log(hash);
+    setModuleName(moduleName)(ret as any, null);
   }
 
   return (ret as any) as Nodes.ASTNode;
@@ -57,21 +55,17 @@ export class ParsingPhaseResult extends PhaseResult {
     return this._parsingContext;
   }
 
-  constructor(public fileName: string, public content: string, private _parsingContext: ParsingContext) {
+  constructor(
+    public fileName: string,
+    public moduleName: string,
+    public content: string,
+    private _parsingContext: ParsingContext
+  ) {
     super();
   }
 
-  static fromString(code: string, parsingContext: ParsingContext) {
-    return new ParsingPhaseResult('(injected code)', code, parsingContext);
-  }
-
   execute() {
-    const salt = this.parsingContext.system.relative(
-      this.parsingContext.system.getCurrentDirectory(),
-      this.parsingContext.system.resolvePath(this.fileName)
-    );
-
-    this.document = getParsingTree(salt, this.fileName, this.content);
+    this.document = getParsingTree(this.moduleName, this.content);
 
     process(this.document as any, this);
 

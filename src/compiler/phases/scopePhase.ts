@@ -221,7 +221,7 @@ function collectNamespaces(
 const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult: ScopePhaseResult) => {
   if (node instanceof Nodes.ReferenceNode) {
     if (!node.closure!.canResolveQName(node.variable, true)) {
-      throw new AstNodeError(`Cannot resolve reference "${node.variable.text}"`, node.variable);
+      throw new AstNodeError(`Cannot find name '${node.variable.text}'`, node.variable);
     }
     const resolved = node.closure!.getQName(node.variable, true);
     const isGlobal = !resolved.isLocalReference || resolved.scope === phaseResult.document.closure;
@@ -267,7 +267,7 @@ function injectCoreImport(document: Nodes.DocumentNode) {
   // TODO: Fix this horrible hack, check correctly if we are in a stdlib
   // context. If so, do not inject the system::core import
 
-  if (document.file && document.file.endsWith('stdlib/system/core.lys')) return;
+  if (document.moduleName === 'system::core') return;
 
   const module = Nodes.QNameNode.fromString('system::core', document.astNode);
   const coreModuleImport = new Nodes.ImportDirectiveNode(document.astNode, module);

@@ -261,7 +261,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::discriminant:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -273,7 +273,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -494,7 +494,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::discriminant_3:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::discriminant_3:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -506,7 +506,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::discriminant_3:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::discriminant_3:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -727,7 +727,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::discriminant_6:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::discriminant_6:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -739,7 +739,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::discriminant_6:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::discriminant_6:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -761,7 +761,7 @@
             |-QNameNode=Custom
               |-NameIdentifierNode="Custom"
           |-BlockNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::$ref:Custom#1)
+            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::$ref:Custom#1)
               |-NameIdentifierNode="$ref" type=(alias Custom (struct hex:<null>))
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Custom)) type=(alias Custom (struct hex:<null>)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias Custom))
@@ -787,13 +787,13 @@
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::$ref:Custom#1)
+              |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::$ref:Custom#1)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(hex:i32#0)
                 |-QNameNode=hex
                   |-NameIdentifierNode="hex"
-            |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/execution/setStructValues.lys::$ref:Custom#1)
+            |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::execution::setStructValues::$ref:Custom#1)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode type=(fun "fromPointer" ((alias u32)) (alias Custom)) annotations=Injected
@@ -1126,7 +1126,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::discriminant_9:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::discriminant_9:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -1138,7 +1138,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::discriminant_9:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::discriminant_9:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -1169,7 +1169,7 @@
             |-QNameNode=CatBag
               |-NameIdentifierNode="CatBag"
           |-BlockNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::$ref_3:CatBag#2)
+            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::$ref_3:CatBag#2)
               |-NameIdentifierNode="$ref" type=(alias CatBag (struct f:<null> g:<null>))
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias CatBag)) type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias CatBag))
@@ -1195,7 +1195,7 @@
               |-ReferenceNode type=(intersection (fun "property$0" ((alias CatBag)) (alias Color)) (fun "property$0" ((alias CatBag) (alias Color)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::$ref_3:CatBag#2)
+              |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::$ref_3:CatBag#2)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,Local(f:Color#0)
@@ -1205,13 +1205,13 @@
               |-ReferenceNode type=(intersection (fun "property$1" ((alias CatBag)) (union (alias Red) (alias None))) (fun "property$1" ((alias CatBag) (union (alias Red) (alias None))) (alias void)))
                 |-QNameNode=property$1
                   |-NameIdentifierNode="property$1"
-              |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::$ref_3:CatBag#2)
+              |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::$ref_3:CatBag#2)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(union (alias Red (struct)) (alias None (struct))) annotations=IsValueNode,Local(g:Red | None#1)
                 |-QNameNode=g
                   |-NameIdentifierNode="g"
-            |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/execution/setStructValues.lys::$ref_3:CatBag#2)
+            |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::execution::setStructValues::$ref_3:CatBag#2)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode type=(fun "fromPointer" ((alias u32)) (alias CatBag)) annotations=Injected
@@ -1749,7 +1749,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::discriminant_12:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::discriminant_12:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -1761,7 +1761,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::discriminant_12:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::discriminant_12:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -1788,7 +1788,7 @@
             |-QNameNode=Custom2
               |-NameIdentifierNode="Custom2"
           |-BlockNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::$ref_7:Custom2#2)
+            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::$ref_7:Custom2#2)
               |-NameIdentifierNode="$ref" type=(alias Custom2 (struct r:<null> g:<null>))
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Custom2)) type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias Custom2))
@@ -1814,7 +1814,7 @@
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Custom2)) (alias i32)) (fun "property$0" ((alias Custom2) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::$ref_7:Custom2#2)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::$ref_7:Custom2#2)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(r:i32#0)
@@ -1824,13 +1824,13 @@
               |-ReferenceNode type=(intersection (fun "property$1" ((alias Custom2)) (alias i32)) (fun "property$1" ((alias Custom2) (alias i32)) (alias void)))
                 |-QNameNode=property$1
                   |-NameIdentifierNode="property$1"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::$ref_7:Custom2#2)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::$ref_7:Custom2#2)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(g:i32#1)
                 |-QNameNode=g
                   |-NameIdentifierNode="g"
-            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/execution/setStructValues.lys::$ref_7:Custom2#2)
+            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::execution::setStructValues::$ref_7:Custom2#2)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode type=(fun "fromPointer" ((alias u32)) (alias Custom2)) annotations=Injected
@@ -2247,7 +2247,7 @@
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
   |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test/fixtures/execution/setStructValues.lys::x:<no-type>)
+    |-ValDeclarationNode annotations=Global(test::fixtures::execution::setStructValues::x:<no-type>)
       |-NameIdentifierNode="x" type=(alias Custom2 (struct r:<null> g:<null>))
       |-FunctionCallNode=(fun "apply" ((alias i32) (alias i32)) (alias Custom2)) type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode
         |-MemberNode type=(fun "apply" ((alias i32) (alias i32)) (alias Custom2))
@@ -2258,7 +2258,7 @@
         |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
         |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
   |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+    |-ValDeclarationNode annotations=Global(test::fixtures::execution::setStructValues::y:<no-type>)
       |-NameIdentifierNode="y" type=(alias Custom2 (struct r:<null> g:<null>))
       |-FunctionCallNode=(fun "apply" ((alias i32) (alias i32)) (alias Custom2)) type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode
         |-MemberNode type=(fun "apply" ((alias i32) (alias i32)) (alias Custom2))
@@ -2294,7 +2294,7 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::x:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::x:<no-type>)
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2311,7 +2311,7 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2340,7 +2340,7 @@
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::x:<no-type>)
+            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::x:<no-type>)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2350,7 +2350,7 @@
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
               |-QNameNode=y
                 |-NameIdentifierNode="y"
             |-IntegerLiteral=2882400001 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2360,7 +2360,7 @@
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+            |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
               |-QNameNode=y
                 |-NameIdentifierNode="y"
             |-IntegerLiteral=5 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2436,7 +2436,7 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::x:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::x:<no-type>)
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
           |-FunctionCallNode=(fun "printf" ((alias bytes) (alias i32)) (alias void)) type=(alias void (native void))
@@ -2452,7 +2452,7 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
           |-FunctionCallNode=(fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) type=(alias void (native void))
@@ -2484,7 +2484,7 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::x:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::x:<no-type>)
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
             |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2501,7 +2501,7 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
             |-HexLiteral=2882400001 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2518,13 +2518,13 @@
                   |-QNameNode=i32
                     |-NameIdentifierNode="i32"
                 |-NameIdentifierNode="load"
-              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+              |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
             |-HexLiteral=2882400001 type=(alias i32 (native i32)) annotations=IsValueNode
             |-StringLiteral="i32.load(y) == 0xABCDEF01 as i32" type=(alias bytes (native bytes)) annotations=IsValueNode
           |-BlockNode type=(native void)
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::VAR:i64#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::VAR:i64#0)
               |-NameIdentifierNode="VAR" type=(alias i64 (native i64))
               |-AsExpressionNode=(fun "as" ((alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-FunctionCallNode=(fun "load" ((alias ref)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2533,13 +2533,13 @@
                       |-QNameNode=i32
                         |-NameIdentifierNode="i32"
                     |-NameIdentifierNode="load"
-                  |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+                  |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                     |-QNameNode=y
                       |-NameIdentifierNode="y"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::VAR2:i64#1)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::VAR2:i64#1)
               |-NameIdentifierNode="VAR2" type=(alias i64 (native i64))
               |-AsExpressionNode=(fun "as" ((alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
                 |-HexLiteral=2882400001 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -2552,10 +2552,10 @@
                   |-NameIdentifierNode="support"
                   |-NameIdentifierNode="test"
                   |-NameIdentifierNode="mustEqual"
-              |-ReferenceNode type=(alias i64 (native i64)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::VAR:i64#0)
+              |-ReferenceNode type=(alias i64 (native i64)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::VAR:i64#0)
                 |-QNameNode=VAR
                   |-NameIdentifierNode="VAR"
-              |-ReferenceNode type=(alias i64 (native i64)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::VAR2:i64#1)
+              |-ReferenceNode type=(alias i64 (native i64)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::VAR2:i64#1)
                 |-QNameNode=VAR2
                   |-NameIdentifierNode="VAR2"
               |-StringLiteral="VAR == VAR2" type=(alias bytes (native bytes)) annotations=IsValueNode
@@ -2572,7 +2572,7 @@
                     |-QNameNode=i32
                       |-NameIdentifierNode="i32"
                   |-NameIdentifierNode="load"
-                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -2597,7 +2597,7 @@
                     |-QNameNode=i32
                       |-NameIdentifierNode="i32"
                   |-NameIdentifierNode="load"
-                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -2622,7 +2622,7 @@
                     |-QNameNode=u8
                       |-NameIdentifierNode="u8"
                   |-NameIdentifierNode="load"
-                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-ReferenceNode type=(type (alias i32 (native i32)))
@@ -2643,7 +2643,7 @@
                     |-QNameNode=u8
                       |-NameIdentifierNode="u8"
                   |-NameIdentifierNode="load"
-                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test/fixtures/execution/setStructValues.lys::y:<no-type>)
+                |-ReferenceNode type=(alias Custom2 (struct r:<null> g:<null>)) annotations=IsValueNode,Global(test::fixtures::execution::setStructValues::y:<no-type>)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
                 |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
@@ -2676,7 +2676,7 @@
               |-QNameNode=START
                 |-NameIdentifierNode="START"
             |-StringLiteral="set values in struct" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
             |-NameIdentifierNode="a" type=(alias CatBag (struct f:<null> g:<null>))
             |-FunctionCallNode=(fun "apply" ((alias Color) (union (alias Red) (alias None))) (alias CatBag)) type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode
               |-MemberNode type=(fun "apply" ((alias Color) (union (alias Red) (alias None))) (alias CatBag))
@@ -2698,7 +2698,7 @@
               |-ReferenceNode type=(fun "addressFromRef" ((alias ref)) (alias u32))
                 |-QNameNode=addressFromRef
                   |-NameIdentifierNode="addressFromRef"
-              |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+              |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
             |-MemberNode type=(native u32) annotations=IsValueNode
@@ -2717,7 +2717,7 @@
                 |-QNameNode=verify
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias CatBag) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
                 |-ReferenceNode type=(type (alias CatBag (struct f:<null> g:<null>)))
@@ -2730,7 +2730,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Color) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="f"
@@ -2744,7 +2744,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Color) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(union (alias Red (struct)) (alias None (struct))) annotations=IsValueNode,ImplicitCall(fun "property_g" ((alias CatBag)) (union (alias Red) (alias None)))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="g"
@@ -2758,7 +2758,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="f"
@@ -2772,7 +2772,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias None) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(union (alias Red (struct)) (alias None (struct))) annotations=IsValueNode,ImplicitCall(fun "property_g" ((alias CatBag)) (union (alias Red) (alias None)))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="g"
@@ -2790,7 +2790,7 @@
                 |-QNameNode=START
                   |-NameIdentifierNode="START"
               |-StringLiteral="setters" type=(alias bytes (native bytes)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
               |-NameIdentifierNode="y" type=(alias Custom (struct hex:<null>))
               |-FunctionCallNode=(fun "apply" ((alias i32)) (alias Custom)) type=(alias Custom (struct hex:<null>)) annotations=IsValueNode
                 |-MemberNode type=(fun "apply" ((alias i32)) (alias Custom))
@@ -2805,7 +2805,7 @@
                   |-NameIdentifierNode="verify"
               |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property_hex" ((alias Custom)) (alias i32))
-                  |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+                  |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
                     |-QNameNode=y
                       |-NameIdentifierNode="y"
                   |-NameIdentifierNode="hex"
@@ -2814,11 +2814,11 @@
               |-StringLiteral="y.hex == 0xAABBCCDD" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_f" ((alias CatBag) (alias Color)) (alias void))
               |-MemberNode type=(intersection (fun "property_f" ((alias CatBag)) (alias Color)) (fun "property_f" ((alias CatBag) (alias Color)) (alias void)))
-                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
                 |-NameIdentifierNode="f"
-              |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+              |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
             |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
@@ -2826,18 +2826,18 @@
                 |-QNameNode=verify
                   |-NameIdentifierNode="verify"
               |-BinaryExpressionNode=(fun "==" ((alias Custom) (alias Custom)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
                 |-NameIdentifierNode="=="
-                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-StringLiteral="y == y" type=(alias bytes (native bytes)) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::tmp:Color#2)
+            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::tmp:Color#2)
               |-NameIdentifierNode="tmp" type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>))))
               |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
                 |-NameIdentifierNode="f"
@@ -2846,11 +2846,11 @@
                 |-QNameNode=verify
                   |-NameIdentifierNode="verify"
               |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-ReferenceNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::tmp:Color#2)
+                |-ReferenceNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::tmp:Color#2)
                   |-QNameNode=tmp
                     |-NameIdentifierNode="tmp"
                 |-NameIdentifierNode="=="
-                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-StringLiteral="tmp == y" type=(alias bytes (native bytes)) annotations=IsValueNode
@@ -2860,12 +2860,12 @@
                   |-NameIdentifierNode="verify"
               |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="f"
                 |-NameIdentifierNode="=="
-                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::y_12:Custom#1)
+                |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::y_12:Custom#1)
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-StringLiteral="a.f == y" type=(alias bytes (native bytes)) annotations=IsValueNode
@@ -2875,18 +2875,18 @@
                   |-NameIdentifierNode="verify"
               |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="f"
                 |-NameIdentifierNode="=="
-                |-ReferenceNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::tmp:Color#2)
+                |-ReferenceNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::tmp:Color#2)
                   |-QNameNode=tmp
                     |-NameIdentifierNode="tmp"
               |-StringLiteral="a.f == tmp" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void))
               |-MemberNode type=(intersection (fun "property_g" ((alias CatBag)) (union (alias Red) (alias None))) (fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void)))
-                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
                 |-NameIdentifierNode="g"
@@ -2899,7 +2899,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(union (alias Red (struct)) (alias None (struct))) annotations=IsValueNode,ImplicitCall(fun "property_g" ((alias CatBag)) (union (alias Red) (alias None)))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="g"
@@ -2923,7 +2923,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Custom) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="f"
@@ -2937,7 +2937,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(union (alias Red (struct)) (alias None (struct))) annotations=IsValueNode,ImplicitCall(fun "property_g" ((alias CatBag)) (union (alias Red) (alias None)))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="g"
@@ -2951,7 +2951,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Color) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="f"
@@ -2965,7 +2965,7 @@
                   |-NameIdentifierNode="verify"
               |-IsExpressionNode=(fun "is" ((union (alias Color) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-MemberNode type=(union (alias Red (struct)) (alias None (struct))) annotations=IsValueNode,ImplicitCall(fun "property_g" ((alias CatBag)) (union (alias Red) (alias None)))
-                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                  |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
                   |-NameIdentifierNode="g"
@@ -2975,14 +2975,14 @@
               |-StringLiteral="a.g is Color" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-PatternMatcherNode type=(native void) annotations=Local(var$4:Color#4)
               |-MemberNode type=(alias Color (union (alias None (struct)) (alias Red (struct)) (alias Custom (struct hex:<null>)))) annotations=IsValueNode,ImplicitCall(fun "property_f" ((alias CatBag)) (alias Color))
-                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test/fixtures/execution/setStructValues.lys::a_3:CatBag#0)
+                |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_3:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
                 |-NameIdentifierNode="f"
               |-MatchCaseIsNode type=(native void) annotations=Local(var$4:Color#4)
                 |-NameIdentifierNode="x" type=(alias Custom (struct hex:<null>))
                 |-BlockNode type=(native void)
-                  |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/setStructValues.lys::hex_3:i32#3)
+                  |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::setStructValues::hex_3:i32#3)
                     |-NameIdentifierNode="hex" type=(alias i32 (native i32))
                     |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property_hex" ((alias Custom)) (alias i32))
                       |-ReferenceNode type=(alias Custom (struct hex:<null>)) annotations=Local(var$4:Color#4)
@@ -3007,7 +3007,7 @@
                       |-QNameNode=verify
                         |-NameIdentifierNode="verify"
                     |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test/fixtures/execution/setStructValues.lys::hex_3:i32#3)
+                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test::fixtures::execution::setStructValues::hex_3:i32#3)
                         |-QNameNode=hex
                           |-NameIdentifierNode="hex"
                       |-NameIdentifierNode="=="

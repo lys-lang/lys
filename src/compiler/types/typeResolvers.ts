@@ -516,10 +516,10 @@ function resolveTypeMember(type: Type, memberName: string, ctx: TypeResolutionCo
       if (resolvedType) {
         return resolvedType;
       } else {
-        throw new Error(`Cannot resolve type of member "${memberName}" in ${type}`);
+        throw new Error(`Cannot resolve type of name '${memberName}' in ${type}`);
       }
     } else {
-      throw new Error(`Cannot find member "${memberName}" in ${type.inspect(0)}`);
+      throw new Error(`Cannot find name '${memberName}' in ${type.inspect(0)}`);
     }
   } else if (NeverType.isNeverType(type)) {
     return type;

@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/implicitCast.lys" {
+  subgraph "cluster_test::fixtures::types::implicitCast" {
     1 [label="FunOverload: test1\n(fun 'test1' ((alias i32)) (alias i32))", fillcolor=grey];
     2 [label="FunNode: test1\n(fun 'test1' ((alias i32)) (alias i32))", fillcolor=grey];
     3 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
@@ -23,19 +23,19 @@ digraph LYS {
     20 [label="FunNode: main\n(fun 'main' () (alias void))", fillcolor=grey];
     21 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
     22 [label="Name: main\n(fun 'main' () (alias void))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/implicitCast.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::implicitCast_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       23 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::test1_1(i32)";
+      label="test::fixtures::types::implicitCast::test1_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/implicitCast.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::implicitCast_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       24 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       25 [label="Ref: test1\n(fun 'test1' ((alias i32)) (alias i32))", fillcolor=grey];
       26 [label="Ref: x\n(alias u8 (native u8))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::main2_1(u8)";
+      label="test::fixtures::types::implicitCast::main2_1(u8)";
     }
-    subgraph "cluster_test/fixtures/types/implicitCast.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::implicitCast_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       27 [label="BlockNode\n(alias boolean (native boolean))", fillcolor=grey];
       28 [label="PatternMatcherNode\n(alias boolean (native boolean))", fillcolor=grey];
@@ -47,9 +47,9 @@ digraph LYS {
       34 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
       35 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
       36 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::testMatchWithDifferentTypes_1(i32)";
+      label="test::fixtures::types::implicitCast::testMatchWithDifferentTypes_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/implicitCast.lys_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::implicitCast_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       37 [label="BlockNode\n(native void)", fillcolor=grey];
       38 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
@@ -103,9 +103,9 @@ digraph LYS {
       86 [label="StringLiteral\n(alias bytes (native bytes))", fillcolor=grey];
       87 [label="FunctionCallNode\n(alias void (native void))", fillcolor=grey];
       88 [label="Ref: END\n(fun 'END' () (alias void))", fillcolor=grey];
-      label="test/fixtures/types/implicitCast.lys::main_1()";
+      label="test::fixtures::types::implicitCast::main_1()";
     }
-    label="test/fixtures/types/implicitCast.lys";
+    label="test::fixtures::types::implicitCast";
   }
   1 -> 6[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

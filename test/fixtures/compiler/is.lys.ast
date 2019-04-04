@@ -253,7 +253,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::discriminant:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -265,7 +265,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/is.lys::discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::compiler::is::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -486,7 +486,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::discriminant_3:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::discriminant_3:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -498,7 +498,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/is.lys::discriminant_3:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::compiler::is::discriminant_3:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -719,7 +719,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::discriminant_6:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::discriminant_6:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -731,7 +731,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/is.lys::discriminant_6:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::compiler::is::discriminant_6:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -913,7 +913,7 @@
     |-NameIdentifierNode="C" type=(type (alias C (struct)))
     |-StructTypeNode type=(type (alias C (struct)))
   |-VarDirectiveNode
-    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/is.lys::value1:<no-type>)
+    |-VarDeclarationNode annotations=Global(test::fixtures::compiler::is::value1:<no-type>)
       |-NameIdentifierNode="value1" type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct))))
       |-ReferenceNode type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
         |-QNameNode=Enum
@@ -922,7 +922,7 @@
         |-QNameNode=A
           |-NameIdentifierNode="A"
   |-VarDirectiveNode
-    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/is.lys::value2:<no-type>)
+    |-VarDeclarationNode annotations=Global(test::fixtures::compiler::is::value2:<no-type>)
       |-NameIdentifierNode="value2" type=(union (alias A (struct)) (alias B (struct)))
       |-UnionTypeNode type=(type (union (alias A (struct)) (alias B (struct))))
         |-ReferenceNode type=(type (alias A (struct)))
@@ -935,7 +935,7 @@
         |-QNameNode=A
           |-NameIdentifierNode="A"
   |-VarDirectiveNode
-    |-VarDeclarationNode annotations=Global(test/fixtures/compiler/is.lys::value3:<no-type>)
+    |-VarDeclarationNode annotations=Global(test::fixtures::compiler::is::value3:<no-type>)
       |-NameIdentifierNode="value3" type=(alias A (struct))
       |-ReferenceNode type=(type (alias A (struct)))
         |-QNameNode=A
@@ -972,86 +972,86 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::x1:boolean#0)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::x1:boolean#0)
             |-NameIdentifierNode="x1" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias A) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value1:<no-type>)
+              |-ReferenceNode type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=IsValueNode,Global(test::fixtures::compiler::is::value1:<no-type>)
                 |-QNameNode=value1
                   |-NameIdentifierNode="value1"
               |-ReferenceNode type=(type (alias A (struct)))
                 |-QNameNode=A
                   |-NameIdentifierNode="A"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::y1:boolean#1)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::y1:boolean#1)
             |-NameIdentifierNode="y1" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias Enum) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value1:<no-type>)
+              |-ReferenceNode type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=IsValueNode,Global(test::fixtures::compiler::is::value1:<no-type>)
                 |-QNameNode=value1
                   |-NameIdentifierNode="value1"
               |-ReferenceNode type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
                 |-QNameNode=Enum
                   |-NameIdentifierNode="Enum"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::z1:boolean#2)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::z1:boolean#2)
             |-NameIdentifierNode="z1" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias B) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value1:<no-type>)
+              |-ReferenceNode type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=IsValueNode,Global(test::fixtures::compiler::is::value1:<no-type>)
                 |-QNameNode=value1
                   |-NameIdentifierNode="value1"
               |-ReferenceNode type=(type (alias B (struct)))
                 |-QNameNode=B
                   |-NameIdentifierNode="B"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::x2:boolean#3)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::x2:boolean#3)
             |-NameIdentifierNode="x2" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias A) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(union (alias A (struct)) (alias B (struct))) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value2:<no-type>)
+              |-ReferenceNode type=(union (alias A (struct)) (alias B (struct))) annotations=IsValueNode,Global(test::fixtures::compiler::is::value2:<no-type>)
                 |-QNameNode=value2
                   |-NameIdentifierNode="value2"
               |-ReferenceNode type=(type (alias A (struct)))
                 |-QNameNode=A
                   |-NameIdentifierNode="A"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::y2:boolean#4)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::y2:boolean#4)
             |-NameIdentifierNode="y2" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias Enum) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(union (alias A (struct)) (alias B (struct))) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value2:<no-type>)
+              |-ReferenceNode type=(union (alias A (struct)) (alias B (struct))) annotations=IsValueNode,Global(test::fixtures::compiler::is::value2:<no-type>)
                 |-QNameNode=value2
                   |-NameIdentifierNode="value2"
               |-ReferenceNode type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
                 |-QNameNode=Enum
                   |-NameIdentifierNode="Enum"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::z2:boolean#5)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::z2:boolean#5)
             |-NameIdentifierNode="z2" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias B) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(union (alias A (struct)) (alias B (struct))) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value2:<no-type>)
+              |-ReferenceNode type=(union (alias A (struct)) (alias B (struct))) annotations=IsValueNode,Global(test::fixtures::compiler::is::value2:<no-type>)
                 |-QNameNode=value2
                   |-NameIdentifierNode="value2"
               |-ReferenceNode type=(type (alias B (struct)))
                 |-QNameNode=B
                   |-NameIdentifierNode="B"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::x3:boolean#6)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::x3:boolean#6)
             |-NameIdentifierNode="x3" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias A) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias A (struct)) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value3:<no-type>)
+              |-ReferenceNode type=(alias A (struct)) annotations=IsValueNode,Global(test::fixtures::compiler::is::value3:<no-type>)
                 |-QNameNode=value3
                   |-NameIdentifierNode="value3"
               |-ReferenceNode type=(type (alias A (struct)))
                 |-QNameNode=A
                   |-NameIdentifierNode="A"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::y3:boolean#7)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::y3:boolean#7)
             |-NameIdentifierNode="y3" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias Enum) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-ReferenceNode type=(alias A (struct)) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value3:<no-type>)
+              |-ReferenceNode type=(alias A (struct)) annotations=IsValueNode,Global(test::fixtures::compiler::is::value3:<no-type>)
                 |-QNameNode=value3
                   |-NameIdentifierNode="value3"
               |-ReferenceNode type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
                 |-QNameNode=Enum
                   |-NameIdentifierNode="Enum"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/is.lys::z3:boolean#8)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::is::z3:boolean#8)
             |-NameIdentifierNode="z3" type=(alias boolean (native boolean))
             |-IsExpressionNode=(fun "is" ((union (alias B) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
               |-FunctionCallNode=(fun "identity" ((alias ref)) (alias ref)) type=(alias ref (ref ?)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "identity" ((alias ref)) (alias ref))
                   |-QNameNode=identity
                     |-NameIdentifierNode="identity"
-                |-ReferenceNode type=(alias A (struct)) annotations=IsValueNode,Global(test/fixtures/compiler/is.lys::value3:<no-type>)
+                |-ReferenceNode type=(alias A (struct)) annotations=IsValueNode,Global(test::fixtures::compiler::is::value3:<no-type>)
                   |-QNameNode=value3
                     |-NameIdentifierNode="value3"
               |-ReferenceNode type=(type (alias B (struct)))

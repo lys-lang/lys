@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/fib.lys" {
+  subgraph "cluster_test::fixtures::types::fib" {
     1 [label="FunOverload: fibo\n(fun 'fibo' ((alias i32) (alias i32) (alias i32)) (alias i32))", fillcolor=grey];
     2 [label="FunNode: fibo\n(fun 'fibo' ((alias i32) (alias i32) (alias i32)) (alias i32))", fillcolor=grey];
     3 [label="Name: n\n(alias i32 (native i32))", fillcolor=grey];
@@ -21,7 +21,7 @@ digraph LYS {
     18 [label="FunNode: test\n(fun 'test' () (alias i32))", fillcolor=grey];
     19 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     20 [label="Name: test\n(fun 'test' () (alias i32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/fib.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::fib_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       21 [label="IfNode\n(alias i32 (native i32))", fillcolor=grey];
       22 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
@@ -37,25 +37,25 @@ digraph LYS {
       32 [label="Ref: n\n(alias i32 (native i32))", fillcolor=grey];
       33 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
       34 [label="Ref: x1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/fib.lys::fibo_1(i32,i32,i32)";
+      label="test::fixtures::types::fib::fibo_1(i32,i32,i32)";
     }
-    subgraph "cluster_test/fixtures/types/fib.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::fib_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       35 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       36 [label="Ref: fibo\n(fun 'fibo' ((alias i32) (alias i32) (alias i32)) (alias i32))", fillcolor=grey];
       37 [label="Ref: n\n(alias i32 (native i32))", fillcolor=grey];
       38 [label="Int: 0\n(alias i32 (native i32))", fillcolor=grey];
       39 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/fib.lys::fib_1(i32)";
+      label="test::fixtures::types::fib::fib_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/fib.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::fib_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       40 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       41 [label="Ref: fib\n(fun 'fib' ((alias i32)) (alias i32))", fillcolor=grey];
       42 [label="Int: 46\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/fib.lys::test_1()";
+      label="test::fixtures::types::fib::test_1()";
     }
-    label="test/fixtures/types/fib.lys";
+    label="test::fixtures::types::fib";
   }
   1 -> 10[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

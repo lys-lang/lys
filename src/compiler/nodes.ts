@@ -1,4 +1,4 @@
-import { IToken, TokenError } from 'ebnf';
+import { TokenError } from 'ebnf';
 import { Closure } from './Closure';
 import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor, annotations } from './annotations';
@@ -30,13 +30,9 @@ export namespace Nodes {
     readonly text: string;
     readonly start: number;
     readonly end: number;
-    readonly parent: IToken;
-    readonly fullText: string;
+    readonly parent: ASTNode;
     readonly errors: TokenError[];
-    readonly rest: string;
-    readonly fragment?: boolean;
-    readonly lookup?: boolean;
-    readonly document: string;
+    readonly moduleName: string;
     readonly children: ReadonlyArray<ASTNode>;
   }
 
@@ -283,8 +279,8 @@ export namespace Nodes {
 
   export class DocumentNode extends Node {
     readonly directives: DirectiveNode[] = [];
-    file?: string;
-    moduleName?: string;
+    fileName!: string;
+    moduleName!: string;
     textContent?: string;
 
     get childrenOrEmpty() {

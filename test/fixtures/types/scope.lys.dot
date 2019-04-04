@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/scope.lys" {
+  subgraph "cluster_test::fixtures::types::scope" {
     1 [label="FunOverload: x1\n(fun 'x1' () (alias f32))", fillcolor=grey];
     2 [label="FunNode: x1\n(fun 'x1' () (alias f32))", fillcolor=grey];
     3 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
@@ -9,7 +9,7 @@ digraph LYS {
     6 [label="FunNode: x2\n(fun 'x2' () (alias i32))", fillcolor=grey];
     7 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     8 [label="Name: x2\n(fun 'x2' () (alias i32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/scope.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::scope_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       9 [label="BlockNode\n(alias f32 (native f32))", fillcolor=grey];
       10 [label="FunNode: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
@@ -17,18 +17,18 @@ digraph LYS {
       12 [label="Name: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
       13 [label="FunctionCallNode\n(alias f32 (native f32))", fillcolor=grey];
       14 [label="Ref: Y\n(fun 'Y' () (alias f32))", fillcolor=grey];
-      label="test/fixtures/types/scope.lys::x1_1()";
+      label="test::fixtures::types::scope::x1_1()";
     }
-    subgraph "cluster_test/fixtures/types/scope.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::scope_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       15 [label="Float: 1.00000\n(alias f32 (native f32))", fillcolor=grey];
       label="child";
     }
-    subgraph "cluster_test/fixtures/types/scope.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::scope_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      label="test/fixtures/types/scope.lys::Y()";
+      label="test::fixtures::types::scope::Y()";
     }
-    subgraph "cluster_test/fixtures/types/scope.lys_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::scope_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       16 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       17 [label="VarDecl: n\n(native void)", fillcolor=grey];
@@ -39,18 +39,18 @@ digraph LYS {
       22 [label="Name: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
       23 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       24 [label="Ref: Y\n(fun 'Y' () (alias i32))", fillcolor=grey];
-      label="test/fixtures/types/scope.lys::x2_1()";
+      label="test::fixtures::types::scope::x2_1()";
     }
-    subgraph "cluster_test/fixtures/types/scope.lys_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::scope_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       25 [label="Ref: n\n(alias i32 (native i32))", fillcolor=grey];
       label="child";
     }
-    subgraph "cluster_test/fixtures/types/scope.lys_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::scope_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
-      label="test/fixtures/types/scope.lys::Y_2()";
+      label="test::fixtures::types::scope::Y_2()";
     }
-    label="test/fixtures/types/scope.lys";
+    label="test::fixtures::types::scope";
   }
   1 -> 4[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

@@ -47,20 +47,20 @@
               |-QNameNode=START
                 |-NameIdentifierNode="START"
             |-StringLiteral="Implicit number casting" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/implicitCast.lys::aByte:u8#0)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::implicitCast::aByte:u8#0)
             |-NameIdentifierNode="aByte" type=(alias u8 (native u8))
             |-AsExpressionNode=(fun "as" ((alias i32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
               |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode type=(type (alias u8 (native u8)))
                 |-QNameNode=u8
                   |-NameIdentifierNode="u8"
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/implicitCast.lys::a:u16#1)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::implicitCast::a:u16#1)
             |-NameIdentifierNode="a" type=(alias u16 (native u16))
             |-ReferenceNode type=(type (alias u16 (native u16)))
               |-QNameNode=u16
                 |-NameIdentifierNode="u16"
             |-InjectedFunctionCallNode=(fun "as" ((alias u8)) (alias u16)) type=(alias u16 (native u16)) annotations=Injected
-              |-ReferenceNode type=(alias u8 (native u8)) annotations=IsValueNode,Local(test/fixtures/execution/implicitCast.lys::aByte:u8#0)
+              |-ReferenceNode type=(alias u8 (native u8)) annotations=IsValueNode,Local(test::fixtures::execution::implicitCast::aByte:u8#0)
                 |-QNameNode=aByte
                   |-NameIdentifierNode="aByte"
           |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
@@ -68,12 +68,12 @@
               |-QNameNode=mustEqual
                 |-NameIdentifierNode="mustEqual"
             |-InjectedFunctionCallNode=(fun "as" ((alias u16)) (alias i32)) type=(alias i32 (native i32)) annotations=Injected
-              |-ReferenceNode type=(alias u16 (native u16)) annotations=IsValueNode,Local(test/fixtures/execution/implicitCast.lys::a:u16#1)
+              |-ReferenceNode type=(alias u16 (native u16)) annotations=IsValueNode,Local(test::fixtures::execution::implicitCast::a:u16#1)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
             |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
             |-StringLiteral="eq(10_u16, 10_i32)" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/implicitCast.lys::x:i16#2)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::implicitCast::x:i16#2)
             |-NameIdentifierNode="x" type=(alias i16 (native i16))
             |-AsExpressionNode=(fun "as" ((alias i32)) (alias i16)) type=(alias i16 (native i16)) annotations=IsValueNode
               |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -90,13 +90,13 @@
                   |-QNameNode=testMatchWithDifferentTypes
                     |-NameIdentifierNode="testMatchWithDifferentTypes"
                 |-InjectedFunctionCallNode=(fun "as" ((alias i16)) (alias i32)) type=(alias i32 (native i32)) annotations=Injected
-                  |-ReferenceNode type=(alias i16 (native i16)) annotations=IsValueNode,Local(test/fixtures/execution/implicitCast.lys::x:i16#2)
+                  |-ReferenceNode type=(alias i16 (native i16)) annotations=IsValueNode,Local(test::fixtures::execution::implicitCast::x:i16#2)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
               |-NameIdentifierNode="=="
               |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
             |-StringLiteral="match 0" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/execution/implicitCast.lys::y:u8#3)
+          |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::implicitCast::y:u8#3)
             |-NameIdentifierNode="y" type=(alias u8 (native u8))
             |-AsExpressionNode=(fun "as" ((alias i32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -113,7 +113,7 @@
                   |-QNameNode=testMatchWithDifferentTypes
                     |-NameIdentifierNode="testMatchWithDifferentTypes"
                 |-InjectedFunctionCallNode=(fun "as" ((alias u8)) (alias i32)) type=(alias i32 (native i32)) annotations=Injected
-                  |-ReferenceNode type=(alias u8 (native u8)) annotations=IsValueNode,Local(test/fixtures/execution/implicitCast.lys::y:u8#3)
+                  |-ReferenceNode type=(alias u8 (native u8)) annotations=IsValueNode,Local(test::fixtures::execution::implicitCast::y:u8#3)
                     |-QNameNode=y
                       |-NameIdentifierNode="y"
               |-NameIdentifierNode="=="

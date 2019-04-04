@@ -10,7 +10,7 @@
       |-NameIdentifierNode="hash"
       |-NameIdentifierNode="keccak"
   |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+    |-ValDeclarationNode annotations=Global(test::fixtures::compiler::1-wast-sha3::k:<no-type>)
       |-NameIdentifierNode="k" type=(alias Keccak (struct data:<null> result:<null>))
       |-FunctionCallNode=(fun "apply" () (alias Keccak)) type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode
         |-MemberNode type=(intersection (fun "apply" ((alias bytes) (alias bytes)) (alias Keccak)) (fun "apply" () (alias Keccak)))
@@ -41,7 +41,7 @@
                 |-QNameNode=Keccak
                   |-NameIdentifierNode="Keccak"
               |-NameIdentifierNode="reset"
-            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test::fixtures::compiler::1-wast-sha3::k:<no-type>)
               |-QNameNode=k
                 |-NameIdentifierNode="k"
           |-FunctionCallNode=(fun "update" ((alias Keccak) (alias bytes)) (alias void)) type=(alias void (native void))
@@ -50,7 +50,7 @@
                 |-QNameNode=Keccak
                   |-NameIdentifierNode="Keccak"
               |-NameIdentifierNode="update"
-            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test::fixtures::compiler::1-wast-sha3::k:<no-type>)
               |-QNameNode=k
                 |-NameIdentifierNode="k"
             |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,Local(input:bytes#0)
@@ -62,6 +62,6 @@
                 |-QNameNode=Keccak
                   |-NameIdentifierNode="Keccak"
               |-NameIdentifierNode="digest"
-            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test/fixtures/compiler/1-wast-sha3.lys::k:<no-type>)
+            |-ReferenceNode type=(alias Keccak (struct data:<null> result:<null>)) annotations=IsValueNode,Global(test::fixtures::compiler::1-wast-sha3::k:<no-type>)
               |-QNameNode=k
                 |-NameIdentifierNode="k"

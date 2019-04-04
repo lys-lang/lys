@@ -1143,21 +1143,21 @@
         )
     )
   )
-  (export "main" (func $test/fixtures/compiler/0-wast.lys::main_1))
-  (func $test/fixtures/compiler/0-wast.lys::xx_1
+  (export "main" (func $test::fixtures::compiler::0-wast::main_1))
+  (func $test::fixtures::compiler::0-wast::xx_1
     (block $B1
       (nop)
     )
   )
-  (func $test/fixtures/compiler/0-wast.lys::add_1 (param $a i32) (param $b i32) (result i32)
+  (func $test::fixtures::compiler::0-wast::add_1 (param $a i32) (param $b i32) (result i32)
     (local $t i32)
     (set_local $t (i32.const 3))
-    (call $test/fixtures/compiler/0-wast.lys::xx_1)
+    (call $test::fixtures::compiler::0-wast::xx_1)
     (drop (call $system::memory::malloc_3 (i32.const 1)))
     (i32.mul (i32.add (get_local $a) (get_local $b)) (get_local $t))
   )
-  (func $test/fixtures/compiler/0-wast.lys::main_1 (result i32)
-    (call $test/fixtures/compiler/0-wast.lys::add_1 (i32.const 1) (i32.const 2))
+  (func $test::fixtures::compiler::0-wast::main_1 (result i32)
+    (call $test::fixtures::compiler::0-wast::add_1 (i32.const 1) (i32.const 2))
   )
   (func $%%START%%
     (global.set $system::memory::AL_BITS (i32.const 3))

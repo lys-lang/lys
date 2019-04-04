@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/multiple-assignment.lys" {
+  subgraph "cluster_test::fixtures::types::multiple-assignment" {
     1 [label="Name: z\n(alias i32 (native i32))", fillcolor=grey];
     2 [label="Int: 3\n(alias i32 (native i32))", fillcolor=grey];
     3 [label="FunOverload: flashero\n(fun 'flashero' ((alias i32)) (alias i32))", fillcolor=grey];
@@ -9,7 +9,7 @@ digraph LYS {
     6 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     7 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     8 [label="Name: flashero\n(fun 'flashero' ((alias i32)) (alias i32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/multiple-assignment.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::multiple-assignment_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       9 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       10 [label="VarDecl: x\n(native void)", fillcolor=grey];
@@ -29,9 +29,9 @@ digraph LYS {
       24 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
       25 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
       26 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/multiple-assignment.lys::flashero_1(i32)";
+      label="test::fixtures::types::multiple-assignment::flashero_1(i32)";
     }
-    label="test/fixtures/types/multiple-assignment.lys";
+    label="test::fixtures::types::multiple-assignment";
   }
   1 -> 23[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[DEFAULT_VALUE]" fontsize=7 fontname="times" color="black" ];
