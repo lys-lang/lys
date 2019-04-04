@@ -133,7 +133,7 @@ export namespace Nodes {
       super(astNode);
     }
 
-    static fromString(name: string, astNode: Nodes.ASTNode) {
+    static fromString(name: string, astNode: ASTNode) {
       const r = new NameIdentifierNode(astNode, name);
       return r;
     }
@@ -149,7 +149,7 @@ export namespace Nodes {
       super(astNode);
     }
 
-    static fromString(name: string, astNode: Nodes.ASTNode): QNameNode {
+    static fromString(name: string, astNode: ASTNode): QNameNode {
       const names = name.split('::').map($ => NameIdentifierNode.fromString($, astNode));
       const r = new QNameNode(astNode, names);
       return r;
@@ -279,9 +279,7 @@ export namespace Nodes {
 
   export class DocumentNode extends Node {
     readonly directives: DirectiveNode[] = [];
-    fileName!: string;
     moduleName!: string;
-    textContent?: string;
 
     get childrenOrEmpty() {
       return this.directives;

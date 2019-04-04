@@ -429,7 +429,6 @@ const visitor = {
   },
   Document(astNode: Nodes.ASTNode) {
     const doc = new Nodes.DocumentNode(astNode);
-    doc.textContent = astNode.text;
     astNode.children.forEach($ => doc.directives.push(visit($)));
 
     return doc;
@@ -583,7 +582,6 @@ export class CanonicalPhaseResult extends PhaseResult {
     }
 
     this.document = visit(this.parsingPhaseResult.document) as Nodes.DocumentNode;
-    this.document.fileName = this.parsingPhaseResult.fileName;
     this.document.moduleName = this.parsingPhaseResult.moduleName;
     failIfErrors('Canonical phase', this.document, this);
   }

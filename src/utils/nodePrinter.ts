@@ -83,7 +83,7 @@ function privatePrint(node: Nodes.Node): string {
   } else if (node instanceof Nodes.AssignmentNode) {
     return `${printNode(node.lhs)} = ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.LiteralNode) {
-    return `${node.astNode!.text}`;
+    return `${node.astNode.text}`;
   } else if (node instanceof Nodes.InjectedFunctionCallNode) {
     return `/* <Injected function call> */\n${indent(
       node.argumentsNode.map(printNode).join('\n')
