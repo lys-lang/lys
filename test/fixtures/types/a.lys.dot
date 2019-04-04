@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/a.lys" {
+  subgraph "cluster_test::fixtures::types::a" {
     1 [label="FunOverload: test\n(fun 'test' () (alias i32))", fillcolor=grey];
     2 [label="FunNode: test\n(fun 'test' () (alias i32))", fillcolor=grey];
     3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
@@ -47,50 +47,50 @@ digraph LYS {
     44 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
     45 [label="Ref: f32\n(type (alias f32 (native f32)))", fillcolor=grey];
     46 [label="Name: x\n(fun 'x' ((alias f32) (alias f32)) (alias f32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/a.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       47 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::test_1()";
+      label="test::fixtures::types::a::test_1()";
     }
-    subgraph "cluster_test/fixtures/types/a.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       48 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::test0_1()";
+      label="test::fixtures::types::a::test0_1()";
     }
-    subgraph "cluster_test/fixtures/types/a.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       49 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::testa_1(i32)";
+      label="test::fixtures::types::a::testa_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/a.lys_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       50 [label="Ref: a\n(alias f32 (native f32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::floatingPoints_1(f32,f64)";
+      label="test::fixtures::types::a::floatingPoints_1(f32,f64)";
     }
-    subgraph "cluster_test/fixtures/types/a.lys_4" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_4" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       51 [label="BinOp: +\n(alias f32 (native f32))", fillcolor=grey];
       52 [label="Ref: a\n(alias f32 (native f32))", fillcolor=grey];
       53 [label="Ref: b\n(alias f32 (native f32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::addFloat_1(f32,f32)";
+      label="test::fixtures::types::a::addFloat_1(f32,f32)";
     }
-    subgraph "cluster_test/fixtures/types/a.lys_5" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_5" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       54 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
       55 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
       56 [label="Ref: b\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::addInts_1(i32,i32)";
+      label="test::fixtures::types::a::addInts_1(i32,i32)";
     }
-    subgraph "cluster_test/fixtures/types/a.lys_6" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::a_6" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       57 [label="BinOp: *\n(alias f32 (native f32))", fillcolor=grey];
       58 [label="BinOp: +\n(alias f32 (native f32))", fillcolor=grey];
       59 [label="Ref: width\n(alias f32 (native f32))", fillcolor=grey];
       60 [label="Float: 1.00000\n(alias f32 (native f32))", fillcolor=grey];
       61 [label="Ref: height\n(alias f32 (native f32))", fillcolor=grey];
-      label="test/fixtures/types/a.lys::x_1(f32,f32)";
+      label="test::fixtures::types::a::x_1(f32,f32)";
     }
-    label="test/fixtures/types/a.lys";
+    label="test::fixtures::types::a";
   }
   1 -> 4[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

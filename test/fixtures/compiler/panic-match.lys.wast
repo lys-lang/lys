@@ -1005,8 +1005,8 @@
         )
     )
   )
-  (export "test" (func $test/fixtures/compiler/panic-match.lys::test_1))
-  (func $test/fixtures/compiler/panic-match.lys::assert_1 (param $x i32)
+  (export "test" (func $test::fixtures::compiler::panic-match::test_1))
+  (func $test::fixtures::compiler::panic-match::assert_1 (param $x i32)
     (if $IF1 (call $system::core::boolean.==_1 (local.get $x) (i32.const 0))
       (then
         (call $system::core::panic_1)
@@ -1014,7 +1014,7 @@
       (else)
     )
   )
-  (func $test/fixtures/compiler/panic-match.lys::test_1 (param $x i32)
+  (func $test::fixtures::compiler::panic-match::test_1 (param $x i32)
     (local $var$1 i32)
     (block $B1
       (block $B2
@@ -1026,7 +1026,7 @@
               (call $system::core::panic_1)
               (br $B2)
             )
-          (call $test/fixtures/compiler/panic-match.lys::assert_1 (i32.const 1))
+          (call $test::fixtures::compiler::panic-match::assert_1 (i32.const 1))
           (br $B2)
         )
     )

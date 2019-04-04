@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/assignment.lys" {
+  subgraph "cluster_test::fixtures::types::assignment" {
     1 [label="FunOverload: test\n(fun 'test' () (alias i32))", fillcolor=grey];
     2 [label="FunNode: test\n(fun 'test' () (alias i32))", fillcolor=grey];
     3 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
@@ -17,7 +17,7 @@ digraph LYS {
     14 [label="FunNode: test3\n(fun 'test3' () (alias i32))", fillcolor=grey];
     15 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     16 [label="Name: test3\n(fun 'test3' () (alias i32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/assignment.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::assignment_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       17 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       18 [label="ValDecl: test\n(native void)", fillcolor=grey];
@@ -28,9 +28,9 @@ digraph LYS {
       23 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
       24 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       25 [label="Int: 2\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/assignment.lys::test_1()";
+      label="test::fixtures::types::assignment::test_1()";
     }
-    subgraph "cluster_test/fixtures/types/assignment.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::assignment_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       26 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       27 [label="ValDecl: test\n(native void)", fillcolor=grey];
@@ -42,9 +42,9 @@ digraph LYS {
       33 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       34 [label="Int: 2\n(alias i32 (native i32))", fillcolor=grey];
       35 [label="Ref: test\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/assignment.lys::test1_1()";
+      label="test::fixtures::types::assignment::test1_1()";
     }
-    subgraph "cluster_test/fixtures/types/assignment.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::assignment_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       36 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       37 [label="ValDecl: test\n(native void)", fillcolor=grey];
@@ -55,9 +55,9 @@ digraph LYS {
       42 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
       43 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       44 [label="Int: 2\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/assignment.lys::test2_1()";
+      label="test::fixtures::types::assignment::test2_1()";
     }
-    subgraph "cluster_test/fixtures/types/assignment.lys_3" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::assignment_3" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       45 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       46 [label="ValDecl: test\n(native void)", fillcolor=grey];
@@ -69,9 +69,9 @@ digraph LYS {
       52 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       53 [label="Int: 2\n(alias i32 (native i32))", fillcolor=grey];
       54 [label="Ref: test\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/assignment.lys::test3_1()";
+      label="test::fixtures::types::assignment::test3_1()";
     }
-    label="test/fixtures/types/assignment.lys";
+    label="test::fixtures::types::assignment";
   }
   1 -> 4[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

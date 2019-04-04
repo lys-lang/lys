@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/global-assignment.lys" {
+  subgraph "cluster_test::fixtures::types::global-assignment" {
     1 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
     2 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
     3 [label="FunOverload: addOne\n(fun 'addOne' () (alias i32))", fillcolor=grey];
@@ -11,7 +11,7 @@ digraph LYS {
     8 [label="FunNode: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
     9 [label="Ref: void\n(type (alias void (native void)))", fillcolor=grey];
     10 [label="Name: addOneNoReturn\n(fun 'addOneNoReturn' () (alias void))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/global-assignment.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::global-assignment_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       11 [label="BlockNode\n(alias i32 (native i32))", fillcolor=grey];
       12 [label="VarDecl: y\n(native void)", fillcolor=grey];
@@ -25,9 +25,9 @@ digraph LYS {
       20 [label="AssignmentNode\n(alias i32 (native i32))", fillcolor=grey];
       21 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
       22 [label="Ref: y\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/global-assignment.lys::addOne_1()";
+      label="test::fixtures::types::global-assignment::addOne_1()";
     }
-    subgraph "cluster_test/fixtures/types/global-assignment.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::global-assignment_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       23 [label="BlockNode\n(native void)", fillcolor=grey];
       24 [label="AssignmentNode\n(native void)", fillcolor=grey];
@@ -35,9 +35,9 @@ digraph LYS {
       26 [label="BinOp: +\n(alias i32 (native i32))", fillcolor=grey];
       27 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
       28 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/global-assignment.lys::addOneNoReturn_1()";
+      label="test::fixtures::types::global-assignment::addOneNoReturn_1()";
     }
-    label="test/fixtures/types/global-assignment.lys";
+    label="test::fixtures::types::global-assignment";
   }
   1 -> 14[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];
   1 -> 21[taillabel="[NAME]" fontsize=7 fontname="times" color="black" ];

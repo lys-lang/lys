@@ -17,18 +17,26 @@ parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 describe('Semantic', function() {
   const phases = function(txt: string, fileName: string): ScopePhaseResult {
     parsingContext.reset();
-    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+    const parsing = parsingContext.getParsingPhaseForContent(
+      fileName,
+      parsingContext.getModuleFQNForFile(fileName),
+      txt
+    );
     const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical, fileName);
+    const semantic = new SemanticPhaseResult(canonical);
     const scope = new ScopePhaseResult(semantic);
     return scope;
   };
 
   const phases1 = function(txt: string, fileName: string): SemanticPhaseResult {
     parsingContext.reset();
-    const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+    const parsing = parsingContext.getParsingPhaseForContent(
+      fileName,
+      parsingContext.getModuleFQNForFile(fileName),
+      txt
+    );
     const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical, fileName);
+    const semantic = new SemanticPhaseResult(canonical);
     return semantic;
   };
 

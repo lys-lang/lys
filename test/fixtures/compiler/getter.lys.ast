@@ -37,7 +37,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/getter.lys::discriminant:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::getter::discriminant:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -49,7 +49,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test/fixtures/compiler/getter.lys::discriminant:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::compiler::getter::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -81,7 +81,7 @@
             |-QNameNode=Color
               |-NameIdentifierNode="Color"
           |-BlockNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local(test/fixtures/compiler/getter.lys::$ref:Color#3)
+            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::compiler::getter::$ref:Color#3)
               |-NameIdentifierNode="$ref" type=(alias Color (struct r:<null> g:<null> b:<null>))
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Color)) type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias Color))
@@ -107,7 +107,7 @@
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Color)) (alias i32)) (fun "property$0" ((alias Color) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,Local(test/fixtures/compiler/getter.lys::$ref:Color#3)
+              |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,Local(test::fixtures::compiler::getter::$ref:Color#3)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(r:i32#0)
@@ -117,7 +117,7 @@
               |-ReferenceNode type=(intersection (fun "property$1" ((alias Color)) (alias i32)) (fun "property$1" ((alias Color) (alias i32)) (alias void)))
                 |-QNameNode=property$1
                   |-NameIdentifierNode="property$1"
-              |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,Local(test/fixtures/compiler/getter.lys::$ref:Color#3)
+              |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,Local(test::fixtures::compiler::getter::$ref:Color#3)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(g:i32#1)
@@ -127,13 +127,13 @@
               |-ReferenceNode type=(intersection (fun "property$2" ((alias Color)) (alias i32)) (fun "property$2" ((alias Color) (alias i32)) (alias void)))
                 |-QNameNode=property$2
                   |-NameIdentifierNode="property$2"
-              |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,Local(test/fixtures/compiler/getter.lys::$ref:Color#3)
+              |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,Local(test::fixtures::compiler::getter::$ref:Color#3)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(b:i32#2)
                 |-QNameNode=b
                   |-NameIdentifierNode="b"
-            |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test/fixtures/compiler/getter.lys::$ref:Color#3)
+            |-ReferenceNode type=(alias Color (struct r:<null> g:<null> b:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::compiler::getter::$ref:Color#3)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode type=(fun "fromPointer" ((alias u32)) (alias Color)) annotations=Injected

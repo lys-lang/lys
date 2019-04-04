@@ -1,5 +1,5 @@
 import { System } from '../compiler/System';
-import { resolve } from 'path';
+import { resolve, relative } from 'path';
 
 export interface IVirtualFile {
   content: string;
@@ -50,6 +50,10 @@ export class WebSystem implements System {
 
   resolvePath(...path: string[]): string {
     return resolve(...path);
+  }
+
+  relative(from: string, to: string): string {
+    return relative(from, to);
   }
 
   fileExists(path: string): boolean {

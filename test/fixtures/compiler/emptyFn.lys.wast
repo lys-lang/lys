@@ -1005,14 +1005,14 @@
         )
     )
   )
-  (export "main" (func $test/fixtures/compiler/emptyFn.lys::main_1))
-  (export "returningValueFn" (func $test/fixtures/compiler/emptyFn.lys::returningValueFn_1))
-  (func $test/fixtures/compiler/emptyFn.lys::main_1
+  (export "main" (func $test::fixtures::compiler::emptyFn::main_1))
+  (export "returningValueFn" (func $test::fixtures::compiler::emptyFn::returningValueFn_1))
+  (func $test::fixtures::compiler::emptyFn::main_1
     (block $B1
       (nop)
     )
   )
-  (func $test/fixtures/compiler/emptyFn.lys::returningValueFn_1
+  (func $test::fixtures::compiler::emptyFn::returningValueFn_1
     (block $B1
       (drop (i32.const 1))
     )

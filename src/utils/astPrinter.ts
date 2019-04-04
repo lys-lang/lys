@@ -41,5 +41,8 @@ export function printAST(token: Nodes.Node, level = 0): string {
 }
 
 export function indent(str: string, indentation: string = '  ') {
+  if (!str.replace) {
+    console.trace();
+  }
   return str.replace(/^(.*)$/gm, indentation + '$1').replace(/^\s+$/gm, '');
 }

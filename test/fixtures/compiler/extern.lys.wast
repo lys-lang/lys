@@ -1,6 +1,6 @@
 (module
-  (import "env" "printf" (func $test/fixtures/compiler/extern.lys::printf_1 (param $str i32) (param $extra i32)))
-  (import "env" "putchar" (func $test/fixtures/compiler/extern.lys::putchar_1 (param $char i32)))
+  (import "env" "printf" (func $test::fixtures::compiler::extern::printf_1 (param $str i32) (param $extra i32)))
+  (import "env" "putchar" (func $test::fixtures::compiler::extern::putchar_1 (param $char i32)))
   (memory $mem 1)
   (export "memory" (memory $mem))
   (func $system::core::addressFromRef_1 (param $pointer i64) (result i32)
@@ -1007,11 +1007,11 @@
         )
     )
   )
-  (export "main" (func $test/fixtures/compiler/extern.lys::main_1))
-  (func $test/fixtures/compiler/extern.lys::main_1
+  (export "main" (func $test::fixtures::compiler::extern::main_1))
+  (func $test::fixtures::compiler::extern::main_1
     (block $B1
-      (call $test/fixtures/compiler/extern.lys::putchar_1 (call $system::core::i32.as_4 (i32.const 0)))
-      (call $test/fixtures/compiler/extern.lys::printf_1 (call $system::core::i32.as_4 (i32.const 0)) (i32.const 0))
+      (call $test::fixtures::compiler::extern::putchar_1 (call $system::core::i32.as_4 (i32.const 0)))
+      (call $test::fixtures::compiler::extern::printf_1 (call $system::core::i32.as_4 (i32.const 0)) (i32.const 0))
     )
   )
 )

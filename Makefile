@@ -7,10 +7,8 @@ build:
 
 GREP="."
 
-
-
 just-test:
-	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep $(GREP) --timeout 10000
+	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000
 
 test: | build just-test
 

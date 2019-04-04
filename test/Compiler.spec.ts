@@ -20,9 +20,13 @@ compilerTestParsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdl
 
 const compilationPhases = function(txt: string, fileName: string): CompilationPhaseResult {
   compilerTestParsingContext.reset();
-  const parsing = compilerTestParsingContext.getParsingPhaseForContent(fileName, txt);
+  const parsing = compilerTestParsingContext.getParsingPhaseForContent(
+    fileName,
+    compilerTestParsingContext.getModuleFQNForFile(fileName),
+    txt
+  );
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical, fileName);
+  const semantic = new SemanticPhaseResult(canonical);
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
   types.execute(true);

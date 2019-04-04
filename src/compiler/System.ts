@@ -13,4 +13,5 @@ export interface System {
   createDirectory(path: string): void;
   getCurrentDirectory(): string;
   getDirectories?(path: string): string[];
+  relative(from: string, to: string): string;
 }

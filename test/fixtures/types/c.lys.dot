@@ -1,6 +1,6 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/c.lys" {
+  subgraph "cluster_test::fixtures::types::c" {
     1 [label="FunOverload: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
     2 [label="FunNode: x\n(fun 'x' ((alias i32)) (alias i32))", fillcolor=grey];
     3 [label="Name: x\n(alias i32 (native i32))", fillcolor=grey];
@@ -15,24 +15,24 @@ digraph LYS {
     12 [label="FunNode: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
     13 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     14 [label="Name: outer\n(fun 'outer' () (alias i32))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/c.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::c_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       15 [label="Ref: x\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/c.lys::x_1(i32)";
+      label="test::fixtures::types::c::x_1(i32)";
     }
-    subgraph "cluster_test/fixtures/types/c.lys_1" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::c_1" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       16 [label="Ref: x\n(alias f32 (native f32))", fillcolor=grey];
-      label="test/fixtures/types/c.lys::x_4(f32)";
+      label="test::fixtures::types::c::x_4(f32)";
     }
-    subgraph "cluster_test/fixtures/types/c.lys_2" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::c_2" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       17 [label="FunctionCallNode\n(alias i32 (native i32))", fillcolor=grey];
       18 [label="Ref: x\n(intersection (fun 'x' ((alias i32)) (alias i32)) (fun 'x' ((alias f32)) (alias f32)))", fillcolor=grey];
       19 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/c.lys::outer_1()";
+      label="test::fixtures::types::c::outer_1()";
     }
-    label="test/fixtures/types/c.lys";
+    label="test::fixtures::types::c";
   }
   1 -> 10[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];

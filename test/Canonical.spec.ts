@@ -6,11 +6,10 @@ import { printAST } from '../dist/utils/astPrinter';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { nodeSystem } from '../dist/support/NodeSystem';
 
-const phases = function(txt: string): CanonicalPhaseResult {
+const phases = function(txt: string, fileName: string): CanonicalPhaseResult {
   const parsingContext = new ParsingContext(nodeSystem);
   parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
-
-  const parsing = parsingContext.getParsingPhaseForContent('test.lys', txt);
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
   const canonical = new CanonicalPhaseResult(parsing);
   return canonical;
 };

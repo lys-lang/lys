@@ -24,16 +24,16 @@ parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 const phases = function(txt: string, fileName: string): ScopePhaseResult {
   parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical, fileName);
+  const semantic = new SemanticPhaseResult(canonical);
   const scope = new ScopePhaseResult(semantic);
   return scope;
 };
 
 const failingPhases = function(txt: string, fileName: string) {
   parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent(fileName, txt);
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
   return new CanonicalPhaseResult(parsing);
 };
 
@@ -443,7 +443,7 @@ describe('Types', function() {
           ---
           fun(a: i32) -> boolean
           ---
-          Cannot find member "gta" in (alias BB)
+          Cannot find name 'gta' in (alias BB)
         `;
       });
 
@@ -1256,7 +1256,7 @@ describe('Types', function() {
         ---
         fun(i: i32) -> void & fun(t: Nila) -> void & fun() -> void
         ---
-        Cannot find member "apply" in (alias x)
+        Cannot find name 'apply' in (alias x)
       `;
 
       checkMainType`
@@ -1486,7 +1486,7 @@ describe('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Cannot find member "apply" in (alias f32)
+        Cannot find name 'apply' in (alias f32)
       `;
 
       checkMainType`
@@ -1494,7 +1494,7 @@ describe('Types', function() {
         ---
         fun() -> f32
         ---
-        Cannot find member "apply" in (alias f32)
+        Cannot find name 'apply' in (alias f32)
       `;
     });
 
@@ -2061,7 +2061,8 @@ describe('Types', function() {
     });
 
     describe('UnionType', () => {
-      const aliasOf = (name: string, type: Type) => new TypeAlias(Nodes.NameIdentifierNode.fromString(name), type);
+      const aliasOf = (name: string, type: Type) =>
+        new TypeAlias(Nodes.NameIdentifierNode.fromString(name, null as any), type);
       const struct = (name: string) => new StructType([]);
       const union = (...of: Type[]) => new UnionType(of);
       const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));
@@ -2769,7 +2770,7 @@ describe('Types', function() {
           ---
           fun(color: Color) -> i32
           ---
-          Cannot find member "property_unexistentProperty"
+          Cannot find name 'property_unexistentProperty'
         `;
 
         checkMainType`
@@ -3590,7 +3591,7 @@ describe('Types', function() {
           if (e) throw e;
 
           try {
-            const result = new SemanticPhaseResult(canonical, canonical.parsingPhaseResult.fileName);
+            const result = new SemanticPhaseResult(canonical);
             const scope = new ScopePhaseResult(result);
             const typePhase = new TypePhaseResult(scope);
             typePhase.execute();

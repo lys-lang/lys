@@ -1,33 +1,26 @@
 digraph LYS {
   node [shape=box,fontsize=10];
-  subgraph "cluster_test/fixtures/types/patternMatching.1.lys" {
+  subgraph "cluster_test::fixtures::types::patternMatching.1" {
     1 [label="FunOverload: test\n(fun 'test' ((alias i32)) (alias boolean))", fillcolor=grey];
     2 [label="FunNode: test\n(fun 'test' ((alias i32)) (alias boolean))", fillcolor=grey];
     3 [label="Name: a\n(alias i32 (native i32))", fillcolor=grey];
     4 [label="Ref: i32\n(type (alias i32 (native i32)))", fillcolor=grey];
     5 [label="Ref: boolean\n(type (alias boolean (native boolean)))", fillcolor=grey];
     6 [label="Name: test\n(fun 'test' ((alias i32)) (alias boolean))", fillcolor=grey];
-    subgraph "cluster_test/fixtures/types/patternMatching.1.lys_0" { rankdir=TB;
+    subgraph "cluster_test::fixtures::types::patternMatching.1_0" { rankdir=TB;
       node [style=filled, fillcolor=grey];
       7 [label="PatternMatcherNode\n(alias boolean (native boolean))", fillcolor=grey];
       8 [label="Ref: a\n(alias i32 (native i32))", fillcolor=grey];
       9 [label="MatchLiteralNode\n(alias boolean (native boolean))", fillcolor=grey];
       10 [label="Int: 1\n(alias i32 (native i32))", fillcolor=grey];
       11 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
-      12 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
-      13 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.1.lys::test_1(i32)";
-    }
-    label="test/fixtures/types/patternMatching.1.lys";
-  }
-  subgraph "cluster_<no-document>" {
-    subgraph "cluster_<no-document>_0" { rankdir=TB;
-      node [style=filled, fillcolor=grey];
-      14 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
+      12 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
+      13 [label="MatchDefaultNode\n(alias boolean (native boolean))", fillcolor=grey];
+      14 [label="BooleanLiteral\n(alias boolean (native boolean))", fillcolor=grey];
       15 [label="TypeReducerNode\n(alias i32 (native i32))", fillcolor=grey];
-      label="test/fixtures/types/patternMatching.1.lys::test_1(i32)";
+      label="test::fixtures::types::patternMatching.1::test_1(i32)";
     }
-    label="<no-document>";
+    label="test::fixtures::types::patternMatching.1";
   }
   1 -> 6[taillabel="[]" fontsize=7 fontname="times" color="black" ];
   2 -> 1[taillabel="[FUNCTION]" fontsize=7 fontname="times" color="black" ];
@@ -36,14 +29,14 @@ digraph LYS {
   4 -> 3[taillabel="[EXPECTED_TYPE]" fontsize=7 fontname="times" color="black" ];
   5 -> 2[taillabel="[#RETURN_TYPE]" fontsize=7 fontname="times" color="black" ];
   8 -> 7[taillabel="[PATTERN_EXPRESSION]" fontsize=7 fontname="times" color="black" ];
-  8 -> 14[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
+  8 -> 12[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
   9 -> 7[taillabel="[MATCH_EXPRESSION]" fontsize=7 fontname="times" color="black" ];
   10 -> 9[taillabel="[LHS]" fontsize=7 fontname="times" color="black" ];
   11 -> 9[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
-  14 -> 9[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
-  14 -> 15[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
-  12 -> 7[taillabel="[MATCH_EXPRESSION]" fontsize=7 fontname="times" color="black" ];
-  13 -> 12[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
-  15 -> 12[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
+  12 -> 9[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
+  12 -> 15[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
+  13 -> 7[taillabel="[MATCH_EXPRESSION]" fontsize=7 fontname="times" color="black" ];
+  14 -> 13[taillabel="[RHS]" fontsize=7 fontname="times" color="black" ];
+  15 -> 13[taillabel="[PATTERN_MATCHING_VALUE]" fontsize=7 fontname="times" color="black" ];
   label="LYS";
 }

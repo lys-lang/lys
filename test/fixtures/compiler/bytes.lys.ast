@@ -5,11 +5,11 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
   |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test/fixtures/compiler/bytes.lys::a:<no-type>)
+    |-ValDeclarationNode annotations=Global(test::fixtures::compiler::bytes::a:<no-type>)
       |-NameIdentifierNode="a" type=(alias bytes (native bytes))
       |-StringLiteral="asdasd" type=(alias bytes (native bytes)) annotations=IsValueNode
   |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test/fixtures/compiler/bytes.lys::b:<no-type>)
+    |-ValDeclarationNode annotations=Global(test::fixtures::compiler::bytes::b:<no-type>)
       |-NameIdentifierNode="b" type=(alias bytes (native bytes))
       |-StringLiteral="utf «【】»" type=(alias bytes (native bytes)) annotations=IsValueNode
   |-OverloadedFunctionNode type=(fun "main" () (alias bytes)) annotations=Injected
@@ -22,6 +22,6 @@
         |-ReferenceNode type=(type (alias bytes (native bytes)))
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
-        |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression,Global(test/fixtures/compiler/bytes.lys::a:<no-type>)
+        |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression,Global(test::fixtures::compiler::bytes::a:<no-type>)
           |-QNameNode=a
             |-NameIdentifierNode="a"

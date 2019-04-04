@@ -1,4 +1,3 @@
-import { TokenError } from 'ebnf';
 import { Nodes } from '../nodes';
 import { failIfErrors } from '../findAllErrors';
 import { PhaseResult } from './PhaseResult';
@@ -104,7 +103,7 @@ const visitor = {
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
     if (!params) {
-      throw new TokenError('Missing param list in function declaration', astNode);
+      throw new PositionCapableError('Missing param list in function declaration', astNode);
     }
 
     ret.parameters = params.children.map($ => visit($));
@@ -199,7 +198,7 @@ const visitor = {
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
     if (!params) {
-      throw new TokenError('Missing param list in function declaration', astNode);
+      throw new PositionCapableError('Missing param list in function declaration', astNode);
     }
 
     fun.parameters = params.children.map($ => visit($));
@@ -208,7 +207,8 @@ const visitor = {
     return fun;
   },
   Decorator(astNode: Nodes.ASTNode) {
-    const name = astNode.children.shift();
+    const children = astNode.children.slice();
+    const name = children.shift();
 
     if (!name) {
       throw new PositionCapableError('Missing decorator name', astNode);
@@ -216,7 +216,7 @@ const visitor = {
 
     const decoratorName = visit(name);
 
-    const args = astNode.children.map(visit) as Nodes.LiteralNode<any>[];
+    const args = children.map(visit) as Nodes.LiteralNode<any>[];
 
     const ret = new Nodes.DecoratorNode(astNode, decoratorName, args);
 
@@ -416,20 +416,19 @@ const visitor = {
     return ret;
   },
   BinNegExpression(x: Nodes.ASTNode) {
-    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('~'), visit(x.children[0]));
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('~', x), visit(x.children[0]));
   },
   NegExpression(x: Nodes.ASTNode) {
-    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('!'), visit(x.children[0]));
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('!', x), visit(x.children[0]));
   },
   UnaryMinus(x: Nodes.ASTNode) {
-    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('-'), visit(x.children[0]));
+    return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('-', x), visit(x.children[0]));
   },
   BooleanLiteral(x: Nodes.ASTNode) {
     return new Nodes.BooleanLiteral(x);
   },
   Document(astNode: Nodes.ASTNode) {
     const doc = new Nodes.DocumentNode(astNode);
-    doc.textContent = astNode.text;
     astNode.children.forEach($ => doc.directives.push(visit($)));
 
     return doc;
@@ -517,7 +516,7 @@ const visitor = {
       if (ret.args[0] instanceof Nodes.QNameNode) {
         const qname = ret.args[0] as Nodes.QNameNode;
 
-        const varRef = new Nodes.ReferenceNode(children[0], qname);
+        const varRef = new Nodes.ReferenceNode(ret.args[0].astNode, qname);
 
         if (qname.names[0].name!.startsWith('$')) {
           // TODO: fix horrible hack $
@@ -533,7 +532,10 @@ const visitor = {
 };
 
 function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
-  if (!astNode) throw new Error('astNode is null');
+  if (!astNode) {
+    console.trace();
+    throw new Error('astNode is null');
+  }
   if ((visitor as any)[astNode.type]) {
     return (visitor as any)[astNode.type](astNode);
   } else {
@@ -566,7 +568,7 @@ function visitLastChild(token: Nodes.ASTNode) {
 }
 
 export class CanonicalPhaseResult extends PhaseResult {
-  document: Nodes.DocumentNode | null = null;
+  document: Nodes.DocumentNode;
 
   get parsingContext(): ParsingContext {
     return this.parsingPhaseResult.parsingContext;
@@ -574,12 +576,13 @@ export class CanonicalPhaseResult extends PhaseResult {
 
   constructor(public parsingPhaseResult: ParsingPhaseResult) {
     super();
-    this.execute();
-  }
 
-  protected execute() {
-    this.document = visit(this.parsingPhaseResult.document!) as Nodes.DocumentNode;
-    this.document!.file = this.parsingPhaseResult.fileName;
-    failIfErrors('Canonical phase', this.document!, this);
+    if (!this.parsingPhaseResult.document) {
+      throw new Error('parsing phase did not run or failed');
+    }
+
+    this.document = visit(this.parsingPhaseResult.document) as Nodes.DocumentNode;
+    this.document.moduleName = this.parsingPhaseResult.moduleName;
+    failIfErrors('Canonical phase', this.document, this);
   }
 }

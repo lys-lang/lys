@@ -1005,8 +1005,8 @@
         )
     )
   )
-  (export "x" (func $test/fixtures/compiler/nop.lys::x_1))
-  (func $test/fixtures/compiler/nop.lys::x_1
+  (export "x" (func $test::fixtures::compiler::nop::x_1))
+  (func $test::fixtures::compiler::nop::x_1
     (block $B1
       (nop)
     )

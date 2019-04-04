@@ -19,25 +19,23 @@ import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 import envLib from '../dist/utils/libs/env';
 import testLib, { getTestResults } from '../dist/utils/libs/test';
-import { nodeSystem } from '../dist/support/NodeSystem';
-import { System } from '../dist/compiler/System';
+import { NodeSystem } from '../dist/support/NodeSystem';
 
 declare var it;
 
-const newSystem: System = {
-  ...nodeSystem,
-  getCurrentDirectory: () => path.resolve(__dirname, 'fixtures', 'execution')
-};
+const newSystem = new NodeSystem();
+newSystem.cwd = path.resolve(__dirname, 'fixtures', 'execution');
 
 const parsingContext = new ParsingContext(newSystem);
-parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
+parsingContext.paths.push(newSystem.resolvePath(__dirname, '../stdlib'));
 
-const phases = function(txt: string, filename = 'test.lys'): CodeGenerationPhaseResult {
+const phases = function(txt: string, fileName: string): CodeGenerationPhaseResult {
   parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent(filename, txt);
+
+  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
 
   const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical, 'test');
+  const semantic = new SemanticPhaseResult(canonical);
   const scope = new ScopePhaseResult(semantic);
   const types = new TypePhaseResult(scope);
   types.execute();
@@ -155,10 +153,12 @@ export function testFolder() {
   glob.sync(parsingContext.system.getCurrentDirectory() + '/**/*.lys').map(testFile);
 }
 
+let executionNumber = 0;
+
 export function test(name: string, src: string, customTest?: (document: any, error?: Error) => Promise<any>) {
   it(name, async function() {
     this.timeout(10000);
 
-    await testSrc(src, customTest);
+    await testSrc(src, customTest, 'inline_execution_test' + (++executionNumber).toString());
   });
 }

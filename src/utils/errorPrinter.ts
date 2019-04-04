@@ -33,7 +33,7 @@ export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
   const errorByFile = new Map<string, IErrorPositionCapable[]>();
 
   parsingContext.messageCollector.errors.forEach($ => {
-    const document = ($.position && $.position.document) || '(no document)';
+    const document = ($.position && $.position.moduleName) || '(no document)';
     if (!errorByFile.has(document)) {
       errorByFile.set(document, []);
     }
@@ -42,30 +42,22 @@ export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
 
   const out: string[] = [];
 
-  errorByFile.forEach((errors, fileName) => {
-    out.push(printErrors_(fileName, parsingContext, errors, stripAnsi));
+  errorByFile.forEach((errors, moduleName) => {
+    out.push(printErrors_(moduleName, parsingContext, errors, stripAnsi));
   });
 
   return out.join('\n');
 }
 
 function printErrors_(
-  fileName: string,
+  moduleName: string,
   parsingContext: ParsingContext,
   errors: IErrorPositionCapable[],
   stripAnsi = false
 ) {
-  const printLines = [];
+  const printLines: string[] = [];
 
-  printLines.push(formatColorAndReset(fileName || '(no file)', gutterStyleSequence));
-
-  let parsing: ParsingPhaseResult | void;
-
-  try {
-    parsing = parsingContext.getParsingPhaseForFile(fileName);
-  } catch {
-    // stub
-  }
+  const parsing: ParsingPhaseResult | void = parsingContext.getExistingParsingPhaseForModule(moduleName);
 
   if (!parsing) {
     errors.forEach((err: IErrorPositionCapable & Error) => {
@@ -81,6 +73,13 @@ function printErrors_(
 
     return printLines.join('\n');
   }
+
+  let fileNameToPrint = parsing.fileName || moduleName;
+
+  fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '/', '');
+  fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '\\', '');
+
+  printLines.push(formatColorAndReset(fileNameToPrint || '(no file)', gutterStyleSequence));
 
   const source = parsing.content;
 

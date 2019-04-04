@@ -51,6 +51,79 @@ export class TypeGraphBuilder {
     return this.createTypeGraph();
   }
 
+  buildFunctionNode(functionNode: Nodes.FunctionNode, args: Type[]): TypeGraph {
+    const paramList = functionNode.parameters;
+
+    if (args.length !== paramList.length) {
+      throw new Error('args.length != paramList.length');
+    }
+
+    if (functionNode.body) {
+      this.traverse(functionNode.body);
+    }
+
+    return this.createTypeGraph();
+  }
+
+  resolveReferenceNode(referenceNode: Reference): TypeNode | null {
+    // If no parent is a local reference else is a reference to another module.
+    if (referenceNode.isLocalReference) {
+      return this.findNode(referenceNode.referencedNode);
+    } else {
+      const typePhase = this.parsingContext.getTypePhase(referenceNode.moduleName!);
+      const typeNode = typePhase.typeGraph.findNode(referenceNode.referencedNode);
+      return typeNode;
+    }
+  }
+
+  processVarDecl(decl: Nodes.VarDeclarationNode) {
+    const variableNode = this.traverseNode(
+      decl.variableName!,
+      this.createNode(decl.variableName!, new VarDeclarationTypeResolver())
+    );
+
+    if (decl.variableType) {
+      Edge.addEdge(this.parsingContext, this.traverse(decl.variableType), variableNode, EdgeLabels.EXPECTED_TYPE);
+    }
+
+    Edge.addEdge(this.parsingContext, this.traverse(decl.value!), variableNode, EdgeLabels.DEFAULT_VALUE);
+
+    return variableNode;
+  }
+
+  processTypeDirective(directive: Nodes.TypeDirectiveNode) {
+    if (directive.variableName!.ofType) {
+      const typeDirective = this.traverseNode(
+        directive.variableName!,
+        this.createNode(directive.variableName!, new TypeDirectiveResolver(directive.variableName!.ofType as TypeType))
+      );
+
+      const shouldNotTraverse =
+        !directive.valueType ||
+        directive.valueType instanceof Nodes.StackTypeNode ||
+        directive.valueType instanceof Nodes.StructTypeNode ||
+        directive.valueType instanceof Nodes.InjectedTypeNode;
+
+      if (!shouldNotTraverse) {
+        Edge.addEdge(this.parsingContext, this.traverse(directive.valueType!), typeDirective);
+      }
+
+      return typeDirective;
+    } else {
+      this.messageCollector.error('Cannot resolve TypeDirective', directive);
+    }
+  }
+
+  findNode(referenceNoded: Nodes.Node): TypeNode | null {
+    const localNode = this.findLocalNode(referenceNoded);
+    return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNoded));
+  }
+
+  traverseChildren(node: Nodes.Node, result: TypeNode) {
+    const children = node.children;
+    return children.map(child => Edge.addEdge(this.parsingContext, this.traverse(child), result));
+  }
+
   private processDirective(node: Nodes.DirectiveNode) {
     if (node instanceof Nodes.VarDirectiveNode) {
       return this.processVarDecl(node.decl!);
@@ -68,20 +141,6 @@ export class TypeGraphBuilder {
     }
 
     throw new Error('Unknown directive ' + node.nodeName);
-  }
-
-  buildFunctionNode(functionNode: Nodes.FunctionNode, args: Type[]): TypeGraph {
-    const paramList = functionNode.parameters;
-
-    if (args.length != paramList.length) {
-      throw new Error('args.length != paramList.length');
-    }
-
-    if (functionNode.body) {
-      this.traverse(functionNode.body);
-    }
-
-    return this.createTypeGraph();
   }
 
   private createTypeGraph(): TypeGraph {
@@ -108,19 +167,8 @@ export class TypeGraphBuilder {
     return new TypeGraph(nodes, this.parentGraph);
   }
 
-  resolveReferenceNode(referenceNode: Reference): TypeNode | null {
-    // If no parent is a local reference else is a reference to another module.
-    if (referenceNode.isLocalReference) {
-      return this.findNode(referenceNode.referencedNode);
-    } else {
-      const typePhase = this.parsingContext.getTypePhase(referenceNode.moduleName!);
-      const typeNode = typePhase.typeGraph.findNode(referenceNode.referencedNode);
-      return typeNode;
-    }
-  }
-
   private resolveReference(reference: Reference, result: TypeNode, edgeName?: string): void {
-    if (!this._referenceNode.some($ => $.reference === reference && $.result == result)) {
+    if (!this._referenceNode.some($ => $.reference === reference && $.result === result)) {
       this._referenceNode.push({ reference, result, edgeName });
     }
   }
@@ -245,7 +293,7 @@ export class TypeGraphBuilder {
            * This reductor will take the carried type and remove the type from the
            * carry.bearerOfTypes
            */
-          newResult.bearerOfTypes = this.traverse(new Nodes.TypeReducerNode(null));
+          newResult.bearerOfTypes = this.traverse(new Nodes.TypeReducerNode(node.astNode));
 
           /**
            * If we have a carry.typeToRemoveNext, add the edge to the typeReductor
@@ -297,7 +345,7 @@ export class TypeGraphBuilder {
            */
           if (matcherNode instanceof Nodes.MatchDefaultNode) {
             newResult.bearerOfTypes = new TypeNode(
-              new Nodes.TypeReducerNode(null),
+              new Nodes.TypeReducerNode(node.astNode),
               new LiteralTypeResolver(InjectableTypes.never)
             );
           }
@@ -382,56 +430,8 @@ export class TypeGraphBuilder {
     return target;
   }
 
-  processVarDecl(decl: Nodes.VarDeclarationNode) {
-    const variableNode = this.traverseNode(
-      decl.variableName!,
-      this.createNode(decl.variableName!, new VarDeclarationTypeResolver())
-    );
-
-    if (decl.variableType) {
-      Edge.addEdge(this.parsingContext, this.traverse(decl.variableType), variableNode, EdgeLabels.EXPECTED_TYPE);
-    }
-
-    Edge.addEdge(this.parsingContext, this.traverse(decl.value!), variableNode, EdgeLabels.DEFAULT_VALUE);
-
-    return variableNode;
-  }
-
-  processTypeDirective(directive: Nodes.TypeDirectiveNode) {
-    if (directive.variableName!.ofType) {
-      const typeDirective = this.traverseNode(
-        directive.variableName!,
-        this.createNode(directive.variableName!, new TypeDirectiveResolver(directive.variableName!.ofType as TypeType))
-      );
-
-      const shouldNotTraverse =
-        !directive.valueType ||
-        directive.valueType instanceof Nodes.StackTypeNode ||
-        directive.valueType instanceof Nodes.StructTypeNode ||
-        directive.valueType instanceof Nodes.InjectedTypeNode;
-
-      if (!shouldNotTraverse) {
-        Edge.addEdge(this.parsingContext, this.traverse(directive.valueType!), typeDirective);
-      }
-
-      return typeDirective;
-    } else {
-      this.messageCollector.error('Cannot resolve TypeDirective', directive);
-    }
-  }
-
-  findNode(referenceNoded: Nodes.Node): TypeNode | null {
-    const localNode = this.findLocalNode(referenceNoded);
-    return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNoded));
-  }
-
   private findLocalNode(referenceNode: Nodes.Node): TypeNode | null {
     return this._nodeMap.get(referenceNode)!;
-  }
-
-  traverseChildren(node: Nodes.Node, result: TypeNode) {
-    const children = node.children;
-    return children.map(child => Edge.addEdge(this.parsingContext, this.traverse(child), result));
   }
 }
 
@@ -440,6 +440,7 @@ function getTypeForIntValue(value: string): string {
     if (value.length > '0x00000000'.length) return 'i64';
   }
 
+  // tslint:disable-next-line:radix
   const intValue = parseInt(value);
 
   if (intValue >= -2147483648 && intValue <= 4294967295) return 'i32';

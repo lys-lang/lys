@@ -89,6 +89,8 @@ async function main() {
     throw new LysError(`Error: File ${file} does not exist.`);
   }
 
+  const moduleName = parsingContext.getModuleFQNForFile(file);
+
   if (!args['--output']) {
     args['--output'] = 'build/' + basename(file, '.lys');
   }
@@ -97,7 +99,7 @@ async function main() {
   const outPath = dirname(outFileFullWithoutExtension);
   mkdirRecursive(outPath);
 
-  const codeGen = compile(parsingContext, file);
+  const codeGen = compile(parsingContext, moduleName);
 
   const optimize = !args['--no-optimize'];
 
