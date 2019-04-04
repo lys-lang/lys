@@ -74,7 +74,10 @@ function printErrors_(
     return printLines.join('\n');
   }
 
-  const fileNameToPrint = parsing.fileName || moduleName;
+  let fileNameToPrint = parsing.fileName || moduleName;
+
+  fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '/', '');
+  fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '\\', '');
 
   printLines.push(formatColorAndReset(fileNameToPrint || '(no file)', gutterStyleSequence));
 
