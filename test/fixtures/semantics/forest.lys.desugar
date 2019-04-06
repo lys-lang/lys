@@ -1,5 +1,3 @@
-import system::core
-
 type Tree = (Empty | Node)
 
 impl Tree {
@@ -268,10 +266,10 @@ type Cons = %struct { tree: (Tree | Forest) }
 
 fun testPassing(): void = {
   var a = Nil
-  var b = Cons.apply(Empty)
-  var c = Cons.apply(Nil)
-  var d = Cons.apply(Node.apply(Empty))
-  var e = Node.apply(Nil)
+  var b = Cons(Empty)
+  var c = Cons(Nil)
+  var d = Cons(Node(Empty))
+  var e = Node(Nil)
   support::test::assert(a is Nil == true)
   support::test::assert(a is Forest == true)
   support::test::assert(b is Forest == true)

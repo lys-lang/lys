@@ -8,10 +8,11 @@ import { print as printTypeGraph } from '../dist/utils/typeGraphPrinter';
 import { printAST } from '../dist/utils/astPrinter';
 import { hexDump, readString } from '../dist/utils/execution';
 import { generateTestInstance } from '../dist/utils/testEnvironment';
+import { loadFromMD } from '../dist/utils/loadFromMD';
+import { compile } from '../dist';
 import glob = require('glob');
 import path = require('path');
 import { readFileSync } from 'fs';
-import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 import envLib from '../dist/utils/libs/env';
 import testLib, { getTestResults } from '../dist/utils/libs/test';
@@ -25,34 +26,54 @@ newSystem.cwd = path.resolve(__dirname, 'fixtures', 'execution');
 const parsingContext = new ParsingContext(newSystem);
 parsingContext.paths.push(newSystem.resolvePath(__dirname, '../stdlib'));
 
-const phases = function(txt: string, fileName: string): CodeGenerationPhaseResult {
+const phasesForContent = function(txt: string, fileName: string): CodeGenerationPhaseResult {
   parsingContext.reset();
 
   const moduleName = parsingContext.getModuleFQNForFile(fileName);
+  parsingContext.invalidateModule(moduleName);
   parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
   const compilation = parsingContext.getCompilationPhase(moduleName);
   return new CodeGenerationPhaseResult(compilation, parsingContext);
 };
 
-async function testSrc(
-  content: string,
-  customTest?: (document: any, error?: Error) => Promise<any>,
-  fileName?: string
-) {
+async function testSrc(content: string, customTest: (document: any, error?: Error) => Promise<any>, fileName: string) {
   let compilationPhaseResult: CodeGenerationPhaseResult;
 
   try {
-    compilationPhaseResult = phases(content, fileName);
+    let libs: Array<(a: any) => void> = [envLib, testLib];
+    let customAssertions: Record<string, (a: any) => void> = {};
+
+    if (fileName.endsWith('.md')) {
+      parsingContext.reset();
+
+      const MD = loadFromMD(parsingContext, content as string);
+
+      for (let path in MD.jsFiles) {
+        if (path === 'assertions.js') {
+          customAssertions[path] = MD.jsFiles[path];
+        } else {
+          libs.push(MD.jsFiles[path]);
+        }
+      }
+
+      compilationPhaseResult = compile(parsingContext, MD.mainModule);
+    } else {
+      compilationPhaseResult = phasesForContent(content, fileName);
+    }
 
     await compilationPhaseResult.validate(false, true);
 
-    const instance = await generateTestInstance(compilationPhaseResult.buffer, [envLib, testLib]);
+    const instance = await generateTestInstance(compilationPhaseResult.buffer, libs);
 
     if (!instance) throw new Error('Invalid compilation');
 
     if (customTest) {
       try {
         await customTest(instance);
+
+        for (let path in customAssertions) {
+          customAssertions[path](() => instance);
+        }
       } catch (e) {
         const maxMemory = instance.exports.test_getMaxMemory();
 
@@ -101,6 +122,10 @@ async function testSrc(
             throw new Error('Suite ' + JSON.stringify(testResult) + ' failed');
           }
         }
+
+        for (let path in customAssertions) {
+          customAssertions[path](() => newInstance);
+        }
       } catch (e) {
         console.error('OPTIMIZED VERSION FAILED');
         throw e;
@@ -115,7 +140,7 @@ async function testSrc(
   }
 }
 
-export function testFolder() {
+export function testFolder(pattern: string) {
   function testFile(fileName: string) {
     const content = readFileSync(fileName).toString();
 
@@ -132,7 +157,7 @@ export function testFolder() {
       );
     });
   }
-  glob.sync(parsingContext.system.getCurrentDirectory() + '/**/*.lys').map(testFile);
+  glob.sync(parsingContext.system.getCurrentDirectory() + pattern).map(testFile);
 }
 
 let executionNumber = 0;

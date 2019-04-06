@@ -12,8 +12,12 @@ describe('Parser', () => {
     const parsingContext = new ParsingContext(nodeSystem);
 
     parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
+
+    const moduleName = parsingContext.getModuleFQNForFile(fileName);
+    parsingContext.invalidateModule(moduleName);
+
     return {
-      document: parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt),
+      document: parsingContext.getParsingPhaseForContent(fileName, moduleName, txt),
       parsingContext
     };
   };

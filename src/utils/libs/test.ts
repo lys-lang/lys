@@ -44,11 +44,13 @@ export default function(getInstance: () => any) {
       printMemory: (start: number, length: number) => {
         console.log(`Dump from ${start.toString(16)} of ${length} bytes`);
 
-        while (start % 16 != 0 && start !== 0) {
+        while (start % 16 !== 0 && start !== 0) {
+          // tslint:disable-next-line:no-parameter-reassignment
           start--;
         }
 
-        while (length % 16 != 0) {
+        while (length % 16 !== 0) {
+          // tslint:disable-next-line:no-parameter-reassignment
           length++;
         }
 

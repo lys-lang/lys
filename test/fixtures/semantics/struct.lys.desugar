@@ -1,5 +1,3 @@
-import system::core
-
 type Number = (Infinity | NDet | Real | Natural | Complex)
 
 impl Number {
@@ -303,7 +301,7 @@ fun isComplex(number: Number): boolean =
 
 fun main(): void = {
   isComplex(Infinity)
-  isComplex(Real.apply(0.0))
-  isComplex(Natural.apply(123))
-  isComplex(Complex.apply(0.0, 99.1))
+  isComplex(Real(0.0))
+  isComplex(Natural(123))
+  isComplex(Complex(0.0, 99.1))
 }

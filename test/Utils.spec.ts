@@ -2,7 +2,7 @@ declare var describe, it;
 import { parseMD } from '../dist/utils/MDParser';
 import { expect } from 'chai';
 
-describe.only('MDParser tests', () => {
+describe('MDParser tests', () => {
   const EQ = (a, b) => expect(JSON.stringify(a, null, 2)).to.eq(JSON.stringify(b, null, 2));
 
   it('must parse an empty document', () => {
@@ -40,7 +40,6 @@ This is some text
 #### B
 
     `);
-    console.dir(result);
     EQ(result, [
       { type: 'header', text: 'header content\nmulti line' },
       { type: 'title', level: 1, text: 'A' },

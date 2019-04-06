@@ -10,6 +10,7 @@ import { writeFileSync } from 'fs';
 import { ForegroundColors, formatColorAndReset } from './utils/colors';
 import { LysError } from './utils/errorPrinter';
 import { compile } from './index';
+import { loadFromMD } from './utils/loadFromMD';
 
 const args = arg(
   {
@@ -81,6 +82,8 @@ parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 async function main() {
   const file = args._[0];
 
+  let customAssertions: Record<string, (getInstance: Function) => void> = {};
+
   if (!file) {
     throw new LysError('Error: You did not specify an input file. \n\n  Usage: $ lys mainFile.lys');
   }
@@ -89,7 +92,22 @@ async function main() {
     throw new LysError(`Error: File ${file} does not exist.`);
   }
 
-  const moduleName = parsingContext.getModuleFQNForFile(file);
+  let mainModule = parsingContext.getModuleFQNForFile(file);
+
+  if (file.endsWith('.md')) {
+    const MD = loadFromMD(parsingContext, parsingContext.system.readFile(file) as string);
+    mainModule = MD.mainModule;
+
+    for (let path in MD.jsFiles) {
+      if (path === 'assertions.js') {
+        customAssertions[path] = MD.jsFiles[path];
+      } else {
+        libs.push(MD.jsFiles[path]);
+      }
+    }
+
+    args['--test'] = true;
+  }
 
   if (!args['--output']) {
     args['--output'] = 'build/' + basename(file, '.lys');
@@ -99,7 +117,7 @@ async function main() {
   const outPath = dirname(outFileFullWithoutExtension);
   mkdirRecursive(outPath);
 
-  const codeGen = compile(parsingContext, moduleName);
+  const codeGen = compile(parsingContext, mainModule);
 
   const optimize = !args['--no-optimize'];
 
@@ -170,6 +188,30 @@ exports.default = async function() {
     }
 
     const testResults = getTestResults(testInstance);
+
+    for (let path in customAssertions) {
+      const startTime = Date.now();
+      try {
+        customAssertions[path](() => testInstance);
+
+        testResults.push({
+          title: path,
+          endTime: Date.now(),
+          startTime,
+          passed: true,
+          skipped: false
+        });
+      } catch (e) {
+        console.error(e);
+        testResults.push({
+          title: path,
+          endTime: Date.now(),
+          startTime,
+          passed: false,
+          skipped: false
+        });
+      }
+    }
 
     if (testResults && testResults.length) {
       nodeSystem.writeFile('_lys_test_results.json', JSON.stringify(testResults, null, 2));

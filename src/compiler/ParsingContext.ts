@@ -21,7 +21,13 @@ export class ParsingContext {
 
   reset() {
     this.typeNumbers.clear();
+    this.modulesInContext.clear();
     this.messageCollector.errors.length = 0;
+    this.typeGraph.reset();
+  }
+
+  invalidateModule(moduleName: string) {
+    this.modulesInContext.delete(moduleName);
   }
 
   getInternalName(moduleName: string, name: string): string {
@@ -43,8 +49,8 @@ export class ParsingContext {
     }
   }
 
-  getTypeDiscriminant(module: string, typeName: string): number {
-    const fqn = module + '::' + typeName;
+  getTypeDiscriminant(moduleName: string, typeName: string): number {
+    const fqn = moduleName + '::' + typeName;
     let typeNumber = this.typeNumbers.get(fqn);
 
     if (!typeNumber) {
@@ -95,15 +101,15 @@ export class ParsingContext {
     }
   }
 
-  getScopePhase(moduleName: string): Nodes.DocumentNode {
-    const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, PhaseFlags.Scope, true);
-    return document;
-  }
-
   getSemanticPhase(moduleName: string): Nodes.DocumentNode {
     const document = this.getParsingPhaseForModule(moduleName);
     analyze(document, this, PhaseFlags.Semantic, true);
+    return document;
+  }
+
+  getScopePhase(moduleName: string): Nodes.DocumentNode {
+    const document = this.getParsingPhaseForModule(moduleName);
+    analyze(document, this, PhaseFlags.Scope, true);
     return document;
   }
 

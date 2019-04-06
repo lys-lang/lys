@@ -40,6 +40,12 @@ export class TypeGraph {
     return typeGraph;
   }
 
+  reset(): any {
+    this.nodes.length = 0;
+    this._subGraph.forEach((_, $) => $.reset());
+    this._subGraph.clear();
+  }
+
   addSubGraph(subGraph: TypeGraph, name: string): void {
     this._subGraph.set(subGraph, name);
   }

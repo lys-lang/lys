@@ -14,6 +14,7 @@ compilerTestParsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdl
 const compilationPhases = function(txt: string, fileName: string): PhasesResult {
   compilerTestParsingContext.reset();
   const moduleName = compilerTestParsingContext.getModuleFQNForFile(fileName);
+  compilerTestParsingContext.invalidateModule(moduleName);
   compilerTestParsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
   const compiler = compilerTestParsingContext.getCompilationPhase(moduleName);
   failWithErrors('Compilation phase', compilerTestParsingContext);

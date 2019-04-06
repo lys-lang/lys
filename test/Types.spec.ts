@@ -22,6 +22,7 @@ parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 const phases = function(txt: string, fileName: string): PhasesResult {
   parsingContext.reset();
   const moduleName = parsingContext.getModuleFQNForFile(fileName);
+  parsingContext.invalidateModule(moduleName);
   parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
 
   return { document: parsingContext.getTypePhase(moduleName), parsingContext };
@@ -2925,9 +2926,36 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        fun test1(x: u8): i32 = x
+      fun test1(x: u8): i32 = x
+      ---
+      fun(x: u8) -> i32
+      `;
+
+      checkMainType`
+        import support::test
+
+        fun testMatchWithDifferentTypes(input: i32): boolean = {
+          match input {
+            case 1 -> true
+            else -> false
+          }
+        }
+
+        #[export]
+        fun main(): void = {
+          var aByte = 10 as u8
+          var a: u16 = aByte
+          mustEqual(a, 10, "eq(10_u16, 10_i32)")
+          // verify(x == 10, "10_u16 == 10_i32")
+          var x = 0 as i16
+          verify(testMatchWithDifferentTypes(x) == false, "match 0")
+          var y = 1 as u8
+          verify(testMatchWithDifferentTypes(y) == true, "match 1")
+          verify(0.0 == 0, "0.0 == 0")
+        }
         ---
-        fun(x: u8) -> i32
+        fun(input: i32) -> boolean
+        fun() -> void
       `;
     });
     describe('operators', () => {

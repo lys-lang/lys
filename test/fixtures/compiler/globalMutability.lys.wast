@@ -1020,7 +1020,7 @@
   (func $%%START%%
     (global.set $test::fixtures::compiler::globalMutability::x (i32.const 2))
     (global.set $test::fixtures::compiler::globalMutability::bc (i32.const 1))
-    (global.set $test::fixtures::compiler::globalMutability::a (block $B2 (result i32)
+    (global.set $test::fixtures::compiler::globalMutability::a (block $B1 (result i32)
             (call $system::core::i32.-_1 (global.get $test::fixtures::compiler::globalMutability::bc) (global.get $test::fixtures::compiler::globalMutability::x))
           ))
   )

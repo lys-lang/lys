@@ -8,8 +8,11 @@ export { ParsingContext, System };
 export function compile(parsingContext: ParsingContext, moduleName: string) {
   const compilation = parsingContext.getCompilationPhase(moduleName);
 
+  failWithErrors(`Compilation`, parsingContext);
+
   const codeGen = new CodeGenerationPhaseResult(compilation, parsingContext);
-  failWithErrors(`Code generation phase`, parsingContext);
+
+  failWithErrors(`Code generation`, parsingContext);
 
   return codeGen;
 }
