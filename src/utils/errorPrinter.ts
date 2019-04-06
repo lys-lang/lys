@@ -1,7 +1,6 @@
 import { LineMapper, ITextPosition } from './LineMapper';
 import { IErrorPositionCapable } from '../compiler/NodeError';
 import { ParsingContext } from '../compiler/ParsingContext';
-import { ParsingPhaseResult } from '../compiler/phases/parsingPhase';
 import { indent } from './astPrinter';
 import { gutterStyleSequence, formatColorAndReset, ForegroundColors, gutterSeparator } from './colors';
 
@@ -57,7 +56,7 @@ function printErrors_(
 ) {
   const printLines: string[] = [];
 
-  const parsing: ParsingPhaseResult | void = parsingContext.getExistingParsingPhaseForModule(moduleName);
+  const parsing = parsingContext.getExistingParsingPhaseForModule(moduleName);
 
   if (!parsing) {
     errors.forEach((err: IErrorPositionCapable & Error) => {

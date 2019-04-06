@@ -1,7 +1,9 @@
-Parsing phase failed. 6 errors found:
-  1)  Unexpected end of input. Expecting FunctionName Got: () = 1
-  2)  Unexpected end of input. Missing FunctionParamsList
-  3)  Unexpected end of input. Missing FunAssignExpression
-  4)  Unexpected end of input. Expecting FunctionName Got: () = 1
-  5)  Unexpected end of input. Missing FunctionParamsList
-  6)  Unexpected end of input. Missing FunAssignExpression
+test/fixtures/parser-error/i.lys
+    1│ private fun () = 1
+     │ ^^^^^^^^^^^^^^^^^^ Unexpected end of input. Expecting FunctionName Got: () = 1
+     │ ^^^^^^^^^^^^^^^^^^ Unexpected end of input. Missing FunctionParamsList
+     │ ^^^^^^^^^^^^^^^^^^ Unexpected end of input. Missing FunAssignExpression
+     │             ^^^^^^ Unexpected end of input. Expecting FunctionName Got: () = 1
+     │                    Unexpected end of input. Missing FunctionParamsList
+     │                    Unexpected end of input. Missing FunAssignExpression
+     │         ^^^^^^^^^^ A function name is required

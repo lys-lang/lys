@@ -193,11 +193,6 @@ export function resolveReturnType(
   if (subGraph) {
     const result = subGraph.findNode(functionNode.body!)!.resultType();
 
-    if (!result) {
-      // THIS SHOULD NOT HAPPEN
-      debugger;
-    }
-
     return result;
   } else {
     const context = ctx.currentParsingContext;

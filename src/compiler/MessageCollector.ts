@@ -1,24 +1,23 @@
-import { IErrorPositionCapable, AstNodeError, PositionCapableError } from './NodeError';
+import { IErrorPositionCapable, AstNodeError, PositionCapableError, isSamePosition } from './NodeError';
 import { Nodes } from './nodes';
 
 export class MessageCollector {
   errors: IErrorPositionCapable[] = [];
 
   error(error: IErrorPositionCapable): void;
-  error(message: string, node: Nodes.Node): void;
+  error(message: string | Error, node: Nodes.Node): void;
   error(error: string | Error, node?: Nodes.Node): void {
     if (error instanceof PositionCapableError) {
-      if (!this.errors.some($ => $.message === error.message && $.position === error.position)) {
+      if (!this.errors.some($ => $.message === error.message && isSamePosition($.position, error.position))) {
         this.errors.push(error);
       }
     } else {
       const message = error instanceof Error ? error.message : error;
       if (node) {
-        if (!this.errors.some($ => $.message === message && $.node === node)) {
+        if (!this.errors.some($ => $.message === message && isSamePosition($.position, node.astNode))) {
           const err = new AstNodeError(message, node);
           if (error instanceof Error && error.stack) {
             err.stack = error.stack;
-            console.error(err);
           }
 
           this.errors.push(err);
@@ -26,12 +25,17 @@ export class MessageCollector {
       } else {
         const err = error instanceof Error ? error : new Error(error);
         this.errors.push(err as any);
+
+        if (error instanceof Error && error.stack) {
+          err.stack = error.stack;
+          console.error(err);
+        }
       }
     }
   }
 
   warning(message: string, node: Nodes.Node) {
-    if (!this.errors.some($ => $.message === message && $.node === node)) {
+    if (!this.errors.some($ => $.message === message && isSamePosition($.position, node.astNode))) {
       this.errors.push(new AstNodeError(message, node, true));
     }
   }
@@ -41,7 +45,10 @@ export class MessageCollector {
   }
 
   hasErrorForBranch(node: Nodes.Node): any {
-    return this.errors.some($ => $.node === node) || node.children.some($ => this.hasErrorForBranch($));
+    return (
+      this.errors.some($ => isSamePosition($.position, node.astNode)) ||
+      node.children.some($ => this.hasErrorForBranch($))
+    );
   }
 
   hasErrors() {

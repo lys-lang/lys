@@ -1,24 +1,15 @@
-import { Nodes, Local, Global } from '../nodes';
+import { Nodes, Local, Global, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { findParentType } from '../nodeHelpers';
-import { failIfErrors } from '../findAllErrors';
-import { PhaseResult } from './PhaseResult';
-import { TypePhaseResult } from './typePhase';
 import { ParsingContext } from '../ParsingContext';
 import { AstNodeError } from '../NodeError';
 import { annotations } from '../annotations';
 import { FunctionType } from '../types';
 import { last } from '../helpers';
-
-const fixParents = walkPreOrder((node: Nodes.Node, _: CompilationPhaseResult, parent: Nodes.Node | null) => {
-  if (parent) {
-    node.parent = parent;
-  }
-  return node;
-});
+import { fixParents } from './helpers';
 
 const resolveLocals = walkPreOrder(
-  (node: Nodes.Node, _: PhaseResult, _parent: Nodes.Node | null) => {
+  (node: Nodes.Node, _: ParsingContext, _parent: Nodes.Node | null) => {
     if (node instanceof Nodes.PatternMatcherNode) {
       // create a local for lhs of MatchNode
 
@@ -57,7 +48,7 @@ const resolveLocals = walkPreOrder(
   }
 );
 
-const resolveVariables = walkPreOrder((node: Nodes.Node, _phaseResult: CompilationPhaseResult) => {
+const resolveVariables = walkPreOrder((node: Nodes.Node, _: ParsingContext) => {
   if (node instanceof Nodes.ReferenceNode) {
     if (node.resolvedReference!.type === 'VALUE') {
       const decl = node.resolvedReference!.referencedNode.parent; // NameIdentifierNode#parent
@@ -184,32 +175,19 @@ function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.F
   return false;
 }
 
-export class CompilationPhaseResult extends PhaseResult {
-  get parsingContext(): ParsingContext {
-    return this.typePhaseResult.parsingContext;
-  }
+export function executeCompilationPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.Compilation) return;
 
-  get document() {
-    return this.typePhaseResult.document;
-  }
+  fixParents(document, parsingContext, null);
 
-  constructor(public typePhaseResult: TypePhaseResult) {
-    super();
-    this.execute();
-  }
+  detectReturnExpressions(document, parsingContext, null);
+  detectTailCall(document, parsingContext, null);
 
-  protected execute() {
-    fixParents(this.document, this, null);
+  resolveDeclarations(document, parsingContext, null);
+  resolveLocals(document, parsingContext, null);
+  resolveVariables(document, parsingContext, null);
 
-    detectReturnExpressions(this.document, this, null);
-    detectTailCall(this.document, this, null);
+  fixParents(document, parsingContext, null);
 
-    resolveDeclarations(this.document, this, null);
-    resolveLocals(this.document, this, null);
-    resolveVariables(this.document, this, null);
-
-    fixParents(this.document, this, null);
-
-    failIfErrors('Compilation phase', this.document, this);
-  }
+  document.phasesRun |= PhaseFlags.Compilation;
 }

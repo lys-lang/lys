@@ -1015,48 +1015,53 @@ class FunctionTypeResolver extends TypeResolver {
 class ReferenceResolver extends TypeResolver {
   execute(node: TypeNode, ctx: TypeResolutionContext): Type {
     const referencedEdge = node.incomingEdges()[0];
-    const type = referencedEdge.incomingType()!;
+    if (referencedEdge) {
+      const type = referencedEdge.incomingType()!;
 
-    if (type instanceof TypeType && node.astNode.hasAnnotation(annotations.IsValueNode)) {
-      if (type.of instanceof TypeAlias) {
-        try {
-          const fnType = safeResolveTypeMember(node.astNode, type.of, 'apply', ctx);
+      if (type instanceof TypeType && node.astNode.hasAnnotation(annotations.IsValueNode)) {
+        if (type.of instanceof TypeAlias) {
+          try {
+            const fnType = safeResolveTypeMember(node.astNode, type.of, 'apply', ctx);
 
-          const fun = findFunctionOverload(
-            fnType,
-            [],
-            node.astNode,
-            ctx,
-            null,
-            false,
-            ctx.parsingContext.messageCollector,
-            true
-          );
+            const fun = findFunctionOverload(
+              fnType,
+              [],
+              node.astNode,
+              ctx,
+              null,
+              false,
+              ctx.parsingContext.messageCollector,
+              true
+            );
 
-          if (fun instanceof FunctionType) {
-            annotateImplicitCall(node.astNode, fun, [], ctx);
+            if (fun instanceof FunctionType) {
+              annotateImplicitCall(node.astNode, fun, [], ctx);
 
-            return fun.returnType!;
+              return fun.returnType!;
+            }
+
+            if (!ctx.parsingContext.messageCollector.hasErrorForBranch(node.astNode)) {
+              ctx.parsingContext.messageCollector.error(type.inspect(100), node.astNode);
+            }
+
+            return fun || INVALID_TYPE;
+          } catch (e) {
+            ctx.parsingContext.messageCollector.error(e, node.astNode);
+            return INVALID_TYPE;
           }
-
-          if (!ctx.parsingContext.messageCollector.hasErrorForBranch(node.astNode)) {
-            ctx.parsingContext.messageCollector.error(type.inspect(100), node.astNode);
-          }
-
-          return fun || INVALID_TYPE;
-        } catch (e) {
-          ctx.parsingContext.messageCollector.error(e, node.astNode);
-          return INVALID_TYPE;
         }
+        ctx.parsingContext.messageCollector.error(new UnexpectedType(type, node.astNode));
       }
-      ctx.parsingContext.messageCollector.error(new UnexpectedType(type, node.astNode));
+
+      if (type) {
+        return type;
+      }
     }
 
-    if (type) {
-      return type;
+    if (!ctx.parsingContext.messageCollector.hasErrorForBranch(node.astNode)) {
+      ctx.parsingContext.messageCollector.error(new AstNodeError(`Unable to resolve reference`, node.astNode));
     }
 
-    ctx.parsingContext.messageCollector.error(new AstNodeError(`Unable to resolve reference`, node.astNode));
     return INVALID_TYPE;
   }
 }

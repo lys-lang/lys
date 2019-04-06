@@ -1,9 +1,54 @@
 import { Nodes } from '../nodes';
-import { failIfErrors } from '../findAllErrors';
-import { PhaseResult } from './PhaseResult';
-import { ParsingPhaseResult } from './parsingPhase';
-import { ParsingContext } from '../ParsingContext';
 import { PositionCapableError } from '../NodeError';
+import { walkPreOrder } from '../walker';
+import { TokenError, IToken } from 'ebnf';
+import { parser } from '../../grammar';
+import { ParsingContext } from '../ParsingContext';
+
+/// --- PARSING PHASE ---
+
+const process = walkPreOrder((token: IToken, parsingContext: ParsingContext) => {
+  if (token.errors && token.errors.length) {
+    token.errors.forEach(($: TokenError) => {
+      if ($) {
+        parsingContext.messageCollector.error(new PositionCapableError($.message, token as any));
+      }
+    });
+  }
+});
+
+const setModuleName = (moduleName: string) =>
+  walkPreOrder((token: any) => {
+    token.moduleName = moduleName;
+  });
+
+const parsingCache = new Map<string /** hash */, IToken>();
+
+function DJB2(input: string) {
+  let hash = 5381;
+
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash << 5) + hash + input.charCodeAt(i);
+  }
+
+  return hash;
+}
+
+function getParsingTree(moduleName: string, content: string, parsingContext: ParsingContext) {
+  const hash = moduleName + '+' + content.length.toString(16) + '_' + DJB2(content).toString(16);
+
+  let ret = parsingCache.get(hash);
+
+  if (!ret) {
+    ret = parser.getAST(content, 'Document');
+    parsingCache.set(hash, ret);
+    setModuleName(moduleName)(ret as any, parsingContext);
+  }
+
+  return (ret as any) as Nodes.ASTNode;
+}
+
+/// --- CANONICAL ---
 
 function binaryOpVisitor(astNode: Nodes.ASTNode) {
   let ret = visit(astNode.children[0]) as
@@ -184,7 +229,9 @@ const visitor = {
     return ret;
   },
   FunDeclaration(astNode: Nodes.ASTNode) {
-    const functionName = visit(findChildrenTypeOrFail(astNode, 'FunctionName').children[0]);
+    const functionName = visit(
+      findChildrenTypeOrFail(astNode, 'FunctionName', 'A function name is required').children[0]
+    );
     const fun = new Nodes.FunctionNode(astNode, functionName);
 
     const retType = findChildrenType(astNode, 'Type');
@@ -245,7 +292,7 @@ const visitor = {
     return ret;
   },
   Parameter(astNode: Nodes.ASTNode) {
-    const parameterName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
+    const parameterName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier', 'A parameter name is required'));
     const ret = new Nodes.ParameterNode(astNode, parameterName);
     const type = findChildrenType(astNode, 'Type');
 
@@ -448,7 +495,20 @@ const visitor = {
     return null;
   },
   StructDirective(astNode: Nodes.ASTNode) {
-    return visit(astNode.children[0]) as Nodes.StructDeclarationNode;
+    const children = astNode.children.slice();
+
+    let child = children[0];
+    let isPublic = true;
+
+    if (child.type === 'PrivateModifier') {
+      isPublic = false;
+      child = children.shift()!;
+    }
+
+    const ret = visit(child) as Nodes.StructDeclarationNode;
+    ret.isPublic = isPublic;
+
+    return ret;
   },
   UnknownExpression(astNode: Nodes.ASTNode) {
     return new Nodes.UnknownExpressionNode(astNode);
@@ -567,22 +627,34 @@ function visitLastChild(token: Nodes.ASTNode) {
   return visit(token.children[token.children.length - 1]);
 }
 
-export class CanonicalPhaseResult extends PhaseResult {
-  document: Nodes.DocumentNode;
+export function getAST(fileName: string, moduleName: string, content: string, parsingContext: ParsingContext) {
+  const parsingTree = getParsingTree(moduleName, content, parsingContext);
 
-  get parsingContext(): ParsingContext {
-    return this.parsingPhaseResult.parsingContext;
+  if (!parsingTree) {
+    throw new Error('parsing phase did not run or failed');
   }
 
-  constructor(public parsingPhaseResult: ParsingPhaseResult) {
-    super();
+  process(parsingTree as any, parsingContext);
+  try {
+    let document = visit(parsingTree) as Nodes.DocumentNode;
 
-    if (!this.parsingPhaseResult.document) {
-      throw new Error('parsing phase did not run or failed');
+    document.moduleName = moduleName;
+    document.fileName = fileName;
+    document.content = content;
+
+    return document;
+  } catch (e) {
+    if (e instanceof PositionCapableError) {
+      let document = new Nodes.DocumentNode(parsingTree);
+
+      document.moduleName = moduleName;
+      document.fileName = fileName;
+      document.content = content;
+
+      parsingContext.messageCollector.error(e);
+
+      return document;
     }
-
-    this.document = visit(this.parsingPhaseResult.document) as Nodes.DocumentNode;
-    this.document.moduleName = this.parsingPhaseResult.moduleName;
-    failIfErrors('Canonical phase', this.document, this);
+    throw e;
   }
 }

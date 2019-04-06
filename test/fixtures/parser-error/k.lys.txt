@@ -1,7 +1,8 @@
-Parsing phase failed. 6 errors found:
-  1)  Unexpected end of input. Expecting THIN_ARROW Got: } map 1
-  2)  Unexpected end of input. Missing Expression
-  3)  Unexpected end of input. Missing CLOSE_BRACKET
-  4)  Unexpected end of input. Expecting THIN_ARROW Got: } map 1
-  5)  Unexpected end of input. Missing Expression
-  6)  Unexpected end of input. Missing CLOSE_BRACKET
+test/fixtures/parser-error/k.lys
+    1│ var a = match x { else } map 1
+     │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unexpected end of input. Expecting THIN_ARROW Got: } map 1
+     │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unexpected end of input. Missing Expression
+     │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unexpected end of input. Missing CLOSE_BRACKET
+     │                        ^^^^^^^ Unexpected end of input. Expecting THIN_ARROW Got: } map 1
+     │                                Unexpected end of input. Missing Expression
+     │                                Unexpected end of input. Missing CLOSE_BRACKET

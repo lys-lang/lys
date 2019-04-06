@@ -24,6 +24,13 @@ export class Local implements LocalGlobalHeapReference {
   constructor(public index: number, public name: string, public declarationNode?: Nodes.Node) {}
 }
 
+export enum PhaseFlags {
+  Semantic = 1,
+  Scope = 2,
+  TypeCheck = 4,
+  Compilation = 8
+}
+
 export namespace Nodes {
   export interface ASTNode {
     readonly type: string;
@@ -280,6 +287,17 @@ export namespace Nodes {
   export class DocumentNode extends Node {
     readonly directives: DirectiveNode[] = [];
     moduleName!: string;
+    fileName!: string;
+    content!: string;
+
+    phasesRun: PhaseFlags = 0;
+
+    // thanks, javascript. TypeGraph cannot me imported because of circular
+    // imports
+    typeGraph?: any;
+
+    typeNumbers: Map<string, number> = new Map();
+    nameIdentifiers: Set<string> = new Set();
 
     get childrenOrEmpty() {
       return this.directives;
@@ -917,6 +935,7 @@ export namespace Nodes {
   }
 
   export class StructDeclarationNode extends TypeNode {
+    isPublic: boolean = true;
     constructor(
       astNode: ASTNode,
       public readonly declaredName: NameIdentifierNode,

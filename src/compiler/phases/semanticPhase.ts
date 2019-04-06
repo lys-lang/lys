@@ -1,17 +1,18 @@
-import { Nodes } from '../nodes';
+import { Nodes, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { Closure } from '../Closure';
-import { failIfErrors } from '../findAllErrors';
-import { PhaseResult } from './PhaseResult';
-import { CanonicalPhaseResult } from './canonicalPhase';
 import { AstNodeError } from '../NodeError';
 import { annotations } from '../annotations';
 import { ParsingContext } from '../ParsingContext';
 import { printNode } from '../../utils/nodePrinter';
+import { getAST } from './canonicalPhase';
 
-function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
+function externDecorator(
+  decorator: Nodes.DecoratorNode,
+  parsingContext: ParsingContext,
+  target: Nodes.FunDirectiveNode
+) {
   if (decorator.args.length !== 2) {
-    phase.parsingContext.messageCollector.error(
+    parsingContext.messageCollector.error(
       '"extern" requires two arguments, module and function name',
       decorator.decoratorName
     );
@@ -24,7 +25,7 @@ function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
     if (decorator.args[0] instanceof Nodes.StringLiteral && decorator.args[0].value.length) {
       moduleName = decorator.args[0].value;
     } else {
-      phase.parsingContext.messageCollector.error('module must be a string', decorator.args[0]);
+      parsingContext.messageCollector.error('module must be a string', decorator.args[0]);
     }
   }
 
@@ -32,7 +33,7 @@ function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
     if (decorator.args[1] instanceof Nodes.StringLiteral && decorator.args[1].value.length) {
       functionName = decorator.args[1].value;
     } else {
-      phase.parsingContext.messageCollector.error('functionName must be a string', decorator.args[1]);
+      parsingContext.messageCollector.error('functionName must be a string', decorator.args[1]);
     }
   }
 
@@ -40,9 +41,13 @@ function externDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
     target.functionNode.functionName.annotate(new annotations.Extern(moduleName, functionName));
   }
 }
-function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
+function exportDecorator(
+  decorator: Nodes.DecoratorNode,
+  parsingContext: ParsingContext,
+  target: Nodes.FunDirectiveNode
+) {
   if (decorator.args.length > 1) {
-    phase.parsingContext.messageCollector.error(
+    parsingContext.messageCollector.error(
       '"export" accepts one argument, the name of the exported element',
       decorator.decoratorName
     );
@@ -54,7 +59,7 @@ function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
     if (decorator.args[0] instanceof Nodes.StringLiteral && decorator.args[0].value.length) {
       exportedName = decorator.args[0].value;
     } else {
-      phase.parsingContext.messageCollector.error('exportedName must be a string', decorator.args[0]);
+      parsingContext.messageCollector.error('exportedName must be a string', decorator.args[0]);
     }
   } else {
     exportedName = target.functionNode.functionName!.name;
@@ -65,36 +70,44 @@ function exportDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseRes
   }
 }
 
-function inlineDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
+function inlineDecorator(
+  decorator: Nodes.DecoratorNode,
+  parsingContext: ParsingContext,
+  target: Nodes.FunDirectiveNode
+) {
   if (decorator.args.length !== 0) {
-    phase.parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName);
+    parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName);
   }
 
   target.functionNode.functionName!.annotate(new annotations.Inline());
 }
 
-function explicitDecorator(decorator: Nodes.DecoratorNode, phase: SemanticPhaseResult, target: Nodes.FunDirectiveNode) {
+function explicitDecorator(
+  decorator: Nodes.DecoratorNode,
+  parsingContext: ParsingContext,
+  target: Nodes.FunDirectiveNode
+) {
   if (decorator.args.length !== 0) {
-    phase.parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName);
+    parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName);
   }
 
   target.functionNode.functionName!.annotate(new annotations.Explicit());
 }
 
-function processDecorations(node: Nodes.FunDirectiveNode, phase: SemanticPhaseResult) {
+function processDecorations(node: Nodes.FunDirectiveNode, parsingContext: ParsingContext) {
   if (node.decorators && node.decorators.length) {
     node.decorators.forEach($ => {
       switch ($.decoratorName.name) {
         case 'extern':
-          return externDecorator($, phase, node);
+          return externDecorator($, parsingContext, node);
         case 'inline':
-          return inlineDecorator($, phase, node);
+          return inlineDecorator($, parsingContext, node);
         case 'explicit':
-          return explicitDecorator($, phase, node);
+          return explicitDecorator($, parsingContext, node);
         case 'export':
-          return exportDecorator($, phase, node);
+          return exportDecorator($, parsingContext, node);
         default:
-          phase.parsingContext.messageCollector.error(`Unknown decorator "${$.decoratorName.name}"`, $.decoratorName);
+          parsingContext.messageCollector.error(`Unknown decorator "${$.decoratorName.name}"`, $.decoratorName);
       }
     });
   }
@@ -102,13 +115,13 @@ function processDecorations(node: Nodes.FunDirectiveNode, phase: SemanticPhaseRe
 
 const overloadFunctions = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
-  phase: SemanticPhaseResult
+  parsingContext: ParsingContext
 ) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode> = new Map();
 
   document.directives.slice().forEach((node: Nodes.Node, ix: number) => {
     if (node instanceof Nodes.FunDirectiveNode) {
-      processDecorations(node, phase);
+      processDecorations(node, parsingContext);
       const functionName = node.functionNode.functionName!.name;
       const x = overloadedFunctions.get(functionName);
       if (x && x instanceof Nodes.OverloadedFunctionNode) {
@@ -127,7 +140,7 @@ const overloadFunctions = function(
         document.directives[ix] = overloaded;
       }
     } else if (node instanceof Nodes.ImplDirective) {
-      overloadFunctions(node, phase);
+      overloadFunctions(node, parsingContext);
     }
   });
 
@@ -138,7 +151,7 @@ const overloadFunctions = function(
 
 const mergeImplementations = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
-  _phase: SemanticPhaseResult
+  _parsingContext: ParsingContext
 ) {
   const impls: Map<string, Nodes.ImplDirective> = new Map();
 
@@ -159,7 +172,11 @@ const mergeImplementations = function(
   return document;
 };
 
-function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseResult): Nodes.DirectiveNode[] {
+function processStruct(
+  node: Nodes.StructDeclarationNode,
+  parsingContext: ParsingContext,
+  document: Nodes.DocumentNode
+): Nodes.DirectiveNode[] {
   const args = node.parameters.map($ => printNode($)).join(', ');
   const typeName = node.declaredName.name;
 
@@ -248,11 +265,10 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
 
     const callRefs = node.parameters.map((_, i) => `property$${i}($ref, ${printNode(_.parameterName)})`).join('\n');
 
-    const canonical = new CanonicalPhaseResult(
-      phase.parsingContext.getParsingPhaseForContent(
-        phase.canonicalPhaseResult.parsingPhaseResult.fileName + '#' + typeName,
-        phase.document.moduleName + '#' + typeName,
-        `
+    const canonical = getAST(
+      document.fileName + '#' + typeName,
+      document.moduleName + '#' + typeName,
+      `
             impl ${typeName} {
               #[inline]
               private fun ${typeName}$discriminant(): u64 = {
@@ -326,17 +342,16 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
               #[explicit]
               fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
             }
-          `
-      )
+          `,
+      parsingContext
     );
 
-    return [typeDirective, ...(canonical.document!.directives || [])];
+    return [typeDirective, ...(canonical.directives || [])];
   } else {
-    const canonical = new CanonicalPhaseResult(
-      phase.parsingContext.getParsingPhaseForContent(
-        phase.canonicalPhaseResult.parsingPhaseResult.fileName + '#' + typeName,
-        phase.document.moduleName + '#' + typeName,
-        `
+    const canonical = getAST(
+      document.fileName + '#' + typeName,
+      document.moduleName + '#' + typeName,
+      `
           impl ${typeName} {
             #[inline]
             private fun ${typeName}$discriminant(): i64 = {
@@ -394,19 +409,20 @@ function processStruct(node: Nodes.StructDeclarationNode, phase: SemanticPhaseRe
             #[explicit]
             fun as(lhs: ${typeName}): ref = %wasm { (local.get $lhs) }
           }
-        `
-      )
+        `,
+      parsingContext
     );
 
-    return [typeDirective, ...(canonical.document!.directives || [])];
+    return [typeDirective, ...(canonical.directives || [])];
   }
 }
 
 const preprocessStructs = function(
-  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
-  phase: SemanticPhaseResult
+  container: Nodes.Node & { directives: Nodes.DirectiveNode[] },
+  parsingContext: ParsingContext,
+  document: Nodes.DocumentNode
 ) {
-  document.directives.slice().forEach((node: Nodes.Node) => {
+  container.directives.slice().forEach((node: Nodes.Node) => {
     if (node instanceof Nodes.EnumDirectiveNode) {
       const newTypeNode = new Nodes.TypeDirectiveNode(node.astNode, node.variableName);
       const union = (newTypeNode.valueType = new Nodes.UnionTypeNode(node.astNode));
@@ -416,7 +432,7 @@ const preprocessStructs = function(
       const implDirectives: Nodes.DirectiveNode[] = [];
 
       node.declarations.forEach($ => {
-        const [decl, ...impl] = processStruct($, phase);
+        const [decl, ...impl] = processStruct($, parsingContext, document);
         newDirectives.push(decl);
         implDirectives.push(...impl);
         const refNode = new Nodes.ReferenceNode(
@@ -426,26 +442,27 @@ const preprocessStructs = function(
         union.of.push(refNode);
       });
 
-      document.directives.splice(document.directives.indexOf(node), 1, ...newDirectives, ...implDirectives);
+      container.directives.splice(container.directives.indexOf(node), 1, ...newDirectives, ...implDirectives);
     } else if (node instanceof Nodes.StructDeclarationNode) {
-      const newDirectives = processStruct(node, phase);
-      document.directives.splice(document.directives.indexOf(node as any), 1, ...newDirectives);
+      const newDirectives = processStruct(node, parsingContext, document);
+      container.directives.splice(container.directives.indexOf(node as any), 1, ...newDirectives);
     }
   });
 
-  return document;
+  return container;
 };
 
 const processUnions = function(
-  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
-  phase: SemanticPhaseResult
+  containerNode: Nodes.Node & { directives: Nodes.DirectiveNode[] },
+  parsingContext: ParsingContext,
+  document: Nodes.DocumentNode
 ) {
-  document.directives.slice().forEach((node: Nodes.Node) => {
+  containerNode.directives.slice().forEach((node: Nodes.Node) => {
     if (node instanceof Nodes.TypeDirectiveNode) {
       const { valueType, variableName } = node;
 
       if (!valueType) {
-        phase.parsingContext.messageCollector.error(`Missing type value`, variableName);
+        parsingContext.messageCollector.error(`Missing type value`, variableName);
         return;
       }
 
@@ -467,11 +484,10 @@ const processUnions = function(
           });
         }
 
-        const canonical = new CanonicalPhaseResult(
-          phase.parsingContext.getParsingPhaseForContent(
-            phase.canonicalPhaseResult.parsingPhaseResult.fileName + '#' + variableName.name,
-            phase.document.moduleName + '#' + variableName.name,
-            `
+        const canonical = getAST(
+          document.fileName + '#' + variableName.name,
+          document.moduleName + '#' + variableName.name,
+          `
               // Union type ${variableName.name}
               impl ${variableName.name} {
                 fun is(a: ${variableName.name} | ref): boolean = {
@@ -505,31 +521,31 @@ const processUnions = function(
               }
 
               ${injectedDirectives.join('\n')}
-            `
-          )
+            `,
+          parsingContext
         );
 
-        document.directives.splice(document.directives.indexOf(node) + 1, 0, ...(canonical.document!.directives || []));
+        containerNode.directives.splice(containerNode.directives.indexOf(node) + 1, 0, ...(canonical.directives || []));
       }
     }
   });
 
-  return document;
+  return containerNode;
 };
 
-const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseResult, _1: Nodes.Node | null) => {
+const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: Nodes.Node | null) => {
   if (node instanceof Nodes.FunctionNode) {
     let used: string[] = [];
     node.parameters.forEach(param => {
       if (used.indexOf(param.parameterName.name) === -1) {
         used.push(param.parameterName.name);
       } else {
-        ctx.parsingContext.messageCollector.error(`Duplicated parameter "${param.parameterName.name}"`, param);
+        parsingContext.messageCollector.error(`Duplicated parameter "${param.parameterName.name}"`, param);
       }
     });
 
     if (!node.functionReturnType) {
-      ctx.parsingContext.messageCollector.error('Missing return type in function declaration', node);
+      parsingContext.messageCollector.error('Missing return type in function declaration', node);
     }
   }
 
@@ -543,7 +559,7 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, ctx: SemanticPhaseRes
   }
 });
 
-const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _1: Nodes.Node | null) => {
+const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _, _1: Nodes.Node | null) => {
   if (node instanceof Nodes.WasmAtomNode) {
     if (node.symbol === 'call' || node.symbol === 'global.get' || node.symbol === 'global.set') {
       if (!node.args[0]) {
@@ -556,7 +572,7 @@ const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _: SemanticPhaseRes
   }
 });
 
-const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResult, _parent: Nodes.Node | null) => {
+const processDeconstruct = walkPreOrder((node: Nodes.Node, _, _parent: Nodes.Node | null) => {
   if (node instanceof Nodes.MatchCaseIsNode) {
     if (!node.declaredName) {
       node.declaredName = Nodes.NameIdentifierNode.fromString('$', node.astNode);
@@ -607,39 +623,19 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _: SemanticPhaseResul
   }
 });
 
-export class SemanticPhaseResult extends PhaseResult {
-  get document() {
-    return this.canonicalPhaseResult.document!;
-  }
+export function executeSemanticPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.Semantic) return;
 
-  get parsingContext(): ParsingContext {
-    return this.canonicalPhaseResult.parsingContext;
-  }
+  preprocessStructs(document, parsingContext, document);
+  processUnions(document, parsingContext, document);
 
-  constructor(public canonicalPhaseResult: CanonicalPhaseResult) {
-    super();
-    this.execute();
-  }
+  processDeconstruct(document, parsingContext);
 
-  protected execute() {
-    this.document.closure = new Closure(
-      this.parsingContext,
-      null,
-      this.document.moduleName,
-      'document_' + this.document.moduleName
-    );
+  mergeImplementations(document, parsingContext);
+  overloadFunctions(document, parsingContext);
 
-    preprocessStructs(this.document, this);
-    processUnions(this.document, this);
+  validateSignatures(document, parsingContext);
+  validateInjectedWasm(document, parsingContext);
 
-    processDeconstruct(this.document, this);
-
-    mergeImplementations(this.document, this);
-    overloadFunctions(this.document, this);
-
-    validateSignatures(this.document, this);
-    validateInjectedWasm(this.document, this);
-
-    failIfErrors('Semantic phase', this.document, this);
-  }
+  document.phasesRun |= PhaseFlags.Semantic;
 }

@@ -2,32 +2,35 @@ import { readFileSync, existsSync, writeFileSync } from 'fs';
 declare var require, it, console;
 import * as expect from 'expect';
 import glob = require('glob');
-import { PhaseResult } from '../dist/compiler/phases/PhaseResult';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
+import { Nodes } from '../dist/compiler/nodes';
+import { ParsingContext } from '../dist/compiler/ParsingContext';
 
 const writeToFile = process.env.UPDATE_AST === 'true';
 
 let inspect = require('util').inspect;
 
-export function testParseToken<T extends PhaseResult>(
+export type PhasesResult = { document: Nodes.DocumentNode; parsingContext: ParsingContext };
+
+export function testParseToken<V extends PhasesResult = PhasesResult>(
   txt: string,
   fileName: string,
   target?: string,
-  customTest?: (document: T, error?: Error) => Promise<void>,
-  phases?: (txt: string, fileName: string) => T,
+  customTest?: (document: V, error?: Error) => Promise<void>,
+  phases?: (txt: string, fileName: string) => V,
   debug?: boolean
 ) {
   testParseTokenFailsafe(
     txt,
     fileName,
     target,
-    async (doc: T, e) => {
-      if (doc && !doc.isSuccess()) {
-        failWithErrors('testParseToken', doc.parsingContext);
+    async (result: V, e) => {
+      if (result && result.parsingContext.messageCollector.hasErrors()) {
+        failWithErrors('testParseToken', result.parsingContext);
       }
 
       if (customTest) {
-        await customTest(doc, e);
+        await customTest(result, e);
       } else if (e) {
         throw e;
       }
@@ -37,12 +40,12 @@ export function testParseToken<T extends PhaseResult>(
   );
 }
 
-export function testParseTokenFailsafe<T extends PhaseResult>(
+export function testParseTokenFailsafe<V extends PhasesResult = PhasesResult>(
   txt: string,
   fileName: string,
   target?: string,
-  customTest?: (document: T, error?: Error) => Promise<any>,
-  phases?: (txt: string, fileName: string) => T,
+  customTest?: (document: V, error?: Error) => Promise<any>,
+  phases?: (txt: string, fileName: string) => V,
   debug?: boolean
 ) {
   it(fileName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async function() {
@@ -50,13 +53,10 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
 
     debug && console.log('      ---------------------------------------------------');
 
-    let result: T;
+    let result: V;
 
     try {
-      const x: any = (result = phases(txt, fileName));
-      if (x.document) {
-        x.document.file = fileName;
-      }
+      result = phases(txt, fileName);
     } catch (e) {
       if (customTest) {
         await customTest(result, e);
@@ -71,10 +71,10 @@ export function testParseTokenFailsafe<T extends PhaseResult>(
   });
 }
 
-export function folderBasedTest<T extends PhaseResult>(
+export function folderBasedTest<V extends PhasesResult = PhasesResult>(
   grep: string,
-  phases: (txt: string, fileName: string) => T,
-  fn: (x: T, err?: Error) => Promise<string>,
+  phases: (txt: string, fileName: string) => V,
+  fn: (x: V, err?: Error) => Promise<string>,
   extension = '.wast',
   shouldFail = false
 ) {
@@ -84,15 +84,15 @@ export function folderBasedTest<T extends PhaseResult>(
       content,
       fileName,
       'Document',
-      async (resultNode: T, err) => {
+      async (resultNode: V, err) => {
         if (!resultNode && !err) throw new Error('WTF');
 
         if (shouldFail) {
-          if (!err && resultNode && resultNode.isSuccess()) {
+          if (!err && resultNode && !resultNode.parsingContext.messageCollector.hasErrors()) {
             throw new Error('Test did not fail');
           }
         } else {
-          if (resultNode && !resultNode.isSuccess()) {
+          if (resultNode && resultNode.parsingContext.messageCollector.hasErrors()) {
             failWithErrors('testFile', resultNode.parsingContext);
           }
           if (err) {
