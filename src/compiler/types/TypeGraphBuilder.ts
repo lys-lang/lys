@@ -71,15 +71,18 @@ export class TypeGraphBuilder {
       return this.findNode(referenceNode.referencedNode);
     } else {
       const moduleDocument = this.parsingContext.getTypePhase(referenceNode.moduleName!);
-      const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
-      return typeNode;
+      if (moduleDocument.typeGraph) {
+        const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
+        return typeNode;
+      }
     }
+    return null;
   }
 
   processVarDecl(decl: Nodes.VarDeclarationNode) {
     const variableNode = this.traverseNode(
-      decl.variableName!,
-      this.createNode(decl.variableName!, new VarDeclarationTypeResolver())
+      decl.variableName,
+      this.createNode(decl.variableName, new VarDeclarationTypeResolver())
     );
 
     if (decl.variableType) {
@@ -92,10 +95,10 @@ export class TypeGraphBuilder {
   }
 
   processTypeDirective(directive: Nodes.TypeDirectiveNode) {
-    if (directive.variableName!.ofType) {
+    if (directive.variableName.ofType) {
       const typeDirective = this.traverseNode(
-        directive.variableName!,
-        this.createNode(directive.variableName!, new TypeDirectiveResolver(directive.variableName!.ofType as TypeType))
+        directive.variableName,
+        this.createNode(directive.variableName, new TypeDirectiveResolver(directive.variableName.ofType as TypeType))
       );
 
       const shouldNotTraverse =
@@ -150,13 +153,14 @@ export class TypeGraphBuilder {
         Edge.addEdge(this.parsingContext, referencedType, result, name || EdgeLabels.NAME);
       } else {
         // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
-        throw new Error(
+        throw new AstNodeError(
           'Unable to resolve reference to ' +
             reference.referencedNode.name +
             ' from ' +
             (reference.moduleName || 'local module') +
             '\n' +
-            result.astNode.closure!.inspect()
+            result.astNode.closure!.inspect(),
+          result.astNode
         );
       }
     });

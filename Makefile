@@ -12,7 +12,7 @@ just-test:
 
 test: | build just-test
 
-ci-test: test lint e2e
+ci-test: | lint test e2e
 
 inspect: build
 	node --inspect ./node_modules/mocha/bin/_mocha --require source-map-support/register

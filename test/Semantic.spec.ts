@@ -12,41 +12,38 @@ const parsingContext = new ParsingContext(nodeSystem);
 parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 describe('Semantic', function() {
-  const phases = function(txt: string, fileName: string): PhasesResult {
+  const semanticPhases = function(txt: string, fileName: string): PhasesResult {
     parsingContext.reset();
     const moduleName = parsingContext.getModuleFQNForFile(fileName);
-    parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
-    return { parsingContext, document: parsingContext.getScopePhase(moduleName) };
-  };
-
-  const phases1 = function(txt: string, fileName: string): PhasesResult {
-    parsingContext.reset();
-    const moduleName = parsingContext.getModuleFQNForFile(fileName);
+    parsingContext.invalidateModule(moduleName);
     parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
     return { parsingContext, document: parsingContext.getSemanticPhase(moduleName) };
+  };
+
+  const scopePhases = function(txt: string, fileName: string): PhasesResult {
+    parsingContext.reset();
+    const moduleName = parsingContext.getModuleFQNForFile(fileName);
+    parsingContext.invalidateModule(moduleName);
+    parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+    return { parsingContext, document: parsingContext.getScopePhase(moduleName) };
   };
 
   describe('Files', () => {
     folderBasedTest(
       'test/fixtures/semantics/*.lys',
-      phases,
+      scopePhases,
       async (result, err) => {
-        if (err) {
-          // console.log(printErrors(result, result.errors));
-          throw err;
-        }
+        if (err) throw err;
         return printAST(result.document);
       },
       '.ast'
     );
+
     folderBasedTest(
       'test/fixtures/semantics/*.lys',
-      phases1,
+      semanticPhases,
       async (result, err) => {
-        if (err) {
-          // console.log(printErrors(result, result.errors));
-          throw err;
-        }
+        if (err) throw err;
         return printNode(result.document);
       },
       '.desugar'
@@ -55,7 +52,7 @@ describe('Semantic', function() {
     describe('Compilation-execution-tests-desugar', () => {
       folderBasedTest(
         '**/execution/*.lys',
-        phases1,
+        semanticPhases,
         async (result, err) => {
           if (err) throw err;
           return printNode(result.document);
@@ -90,7 +87,7 @@ describe('Semantic', function() {
         if (e) throw e;
         expect(parsingContext.messageCollector.hasErrors()).toEqual(false);
       },
-      phases
+      scopePhases
     );
   }
 
@@ -118,7 +115,7 @@ describe('Semantic', function() {
         }
         expect(didFail).toEqual(true);
       },
-      phases,
+      scopePhases,
       false
     );
   }
@@ -198,7 +195,7 @@ describe('Semantic', function() {
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
-      phases
+      scopePhases
     );
 
     testParseToken(
@@ -217,7 +214,7 @@ describe('Semantic', function() {
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
-      phases
+      scopePhases
     );
   });
 
@@ -306,7 +303,7 @@ describe('Semantic', function() {
         const statements = refs[0].statements;
         expect(statements.length).toBe(1);
       },
-      phases
+      scopePhases
     );
     testParseToken(
       `
@@ -324,7 +321,7 @@ describe('Semantic', function() {
         const statements = refs[0].statements;
         expect(statements.length).toBe(3);
       },
-      phases
+      scopePhases
     );
     testParseToken(
       `
@@ -342,7 +339,7 @@ describe('Semantic', function() {
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
-      phases
+      scopePhases
     );
   });
 
@@ -357,7 +354,7 @@ describe('Semantic', function() {
         if (e) throw e;
         expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
       },
-      phases
+      scopePhases
     );
 
     testParseToken(
@@ -374,7 +371,7 @@ describe('Semantic', function() {
         expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
         expect(result.document.closure.importedModules.has('system::random')).toEqual(true);
       },
-      phases
+      scopePhases
     );
 
     testParseToken(
@@ -387,7 +384,7 @@ describe('Semantic', function() {
         if (e) throw e;
         expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
       },
-      phases
+      scopePhases
     );
 
     testParseToken(
@@ -400,7 +397,7 @@ describe('Semantic', function() {
         if (e) throw e;
         expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
       },
-      phases
+      scopePhases
     );
   });
 

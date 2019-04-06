@@ -133,7 +133,18 @@ export class Closure {
   }
 
   inspect(content: string = '') {
-    let localContent = `${this.name}: {\n${Object.keys(this.nameMappings)
+    let imports = '';
+
+    if (this.importedModules.size) {
+      imports = '\n';
+      this.importedModules.forEach(($, moduleName) => {
+        let names: string[] = [];
+        $.forEach($ => names.push($));
+        imports = imports + '  import ' + names.join(',') + ' from ' + moduleName + '\n';
+      });
+    }
+
+    let localContent = `${this.name}: {${imports}\n${Object.keys(this.nameMappings)
       .map($ => 'let ' + $)
       .join('\n')
       .replace(/^(.*)/gm, '  $1')}`;

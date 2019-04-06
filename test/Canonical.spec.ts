@@ -8,9 +8,12 @@ import { nodeSystem } from '../dist/support/NodeSystem';
 const phases = function(txt: string, fileName: string): PhasesResult {
   const parsingContext = new ParsingContext(nodeSystem);
   parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
+  const moduleName = parsingContext.getModuleFQNForFile(fileName);
+  parsingContext.invalidateModule(moduleName);
+
   return {
     parsingContext,
-    document: parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt)
+    document: parsingContext.getParsingPhaseForContent(fileName, moduleName, txt)
   };
 };
 

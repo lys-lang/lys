@@ -215,7 +215,7 @@
        )
        (i64.const -4294967296)
       )
-      (i64.const 17179869184)
+      (i64.const 115964116992)
      )
     )
    )
@@ -252,7 +252,7 @@
           (i32.const 8)
          )
         )
-        (i64.const 17179869184)
+        (i64.const 115964116992)
        )
       )
      )
@@ -705,7 +705,7 @@
    (global.get $global$5)
   )
   (global.set $global$7
-   (i64.const 12884901888)
+   (i64.const 111669149696)
   )
   (global.set $global$8
    (i64.const 8589934592)
