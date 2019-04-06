@@ -1,37 +1,36 @@
 import { Nodes } from './nodes';
 import { walkPreOrder } from './walker';
-import { PhaseResult } from './phases/PhaseResult';
 import { printErrors } from '../utils/errorPrinter';
 import { ParsingContext } from './ParsingContext';
 import { PositionCapableError } from './NodeError';
 import { indent } from '../utils/astPrinter';
 
-const process = walkPreOrder((token: Nodes.Node, doc: PhaseResult) => {
+const process = walkPreOrder((token: Nodes.Node, parsingContext: ParsingContext) => {
   if (token.astNode && token.astNode.errors && token.astNode.errors.length) {
     token.astNode.errors.forEach(($: any) => {
-      if ($ && !doc.parsingContext.messageCollector.errors.includes($)) {
-        doc.parsingContext.messageCollector.error($);
+      if ($ && !parsingContext.messageCollector.errors.includes($)) {
+        parsingContext.messageCollector.error($);
       }
     });
   }
 });
 
-export function findAllErrors(document: Nodes.DocumentNode, phase: PhaseResult) {
+export function findAllErrors(document: Nodes.DocumentNode, phase: ParsingContext) {
   document.children.forEach($ => process($, phase));
 
   return document;
 }
 
-export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, phase: PhaseResult) {
-  findAllErrors(document, phase);
-  failWithErrors(phaseName, phase.parsingContext);
+export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  findAllErrors(document, parsingContext);
+  failWithErrors(phaseName, parsingContext);
 }
 
 export function failWithErrors(phaseName: string, pc: ParsingContext) {
   if (!pc.messageCollector.hasErrors()) return;
 
   if (pc && pc.messageCollector.errors.length) {
-    pc.system.write(printErrors(pc));
+    pc.system.write(printErrors(pc) + '\n');
   }
 
   throw Object.assign(

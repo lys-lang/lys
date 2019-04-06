@@ -12,17 +12,15 @@ import _wabt = require('wabt');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType } from '../nodes';
-import { failIfErrors } from '../findAllErrors';
 import { findParentType } from '../nodeHelpers';
 import { FunctionType, Type } from '../types';
-import { CompilationPhaseResult } from './compilationPhase';
-import { PhaseResult } from './PhaseResult';
 import { AstNodeError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { printAST } from '../../utils/astPrinter';
+import { walk } from '../walker';
 
 type CompilationModuleResult = {
-  compilationPhase: CompilationPhaseResult;
+  document: Nodes.DocumentNode;
   moduleParts: any[];
   starters: any[];
   endMemory: number;
@@ -403,20 +401,11 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
   return generatedNode;
 }
 
-export class CodeGenerationPhaseResult extends PhaseResult {
+export class CodeGenerationPhaseResult {
   programAST: any;
   buffer?: Uint8Array;
 
-  get document() {
-    return this.compilationPhaseResult.document;
-  }
-
-  get parsingContext(): ParsingContext {
-    return this.compilationPhaseResult.parsingContext;
-  }
-
-  constructor(public compilationPhaseResult: CompilationPhaseResult) {
-    super();
+  constructor(public document: Nodes.DocumentNode, public parsingContext: ParsingContext) {
     try {
       this.execute();
     } catch (e) {
@@ -436,11 +425,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
   }> {
     let text = print(this.programAST);
 
-    const wabtModule = wabt.parseWat(
-      this.compilationPhaseResult.typePhaseResult.scopePhaseResult.semanticPhaseResult.canonicalPhaseResult
-        .parsingPhaseResult.moduleName,
-      text
-    );
+    const wabtModule = wabt.parseWat(this.document.moduleName, text);
 
     try {
       wabtModule.resolveNames();
@@ -515,10 +500,10 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     return new WebAssembly.Instance(compiled, imports);
   }
 
-  generatePhase(compilationPhase: CompilationPhaseResult, startMemory: number): CompilationModuleResult {
-    const globals = findNodesByType(compilationPhase.document, Nodes.VarDirectiveNode);
-    const functions = findNodesByType(compilationPhase.document, Nodes.OverloadedFunctionNode);
-    const bytesLiterals = findNodesByType(compilationPhase.document, Nodes.StringLiteral);
+  generatePhase(document: Nodes.DocumentNode, startMemory: number): CompilationModuleResult {
+    const globals = findNodesByType(document, Nodes.VarDirectiveNode);
+    const functions = findNodesByType(document, Nodes.OverloadedFunctionNode);
+    const bytesLiterals = findNodesByType(document, Nodes.StringLiteral);
 
     const starters: any[] = [];
     const imports: any[] = [];
@@ -568,7 +553,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
       const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
       const identifier = t.identifier(local.name);
 
-      starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, compilationPhase.document)]));
+      starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, document)]));
 
       return t.global(
         t.globalType(binaryenType, mut),
@@ -593,7 +578,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
             )
           );
         } else {
-          createdFunctions.push(emitFunction(fun.functionNode, compilationPhase.document));
+          createdFunctions.push(emitFunction(fun.functionNode, document));
         }
 
         const exportedAnnotation = functionName.getAnnotation(annotations.Export);
@@ -610,7 +595,7 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     });
 
     return {
-      compilationPhase,
+      document,
       moduleParts: [...dataSection, ...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
       starters,
       endMemory,
@@ -619,19 +604,15 @@ export class CodeGenerationPhaseResult extends PhaseResult {
   }
 
   protected execute() {
-    const exportList = [this.compilationPhaseResult];
+    const exportList = [this.document];
 
-    const moduleList = new Set<string>(this.compilationPhaseResult.typePhaseResult.scopePhaseResult.importedModules);
+    const moduleList = new Set<string>();
 
-    let added = true;
-
-    while (added) {
-      added = false;
-
-      moduleList.forEach($ => {
-        const scope = this.parsingContext.getScopePhase($);
-        if (scope) {
-          scope.importedModules.forEach($ => {
+    const collectImports = (document: Nodes.DocumentNode) => {
+      let added = false;
+      walk(document, this.parsingContext, node => {
+        if (node.closure && node.closure.importedModules.size) {
+          node.closure.importedModules.forEach((_, $) => {
             if (!moduleList.has($)) {
               added = true;
               moduleList.add($);
@@ -639,7 +620,25 @@ export class CodeGenerationPhaseResult extends PhaseResult {
           });
         }
       });
-    }
+      return added;
+    };
+
+    collectImports(this.document);
+
+    let added = true;
+
+    do {
+      added = false;
+
+      moduleList.forEach($ => {
+        const scope = this.parsingContext.getScopePhase($);
+        if (scope) {
+          added = collectImports(scope);
+        } else {
+          // ERROR
+        }
+      });
+    } while (added);
 
     moduleList.forEach($ => {
       const compilation = this.parsingContext.getCompilationPhase($);
@@ -681,7 +680,5 @@ export class CodeGenerationPhaseResult extends PhaseResult {
     const module = t.module(null, moduleParts);
 
     this.programAST = t.program([module]);
-
-    failIfErrors('WASM generation', this.document, this);
   }
 }

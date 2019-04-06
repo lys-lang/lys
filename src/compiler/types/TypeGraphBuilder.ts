@@ -70,8 +70,8 @@ export class TypeGraphBuilder {
     if (referenceNode.isLocalReference) {
       return this.findNode(referenceNode.referencedNode);
     } else {
-      const typePhase = this.parsingContext.getTypePhase(referenceNode.moduleName!);
-      const typeNode = typePhase.typeGraph.findNode(referenceNode.referencedNode);
+      const moduleDocument = this.parsingContext.getTypePhase(referenceNode.moduleName!);
+      const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
       return typeNode;
     }
   }
@@ -174,22 +174,22 @@ export class TypeGraphBuilder {
   }
 
   private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode, edgeName?: string): void {
-    const reference = node.closure!.get(name, true);
+    try {
+      const reference = node.closure!.get(name, true);
 
-    if (reference) {
       this.resolveReference(reference, result, edgeName);
-    } else {
-      this.messageCollector.error(`Invalid reference ${name}` /* InvalidReferenceMessage */, node);
+    } catch (e) {
+      this.messageCollector.error(e, node);
     }
   }
 
   private resolveVariable(node: Nodes.QNameNode, result: TypeNode): void {
-    const reference = node.closure!.getQName(node, true);
+    try {
+      const reference = node.closure!.getQName(node, true);
 
-    if (reference) {
       this.resolveReference(reference, result);
-    } else {
-      this.messageCollector.error(`Invalid reference ${node.text}` /* InvalidReferenceMessage */, node);
+    } catch (e) {
+      this.messageCollector.error(e, node);
     }
   }
 

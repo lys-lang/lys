@@ -1,10 +1,6 @@
 declare var describe, it, console;
 
-import { folderBasedTest } from './TestHelpers';
-import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
-import { TypePhaseResult } from '../dist/compiler/phases/typePhase';
-import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
+import { folderBasedTest, PhasesResult } from './TestHelpers';
 import { print } from '../dist/utils/typeGraphPrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
@@ -16,25 +12,19 @@ import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
 import { AstNodeError } from '../dist/compiler/NodeError';
 import { nodeSystem } from '../dist/support/NodeSystem';
+import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 const REF_TYPE = RefType.instance;
 
 const parsingContext = new ParsingContext(nodeSystem);
 parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
-const phases = function(txt: string, fileName: string): ScopePhaseResult {
+const phases = function(txt: string, fileName: string): PhasesResult {
   parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
-  const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
-  const scope = new ScopePhaseResult(semantic);
-  return scope;
-};
+  const moduleName = parsingContext.getModuleFQNForFile(fileName);
+  parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
 
-const failingPhases = function(txt: string, fileName: string) {
-  parsingContext.reset();
-  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
-  return new CanonicalPhaseResult(parsing);
+  return { document: parsingContext.getTypePhase(moduleName), parsingContext };
 };
 
 describe('Types', function() {
@@ -55,21 +45,13 @@ describe('Types', function() {
 
         const phaseResult = phases(program, `types_${number}.lys`);
 
-        const typePhase = new TypePhaseResult(phaseResult);
-
-        try {
-          typePhase.execute();
-        } catch (e) {
-          console.log(printNode(typePhase.document));
-          console.log(printAST(typePhase.document));
-          console.log(print(typePhase.typeGraph));
-          throw e;
-        }
+        const document = phaseResult.document;
+        const parsingContext = phaseResult.parsingContext;
 
         const expectedResult = normalizeResult(expectedType);
         try {
           const givenResult = normalizeResult(
-            typePhase.document.directives
+            document.directives
               .map($ => {
                 if (
                   $ instanceof Nodes.OverloadedFunctionNode &&
@@ -90,7 +72,7 @@ describe('Types', function() {
 
           if (expectedError) {
             try {
-              typePhase.ensureIsValid();
+              failWithErrors('type phase', phaseResult.parsingContext);
               throw new Error('x');
             } catch (e) {
               if (e.message === 'x') {
@@ -105,13 +87,13 @@ describe('Types', function() {
               }
             }
           } else {
-            typePhase.ensureIsValid();
+            failWithErrors('type phase', phaseResult.parsingContext);
           }
         } catch (e) {
-          console.log(printErrors(typePhase.parsingContext));
-          console.log(printNode(typePhase.document));
-          console.log(printAST(typePhase.document));
-          console.log(print(typePhase.typeGraph));
+          console.log(printErrors(parsingContext));
+          console.log(printNode(document));
+          console.log(printAST(document));
+          console.log(print(document.typeGraph));
           throw e;
         }
       });
@@ -3539,16 +3521,12 @@ describe('Types', function() {
         phases,
         async (result, e) => {
           if (e) throw e;
-          const typePhase = new TypePhaseResult(result);
-          typePhase.execute();
-          try {
-            typePhase.ensureIsValid();
 
-            return print(typePhase.typeGraph);
-          } catch (e) {
-            // console.log(print(typePhase.typeGraph));
-            throw e;
+          if (!result.document.typeGraph) {
+            failWithErrors('document has not typeGraph', result.parsingContext);
           }
+
+          return print(result.document.typeGraph);
         },
         '.dot'
       );
@@ -3568,9 +3546,7 @@ describe('Types', function() {
           }
 
           try {
-            const typePhase = new TypePhaseResult(result);
-            typePhase.execute();
-            return printAST(typePhase.document);
+            return printAST(result.document);
           } catch (e) {
             if (e instanceof AstNodeError) {
               result.parsingContext.messageCollector.error(e);
@@ -3586,26 +3562,22 @@ describe('Types', function() {
     describe('Compiler errors', () => {
       folderBasedTest(
         '**/type-error/*.lys',
-        failingPhases,
-        async (canonical, e) => {
+        phases,
+        async (result, e) => {
           if (e) throw e;
 
           try {
-            const result = new SemanticPhaseResult(canonical);
-            const scope = new ScopePhaseResult(result);
-            const typePhase = new TypePhaseResult(scope);
-            typePhase.execute();
-            typePhase.ensureIsValid();
-            throw new Error('Type phase did not fail');
+            failWithErrors('should have errors', result.parsingContext);
           } catch (e) {
-            if (!canonical.parsingContext.messageCollector.errors.length) {
+            if (!result.parsingContext.messageCollector.errors.length) {
               throw e;
             }
           }
 
-          return printErrors(canonical.parsingContext, true);
+          return printErrors(result.parsingContext, true);
         },
-        '.txt'
+        '.txt',
+        true
       );
     });
   });

@@ -1,13 +1,12 @@
-import { Nodes } from '../nodes';
+import { Nodes, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { annotations } from '../annotations';
-import { failIfErrors } from '../findAllErrors';
-import { PhaseResult } from './PhaseResult';
-import { SemanticPhaseResult } from './semanticPhase';
 import { AstNodeError, UnreachableCode } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
 import { findParentDelegate } from '../nodeHelpers';
+import { getDocument, fixParents } from './helpers';
+import { Closure } from '../Closure';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
 
@@ -95,89 +94,78 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-const createClosures = walkPreOrder(
-  (node: Nodes.Node, phase: ScopePhaseResult, parent: Nodes.Node | null) => {
-    if (parent) {
-      if (!node.closure) {
-        node.closure = parent.closure;
+const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext, parent: Nodes.Node | null) => {
+  if (parent) {
+    if (!node.closure) {
+      node.closure = parent.closure;
+    }
+
+    if (node instanceof Nodes.MatcherNode) {
+      node.rhs.closure = node.closure!.newChildClosure('MatcherRHS');
+
+      if (node.declaredName) {
+        node.rhs.closure.set(node.declaredName, 'VALUE');
       }
 
-      if (node instanceof Nodes.MatcherNode) {
-        node.rhs.closure = node.closure!.newChildClosure('MatcherRHS');
+      if (node instanceof Nodes.MatchCaseIsNode) {
+        if (node.deconstructorNames) {
+          const takenNames = new Map<string, Nodes.Node>();
 
-        if (node.declaredName) {
-          node.rhs.closure.set(node.declaredName, 'VALUE');
-        }
-
-        if (node instanceof Nodes.MatchCaseIsNode) {
-          if (node.deconstructorNames) {
-            const takenNames = new Map<string, Nodes.Node>();
-
-            node.deconstructorNames.forEach($ => {
-              if ($.name !== '_') {
-                if (takenNames.has($.name)) {
-                  phase.parsingContext.messageCollector.error(new AstNodeError('Duplicated name', $));
-                } else {
-                  takenNames.set($.name, $);
-                  node.rhs.closure!.set($, 'VALUE');
-                }
+          node.deconstructorNames.forEach($ => {
+            if ($.name !== '_') {
+              if (takenNames.has($.name)) {
+                parsingContext.messageCollector.error(new AstNodeError('Duplicated name', $));
+              } else {
+                takenNames.set($.name, $);
+                node.rhs.closure!.set($, 'VALUE');
               }
-            });
-          }
-        }
-      } else if (node instanceof Nodes.OverloadedFunctionNode) {
-        node.closure!.set(node.functionName, 'FUNCTION');
-      } else if (node instanceof Nodes.VarDeclarationNode) {
-        if (node.variableName.name in InjectableTypes) {
-          phase.parsingContext.messageCollector.error(
-            new AstNodeError('Cannot declare a variable with the name of an system type', node.variableName)
-          );
-        }
-        node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_VarDeclaration');
-        node.closure!.set(node.variableName, 'VALUE');
-      } else if (node instanceof Nodes.ImplDirective) {
-        node.closure = node.closure!.newChildClosure(node.reference.variable.text + '.');
-      } else if (node instanceof Nodes.TypeDirectiveNode) {
-        node.closure!.set(node.variableName, 'TYPE');
-      } else if (node instanceof Nodes.FunctionNode) {
-        if (node.functionName) {
-          if (!(parent instanceof Nodes.DirectiveNode)) {
-            node.closure!.set(node.functionName, 'VALUE');
-          }
-
-          if (!node.functionName.internalIdentifier) {
-            node.functionName.internalIdentifier = node.closure!.getInternalIdentifier(node);
-          }
-        }
-
-        if (!node.body) {
-          phase.parsingContext.messageCollector.error(new AstNodeError('Function has no body', node));
-        } else {
-          if (node.functionName) {
-            node.body.closure = node.closure!.newChildClosure(node.functionName.name + '_Body');
-          } else {
-            node.body.closure = node.closure!.newChildClosure('Body');
-          }
-
-          node.parameters.forEach($ => {
-            node.body!.closure!.set($.parameterName, 'VALUE');
+            }
           });
         }
+      }
+    } else if (node instanceof Nodes.OverloadedFunctionNode) {
+      node.closure!.set(node.functionName, 'FUNCTION');
+    } else if (node instanceof Nodes.VarDeclarationNode) {
+      if (node.variableName.name in InjectableTypes) {
+        parsingContext.messageCollector.error(
+          new AstNodeError('Cannot declare a variable with the name of an system type', node.variableName)
+        );
+      }
+      node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_VarDeclaration');
+      node.closure!.set(node.variableName, 'VALUE');
+    } else if (node instanceof Nodes.ImplDirective) {
+      node.closure = node.closure!.newChildClosure(node.reference.variable.text + '.');
+    } else if (node instanceof Nodes.TypeDirectiveNode) {
+      node.closure!.set(node.variableName, 'TYPE');
+    } else if (node instanceof Nodes.FunctionNode) {
+      if (node.functionName) {
+        if (!(parent instanceof Nodes.DirectiveNode)) {
+          node.closure!.set(node.functionName, 'VALUE');
+        } else if (!node.functionName.internalIdentifier) {
+          node.functionName.internalIdentifier = node.closure!.getInternalIdentifier(node.functionName);
+        }
+      }
 
-        node.processParameters();
-      } else if (node instanceof Nodes.BlockNode) {
-        node.closure = node.closure!.newChildClosure('Block');
+      if (!node.body) {
+        parsingContext.messageCollector.error(new AstNodeError('Function has no body', node));
+      } else {
+        if (node.functionName) {
+          node.body.closure = node.closure!.newChildClosure(node.functionName.name + '_Body');
+        } else {
+          node.body.closure = node.closure!.newChildClosure('Body');
+        }
+
+        node.parameters.forEach($ => {
+          node.body!.closure!.set($.parameterName, 'VALUE');
+        });
       }
-    }
-  },
-  node => {
-    if (node instanceof Nodes.NameIdentifierNode) {
-      if (!node.internalIdentifier) {
-        node.internalIdentifier = node.closure!.getInternalIdentifier(node);
-      }
+
+      node.processParameters();
+    } else if (node instanceof Nodes.BlockNode) {
+      node.closure = node.closure!.newChildClosure('Block');
     }
   }
-);
+});
 
 function collectNamespaces(
   namespace: Nodes.NameIdentifierNode,
@@ -218,38 +206,40 @@ function collectNamespaces(
   });
 }
 
-const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, phaseResult: ScopePhaseResult) => {
+const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingContext: ParsingContext) => {
   if (node instanceof Nodes.ReferenceNode) {
     if (!node.closure!.canResolveQName(node.variable, true)) {
       throw new AstNodeError(`Cannot find name '${node.variable.text}'`, node.variable);
     }
     const resolved = node.closure!.getQName(node.variable, true);
-    const isGlobal = !resolved.isLocalReference || resolved.scope === phaseResult.document.closure;
+    const document = getDocument(node);
+    const isGlobal = !resolved.isLocalReference || resolved.scope === document.closure;
     node.isLocal = !isGlobal;
     node.resolvedReference = resolved;
     node.closure!.incrementUsageQName(node.variable);
   } else if (node instanceof Nodes.ImplDirective) {
-    collectNamespaces(node.reference.resolvedReference!.referencedNode, node.directives, phaseResult.parsingContext);
+    if (node.reference.resolvedReference) {
+      collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, parsingContext);
+    }
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
-      phaseResult.parsingContext.getScopePhase(node.module.text);
+      parsingContext.getScopePhase(node.module.text);
     } catch (e) {
-      phaseResult.parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node);
+      parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node);
     }
   }
 });
 
-const findImplicitImports = walkPreOrder((node: Nodes.Node, scopePhaseResult: ScopePhaseResult) => {
+const findImplicitImports = walkPreOrder((node: Nodes.Node, _: ParsingContext) => {
   if (node instanceof Nodes.ReferenceNode) {
     if (node.variable.names.length > 1) {
       const { moduleName, variable } = node.variable.deconstruct();
       node.closure!.registerImport(moduleName, new Set([variable]));
-      scopePhaseResult.importedModules.add(moduleName);
     }
   }
 });
 
-const injectImplicitCalls = walkPreOrder((node: Nodes.Node, _scopePhaseResult: ScopePhaseResult) => {
+const injectImplicitCalls = walkPreOrder((node: Nodes.Node, _: ParsingContext) => {
   if (node instanceof Nodes.FunctionCallNode && node.functionNode instanceof Nodes.ReferenceNode) {
     if (node.functionNode.resolvedReference && node.functionNode.resolvedReference.type === 'TYPE') {
       const member = new Nodes.MemberNode(
@@ -277,17 +267,10 @@ function injectCoreImport(document: Nodes.DocumentNode) {
   document.directives.unshift(coreModuleImport);
 }
 
-const fixParents = walkPreOrder((node: Nodes.Node, _: ScopePhaseResult, parent: Nodes.Node | null) => {
-  if (parent) {
-    node.parent = parent;
-  }
-  return node;
-});
-
 const unreachableAnnotation = new annotations.IsUnreachable();
 
 const validateLoops = walkPreOrder(
-  (node: Nodes.Node, phaseResult: ScopePhaseResult) => {
+  (node: Nodes.Node, parsingContext: ParsingContext) => {
     if (node instanceof Nodes.ContinueNode || node instanceof Nodes.BreakNode) {
       const relevantParent = findParentDelegate(node, $ => {
         return (
@@ -299,23 +282,23 @@ const validateLoops = walkPreOrder(
         node.annotate(new annotations.CurrentLoop(relevantParent));
       } else {
         if (relevantParent instanceof Nodes.FunctionNode) {
-          phaseResult.parsingContext.messageCollector.error(`Invalid location: No loop was found`, node);
+          parsingContext.messageCollector.error(`Invalid location: No loop was found`, node);
         } else {
-          phaseResult.parsingContext.messageCollector.error(`Invalid location. Parent block must return a value`, node);
+          parsingContext.messageCollector.error(`Invalid location. Parent block must return a value`, node);
           if (relevantParent) {
-            phaseResult.parsingContext.messageCollector.error(`Not all paths return a value`, relevantParent);
+            parsingContext.messageCollector.error(`Not all paths return a value`, relevantParent);
           }
         }
       }
     }
   },
-  (node, phaseResult) => {
+  (node, parsingContext) => {
     if (node instanceof Nodes.BlockNode) {
       let nextAreUnreachable = false;
 
       node.statements.forEach($ => {
         if (nextAreUnreachable) {
-          phaseResult.parsingContext.messageCollector.error(new UnreachableCode($));
+          parsingContext.messageCollector.error(new UnreachableCode($));
           $.annotate(unreachableAnnotation);
         }
         if ($ instanceof Nodes.ContinueNode || $ instanceof Nodes.BreakNode) {
@@ -328,48 +311,32 @@ const validateLoops = walkPreOrder(
   }
 );
 
-export class ScopePhaseResult extends PhaseResult {
-  importedModules = new Set<string>();
+export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.Scope) return;
 
-  get document() {
-    return this.semanticPhaseResult.document;
-  }
+  document.closure = new Closure(parsingContext, document.moduleName, null, '[DocumentScope]');
 
-  get parsingContext(): ParsingContext {
-    return this.semanticPhaseResult.parsingContext;
-  }
+  injectCoreImport(document);
 
-  constructor(public semanticPhaseResult: SemanticPhaseResult) {
-    super();
-    this.execute();
-  }
+  createClosures(document, parsingContext, null);
 
-  protected execute() {
-    injectCoreImport(this.document);
+  fixParents(document, parsingContext);
 
-    createClosures(this.document, this, null);
-
-    this.registerImportedModules();
-
-    findImplicitImports(this.document, this, null);
-
-    resolveVariables(this.document, this, null);
-    findValueNodes(this.document, this, null);
-
-    injectImplicitCalls(this.document, this, null);
-    fixParents(this.document, this);
-    validateLoops(this.document, this);
-
-    failIfErrors('Scope phase', this.document, this);
-  }
-
-  private registerImportedModules() {
-    (this.document.directives.filter(
-      $ => $ instanceof Nodes.ImportDirectiveNode
-    ) as Nodes.ImportDirectiveNode[]).forEach($ => {
+  (document.directives.filter($ => $ instanceof Nodes.ImportDirectiveNode) as Nodes.ImportDirectiveNode[]).forEach(
+    $ => {
       const importAll = $.allItems ? new Set(['*']) : new Set();
-      this.importedModules.add($.module.text);
-      this.document.closure!.registerImport($.module.text, importAll);
-    });
-  }
+      document.closure!.registerImport($.module.text, importAll);
+    }
+  );
+
+  findImplicitImports(document, parsingContext, null);
+
+  resolveVariables(document, parsingContext, null);
+  findValueNodes(document, parsingContext, null);
+
+  injectImplicitCalls(document, parsingContext, null);
+
+  validateLoops(document, parsingContext);
+
+  document.phasesRun |= PhaseFlags.Scope;
 }

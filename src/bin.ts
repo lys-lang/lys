@@ -126,7 +126,7 @@ async function main() {
   }
 
   const values: number[] = [];
-  codeGen.buffer.forEach($ => values.push($));
+  codeGen.buffer.forEach(($: number) => values.push($));
 
   src.push(`const buffer = new Uint8Array(${JSON.stringify(values)})`);
 

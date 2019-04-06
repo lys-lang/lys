@@ -1,34 +1,34 @@
 declare var describe;
 
 import { folderBasedTest, testParseToken } from './TestHelpers';
-import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
 import { expect } from 'chai';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
 import { nodeSystem } from '../dist/support/NodeSystem';
+import { printErrors } from '../dist/utils/errorPrinter';
 
 describe('Parser', () => {
-  const phases = function(txt: string, fileName: string): CanonicalPhaseResult {
+  const phases = function(txt: string, fileName: string) {
     const parsingContext = new ParsingContext(nodeSystem);
 
     parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
-    const parsing = parsingContext.getParsingPhaseForContent(
-      fileName,
-      parsingContext.getModuleFQNForFile(fileName),
-      txt
-    );
-    const ret = new CanonicalPhaseResult(parsing);
-    return ret;
+    return {
+      document: parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt),
+      parsingContext
+    };
   };
   describe('Failing examples', () => {
     folderBasedTest(
       '**/parser-error/*.lys',
       phases,
       async (result, e) => {
-        if (!e && result && result.isSuccess()) {
+        if (!e && result && result.parsingContext.messageCollector.errors.length == 0) {
           throw new Error('The test did not fail');
         }
-        return (e || result.parsingContext.messageCollector.errors[0]).message;
+        if (!result && e) {
+          throw e;
+        }
+        return printErrors(result.parsingContext, true);
       },
       '.txt',
       true
@@ -57,7 +57,7 @@ describe('Parser', () => {
     }
 
     function testEquivalence(a: string, b: string) {
-      let aDocument: CanonicalPhaseResult = null;
+      let aDocument: ReturnType<typeof phases> = null;
 
       testParseToken(
         a,

@@ -14,6 +14,10 @@ export type IErrorPositionCapable = {
   readonly position: IPositionCapable;
 } & Error;
 
+export function isSamePosition(lhs: IPositionCapable, rhs: IPositionCapable) {
+  return lhs === rhs || (lhs.moduleName === rhs.moduleName && lhs.end === rhs.end && lhs.start === rhs.start);
+}
+
 export class PositionCapableError extends Error implements IErrorPositionCapable {
   constructor(public message: string, public readonly position: IPositionCapable, public warning: boolean = false) {
     super(message);

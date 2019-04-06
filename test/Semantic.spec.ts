@@ -2,10 +2,7 @@ declare var describe, it, require, console;
 
 import * as expect from 'expect';
 import { findNodesByType, Nodes } from '../dist/compiler/nodes';
-import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
-import { folderBasedTest, testParseToken, testParseTokenFailsafe } from './TestHelpers';
-import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
+import { folderBasedTest, testParseToken, testParseTokenFailsafe, PhasesResult } from './TestHelpers';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
@@ -15,29 +12,18 @@ const parsingContext = new ParsingContext(nodeSystem);
 parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 describe('Semantic', function() {
-  const phases = function(txt: string, fileName: string): ScopePhaseResult {
+  const phases = function(txt: string, fileName: string): PhasesResult {
     parsingContext.reset();
-    const parsing = parsingContext.getParsingPhaseForContent(
-      fileName,
-      parsingContext.getModuleFQNForFile(fileName),
-      txt
-    );
-    const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical);
-    const scope = new ScopePhaseResult(semantic);
-    return scope;
+    const moduleName = parsingContext.getModuleFQNForFile(fileName);
+    parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+    return { parsingContext, document: parsingContext.getScopePhase(moduleName) };
   };
 
-  const phases1 = function(txt: string, fileName: string): SemanticPhaseResult {
+  const phases1 = function(txt: string, fileName: string): PhasesResult {
     parsingContext.reset();
-    const parsing = parsingContext.getParsingPhaseForContent(
-      fileName,
-      parsingContext.getModuleFQNForFile(fileName),
-      txt
-    );
-    const canonical = new CanonicalPhaseResult(parsing);
-    const semantic = new SemanticPhaseResult(canonical);
-    return semantic;
+    const moduleName = parsingContext.getModuleFQNForFile(fileName);
+    parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+    return { parsingContext, document: parsingContext.getSemanticPhase(moduleName) };
   };
 
   describe('Files', () => {
@@ -46,7 +32,7 @@ describe('Semantic', function() {
       phases,
       async (result, err) => {
         if (err) {
-          // console.log(printErrors(result.document, result.errors));
+          // console.log(printErrors(result, result.errors));
           throw err;
         }
         return printAST(result.document);
@@ -58,7 +44,7 @@ describe('Semantic', function() {
       phases1,
       async (result, err) => {
         if (err) {
-          // console.log(printErrors(result.document, result.errors));
+          // console.log(printErrors(result, result.errors));
           throw err;
         }
         return printNode(result.document);
@@ -102,7 +88,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.isSuccess()).toEqual(true);
+        expect(parsingContext.messageCollector.hasErrors()).toEqual(false);
       },
       phases
     );
@@ -123,12 +109,12 @@ describe('Semantic', function() {
       result,
       'MUST_FAIL_' + getFileName(),
       'Document',
-      async (phaseResult, err) => {
-        const didFail = !!err || !phaseResult || !phaseResult.isSuccess();
+      async (result, err) => {
+        const didFail = !!err || !result || parsingContext.messageCollector.hasErrors();
         if (!didFail) {
           console.log(result);
-          console.log(printAST(phaseResult.document));
-          console.log(phaseResult.document.closure.deepInspect());
+          console.log(printAST(result.document));
+          console.log(result.document.closure.deepInspect());
         }
         expect(didFail).toEqual(true);
       },
@@ -206,9 +192,9 @@ describe('Semantic', function() {
         }`,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        const refs = findNodesByType(x.document, Nodes.BlockNode);
+        const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
@@ -225,9 +211,9 @@ describe('Semantic', function() {
         }`,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        const refs = findNodesByType(x.document, Nodes.BlockNode);
+        const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
@@ -314,9 +300,9 @@ describe('Semantic', function() {
         }`,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        const refs = findNodesByType(x.document, Nodes.BlockNode);
+        const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(1);
       },
@@ -332,9 +318,9 @@ describe('Semantic', function() {
       `,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        const refs = findNodesByType(x.document, Nodes.BlockNode);
+        const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(3);
       },
@@ -350,9 +336,9 @@ describe('Semantic', function() {
         }`,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        const refs = findNodesByType(x.document, Nodes.BlockNode);
+        const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
       },
@@ -367,9 +353,9 @@ describe('Semantic', function() {
       `,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
       },
       phases
     );
@@ -383,10 +369,10 @@ describe('Semantic', function() {
       `,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
-        expect(x.document.closure.importedModules.has('system::random')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::random')).toEqual(true);
       },
       phases
     );
@@ -397,9 +383,9 @@ describe('Semantic', function() {
       `,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
       },
       phases
     );
@@ -410,9 +396,9 @@ describe('Semantic', function() {
       `,
       getFileName(),
       'Document',
-      async (x, e) => {
+      async (result, e) => {
         if (e) throw e;
-        expect(x.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
       },
       phases
     );

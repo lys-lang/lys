@@ -2,7 +2,6 @@ import { Nodes } from './nodes';
 import { Reference } from './Reference';
 import { ParsingContext } from './ParsingContext';
 import { AstNodeError } from './NodeError';
-import { ScopePhaseResult } from './phases/scopePhase';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
@@ -19,11 +18,11 @@ export class Closure {
 
   constructor(
     public parsingContext: ParsingContext,
+    public readonly moduleName: string,
     public parent: Closure | null = null,
-    public readonly moduleName: string | null = null,
     public nameHint: string = ''
   ) {
-    this.name = this.parsingContext.getUnusedName(nameHint + '_scope');
+    this.name = this.parsingContext.getInternalName(moduleName, nameHint + '[child_scope]');
   }
 
   registerForeginModule(moduleName: string) {
@@ -39,22 +38,14 @@ export class Closure {
     names.forEach($ => mod.add($));
   }
 
-  getInternalIdentifier(node: Nodes.Node) {
-    let prefix = '__identifier';
-
-    if (node instanceof Nodes.FunctionNode) {
-      prefix = node.functionName.name || 'anonFun';
-    } else if (node instanceof Nodes.StructDeclarationNode) {
-      prefix = node.declaredName.name || 'anonType';
-    } else if (node instanceof Nodes.NameIdentifierNode) {
-      prefix = node.name || 'anonName';
-    }
+  getInternalIdentifier(node: Nodes.NameIdentifierNode) {
+    let prefix = node.name;
 
     if (this.nameHint && (this.nameHint.endsWith('#') || this.nameHint.endsWith('.'))) {
       prefix = this.nameHint + prefix;
     }
 
-    return this.parsingContext.getUnusedName(`${this.moduleName ? this.moduleName + '::' : ''}${prefix}`);
+    return this.parsingContext.getInternalName(this.moduleName, prefix);
   }
 
   incrementUsage(name: string) {
@@ -79,6 +70,10 @@ export class Closure {
     this.nameMappings[localName] = new Reference(nameNode, this, type, null);
 
     this.localScopeDeclares.add(localName);
+
+    if (!nameNode.internalIdentifier) {
+      nameNode.internalIdentifier = this.getInternalIdentifier(nameNode);
+    }
 
     return this.nameMappings[localName];
   }
@@ -109,8 +104,8 @@ export class Closure {
         const parts = localName.split('::');
         const moduleName = parts.slice(0, -1).join('::');
         const name = parts[parts.length - 1];
-        const module = this.parsingContext.getScopePhase(moduleName) as ScopePhaseResult;
-        const ref = module.document.closure!.get(name, recurseParent);
+        const moduleDocument = this.parsingContext.getScopePhase(moduleName);
+        const ref = moduleDocument.closure!.get(name, recurseParent);
 
         return ref.withModule(moduleName);
       }
@@ -120,21 +115,21 @@ export class Closure {
       }
 
       for (let [moduleName, importsSet] of this.importedModules) {
-        const module = this.parsingContext.getScopePhase(moduleName) as ScopePhaseResult;
+        const moduleDocument = this.parsingContext.getScopePhase(moduleName);
 
         if (importsSet.has(localName)) {
-          const ref = module.document.closure!.get(localName, recurseParent);
+          const ref = moduleDocument.closure!.get(localName, recurseParent);
 
           return ref.withModule(moduleName);
-        } else if (importsSet.has('*') && module.document.closure!.canResolveName(localName, recurseParent)) {
-          const ref = module.document.closure!.get(localName, recurseParent);
+        } else if (importsSet.has('*') && moduleDocument.closure!.canResolveName(localName, recurseParent)) {
+          const ref = moduleDocument.closure!.get(localName, recurseParent);
 
           return ref.withModule(moduleName);
         }
       }
     }
 
-    throw new Error('Cannot resolve name "' + localName + '"');
+    throw new Error("Cannot find name '" + localName + "'");
   }
 
   inspect(content: string = '') {
@@ -155,7 +150,7 @@ export class Closure {
   }
 
   newChildClosure(nameHint: string): Closure {
-    const newScope = new Closure(this.parsingContext, this, this.moduleName, nameHint);
+    const newScope = new Closure(this.parsingContext, this.moduleName, this, nameHint);
     this.childrenScopes.push(newScope);
     return newScope;
   }

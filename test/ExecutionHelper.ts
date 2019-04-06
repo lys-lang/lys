@@ -1,14 +1,10 @@
-import { print } from '@webassemblyjs/wast-printer';
+import { print as printWAST } from '@webassemblyjs/wast-printer';
 
-import { CompilationPhaseResult } from '../dist/compiler/phases/compilationPhase';
-import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
-import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
-import { TypePhaseResult } from '../dist/compiler/phases/typePhase';
 import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGenerationPhase';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
+import { print as printTypeGraph } from '../dist/utils/typeGraphPrinter';
 import { printAST } from '../dist/utils/astPrinter';
 import { hexDump, readString } from '../dist/utils/execution';
 import { generateTestInstance } from '../dist/utils/testEnvironment';
@@ -32,16 +28,10 @@ parsingContext.paths.push(newSystem.resolvePath(__dirname, '../stdlib'));
 const phases = function(txt: string, fileName: string): CodeGenerationPhaseResult {
   parsingContext.reset();
 
-  const parsing = parsingContext.getParsingPhaseForContent(fileName, parsingContext.getModuleFQNForFile(fileName), txt);
-
-  const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
-  const scope = new ScopePhaseResult(semantic);
-  const types = new TypePhaseResult(scope);
-  types.execute();
-  types.ensureIsValid();
-  const compilation = new CompilationPhaseResult(types);
-  return new CodeGenerationPhaseResult(compilation);
+  const moduleName = parsingContext.getModuleFQNForFile(fileName);
+  parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+  const compilation = parsingContext.getCompilationPhase(moduleName);
+  return new CodeGenerationPhaseResult(compilation, parsingContext);
 };
 
 async function testSrc(
@@ -53,17 +43,6 @@ async function testSrc(
 
   try {
     compilationPhaseResult = phases(content, fileName);
-
-    if (compilationPhaseResult.parsingContext.messageCollector.errors.length) {
-      console.log(printErrors(compilationPhaseResult.parsingContext));
-    }
-
-    if (!compilationPhaseResult.isSuccess()) {
-      console.log(printNode(compilationPhaseResult.document));
-      console.log(printAST(compilationPhaseResult.document));
-      console.log(print(compilationPhaseResult.compilationPhaseResult.typePhaseResult.typeGraph));
-      failWithErrors('ExecutionHelpers.testSrc', compilationPhaseResult.parsingContext);
-    }
 
     await compilationPhaseResult.validate(false, true);
 
@@ -77,10 +56,13 @@ async function testSrc(
       } catch (e) {
         const maxMemory = instance.exports.test_getMaxMemory();
 
+        console.log(printErrors(compilationPhaseResult.parsingContext));
+        console.log(printAST(compilationPhaseResult.document));
+        console.log(printTypeGraph(compilationPhaseResult.document.typeGraph));
         console.log(hexDump(instance.exports.memory.buffer, maxMemory));
         console.error(printNode(compilationPhaseResult.document));
         console.error('NON OPTIMIZED VERSION');
-        console.log(print(compilationPhaseResult.programAST));
+        console.log(printWAST(compilationPhaseResult.programAST));
         await compilationPhaseResult.validate(true);
         console.log(compilationPhaseResult.emitText());
 

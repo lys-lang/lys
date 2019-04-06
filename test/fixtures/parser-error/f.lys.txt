@@ -1,7 +1,8 @@
-Parsing phase failed. 6 errors found:
-  1)  Unexpected end of input. Expecting Type Got: ,b: AType) = 2
-  2)  Unexpected end of input. Missing CLOSE_PAREN
-  3)  Unexpected end of input. Missing FunAssignExpression
-  4)  Unexpected end of input. Expecting Type Got: ,b: AType) = 2
-  5)  Unexpected end of input. Missing CLOSE_PAREN
-  6)  Unexpected end of input. Missing FunAssignExpression
+test/fixtures/parser-error/f.lys
+    1│ private fun test(a: ,b: AType) = 2
+     │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unexpected end of input. Expecting Type Got: ,b: AType) = 2
+     │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unexpected end of input. Missing CLOSE_PAREN
+     │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Unexpected end of input. Missing FunAssignExpression
+     │                     ^^^^^^^^^^^^^^ Unexpected end of input. Expecting Type Got: ,b: AType) = 2
+     │                                    Unexpected end of input. Missing CLOSE_PAREN
+     │                                    Unexpected end of input. Missing FunAssignExpression

@@ -1,3 +1,5 @@
+import system::core
+
 val AL_BITS: i32 = 3
 
 val AL_SIZE: i32 = 1 << AL_BITS
@@ -190,7 +192,7 @@ impl String {
     var newData = system::memory::allocBytes(lhsLen + rhsLen)
     system::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
     system::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
-    String(newData)
+    String.apply(newData)
   }
 
   fun charAt(str: String, at: i32): u16 = {
@@ -609,10 +611,10 @@ type Cons = %struct { tree: (Tree | Forest) }
 
 fun testPassing(): void = {
   var a = Nil
-  var b = Cons(Empty)
-  var c = Cons(Nil)
-  var d = Cons(Node(Empty))
-  var e = Node(Nil)
+  var b = Cons.apply(Empty)
+  var c = Cons.apply(Nil)
+  var d = Cons.apply(Node.apply(Empty))
+  var e = Node.apply(Nil)
   support::test::assert(a is Nil == true)
   support::test::assert(a is Forest == true)
   support::test::assert(b is Forest == true)
@@ -821,9 +823,9 @@ impl Boolean {
 
 fun gt0(x: i32): Boolean =
   if (x > 0)
-    True()
+    True.apply()
   else
-    False()
+    False.apply()
 
 
 fun isTrue(a: Boolean): boolean =
@@ -895,7 +897,7 @@ impl Iterator {
 
   fun next(iter: Iterator): Maybe = {
     if (iter.current <= iter.target) {
-      var r = Some(iter.current)
+      var r = Some.apply(iter.current)
       iter.current = iter.current + 1
       r
     } else {
@@ -1029,7 +1031,7 @@ type Some = %struct { value: i32 }
 
 fun testFn3(from: i32, to: i32): i32 = {
   var ret = 0
-  val $iter$ = Iterator(from, to)
+  val $iter$ = Iterator.apply(from, to)
   loop {
     match Iterator.next($iter$) {
       case is Some -> {

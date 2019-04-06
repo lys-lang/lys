@@ -96,7 +96,7 @@
        )
        (i64.const -4294967296)
       )
-      (i64.const 38654705664)
+      (i64.const 17179869184)
      )
     )
    )
@@ -382,7 +382,7 @@
  )
  (func $9 (; 13 ;) (type $0)
   (global.set $global$0
-   (i64.const 34359738368)
+   (i64.const 12884901888)
   )
   (global.set $global$1
    (i32.const 3)

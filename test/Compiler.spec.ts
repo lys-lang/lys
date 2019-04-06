@@ -1,14 +1,7 @@
 declare var describe;
 
-import { folderBasedTest } from './TestHelpers';
+import { folderBasedTest, PhasesResult } from './TestHelpers';
 
-import { print } from '@webassemblyjs/wast-printer';
-
-import { CanonicalPhaseResult } from '../dist/compiler/phases/canonicalPhase';
-import { SemanticPhaseResult } from '../dist/compiler/phases/semanticPhase';
-import { TypePhaseResult } from '../dist/compiler/phases/typePhase';
-import { CompilationPhaseResult } from '../dist/compiler/phases/compilationPhase';
-import { ScopePhaseResult } from '../dist/compiler/phases/scopePhase';
 import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGenerationPhase';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
@@ -18,29 +11,18 @@ import { nodeSystem } from '../dist/support/NodeSystem';
 const compilerTestParsingContext = new ParsingContext(nodeSystem);
 compilerTestParsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
-const compilationPhases = function(txt: string, fileName: string): CompilationPhaseResult {
+const compilationPhases = function(txt: string, fileName: string): PhasesResult {
   compilerTestParsingContext.reset();
-  const parsing = compilerTestParsingContext.getParsingPhaseForContent(
-    fileName,
-    compilerTestParsingContext.getModuleFQNForFile(fileName),
-    txt
-  );
-  const canonical = new CanonicalPhaseResult(parsing);
-  const semantic = new SemanticPhaseResult(canonical);
-  const scope = new ScopePhaseResult(semantic);
-  const types = new TypePhaseResult(scope);
-  types.execute(true);
-  types.ensureIsValid();
-  const compiler = new CompilationPhaseResult(types);
-  if (!compiler.isSuccess()) {
-    failWithErrors('Compilation phase', compiler.parsingContext);
-  }
-  return compiler;
+  const moduleName = compilerTestParsingContext.getModuleFQNForFile(fileName);
+  compilerTestParsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+  const compiler = compilerTestParsingContext.getCompilationPhase(moduleName);
+  failWithErrors('Compilation phase', compilerTestParsingContext);
+  return { parsingContext: compilerTestParsingContext, document: compiler };
 };
 
-const phases = function(txt: string, fileName: string): CodeGenerationPhaseResult {
+const phases = function(txt: string, fileName: string) {
   const compiler = compilationPhases(txt, fileName);
-  return new CodeGenerationPhaseResult(compiler);
+  return new CodeGenerationPhaseResult(compiler.document, compilerTestParsingContext);
 };
 
 describe('Compiler', function() {
