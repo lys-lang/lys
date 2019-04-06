@@ -1009,7 +1009,7 @@
   (func $test::fixtures::compiler::c::x_1 (param $x i32) (result i32)
     (local.get $x)
   )
-  (func $test::fixtures::compiler::c::x_4 (param $x f32) (result f32)
+  (func $test::fixtures::compiler::c::x_3 (param $x f32) (result f32)
     (local.get $x)
   )
   (func $test::fixtures::compiler::c::outer_1 (result i32)

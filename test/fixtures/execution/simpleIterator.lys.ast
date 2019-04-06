@@ -832,7 +832,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::discriminant_3:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::discriminant_1:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -844,7 +844,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::discriminant_3:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::discriminant_1:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -1065,7 +1065,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::discriminant_6:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::discriminant_2:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -1077,7 +1077,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::discriminant_6:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::discriminant_2:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias u64 (native u64)))
@@ -1099,7 +1099,7 @@
             |-QNameNode=Some
               |-NameIdentifierNode="Some"
           |-BlockNode type=(alias Some (struct value:<null>)) annotations=IsValueNode
-            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::$ref_4:Some#1)
+            |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::$ref_1:Some#1)
               |-NameIdentifierNode="$ref" type=(alias Some (struct value:<null>))
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Some)) type=(alias Some (struct value:<null>)) annotations=IsValueNode
                 |-ReferenceNode type=(fun "fromPointer" ((alias u32)) (alias Some))
@@ -1125,13 +1125,13 @@
               |-ReferenceNode type=(intersection (fun "property$0" ((alias Some)) (alias i32)) (fun "property$0" ((alias Some) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::$ref_4:Some#1)
+              |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::$ref_1:Some#1)
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
               |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(value:i32#0)
                 |-QNameNode=value
                   |-NameIdentifierNode="value"
-            |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::execution::simpleIterator::$ref_4:Some#1)
+            |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::execution::simpleIterator::$ref_1:Some#1)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode type=(fun "fromPointer" ((alias u32)) (alias Some)) annotations=Injected
@@ -1480,7 +1480,7 @@
                 |-MatchCaseIsNode type=(native void) annotations=Local(var$5:Maybe#5)
                   |-NameIdentifierNode="$" type=(alias Some (struct value:<null>))
                   |-BlockNode type=(native void)
-                    |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::value_8:i32#4)
+                    |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::simpleIterator::value_7:i32#4)
                       |-NameIdentifierNode="value" type=(alias i32 (native i32))
                       |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property_value" ((alias Some)) (alias i32))
                         |-ReferenceNode type=(alias Some (struct value:<null>)) annotations=Local(var$5:Maybe#5)
@@ -1496,7 +1496,7 @@
                           |-QNameNode=ret
                             |-NameIdentifierNode="ret"
                         |-NameIdentifierNode="+"
-                        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::value_8:i32#4)
+                        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test::fixtures::execution::simpleIterator::value_7:i32#4)
                           |-QNameNode=value
                             |-NameIdentifierNode="value"
                     |-ContinueNode type=(native void) annotations=CurrentLoop

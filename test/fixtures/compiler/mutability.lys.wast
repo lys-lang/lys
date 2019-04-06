@@ -1016,13 +1016,13 @@
     )
   )
   (func $test::fixtures::compiler::mutability::main2_1 (param $x i32) (result i32)
-    (local $test::fixtures::compiler::mutability::a_3 i32)
+    (local $test::fixtures::compiler::mutability::a_1 i32)
     (block $B1 (result i32)
-      (local.set $test::fixtures::compiler::mutability::a_3 (i32.const 1))
+      (local.set $test::fixtures::compiler::mutability::a_1 (i32.const 1))
       (if $IF2 (call $system::core::i32.==_1 (local.get $x) (i32.const 1))
           (then
             (block $B3
-                (local.set $test::fixtures::compiler::mutability::a_3 (i32.const 3))
+                (local.set $test::fixtures::compiler::mutability::a_1 (i32.const 3))
               )
           )
           (else
@@ -1031,7 +1031,7 @@
               )
           )
         )
-      (local.get $test::fixtures::compiler::mutability::a_3)
+      (local.get $test::fixtures::compiler::mutability::a_1)
     )
   )
 )

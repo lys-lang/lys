@@ -1040,13 +1040,13 @@
     )
   )
   (func $test::fixtures::compiler::loops::test2_1
-    (local $test::fixtures::compiler::loops::x_4 i32)
+    (local $test::fixtures::compiler::loops::x_1 i32)
     (block $B1
-      (local.set $test::fixtures::compiler::loops::x_4 (i32.const 1))
+      (local.set $test::fixtures::compiler::loops::x_1 (i32.const 1))
       (block $Break2
           (loop $Loop2
               (block $B3
-                  (local.set $test::fixtures::compiler::loops::x_4 (call $system::core::i32.+_1 (local.get $test::fixtures::compiler::loops::x_4) (i32.const 1)))
+                  (local.set $test::fixtures::compiler::loops::x_1 (call $system::core::i32.+_1 (local.get $test::fixtures::compiler::loops::x_1) (i32.const 1)))
                   (br $Loop2)
                 )
             )
@@ -1054,17 +1054,17 @@
     )
   )
   (func $test::fixtures::compiler::loops::test3_1
-    (local $test::fixtures::compiler::loops::x_7 i32)
+    (local $test::fixtures::compiler::loops::x_2 i32)
     (block $B1
-      (local.set $test::fixtures::compiler::loops::x_7 (i32.const 1))
+      (local.set $test::fixtures::compiler::loops::x_2 (i32.const 1))
       (block $Break2
           (loop $Loop2
               (block $B3
                   (block $Break4
                       (loop $Loop4
                           (block $B5
-                              (local.set $test::fixtures::compiler::loops::x_7 (call $system::core::i32.+_1 (local.get $test::fixtures::compiler::loops::x_7) (i32.const 1)))
-                              (if $IF6 (call $system::core::i32.==_1 (local.get $test::fixtures::compiler::loops::x_7) (i32.const 10))
+                              (local.set $test::fixtures::compiler::loops::x_2 (call $system::core::i32.+_1 (local.get $test::fixtures::compiler::loops::x_2) (i32.const 1)))
+                              (if $IF6 (call $system::core::i32.==_1 (local.get $test::fixtures::compiler::loops::x_2) (i32.const 10))
                                   (then
                                     (br $Break4)
                                   )
@@ -1073,7 +1073,7 @@
                             )
                         )
                     )
-                  (if $IF7 (call $system::core::i32.>_1 (local.get $test::fixtures::compiler::loops::x_7) (i32.const 100))
+                  (if $IF7 (call $system::core::i32.>_1 (local.get $test::fixtures::compiler::loops::x_2) (i32.const 100))
                       (then
                         (br $Break2)
                       )

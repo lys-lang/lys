@@ -893,7 +893,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::discriminant_3:u32#0)
+            |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::discriminant_1:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -905,7 +905,7 @@
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
               |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::discriminant_3:u32#0)
+                |-ReferenceNode type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::discriminant_1:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
                 |-ReferenceNode type=(type (alias i64 (native i64)))
@@ -1125,21 +1125,21 @@
             |-MatchCaseIsNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$4:Tree#4)
               |-NameIdentifierNode="$" type=(alias Node (struct value:<null> left:<null> right:<null>))
               |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-                |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::value_8:i32#1)
+                |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::value_7:i32#1)
                   |-NameIdentifierNode="value" type=(alias i32 (native i32))
                   |-MemberNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property_value" ((alias Node)) (alias i32))
                     |-ReferenceNode type=(alias Node (struct value:<null> left:<null> right:<null>)) annotations=Local(var$4:Tree#4)
                       |-QNameNode=$
                         |-NameIdentifierNode="$"
                     |-NameIdentifierNode="value"
-                |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::left_2:Tree#2)
+                |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::left_1:Tree#2)
                   |-NameIdentifierNode="left" type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct))))
                   |-MemberNode type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct)))) annotations=IsValueNode,ImplicitCall(fun "property_left" ((alias Node)) (alias Tree))
                     |-ReferenceNode type=(alias Node (struct value:<null> left:<null> right:<null>)) annotations=Local(var$4:Tree#4)
                       |-QNameNode=$
                         |-NameIdentifierNode="$"
                     |-NameIdentifierNode="left"
-                |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::right_2:Tree#3)
+                |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::right_1:Tree#3)
                   |-NameIdentifierNode="right" type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct))))
                   |-MemberNode type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct)))) annotations=IsValueNode,ImplicitCall(fun "property_right" ((alias Node)) (alias Tree))
                     |-ReferenceNode type=(alias Node (struct value:<null> left:<null> right:<null>)) annotations=Local(var$4:Tree#4)
@@ -1148,7 +1148,7 @@
                     |-NameIdentifierNode="right"
                 |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
                   |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                    |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::value_8:i32#1)
+                    |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::value_7:i32#1)
                       |-QNameNode=value
                         |-NameIdentifierNode="value"
                     |-NameIdentifierNode="+"
@@ -1156,7 +1156,7 @@
                       |-ReferenceNode type=(fun "sum" ((alias Tree)) (alias i32))
                         |-QNameNode=sum
                           |-NameIdentifierNode="sum"
-                      |-ReferenceNode type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct)))) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::left_2:Tree#2)
+                      |-ReferenceNode type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct)))) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::left_1:Tree#2)
                         |-QNameNode=left
                           |-NameIdentifierNode="left"
                   |-NameIdentifierNode="+"
@@ -1164,7 +1164,7 @@
                     |-ReferenceNode type=(fun "sum" ((alias Tree)) (alias i32))
                       |-QNameNode=sum
                         |-NameIdentifierNode="sum"
-                    |-ReferenceNode type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct)))) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::right_2:Tree#3)
+                    |-ReferenceNode type=(alias Tree (union (alias Node (struct value:<null> left:<null> right:<null>)) (alias Empty (struct)))) annotations=IsValueNode,Local(test::fixtures::execution::traverseTree::right_1:Tree#3)
                       |-QNameNode=right
                         |-NameIdentifierNode="right"
               |-ReferenceNode type=(type (alias Node (struct value:<null> left:<null> right:<null>)))
