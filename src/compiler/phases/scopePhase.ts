@@ -5,7 +5,7 @@ import { AstNodeError, UnreachableCode } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
 import { findParentDelegate } from '../nodeHelpers';
-import { getDocument, fixParents, collectImports } from './helpers';
+import { getDocument, fixParents } from './helpers';
 import { Closure } from '../Closure';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
@@ -223,7 +223,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
     }
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
-      parsingContext.getPhase(node.module.text, PhaseFlags.Scope);
+      parsingContext.getPhase(node.module.text, PhaseFlags.NameInitialization);
     } catch (e) {
       parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node);
     }
@@ -314,7 +314,7 @@ const validateLoops = walkPreOrder(
   }
 );
 
-function scopesAndNamesPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+export function executeNameInitializationPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   if (document.phasesRun & PhaseFlags.NameInitialization) return;
 
   document.closure = new Closure(parsingContext, document.moduleName, null, '[DocumentScope]');
@@ -330,32 +330,6 @@ function scopesAndNamesPhase(document: Nodes.DocumentNode, parsingContext: Parsi
   document.phasesRun |= PhaseFlags.NameInitialization;
 
   return;
-}
-
-/**
- * This phase registers all the name, creates all the scopes, and registers the
- * imported modules.
- * It runs until no module import is added.
- */
-function executeNameInitializationPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
-  const moduleList = new Set<string>();
-
-  moduleList.add(document.moduleName);
-  let didAddNewOnes = true;
-
-  while (didAddNewOnes) {
-    didAddNewOnes = false;
-
-    for (let module of moduleList) {
-      const document = parsingContext.getPhase(module, PhaseFlags.Semantic);
-
-      scopesAndNamesPhase(document, parsingContext);
-
-      if (collectImports(moduleList, document, parsingContext)) {
-        didAddNewOnes = true;
-      }
-    }
-  }
 }
 
 export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
