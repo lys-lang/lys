@@ -72,14 +72,11 @@
   )
   (if
    (i32.gt_u
-    (local.tee $0
+    (local.tee $1
      (i32.and
       (i32.add
        (global.get $global$2)
        (i32.add
-        (local.tee $2
-         (global.get $global$6)
-        )
         (select
          (local.get $0)
          (i32.const 8)
@@ -87,6 +84,9 @@
           (local.get $0)
           (i32.const 8)
          )
+        )
+        (local.tee $0
+         (global.get $global$6)
         )
        )
       )
@@ -97,7 +97,7 @@
      )
     )
     (i32.shl
-     (local.tee $1
+     (local.tee $2
       (current_memory)
      )
      (i32.const 16)
@@ -107,17 +107,15 @@
     (i32.lt_u
      (grow_memory
       (select
-       (local.tee $3
-        (local.get $1)
-       )
+       (local.get $2)
        (local.tee $4
-        (local.tee $1
+        (local.tee $3
          (i32.shr_s
           (i32.and
            (i32.add
             (i32.sub
+             (local.get $1)
              (local.get $0)
-             (local.get $2)
             )
             (i32.const 65535)
            )
@@ -128,7 +126,7 @@
         )
        )
        (i32.gt_u
-        (local.get $3)
+        (local.get $2)
         (local.get $4)
        )
       )
@@ -138,7 +136,7 @@
     (if
      (i32.lt_u
       (grow_memory
-       (local.get $1)
+       (local.get $3)
       )
       (i32.const 0)
      )
@@ -147,9 +145,9 @@
    )
   )
   (global.set $global$6
-   (local.get $0)
+   (local.get $1)
   )
-  (local.get $2)
+  (local.get $0)
  )
  (func $3 (; 3 ;) (type $11) (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -372,7 +370,7 @@
     )
    )
   )
-  (local.set $5
+  (local.set $4
    (i64.xor
     (i64.load
      (i32.add
@@ -429,7 +427,7 @@
    (i64.xor
     (local.tee $1
      (i64.xor
-      (local.tee $6
+      (local.tee $5
        (i64.xor
         (i64.load
          (i32.add
@@ -480,7 +478,7 @@
        )
       )
       (i64.rotl
-       (local.tee $4
+       (local.tee $6
         (i64.xor
          (i64.load
           (i32.add
@@ -728,13 +726,13 @@
     (i32.const 16)
    )
    (i64.xor
-    (local.tee $4
+    (local.tee $1
      (i64.xor
       (i64.rotl
-       (local.get $5)
+       (local.get $4)
        (i64.const 1)
       )
-      (local.get $4)
+      (local.get $6)
      )
     )
     (i64.load
@@ -755,7 +753,7 @@
     (i32.const 56)
    )
    (i64.xor
-    (local.get $4)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -774,7 +772,7 @@
     (i32.const 96)
    )
    (i64.xor
-    (local.get $4)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -793,7 +791,7 @@
     (i32.const 136)
    )
    (i64.xor
-    (local.get $4)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -812,7 +810,7 @@
     (i32.const 176)
    )
    (i64.xor
-    (local.get $4)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -831,10 +829,10 @@
     (i32.const 24)
    )
    (i64.xor
-    (local.tee $3
+    (local.tee $1
      (i64.xor
       (i64.rotl
-       (local.get $6)
+       (local.get $5)
        (i64.const 1)
       )
       (local.get $3)
@@ -858,7 +856,7 @@
     (i32.const -64)
    )
    (i64.xor
-    (local.get $3)
+    (local.get $1)
     (i64.load
      (i32.sub
       (i32.wrap_i64
@@ -877,7 +875,7 @@
     (i32.const 104)
    )
    (i64.xor
-    (local.get $3)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -896,7 +894,7 @@
     (i32.const 144)
    )
    (i64.xor
-    (local.get $3)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -915,7 +913,7 @@
     (i32.const 184)
    )
    (i64.xor
-    (local.get $3)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -934,13 +932,13 @@
     (i32.const 32)
    )
    (i64.xor
-    (local.tee $2
+    (local.tee $1
      (i64.xor
       (i64.rotl
        (local.get $2)
        (i64.const 1)
       )
-      (local.get $5)
+      (local.get $4)
      )
     )
     (i64.load
@@ -961,7 +959,7 @@
     (i32.const 72)
    )
    (i64.xor
-    (local.get $2)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -980,7 +978,7 @@
     (i32.const 112)
    )
    (i64.xor
-    (local.get $2)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -999,7 +997,7 @@
     (i32.const 152)
    )
    (i64.xor
-    (local.get $2)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
@@ -1018,7 +1016,7 @@
     (i32.const 192)
    )
    (i64.xor
-    (local.get $2)
+    (local.get $1)
     (i64.load
      (i32.add
       (i32.wrap_i64
