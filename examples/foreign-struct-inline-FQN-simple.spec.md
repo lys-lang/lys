@@ -1,6 +1,6 @@
 # Test
 
-Ensure that types from other modules can be accessed via fully qualified names. (`lib::Some(12)`)
+Ensure that types from other modules can be accessed via fully qualified names, without implicit imports. (`lib::Some(12)`)
 
 #### main.lys
 

@@ -16,7 +16,7 @@ import {
   StructType
 } from '../types';
 import { AstNodeError } from '../NodeError';
-import { getDocument, fixParents } from './helpers';
+import { getDocument, fixParents, getModuleSet } from './helpers';
 
 const initializeTypes = walkPreOrder<Nodes.Node>(
   (_node, _phase) => {
@@ -97,16 +97,35 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
   }
 );
 
-export function executeTypePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext, printGraph = false) {
-  if (document.phasesRun & PhaseFlags.TypeCheck) return;
+function initializeExports(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.TypeInitialization) return;
 
   fixParents(document, parsingContext);
   initializeTypes(document, parsingContext);
+
+  document.phasesRun |= PhaseFlags.TypeInitialization;
+}
+
+export function executeTypeGraph(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.TypeGraph) return;
+
+  const moduleList = getModuleSet(document, parsingContext);
+
+  moduleList.forEach($ => {
+    initializeExports(parsingContext.getPhase($, PhaseFlags.Scope), parsingContext);
+  });
+
+  document.phasesRun |= PhaseFlags.TypeGraph;
+}
+
+export function executeTypeCheck(document: Nodes.DocumentNode, parsingContext: ParsingContext, printGraph = false) {
+  if (document.phasesRun & PhaseFlags.TypeCheck) return;
 
   try {
     const graphBuilder = new TypeGraphBuilder(parsingContext, parsingContext.typeGraph);
 
     const typeGraph = (document.typeGraph = graphBuilder.build(document));
+
     const typeResolutionContext = new TypeResolutionContext(typeGraph, parsingContext);
 
     const executor = typeResolutionContext.newExecutorWithContext(document.closure!, typeGraph, parsingContext);

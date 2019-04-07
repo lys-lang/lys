@@ -1,5 +1,5 @@
 import { TypeNode, TypeGraph, TypeResolver, Edge, LiteralTypeResolver } from './TypeGraph';
-import { Nodes } from '../nodes';
+import { Nodes, PhaseFlags } from '../nodes';
 import {
   getTypeResolver,
   EdgeLabels,
@@ -70,10 +70,14 @@ export class TypeGraphBuilder {
     if (referenceNode.isLocalReference) {
       return this.findNode(referenceNode.referencedNode);
     } else {
-      const moduleDocument = this.parsingContext.getTypePhase(referenceNode.moduleName!);
-      if (moduleDocument.typeGraph) {
-        const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
-        return typeNode;
+      if (referenceNode.referencedNode.typeNode) {
+        return referenceNode.referencedNode.typeNode;
+      } else {
+        const moduleDocument = this.parsingContext.getPhase(referenceNode.moduleName!, PhaseFlags.TypeCheck);
+        if (moduleDocument.typeGraph) {
+          const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
+          return typeNode;
+        }
       }
     }
     return null;

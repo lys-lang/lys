@@ -399,7 +399,7 @@
        )
        (i64.const -4294967296)
       )
-      (i64.const 77309411328)
+      (i64.const 81604378624)
      )
     )
    )
@@ -446,7 +446,7 @@
       (i64.extend_i32_u
        (local.get $1)
       )
-      (i64.const 81604378624)
+      (i64.const 64424509440)
      )
     )
    )
@@ -999,7 +999,7 @@
    (global.get $global$5)
   )
   (global.set $global$7
-   (i64.const 73014444032)
+   (i64.const 77309411328)
   )
  )
 )

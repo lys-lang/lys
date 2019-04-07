@@ -17,6 +17,7 @@ import { readFileSync } from 'fs';
 import envLib from '../dist/utils/libs/env';
 import testLib, { getTestResults } from '../dist/utils/libs/test';
 import { NodeSystem } from '../dist/support/NodeSystem';
+import { PhaseFlags } from '../dist/compiler/nodes';
 
 declare var it;
 
@@ -32,7 +33,8 @@ const phasesForContent = function(txt: string, fileName: string): CodeGeneration
   const moduleName = parsingContext.getModuleFQNForFile(fileName);
   parsingContext.invalidateModule(moduleName);
   parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
-  const compilation = parsingContext.getCompilationPhase(moduleName);
+  const compilation = parsingContext.getPhase(moduleName, PhaseFlags.Compilation);
+
   return new CodeGenerationPhaseResult(compilation, parsingContext);
 };
 

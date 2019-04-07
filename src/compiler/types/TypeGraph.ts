@@ -133,10 +133,16 @@ export class TypeNode {
   private _outgoingEdges: Array<Edge> = [];
   private _incomingEdges: Array<Edge> = [];
   private succeed: boolean = false;
+
   constructor(public astNode: Nodes.Node, public typeResolver: TypeResolver) {
     if (!astNode) {
       throw new Error('empty astNode');
     }
+    if (astNode.typeNode) {
+      console.trace();
+      throw new AstNodeError('this node already has a TypeNode', astNode);
+    }
+    astNode.typeNode = this;
   }
 
   execute(ctx: TypeResolutionContext): void {

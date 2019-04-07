@@ -19,12 +19,16 @@ const resolveLocals = walkPreOrder(
        */
       const fn = findParentType(node, Nodes.FunctionNode);
       if (fn) {
-        const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType!));
-        node.annotate(localAnnotation);
+        if (node.lhs.ofType) {
+          const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType));
+          node.annotate(localAnnotation);
 
-        node.matchingSet.forEach($ => {
-          $.annotate(localAnnotation);
-        });
+          node.matchingSet.forEach($ => {
+            $.annotate(localAnnotation);
+          });
+        } else {
+          throw new AstNodeError('node.lhs.ofType is undefined', node.lhs);
+        }
       } else {
         // TODO: what if we reach here?
       }

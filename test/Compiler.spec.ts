@@ -7,6 +7,7 @@ import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printAST } from '../dist/utils/astPrinter';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
 import { nodeSystem } from '../dist/support/NodeSystem';
+import { PhaseFlags } from '../dist/compiler/nodes';
 
 const compilerTestParsingContext = new ParsingContext(nodeSystem);
 compilerTestParsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
@@ -16,7 +17,7 @@ const compilationPhases = function(txt: string, fileName: string): PhasesResult 
   const moduleName = compilerTestParsingContext.getModuleFQNForFile(fileName);
   compilerTestParsingContext.invalidateModule(moduleName);
   compilerTestParsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
-  const compiler = compilerTestParsingContext.getCompilationPhase(moduleName);
+  const compiler = compilerTestParsingContext.getPhase(moduleName, PhaseFlags.Compilation);
   failWithErrors('Compilation phase', compilerTestParsingContext);
   return { parsingContext: compilerTestParsingContext, document: compiler };
 };

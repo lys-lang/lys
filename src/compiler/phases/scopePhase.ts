@@ -5,7 +5,7 @@ import { AstNodeError, UnreachableCode } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
 import { findParentDelegate } from '../nodeHelpers';
-import { getDocument, fixParents } from './helpers';
+import { getDocument, fixParents, collectImports } from './helpers';
 import { Closure } from '../Closure';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
@@ -223,7 +223,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
     }
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
-      parsingContext.getScopePhase(node.module.text);
+      parsingContext.getPhase(node.module.text, PhaseFlags.Scope);
     } catch (e) {
       parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node);
     }
@@ -231,7 +231,10 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
 });
 
 const findImplicitImports = walkPreOrder((node: Nodes.Node, _: ParsingContext) => {
-  if (node instanceof Nodes.ReferenceNode) {
+  if (node instanceof Nodes.ImportDirectiveNode) {
+    const importAll = node.allItems ? new Set(['*']) : new Set();
+    node.closure!.registerImport(node.module.text, importAll);
+  } else if (node instanceof Nodes.ReferenceNode) {
     if (node.variable.names.length > 1) {
       const { moduleName, variable } = node.variable.deconstruct();
       node.closure!.registerImport(moduleName, new Set([variable]));
@@ -311,8 +314,8 @@ const validateLoops = walkPreOrder(
   }
 );
 
-export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
-  if (document.phasesRun & PhaseFlags.Scope) return;
+function scopesAndNamesPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.NameInitialization) return;
 
   document.closure = new Closure(parsingContext, document.moduleName, null, '[DocumentScope]');
 
@@ -322,20 +325,47 @@ export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: 
 
   fixParents(document, parsingContext);
 
-  (document.directives.filter($ => $ instanceof Nodes.ImportDirectiveNode) as Nodes.ImportDirectiveNode[]).forEach(
-    $ => {
-      const importAll = $.allItems ? new Set(['*']) : new Set();
-      document.closure!.registerImport($.module.text, importAll);
-    }
-  );
-
   findImplicitImports(document, parsingContext, null);
+
+  document.phasesRun |= PhaseFlags.NameInitialization;
+
+  return;
+}
+
+/**
+ * This phase registers all the name, creates all the scopes, and registers the
+ * imported modules.
+ * It runs until no module import is added.
+ */
+function executeNameInitializationPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  const moduleList = new Set<string>();
+
+  moduleList.add(document.moduleName);
+  let didAddNewOnes = true;
+
+  while (didAddNewOnes) {
+    didAddNewOnes = false;
+
+    for (let module of moduleList) {
+      const document = parsingContext.getPhase(module, PhaseFlags.Semantic);
+
+      scopesAndNamesPhase(document, parsingContext);
+
+      if (collectImports(moduleList, document, parsingContext)) {
+        didAddNewOnes = true;
+      }
+    }
+  }
+}
+
+export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.phasesRun & PhaseFlags.Scope) return;
+
+  executeNameInitializationPhase(document, parsingContext);
 
   resolveVariables(document, parsingContext, null);
   findValueNodes(document, parsingContext, null);
-
   injectImplicitCalls(document, parsingContext, null);
-
   validateLoops(document, parsingContext);
 
   document.phasesRun |= PhaseFlags.Scope;

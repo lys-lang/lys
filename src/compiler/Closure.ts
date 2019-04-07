@@ -1,4 +1,4 @@
-import { Nodes } from './nodes';
+import { Nodes, PhaseFlags } from './nodes';
 import { Reference } from './Reference';
 import { ParsingContext } from './ParsingContext';
 import { AstNodeError } from './NodeError';
@@ -104,7 +104,7 @@ export class Closure {
         const parts = localName.split('::');
         const moduleName = parts.slice(0, -1).join('::');
         const name = parts[parts.length - 1];
-        const moduleDocument = this.parsingContext.getScopePhase(moduleName);
+        const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.Scope);
         const ref = moduleDocument.closure!.get(name, recurseParent);
 
         return ref.withModule(moduleName);
@@ -115,7 +115,7 @@ export class Closure {
       }
 
       for (let [moduleName, importsSet] of this.importedModules) {
-        const moduleDocument = this.parsingContext.getScopePhase(moduleName);
+        const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.Scope);
 
         if (importsSet.has(localName)) {
           const ref = moduleDocument.closure!.get(localName, recurseParent);

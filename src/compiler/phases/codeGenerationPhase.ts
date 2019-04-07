@@ -11,13 +11,14 @@ import * as binaryen from 'binaryen';
 import _wabt = require('wabt');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
-import { Nodes, findNodesByType } from '../nodes';
+import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
 import { findParentType } from '../nodeHelpers';
 import { FunctionType, Type } from '../types';
 import { AstNodeError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { printAST } from '../../utils/astPrinter';
-import { walk } from '../walker';
+import { getModuleSet } from './helpers';
+import { failWithErrors } from '../findAllErrors';
 
 type CompilationModuleResult = {
   document: Nodes.DocumentNode;
@@ -78,9 +79,11 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
         retType
       );
     }
-    throw new Error(fnType + ' has no return type');
+    throw new AstNodeError(fnType + ' has no return type', fn);
+  } else if (fnType) {
+    throw new AstNodeError(fnType + ' is not a function', fn);
   } else {
-    throw new Error(fnType + ' is not afunction');
+    throw new AstNodeError('Function did not resolve any type', fn);
   }
 }
 
@@ -406,6 +409,8 @@ export class CodeGenerationPhaseResult {
   buffer?: Uint8Array;
 
   constructor(public document: Nodes.DocumentNode, public parsingContext: ParsingContext) {
+    failWithErrors(`Compilation`, parsingContext);
+
     try {
       this.execute();
     } catch (e) {
@@ -606,42 +611,10 @@ export class CodeGenerationPhaseResult {
   protected execute() {
     const exportList = [this.document];
 
-    const moduleList = new Set<string>();
-
-    const collectImports = (document: Nodes.DocumentNode) => {
-      let added = false;
-      walk(document, this.parsingContext, node => {
-        if (node.closure && node.closure.importedModules.size) {
-          node.closure.importedModules.forEach((_, $) => {
-            if (!moduleList.has($)) {
-              added = true;
-              moduleList.add($);
-            }
-          });
-        }
-      });
-      return added;
-    };
-
-    collectImports(this.document);
-
-    let added = true;
-
-    do {
-      added = false;
-
-      moduleList.forEach($ => {
-        const scope = this.parsingContext.getScopePhase($);
-        if (scope) {
-          added = collectImports(scope);
-        } else {
-          // ERROR
-        }
-      });
-    } while (added);
+    const moduleList = getModuleSet(this.document, this.parsingContext);
 
     moduleList.forEach($ => {
-      const compilation = this.parsingContext.getCompilationPhase($);
+      const compilation = this.parsingContext.getPhase($, PhaseFlags.Compilation);
 
       if (!exportList.includes(compilation)) {
         exportList.push(compilation);
