@@ -127,14 +127,11 @@
   )
   (if
    (i32.gt_u
-    (local.tee $0
+    (local.tee $1
      (i32.and
       (i32.add
        (global.get $global$2)
        (i32.add
-        (local.tee $2
-         (global.get $global$6)
-        )
         (select
          (local.get $0)
          (i32.const 8)
@@ -142,6 +139,9 @@
           (local.get $0)
           (i32.const 8)
          )
+        )
+        (local.tee $0
+         (global.get $global$6)
         )
        )
       )
@@ -152,7 +152,7 @@
      )
     )
     (i32.shl
-     (local.tee $1
+     (local.tee $2
       (current_memory)
      )
      (i32.const 16)
@@ -162,17 +162,15 @@
     (i32.lt_u
      (grow_memory
       (select
-       (local.tee $3
-        (local.get $1)
-       )
+       (local.get $2)
        (local.tee $4
-        (local.tee $1
+        (local.tee $3
          (i32.shr_s
           (i32.and
            (i32.add
             (i32.sub
+             (local.get $1)
              (local.get $0)
-             (local.get $2)
             )
             (i32.const 65535)
            )
@@ -183,7 +181,7 @@
         )
        )
        (i32.gt_u
-        (local.get $3)
+        (local.get $2)
         (local.get $4)
        )
       )
@@ -193,7 +191,7 @@
     (if
      (i32.lt_u
       (grow_memory
-       (local.get $1)
+       (local.get $3)
       )
       (i32.const 0)
      )
@@ -202,9 +200,9 @@
    )
   )
   (global.set $global$6
-   (local.get $0)
+   (local.get $1)
   )
-  (local.get $2)
+  (local.get $0)
  )
  (func $3 (; 7 ;) (type $7) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
