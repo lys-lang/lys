@@ -2,7 +2,7 @@
 
 import { main } from './index-bin';
 
-main(process.cwd(), process.argv)
+main(process.cwd(), process.argv.slice(2))
   .then(() => process.exit(0))
   .catch($ => {
     if (process.argv.includes('--debug')) {

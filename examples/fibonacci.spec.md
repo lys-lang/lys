@@ -2,12 +2,45 @@
 
 Recursive Fibonacci series. Using if and pattern matching.
 
+#### lib/fibonacci_if.lys
+
+```dwl
+
+private fun fibonacci(n: i64, x1: i64, x2: i64): i64 = {
+  if (n > 0) {
+    fibonacci(n - 1, x2, x1 + x2)
+  } else {
+    x1
+  }
+}
+
+fun fibonacciIf(n: i64): i64 =
+  fibonacci(n, 0, 1)
+
+```
+
+#### lib/fibonacci_match.lys
+
+```dwl
+
+private fun fibonacci(n: i64, a: i64, b: i64): i64 =
+  match n {
+    case 0 -> a
+    case 1 -> b
+    else   -> fibonacci(n - 1, b, a + b)
+  }
+
+fun fibonacciMatch(n: i64): i64 =
+  fibonacci(n, 0, 1)
+
+```
+
 #### main.lys
 
 ```dwl
 import support::test
-import Math::fibonacci_if
-import Math::fibonacci_match
+import lib::fibonacci_if
+import lib::fibonacci_match
 
 #[export]
 fun main(): void = {
@@ -25,37 +58,4 @@ fun main(): void = {
 
   END()
 }
-```
-
-#### Math/fibonacci_if.lys
-
-```dwl
-
-private fun fibonacci(n: i64, x1: i64, x2: i64): i64 = {
-  if (n > 0) {
-    fibonacci(n - 1, x2, x1 + x2)
-  } else {
-    x1
-  }
-}
-
-fun fibonacciIf(n: i64): i64 =
-  fibonacci(n, 0, 1)
-
-```
-
-#### Math/fibonacci_match.lys
-
-```dwl
-
-private fun fibonacci(n: i64, a: i64, b: i64): i64 =
-  match n {
-    case 0 -> a
-    case 1 -> b
-    else   -> fibonacci(n - 1, b, a + b)
-  }
-
-fun fibonacciMatch(n: i64): i64 =
-  fibonacci(n, 0, 1)
-
 ```
