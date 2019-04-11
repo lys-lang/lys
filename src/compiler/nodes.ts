@@ -147,11 +147,6 @@ export namespace Nodes {
       const r = new NameIdentifierNode(astNode, name);
       return r;
     }
-
-    getSelfReference() {
-      // TODO: Review this
-      return this.closure!.get(this.name, false);
-    }
   }
 
   export class QNameNode extends Node {

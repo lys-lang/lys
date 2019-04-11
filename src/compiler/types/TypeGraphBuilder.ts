@@ -122,6 +122,9 @@ export class TypeGraphBuilder {
   }
 
   findNode(referenceNoded: Nodes.Node): TypeNode | null {
+    if (referenceNoded.typeNode) {
+      return referenceNoded.typeNode;
+    }
     const localNode = this.findLocalNode(referenceNoded);
     return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNoded));
   }
@@ -159,11 +162,9 @@ export class TypeGraphBuilder {
         // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
         throw new AstNodeError(
           'Unable to resolve reference to ' +
-            reference.referencedNode.name +
-            ' from ' +
-            (reference.moduleName || 'local module') +
-            '\n' +
-            result.astNode.closure!.inspect(),
+            (reference.moduleName
+              ? reference.moduleName + '::' + reference.referencedNode.name
+              : reference.referencedNode.name),
           result.astNode
         );
       }
@@ -183,7 +184,7 @@ export class TypeGraphBuilder {
 
   private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode, edgeName?: string): void {
     try {
-      const reference = node.closure!.get(name, true);
+      const reference = node.closure!.get(name);
 
       this.resolveReference(reference, result, edgeName);
     } catch (e) {
@@ -193,7 +194,7 @@ export class TypeGraphBuilder {
 
   private resolveVariable(node: Nodes.QNameNode, result: TypeNode): void {
     try {
-      const reference = node.closure!.getQName(node, true);
+      const reference = node.closure!.getQName(node);
 
       this.resolveReference(reference, result);
     } catch (e) {

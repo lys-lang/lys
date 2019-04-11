@@ -52,25 +52,31 @@ const resolveLocals = walkPreOrder(
   }
 );
 
-const resolveVariables = walkPreOrder((node: Nodes.Node, _: ParsingContext) => {
+const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext) => {
   if (node instanceof Nodes.ReferenceNode) {
-    if (node.resolvedReference!.type === 'VALUE') {
-      const decl = node.resolvedReference!.referencedNode.parent; // NameIdentifierNode#parent
-      if (
-        decl instanceof Nodes.ParameterNode ||
-        decl instanceof Nodes.VarDeclarationNode ||
-        decl instanceof Nodes.ValDeclarationNode ||
-        decl instanceof Nodes.MatcherNode
-      ) {
-        const declLocal = decl.getAnnotation(annotations.LocalIdentifier);
+    if (node.resolvedReference) {
+      if (node.resolvedReference.type === 'VALUE') {
+        const decl = node.resolvedReference!.referencedNode.parent; // NameIdentifierNode#parent
+        if (
+          decl instanceof Nodes.ParameterNode ||
+          decl instanceof Nodes.VarDeclarationNode ||
+          decl instanceof Nodes.ValDeclarationNode ||
+          decl instanceof Nodes.MatcherNode
+        ) {
+          const declLocal = decl.getAnnotation(annotations.LocalIdentifier);
 
-        if (!declLocal) {
-          throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
+          if (!declLocal) {
+            throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
+          }
+
+          node.annotate(declLocal);
+        } else {
+          throw new AstNodeError(`Value node has no local`, decl!);
         }
-
-        node.annotate(declLocal);
-      } else {
-        throw new AstNodeError(`Value node has no local`, decl!);
+      }
+    } else {
+      if (!parsingContext.messageCollector.hasErrorForBranch(node)) {
+        throw new AstNodeError(`Reference was not resolved`, node);
       }
     }
   }

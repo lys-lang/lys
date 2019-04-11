@@ -2,11 +2,13 @@ import { Nodes, PhaseFlags } from './nodes';
 import { Reference } from './Reference';
 import { ParsingContext } from './ParsingContext';
 import { AstNodeError } from './NodeError';
+import { indent } from '../utils/astPrinter';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
 export class Closure {
   localScopeDeclares: Set<string> = new Set();
+  exportedNames: Set<string> = new Set();
   nameMappings: Record<string, Reference> = {};
   localUsages: Record<string, number> = {};
 
@@ -49,7 +51,7 @@ export class Closure {
   }
 
   incrementUsage(name: string) {
-    const reference = this.get(name, true);
+    const reference = this.get(name);
     this.localUsages[name] = (this.localUsages[name] || 0) + 1;
     reference.usages++;
   }
@@ -58,7 +60,7 @@ export class Closure {
     this.incrementUsage(name.text);
   }
 
-  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType): Reference | null {
+  set(nameNode: Nodes.NameIdentifierNode, type: ReferenceType, exported: boolean): Reference | null {
     const localName = nameNode.name;
 
     if (localName === '_') return null;
@@ -69,6 +71,10 @@ export class Closure {
 
     this.nameMappings[localName] = new Reference(nameNode, this, type, null);
 
+    if (exported) {
+      this.exportedNames.add(localName);
+    }
+
     this.localScopeDeclares.add(localName);
 
     if (!nameNode.internalIdentifier) {
@@ -78,52 +84,67 @@ export class Closure {
     return this.nameMappings[localName];
   }
 
-  canResolveName(localName: string, recurseParent: boolean) {
+  canResolveName(localName: string) {
     try {
-      return !!this.get(localName, recurseParent);
+      return !!this.get(localName);
     } catch {
       return false;
     }
   }
 
-  canResolveQName(qname: Nodes.QNameNode, recurseParent: boolean) {
-    return this.canResolveName(qname.text, recurseParent);
+  canResolveQName(qname: Nodes.QNameNode) {
+    return this.canResolveName(qname.text);
   }
 
-  getQName(qname: Nodes.QNameNode, recurseParent: boolean): Reference {
-    return this.get(qname.text, recurseParent);
+  getQName(qname: Nodes.QNameNode): Reference {
+    return this.get(qname.text);
   }
 
-  get(localName: string, recurseParent: boolean): Reference {
+  canGetFromOutside(localName: string) {
+    return this.exportedNames.has(localName);
+  }
+
+  getFromOutside(localName: string): Reference | null {
+    if (!this.canGetFromOutside(localName)) {
+      throw new Error(`Name ${localName} is private in module ${this.name}`);
+    }
+    if (localName in this.nameMappings) {
+      return this.nameMappings[localName];
+    }
+    return null;
+  }
+
+  get(localName: string): Reference {
     if (localName in this.nameMappings) {
       return this.nameMappings[localName];
     }
 
-    if (recurseParent) {
-      if (localName.includes('::')) {
-        const parts = localName.split('::');
-        const moduleName = parts.slice(0, -1).join('::');
-        const name = parts[parts.length - 1];
-        const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
-        const ref = moduleDocument.closure!.get(name, recurseParent);
-
+    if (localName.includes('::')) {
+      const parts = localName.split('::');
+      const moduleName = parts.slice(0, -1).join('::');
+      const name = parts[parts.length - 1];
+      const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
+      const ref = moduleDocument.closure!.getFromOutside(name);
+      if (ref) {
         return ref.withModule(moduleName);
       }
+    }
 
-      if (this.parent && this.parent.canResolveName(localName, recurseParent)) {
-        return this.parent.get(localName, recurseParent);
-      }
+    if (this.parent && this.parent.canResolveName(localName)) {
+      return this.parent.get(localName);
+    }
 
-      for (let [moduleName, importsSet] of this.importedModules) {
-        const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
+    for (let [moduleName, importsSet] of this.importedModules) {
+      const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
 
-        if (importsSet.has(localName)) {
-          const ref = moduleDocument.closure!.get(localName, recurseParent);
-
+      if (importsSet.has(localName)) {
+        const ref = moduleDocument.closure!.getFromOutside(localName);
+        if (ref) {
           return ref.withModule(moduleName);
-        } else if (importsSet.has('*') && moduleDocument.closure!.canResolveName(localName, recurseParent)) {
-          const ref = moduleDocument.closure!.get(localName, recurseParent);
-
+        }
+      } else if (importsSet.has('*') && moduleDocument.closure!.canGetFromOutside(localName)) {
+        const ref = moduleDocument.closure!.getFromOutside(localName);
+        if (ref) {
           return ref.withModule(moduleName);
         }
       }
@@ -158,6 +179,23 @@ export class Closure {
 
   deepInspect(): string {
     return this.inspect(this.childrenScopes.map($ => $.deepInspect()).join('\n'));
+  }
+
+  inspectExportedNames(voidIfEmpty = false) {
+    let exportedNames: string[] = [];
+
+    this.exportedNames.forEach($ => exportedNames.push('let ' + $));
+
+    this.childrenScopes.forEach($ => {
+      const ret = $.inspectExportedNames(true);
+      if (ret.trim().length) {
+        exportedNames.push(ret);
+      }
+    });
+
+    if (!exportedNames.length && voidIfEmpty) return '';
+
+    return `${this.name}: {\n${indent(exportedNames.join('\n'))}\n}`;
   }
 
   newChildClosure(nameHint: string): Closure {

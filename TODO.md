@@ -1,8 +1,8 @@
 - automatically coerce based on implicit `as`
   - remove hardcoded ref type
 - val variables should not be reassignable
-- parameters should be immutable
-- private names are no private
+- function parameters should be immutable
+- private names are no private, it needs more tests
 - reuse string literals in memory
 - let constructs (scope)
 - methods

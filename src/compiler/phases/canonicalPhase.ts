@@ -1,5 +1,5 @@
 import { Nodes } from '../nodes';
-import { PositionCapableError } from '../NodeError';
+import { PositionCapableError, AstNodeError } from '../NodeError';
 import { walkPreOrder } from '../walker';
 import { TokenError, IToken } from 'ebnf';
 import { parser } from '../../grammar';
@@ -344,7 +344,7 @@ const visitor = {
           ret = fnCall;
         }
       } else {
-        console.log('Dont know what to doooo1' + currentNode.text);
+        throw new PositionCapableError('WAST expression requires an operation name at the begining', astNode);
       }
     }
 

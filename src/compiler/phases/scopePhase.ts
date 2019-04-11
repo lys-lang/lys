@@ -104,7 +104,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
       node.rhs.closure = node.closure!.newChildClosure('MatcherRHS');
 
       if (node.declaredName) {
-        node.rhs.closure.set(node.declaredName, 'VALUE');
+        node.rhs.closure.set(node.declaredName, 'VALUE', false);
       }
 
       if (node instanceof Nodes.MatchCaseIsNode) {
@@ -117,14 +117,14 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
                 parsingContext.messageCollector.error(new AstNodeError('Duplicated name', $));
               } else {
                 takenNames.set($.name, $);
-                node.rhs.closure!.set($, 'VALUE');
+                node.rhs.closure!.set($, 'VALUE', false);
               }
             }
           });
         }
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure!.set(node.functionName, 'FUNCTION');
+      node.closure!.set(node.functionName, 'FUNCTION', node.isPublic);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
@@ -132,15 +132,19 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
         );
       }
       node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_VarDeclaration');
-      node.closure!.set(node.variableName, 'VALUE');
+      node.closure!.set(
+        node.variableName,
+        'VALUE',
+        node.parent instanceof Nodes.VarDirectiveNode && node.parent.isPublic
+      );
     } else if (node instanceof Nodes.ImplDirective) {
       node.closure = node.closure!.newChildClosure(node.reference.variable.text + '.');
     } else if (node instanceof Nodes.TypeDirectiveNode) {
-      node.closure!.set(node.variableName, 'TYPE');
+      node.closure!.set(node.variableName, 'TYPE', node.isPublic);
     } else if (node instanceof Nodes.FunctionNode) {
       if (node.functionName) {
         if (!(parent instanceof Nodes.DirectiveNode)) {
-          node.closure!.set(node.functionName, 'VALUE');
+          node.closure!.set(node.functionName, 'VALUE', false);
         } else if (!node.functionName.internalIdentifier) {
           node.functionName.internalIdentifier = node.closure!.getInternalIdentifier(node.functionName);
         }
@@ -156,7 +160,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
         }
 
         node.parameters.forEach($ => {
-          node.body!.closure!.set($.parameterName, 'VALUE');
+          node.body!.closure!.set($.parameterName, 'VALUE', false);
         });
       }
 
@@ -208,10 +212,10 @@ function collectNamespaces(
 
 const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingContext: ParsingContext) => {
   if (node instanceof Nodes.ReferenceNode) {
-    if (!node.closure!.canResolveQName(node.variable, true)) {
+    if (!node.closure!.canResolveQName(node.variable)) {
       throw new AstNodeError(`Cannot find name '${node.variable.text}'`, node.variable);
     }
-    const resolved = node.closure!.getQName(node.variable, true);
+    const resolved = node.closure!.getQName(node.variable);
     const document = getDocument(node);
     const isGlobal = !resolved.isLocalReference || resolved.scope === document.closure;
     node.isLocal = !isGlobal;
@@ -220,6 +224,8 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
   } else if (node instanceof Nodes.ImplDirective) {
     if (node.reference.resolvedReference) {
       collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, parsingContext);
+    } else {
+      throw new AstNodeError(`Impl is not resolved`, node);
     }
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
@@ -334,8 +340,6 @@ export function executeNameInitializationPhase(document: Nodes.DocumentNode, par
 
 export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   if (document.phasesRun & PhaseFlags.Scope) return;
-
-  executeNameInitializationPhase(document, parsingContext);
 
   resolveVariables(document, parsingContext, null);
   findValueNodes(document, parsingContext, null);
