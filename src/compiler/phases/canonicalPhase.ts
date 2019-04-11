@@ -1,5 +1,5 @@
 import { Nodes } from '../nodes';
-import { PositionCapableError, AstNodeError } from '../NodeError';
+import { PositionCapableError } from '../NodeError';
 import { walkPreOrder } from '../walker';
 import { TokenError, IToken } from 'ebnf';
 import { parser } from '../../grammar';
