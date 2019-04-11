@@ -249,7 +249,7 @@
       (i64.extend_i32_u
        (local.get $2)
       )
-      (i64.const 4294967296)
+      (i64.const 64424509440)
      )
     )
    )

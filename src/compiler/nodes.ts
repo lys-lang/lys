@@ -26,9 +26,12 @@ export class Local implements LocalGlobalHeapReference {
 
 export enum PhaseFlags {
   Semantic = 1,
-  Scope = 2,
-  TypeCheck = 4,
-  Compilation = 8
+  NameInitialization = 2,
+  Scope = 4,
+  TypeInitialization = 8,
+  TypeGraph = 16,
+  TypeCheck = 32,
+  Compilation = 64
 }
 
 export namespace Nodes {
@@ -37,7 +40,6 @@ export namespace Nodes {
     readonly text: string;
     readonly start: number;
     readonly end: number;
-    readonly parent: ASTNode;
     readonly errors: TokenError[];
     readonly moduleName: string;
     readonly children: ReadonlyArray<ASTNode>;
@@ -48,6 +50,7 @@ export namespace Nodes {
     closure?: Closure;
     parent?: Node;
     ofType?: Type;
+    typeNode?: any; // TypeNode
 
     private annotations?: Set<Annotation>;
 
@@ -143,11 +146,6 @@ export namespace Nodes {
     static fromString(name: string, astNode: ASTNode) {
       const r = new NameIdentifierNode(astNode, name);
       return r;
-    }
-
-    getSelfReference() {
-      // TODO: Review this
-      return this.closure!.get(this.name, false);
     }
   }
 

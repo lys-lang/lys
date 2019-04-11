@@ -142,7 +142,7 @@
   (func $system::hash::keccak::Keccak.Keccak$discriminant_1 (result i64)
     (local $system::hash::keccak::discriminant i32)
     (block $B1 (result i64)
-      (local.set $system::hash::keccak::discriminant (i32.const 1))
+      (local.set $system::hash::keccak::discriminant (i32.const 15))
       (call $system::core::u64.<<_1 (call $system::core::u32.as_2 (local.get $system::hash::keccak::discriminant)) (i32.const 32))
     )
   )

@@ -18,7 +18,6 @@ export class MessageCollector {
           const err = new AstNodeError(message, node);
           if (error instanceof Error && error.stack) {
             err.stack = error.stack;
-            console.error(err);
           }
 
           this.errors.push(err);
@@ -29,7 +28,6 @@ export class MessageCollector {
 
         if (error instanceof Error && error.stack) {
           err.stack = error.stack;
-          console.error(err);
         }
       }
     }

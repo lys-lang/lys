@@ -175,12 +175,14 @@ const mergeImplementations = function(
 function processStruct(
   node: Nodes.StructDeclarationNode,
   parsingContext: ParsingContext,
-  document: Nodes.DocumentNode
+  document: Nodes.DocumentNode,
+  isPublic: boolean
 ): Nodes.DirectiveNode[] {
   const args = node.parameters.map($ => printNode($)).join(', ');
   const typeName = node.declaredName.name;
 
   const typeDirective = new Nodes.TypeDirectiveNode(node.astNode, node.declaredName);
+  typeDirective.isPublic = isPublic;
   const signature = new Nodes.StructTypeNode(node.astNode, []);
   typeDirective.valueType = signature;
 
@@ -427,12 +429,14 @@ const preprocessStructs = function(
       const newTypeNode = new Nodes.TypeDirectiveNode(node.astNode, node.variableName);
       const union = (newTypeNode.valueType = new Nodes.UnionTypeNode(node.astNode));
       union.of = [];
+      newTypeNode.isPublic = node.isPublic;
 
       const newDirectives: Nodes.DirectiveNode[] = [newTypeNode];
       const implDirectives: Nodes.DirectiveNode[] = [];
 
       node.declarations.forEach($ => {
-        const [decl, ...impl] = processStruct($, parsingContext, document);
+        const [decl, ...impl] = processStruct($, parsingContext, document, node.isPublic);
+
         newDirectives.push(decl);
         implDirectives.push(...impl);
         const refNode = new Nodes.ReferenceNode(
@@ -444,7 +448,7 @@ const preprocessStructs = function(
 
       container.directives.splice(container.directives.indexOf(node), 1, ...newDirectives, ...implDirectives);
     } else if (node instanceof Nodes.StructDeclarationNode) {
-      const newDirectives = processStruct(node, parsingContext, document);
+      const newDirectives = processStruct(node, parsingContext, document, node.isPublic);
       container.directives.splice(container.directives.indexOf(node as any), 1, ...newDirectives);
     }
   });

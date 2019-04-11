@@ -101,27 +101,9 @@ export class ParsingContext {
     }
   }
 
-  getSemanticPhase(moduleName: string): Nodes.DocumentNode {
+  getPhase(moduleName: string, phase: PhaseFlags): Nodes.DocumentNode {
     const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, PhaseFlags.Semantic, true);
-    return document;
-  }
-
-  getScopePhase(moduleName: string): Nodes.DocumentNode {
-    const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, PhaseFlags.Scope, true);
-    return document;
-  }
-
-  getTypePhase(moduleName: string): Nodes.DocumentNode {
-    const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, PhaseFlags.TypeCheck, true);
-    return document;
-  }
-
-  getCompilationPhase(moduleName: string): Nodes.DocumentNode {
-    const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, PhaseFlags.Compilation, true);
+    analyze(document, this, phase, true);
     return document;
   }
 

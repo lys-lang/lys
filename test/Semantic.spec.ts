@@ -1,7 +1,7 @@
 declare var describe, it, require, console;
 
 import * as expect from 'expect';
-import { findNodesByType, Nodes } from '../dist/compiler/nodes';
+import { findNodesByType, Nodes, PhaseFlags } from '../dist/compiler/nodes';
 import { folderBasedTest, testParseToken, testParseTokenFailsafe, PhasesResult } from './TestHelpers';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
@@ -17,7 +17,7 @@ describe('Semantic', function() {
     const moduleName = parsingContext.getModuleFQNForFile(fileName);
     parsingContext.invalidateModule(moduleName);
     parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
-    return { parsingContext, document: parsingContext.getSemanticPhase(moduleName) };
+    return { parsingContext, document: parsingContext.getPhase(moduleName, PhaseFlags.Semantic) };
   };
 
   const scopePhases = function(txt: string, fileName: string): PhasesResult {
@@ -25,7 +25,7 @@ describe('Semantic', function() {
     const moduleName = parsingContext.getModuleFQNForFile(fileName);
     parsingContext.invalidateModule(moduleName);
     parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
-    return { parsingContext, document: parsingContext.getScopePhase(moduleName) };
+    return { parsingContext, document: parsingContext.getPhase(moduleName, PhaseFlags.Scope) };
   };
 
   describe('Files', () => {

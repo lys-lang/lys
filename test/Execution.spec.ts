@@ -994,6 +994,7 @@ describe('Execution tests', () => {
   describe('fixtures/execution', () => {
     testFolder('/**/*.lys');
   });
+
   describe('fixtures/execution/modules', () => {
     testFolder('/modules/*.md');
   });

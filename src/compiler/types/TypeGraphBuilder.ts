@@ -1,5 +1,5 @@
 import { TypeNode, TypeGraph, TypeResolver, Edge, LiteralTypeResolver } from './TypeGraph';
-import { Nodes } from '../nodes';
+import { Nodes, PhaseFlags } from '../nodes';
 import {
   getTypeResolver,
   EdgeLabels,
@@ -70,10 +70,14 @@ export class TypeGraphBuilder {
     if (referenceNode.isLocalReference) {
       return this.findNode(referenceNode.referencedNode);
     } else {
-      const moduleDocument = this.parsingContext.getTypePhase(referenceNode.moduleName!);
-      if (moduleDocument.typeGraph) {
-        const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
-        return typeNode;
+      if (referenceNode.referencedNode.typeNode) {
+        return referenceNode.referencedNode.typeNode;
+      } else {
+        const moduleDocument = this.parsingContext.getPhase(referenceNode.moduleName!, PhaseFlags.TypeCheck);
+        if (moduleDocument.typeGraph) {
+          const typeNode = (moduleDocument.typeGraph as TypeGraph).findNode(referenceNode.referencedNode);
+          return typeNode;
+        }
       }
     }
     return null;
@@ -118,6 +122,9 @@ export class TypeGraphBuilder {
   }
 
   findNode(referenceNoded: Nodes.Node): TypeNode | null {
+    if (referenceNoded.typeNode) {
+      return referenceNoded.typeNode;
+    }
     const localNode = this.findLocalNode(referenceNoded);
     return localNode || (this.parentGraph && this.parentGraph.findNode(referenceNoded));
   }
@@ -155,11 +162,9 @@ export class TypeGraphBuilder {
         // This should never happen or it means that the scope face didn't work correctly. That is why we should fail
         throw new AstNodeError(
           'Unable to resolve reference to ' +
-            reference.referencedNode.name +
-            ' from ' +
-            (reference.moduleName || 'local module') +
-            '\n' +
-            result.astNode.closure!.inspect(),
+            (reference.moduleName
+              ? reference.moduleName + '::' + reference.referencedNode.name
+              : reference.referencedNode.name),
           result.astNode
         );
       }
@@ -179,7 +184,7 @@ export class TypeGraphBuilder {
 
   private resolveVariableByName(node: Nodes.Node, name: string, result: TypeNode, edgeName?: string): void {
     try {
-      const reference = node.closure!.get(name, true);
+      const reference = node.closure!.get(name);
 
       this.resolveReference(reference, result, edgeName);
     } catch (e) {
@@ -189,7 +194,7 @@ export class TypeGraphBuilder {
 
   private resolveVariable(node: Nodes.QNameNode, result: TypeNode): void {
     try {
-      const reference = node.closure!.getQName(node, true);
+      const reference = node.closure!.getQName(node);
 
       this.resolveReference(reference, result);
     } catch (e) {

@@ -5,7 +5,7 @@ import { print } from '../dist/utils/typeGraphPrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
 import { annotations } from '../dist/compiler/annotations';
-import { Nodes } from '../dist/compiler/nodes';
+import { Nodes, PhaseFlags } from '../dist/compiler/nodes';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes } from '../dist/compiler/types';
 import { printNode } from '../dist/utils/nodePrinter';
@@ -25,7 +25,7 @@ const phases = function(txt: string, fileName: string): PhasesResult {
   parsingContext.invalidateModule(moduleName);
   parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
 
-  return { document: parsingContext.getTypePhase(moduleName), parsingContext };
+  return { document: parsingContext.getPhase(moduleName, PhaseFlags.TypeCheck), parsingContext };
 };
 
 describe('Types', function() {

@@ -344,7 +344,7 @@ const visitor = {
           ret = fnCall;
         }
       } else {
-        console.log('Dont know what to doooo1' + currentNode.text);
+        throw new PositionCapableError('WAST expression requires an operation name at the begining', astNode);
       }
     }
 
