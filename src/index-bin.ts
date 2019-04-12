@@ -52,6 +52,8 @@ export async function main(cwd: string, argv: string[]) {
 
   args['--lib'] = args['--lib'] || [];
 
+  const DEBUG = !!args['--debug'];
+
   const file = args._[0];
 
   let customAssertions: Record<string, (getInstance: Function) => void> = {};
@@ -117,7 +119,7 @@ export async function main(cwd: string, argv: string[]) {
   const outPath = dirname(outFileFullWithoutExtension);
   mkdirRecursive(outPath);
 
-  const codeGen = compile(parsingContext, mainModule);
+  const codeGen = compile(parsingContext, mainModule, DEBUG);
 
   const optimize = !args['--no-optimize'];
 

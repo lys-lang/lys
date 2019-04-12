@@ -29,7 +29,6 @@ import {
   CannotInferReturnType
 } from '../NodeError';
 import { MessageCollector } from '../MessageCollector';
-import { printAST } from '../../utils/astPrinter';
 
 declare var console: any;
 
@@ -354,8 +353,6 @@ class AssignmentNodeTypeResolver extends TypeResolver {
         return INVALID_TYPE;
       }
     } else if (assignmentNode.lhs instanceof Nodes.BinaryExpressionNode) {
-      console.log(lhsType.inspect(100), printAST(lhs.source.astNode));
-
       if (assignmentNode.lhs.hasAnnotation(annotations.ImplicitCall)) {
         ctx.parsingContext.messageCollector.error('!!! This node already has a ImplicitCall', assignmentNode.lhs);
         return INVALID_TYPE;

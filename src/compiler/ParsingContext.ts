@@ -101,9 +101,9 @@ export class ParsingContext {
     }
   }
 
-  getPhase(moduleName: string, phase: PhaseFlags): Nodes.DocumentNode {
+  getPhase(moduleName: string, phase: PhaseFlags, debug = false): Nodes.DocumentNode {
     const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, phase, true);
+    analyze(document, this, phase, debug);
     return document;
   }
 
