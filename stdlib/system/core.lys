@@ -815,6 +815,26 @@ impl bytes {
     toAddr(str) + 4 as u32
   }
 
+  fun [](data: bytes, at: u32): u8 = {
+    if (at > data.length) {
+      panic()
+    }
+    if (at < 0 as u32) {
+      panic()
+    }
+    u8.load(data.ptr as ref, at)
+  }
+
+  fun [](data: bytes, at: u32, value: u8): void = {
+    if (at > data.length) {
+      panic()
+    }
+    if (at < 0 as u32) {
+      panic()
+    }
+    u8.store(data.ptr as ref, value, at)
+  }
+
   fun get(data: bytes, at: u32): u8 = {
     if (at > data.length) {
       panic()

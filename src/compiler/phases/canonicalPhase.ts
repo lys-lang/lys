@@ -284,13 +284,6 @@ const visitor = {
     const statements = astNode.children.map($ => visit($)).filter($ => !!$);
     return new Nodes.BlockNode(astNode, statements);
   },
-  FunctionCallExpression(astNode: Nodes.ASTNode) {
-    const functionNode = visit(astNode.children[0]);
-    const argumentsNode = astNode.children[1].children.map($ => visit($));
-    const ret = new Nodes.FunctionCallNode(astNode, functionNode, argumentsNode);
-
-    return ret;
-  },
   Parameter(astNode: Nodes.ASTNode) {
     const parameterName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier', 'A parameter name is required'));
     const ret = new Nodes.ParameterNode(astNode, parameterName);
@@ -323,28 +316,33 @@ const visitor = {
   },
   AtomicExpression(astNode: Nodes.ASTNode) {
     let ret = visit(astNode.children[0]);
-
     for (let currentChildren = 1; currentChildren < astNode.children.length; currentChildren++) {
-      const operatorNode = astNode.children[currentChildren];
-      currentChildren++;
       const currentNode = astNode.children[currentChildren];
 
-      const nextNode = astNode.children[currentChildren + 1];
+      const doesItHaveCallArguments = currentNode && currentNode.type === 'CallArguments';
+      const doesItHaveIndexExpression = currentNode && currentNode.type === 'IndexExpression';
+      const doesItHaveMemberExpression = currentNode && currentNode.type === 'MemberExpression';
 
-      if (currentNode.type === 'NameIdentifier') {
-        ret = new Nodes.MemberNode(astNode, ret, operatorNode.text, visit(currentNode));
-
-        const doesItHaveCallArguments = nextNode && nextNode.type === 'CallArguments';
-
-        if (doesItHaveCallArguments) {
-          currentChildren++;
-          const argumentsNode = nextNode.children.map($ => visit($));
-          const fnCall = new Nodes.FunctionCallNode(currentNode, ret, argumentsNode);
-          fnCall.isInfix = true;
-          ret = fnCall;
-        }
+      if (doesItHaveCallArguments) {
+        const argumentsNode = currentNode.children.map($ => visit($));
+        const fnCall = new Nodes.FunctionCallNode(currentNode, ret, argumentsNode);
+        fnCall.isInfix = true;
+        ret = fnCall;
+      } else if (doesItHaveIndexExpression) {
+        const argument = visit(currentNode.children[0]);
+        const indexSelector = new Nodes.BinaryExpressionNode(
+          currentNode,
+          Nodes.NameIdentifierNode.fromString('[]', currentNode),
+          ret,
+          argument
+        );
+        ret = indexSelector;
+      } else if (doesItHaveMemberExpression) {
+        ret = new Nodes.MemberNode(astNode, ret, currentNode.children[0].text, visit(currentNode.children[1]));
       } else {
-        throw new PositionCapableError('WAST expression requires an operation name at the begining', astNode);
+        if (currentNode) {
+          throw new PositionCapableError("Don't know what to do with " + currentNode.type, currentNode);
+        }
       }
     }
 

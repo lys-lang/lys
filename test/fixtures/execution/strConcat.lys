@@ -48,11 +48,20 @@ fun main(): void = {
   {
     val x = String("ab") + String("µ⚜︎")
 
+
+
     mustEqual(String.charAt(x, 0 as u32) as i32, 0x0061, "a assertion failed")
     mustEqual(String.charAt(x, 1 as u32) as i32, 0x0062, "b assertion failed")
     mustEqual(String.charAt(x, 2 as u32) as i32, 0x00B5, "µ assertion failed")
     mustEqual(String.charAt(x, 3 as u32) as i32, 0x269C, "0x269C assertion failed")
     mustEqual(String.charAt(x, 4 as u32) as i32, 0xFE0E, "0xFE0E assertion failed")
+
+    mustEqual(x.data[8 as u32] as i32, 0x0E, "0x0E assertion failed")
+    mustEqual(x.data[9 as u32] as i32, 0xFE, "0xFE assertion failed")
+
+    x.data[8 as u32] = 1 as u8
+
+    mustEqual(x.data[8 as u32] as i32, 0x1, "0x1 assertion failed")
   }
   END()
 }

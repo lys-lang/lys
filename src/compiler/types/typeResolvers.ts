@@ -29,6 +29,7 @@ import {
   CannotInferReturnType
 } from '../NodeError';
 import { MessageCollector } from '../MessageCollector';
+import { printAST } from '../../utils/astPrinter';
 
 declare var console: any;
 
@@ -352,6 +353,38 @@ class AssignmentNodeTypeResolver extends TypeResolver {
         ctx.parsingContext.messageCollector.error('Overload not found', assignmentNode.rhs!);
         return INVALID_TYPE;
       }
+    } else if (assignmentNode.lhs instanceof Nodes.BinaryExpressionNode) {
+      console.log(lhsType.inspect(100), printAST(lhs.source.astNode));
+
+      if (assignmentNode.lhs.hasAnnotation(annotations.ImplicitCall)) {
+        ctx.parsingContext.messageCollector.error('!!! This node already has a ImplicitCall', assignmentNode.lhs);
+        return INVALID_TYPE;
+      }
+
+      const fun = findFunctionOverload(
+        lhsType,
+        [assignmentNode.lhs.lhs.ofType!, assignmentNode.lhs.rhs.ofType!, rhsType],
+        assignmentNode.lhs,
+        ctx,
+        null,
+        false,
+        ctx.parsingContext.messageCollector,
+        true
+      );
+
+      if (fun && fun instanceof FunctionType) {
+        annotateImplicitCall(
+          node.astNode,
+          fun,
+          [assignmentNode.lhs.lhs, assignmentNode.lhs.rhs, assignmentNode.rhs],
+          ctx
+        );
+
+        return fun.returnType;
+      } else {
+        ctx.parsingContext.messageCollector.error('Overload not found', assignmentNode.rhs!);
+        return INVALID_TYPE;
+      }
     } else {
       const rhsType = rhs.incomingType()!;
 
@@ -567,7 +600,7 @@ class MemberTypeResolver extends TypeResolver {
         const resolvedProperty = safeResolveTypeMember(opNode.lhs, LHSType, 'property_' + opNode.memberName!.name, ctx);
 
         if (resolvedProperty) {
-          const isGetter = opNode.hasAnnotation(annotations.IsValueNode);
+          const isGetter = !opNode.hasAnnotation(annotations.IsAssignationLHS);
           if (isGetter) {
             const fun = findFunctionOverload(
               resolvedProperty,
@@ -587,8 +620,8 @@ class MemberTypeResolver extends TypeResolver {
             } else {
               ctx.parsingContext.messageCollector.error(
                 new AstNodeError(
-                  `${LHSType}.property_${opNode.memberName!.name} is not a valid property getter`,
-                  opNode.memberName!
+                  `${LHSType}.property_${opNode.memberName.name} is not a valid property getter`,
+                  opNode.memberName
                 )
               );
               return INVALID_TYPE;
@@ -598,7 +631,7 @@ class MemberTypeResolver extends TypeResolver {
           }
         } else {
           ctx.parsingContext.messageCollector.error(
-            new AstNodeError(`Property ${opNode.memberName!.name} doesn't exist in type ${LHSType}`, opNode.memberName!)
+            new AstNodeError(`Property ${opNode.memberName.name} doesn't exist in type ${LHSType}`, opNode.memberName)
           );
           return INVALID_TYPE;
         }
@@ -1083,23 +1116,29 @@ function processFunctionCall(
   ctx: TypeResolutionContext
 ): Type {
   try {
-    const fun = findFunctionOverload(
-      functionType,
-      argTypes,
-      node,
-      ctx,
-      null,
-      false,
-      ctx.parsingContext.messageCollector,
-      true
-    );
+    const isGetter = !node.hasAnnotation(annotations.IsAssignationLHS);
 
-    if (fun instanceof FunctionType) {
-      node.resolvedFunctionType = fun;
+    if (isGetter) {
+      const fun = findFunctionOverload(
+        functionType,
+        argTypes,
+        node,
+        ctx,
+        null,
+        false,
+        ctx.parsingContext.messageCollector,
+        true
+      );
 
-      ensureArgumentCoercion(node, fun, argTypes, ctx);
+      if (fun instanceof FunctionType) {
+        node.resolvedFunctionType = fun;
 
-      return fun.returnType!;
+        ensureArgumentCoercion(node, fun, argTypes, ctx);
+
+        return fun.returnType!;
+      }
+    } else {
+      return functionType;
     }
   } catch (e) {
     const errorNode = e.node || node;

@@ -27,6 +27,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
 
   if (node instanceof Nodes.AssignmentNode) {
     node.rhs.annotate(valueNodeAnnotation);
+    node.lhs.annotate(new annotations.IsAssignationLHS());
   }
 
   if (node instanceof Nodes.MemberNode) {
