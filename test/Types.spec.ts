@@ -125,6 +125,22 @@ describe('Types', function() {
     // });
   }
 
+  describe('index selector', () => {
+    checkMainType`
+      val x = "a"[0 as u32]
+      ---
+      x := (alias u8 (native u8))
+    `;
+
+    checkMainType`
+      fun x(x: bytes, y: u8): void = {
+        x[0 as u32] = y
+      }
+      ---
+      fun(x: bytes, y: u8) -> void
+    `;
+  });
+
   describe('unit', () => {
     checkMainType`
       fun abc(): void = {/* empty block */}

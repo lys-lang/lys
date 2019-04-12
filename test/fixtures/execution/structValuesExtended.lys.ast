@@ -3044,21 +3044,21 @@
                   |-NameIdentifierNode="Color"
             |-StringLiteral="J" type=(alias bytes (native bytes)) annotations=IsValueNode
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_a" ((alias CatBag) (alias i32)) (alias void))
-            |-MemberNode type=(intersection (fun "property_a" ((alias CatBag)) (alias i32)) (fun "property_a" ((alias CatBag) (alias i32)) (alias void)))
+            |-MemberNode type=(intersection (fun "property_a" ((alias CatBag)) (alias i32)) (fun "property_a" ((alias CatBag) (alias i32)) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
               |-NameIdentifierNode="a"
             |-IntegerLiteral=5 type=(alias i32 (native i32)) annotations=IsValueNode
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_b" ((alias CatBag) (alias boolean)) (alias void))
-            |-MemberNode type=(intersection (fun "property_b" ((alias CatBag)) (alias boolean)) (fun "property_b" ((alias CatBag) (alias boolean)) (alias void)))
+            |-MemberNode type=(intersection (fun "property_b" ((alias CatBag)) (alias boolean)) (fun "property_b" ((alias CatBag) (alias boolean)) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
               |-NameIdentifierNode="b"
             |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_c" ((alias CatBag) (alias f32)) (alias void))
-            |-MemberNode type=(intersection (fun "property_c" ((alias CatBag)) (alias f32)) (fun "property_c" ((alias CatBag) (alias f32)) (alias void)))
+            |-MemberNode type=(intersection (fun "property_c" ((alias CatBag)) (alias f32)) (fun "property_c" ((alias CatBag) (alias f32)) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
@@ -3066,7 +3066,7 @@
             |-UnaryExpressionNode=(fun "-" ((alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
               |-FloatLiteral=999 type=(alias f32 (native f32))
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_d" ((alias CatBag) (alias i64)) (alias void))
-            |-MemberNode type=(intersection (fun "property_d" ((alias CatBag)) (alias i64)) (fun "property_d" ((alias CatBag) (alias i64)) (alias void)))
+            |-MemberNode type=(intersection (fun "property_d" ((alias CatBag)) (alias i64)) (fun "property_d" ((alias CatBag) (alias i64)) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
@@ -3077,7 +3077,7 @@
                 |-QNameNode=i64
                   |-NameIdentifierNode="i64"
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_e" ((alias CatBag) (alias f64)) (alias void))
-            |-MemberNode type=(intersection (fun "property_e" ((alias CatBag)) (alias f64)) (fun "property_e" ((alias CatBag) (alias f64)) (alias void)))
+            |-MemberNode type=(intersection (fun "property_e" ((alias CatBag)) (alias f64)) (fun "property_e" ((alias CatBag) (alias f64)) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
@@ -3097,7 +3097,7 @@
                   |-NameIdentifierNode="a"
               |-NameIdentifierNode="c"
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_f" ((alias CatBag) (alias Color)) (alias void))
-            |-MemberNode type=(intersection (fun "property_f" ((alias CatBag)) (alias Color)) (fun "property_f" ((alias CatBag) (alias Color)) (alias void)))
+            |-MemberNode type=(intersection (fun "property_f" ((alias CatBag)) (alias Color)) (fun "property_f" ((alias CatBag) (alias Color)) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"
@@ -3119,7 +3119,7 @@
                   |-NameIdentifierNode="a"
               |-NameIdentifierNode="c"
           |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void))
-            |-MemberNode type=(intersection (fun "property_g" ((alias CatBag)) (union (alias Red) (alias None))) (fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void)))
+            |-MemberNode type=(intersection (fun "property_g" ((alias CatBag)) (union (alias Red) (alias None))) (fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void))) annotations=IsAssignationLHS
               |-ReferenceNode type=(alias CatBag (struct a:<null> b:<null> c:<null> d:<null> e:<null> f:<null> g:<null>)) annotations=Local(test::fixtures::execution::structValuesExtended::a_21:CatBag#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"

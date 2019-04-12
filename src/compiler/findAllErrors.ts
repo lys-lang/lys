@@ -26,7 +26,7 @@ export function failIfErrors(phaseName: string, document: Nodes.DocumentNode, pa
   failWithErrors(phaseName, parsingContext);
 }
 
-export function failWithErrors(phaseName: string, pc: ParsingContext) {
+export function failWithErrors(phaseName: string, pc: ParsingContext, debug = false) {
   if (!pc.messageCollector.hasErrors()) return;
 
   if (pc && pc.messageCollector.errors.length) {
@@ -40,6 +40,11 @@ export function failWithErrors(phaseName: string, pc: ParsingContext) {
           pc.messageCollector.errors
             .map(($: Error, $$) => {
               let msg = $ instanceof PositionCapableError ? '' + $.message : $.toString() + '\n';
+
+              if (debug && $.stack) {
+                msg = msg + '\n' + $.stack;
+              }
+
               return indent(msg, '    ').replace(/^\s+(.*)/m, ($$ + 1).toString() + ')  $1');
             })
             .join('\n')

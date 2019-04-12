@@ -900,6 +900,48 @@
       (call $system::core::u32.+_1 (call $system::core::bytes.toAddr_1 (local.get $str)) (call $system::core::i32.as_4 (i32.const 4)))
     )
   )
+  (func $system::core::bytes.___1 (param $data i64) (param $at i32) (result i32)
+    (block $B1 (result i32)
+      (if $IF2 (call $system::core::u32.>_1 (local.get $at) (call $system::core::bytes.property_length_1 (local.get $data)))
+          (then
+            (block $B3
+                (call $system::core::panic_1)
+              )
+          )
+          (else)
+        )
+      (if $IF4 (call $system::core::u32.<_1 (local.get $at) (call $system::core::i32.as_4 (i32.const 0)))
+          (then
+            (block $B5
+                (call $system::core::panic_1)
+              )
+          )
+          (else)
+        )
+      (call $system::core::u8.load_2 (call $system::core::u32.as_8 (call $system::core::bytes.property_ptr_1 (local.get $data))) (local.get $at))
+    )
+  )
+  (func $system::core::bytes.___2 (param $data i64) (param $at i32) (param $value i32)
+    (block $B1
+      (if $IF2 (call $system::core::u32.>_1 (local.get $at) (call $system::core::bytes.property_length_1 (local.get $data)))
+          (then
+            (block $B3
+                (call $system::core::panic_1)
+              )
+          )
+          (else)
+        )
+      (if $IF4 (call $system::core::u32.<_1 (local.get $at) (call $system::core::i32.as_4 (i32.const 0)))
+          (then
+            (block $B5
+                (call $system::core::panic_1)
+              )
+          )
+          (else)
+        )
+      (call $system::core::u8.store_2 (call $system::core::u32.as_8 (call $system::core::bytes.property_ptr_1 (local.get $data))) (local.get $value) (local.get $at))
+    )
+  )
   (func $system::core::bytes.get_1 (param $data i64) (param $at i32) (result i32)
     (block $B1 (result i32)
       (if $IF2 (call $system::core::u32.>_1 (local.get $at) (call $system::core::bytes.property_length_1 (local.get $data)))

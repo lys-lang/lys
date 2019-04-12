@@ -95,6 +95,7 @@ FunOperator       ::= ( BitNotPreOperator
                       | AndKeyword
                       | OrKeyword
                       | NotPreOperator
+                      | '[]'
                       )
 
 NamespaceElementList ::= OPEN_BRACKET (WS* ImplInnerDirective)* WS* CLOSE_BRACKET {pin=1,recoverUntil=BLOCK_RECOVERY}
@@ -141,12 +142,11 @@ MulExpression     ::= IsExpression (WS* MulOperator WS* IsExpression)* {simplify
 IsExpression      ::= AsExpression (WS* IsKeyword WS* Type)* {simplifyWhenOneChildren=true}
 AsExpression      ::= UnaryExpression (WS* AsKeyword WS* Type)* {simplifyWhenOneChildren=true}
 UnaryExpression   ::= NegExpression | BinNegExpression | UnaryMinus | AtomicExpression {simplifyWhenOneChildren=true}
-AtomicExpression  ::= FunctionCallExpression (WS* BinaryExpression)* {simplifyWhenOneChildren=true}
-FunctionCallExpression
-                  ::= Value (WS* &'(' CallArguments)? {simplifyWhenOneChildren=true}
+AtomicExpression  ::= Value (WS* (&'.' MemberExpression | &'(' CallArguments | &'[' IndexExpression))* {simplifyWhenOneChildren=true,pin=1}
 
 BinMemberOperator ::= '.^' | '.'
-BinaryExpression  ::= BinMemberOperator NameIdentifier (WS* &'('CallArguments)? {pin=1,fragment=true}
+MemberExpression  ::= BinMemberOperator NameIdentifier {pin=1}
+IndexExpression   ::= OPEN_ARRAY WS* Expression WS* CLOSE_ARRAY {pin=1}
 
 NegExpression     ::= '!' AtomicExpression {pin=1}
 BinNegExpression  ::= '~' AtomicExpression {pin=1}
@@ -156,7 +156,7 @@ Value             ::= ( Literal
                       | Reference
                       | &'(' ParenExpression
                       | &'{' CodeBlock
-                      ) {fragment=true}
+                      ) {fragment=true,pin=1}
 
 ParenExpression   ::= OPEN_PAREN WS* Expression WS* CLOSE_PAREN {pin=1,recoverUntil=CLOSE_PAREN}
 

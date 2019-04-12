@@ -6,9 +6,10 @@ build:
 	node dist/utils/packStdLib.js
 
 GREP="."
+TEST_FILE=*
 
 just-test:
-	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000 test/*.spec.js
+	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000 "test/$(TEST_FILE).spec.js"
 
 test: | build just-test
 

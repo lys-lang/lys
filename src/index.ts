@@ -6,12 +6,14 @@ import { PhaseFlags } from './compiler/nodes';
 
 export { ParsingContext, System };
 
-export function compile(parsingContext: ParsingContext, moduleName: string) {
-  const compilation = parsingContext.getPhase(moduleName, PhaseFlags.Compilation);
+export function compile(parsingContext: ParsingContext, moduleName: string, debug = false) {
+  const compilation = parsingContext.getPhase(moduleName, PhaseFlags.Compilation, debug);
+
+  failWithErrors(`Code generation`, parsingContext, debug);
 
   const codeGen = new CodeGenerationPhaseResult(compilation, parsingContext);
 
-  failWithErrors(`Code generation`, parsingContext);
+  failWithErrors(`Code generation`, parsingContext, debug);
 
   return codeGen;
 }

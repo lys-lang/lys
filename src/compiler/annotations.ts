@@ -73,6 +73,7 @@ export namespace annotations {
 
   export class IsUnreachable extends Annotation {}
   export class IsValueNode extends Annotation {}
+  export class IsAssignationLHS extends Annotation {}
   export class IsTypeNode extends Annotation {}
 
   export class IsReturnExpression extends Annotation {
