@@ -3,5 +3,5 @@ test/fixtures/type-error/noOverloadQty.lys
     2│ private fun x(a: i32): i32 = 1
     3│ 
     4│ fun x(a: f32): i32 = x(1.0, 1, 2)
-     │                      ^^^^^^^^^^^^ Could not find a valid overload for function of type fun() -> i32 & fun(a: i32) -> i32 & fun(a: f32) -> i32 with the arguments of type (f32, i32, i32)
+     │                       ^^^^^^^^^^^ Could not find a valid overload for function of type fun() -> i32 & fun(a: i32) -> i32 & fun(a: f32) -> i32 with the arguments of type (f32, i32, i32)
     5│ 

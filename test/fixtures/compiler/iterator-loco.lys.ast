@@ -571,7 +571,7 @@
                           |-NameIdentifierNode="iter"
                       |-NameIdentifierNode="current"
                 |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_current" ((alias Iterator) (alias i32)) (alias void))
-                  |-MemberNode type=(intersection (fun "property_current" ((alias Iterator)) (alias i32)) (fun "property_current" ((alias Iterator) (alias i32)) (alias void)))
+                  |-MemberNode type=(intersection (fun "property_current" ((alias Iterator)) (alias i32)) (fun "property_current" ((alias Iterator) (alias i32)) (alias void))) annotations=IsAssignationLHS
                     |-ReferenceNode type=(alias Iterator (struct current:<null> target:<null>)) annotations=Local(iter:Iterator#0)
                       |-QNameNode=iter
                         |-NameIdentifierNode="iter"
@@ -1486,7 +1486,7 @@
                             |-NameIdentifierNode="$"
                         |-NameIdentifierNode="value"
                     |-AssignmentNode type=(native void)
-                      |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(test::fixtures::compiler::iterator-loco::ret:i32#2)
+                      |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS,Local(test::fixtures::compiler::iterator-loco::ret:i32#2)
                         |-QNameNode=ret
                           |-NameIdentifierNode="ret"
                       |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode

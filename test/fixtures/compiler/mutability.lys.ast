@@ -22,7 +22,7 @@
                 |-NameIdentifierNode="i32"
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-AssignmentNode type=(native void)
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(test::fixtures::compiler::mutability::a:i32#0)
+            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS,Local(test::fixtures::compiler::mutability::a:i32#0)
               |-QNameNode=a
                 |-NameIdentifierNode="a"
             |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
@@ -60,7 +60,7 @@
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
             |-BlockNode type=(native void)
               |-AssignmentNode type=(native void)
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=Local(test::fixtures::compiler::mutability::a_1:i32#1)
+                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS,Local(test::fixtures::compiler::mutability::a_1:i32#1)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
                 |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode

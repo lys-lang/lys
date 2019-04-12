@@ -2813,7 +2813,7 @@
                 |-HexLiteral=2864434397 type=(alias i32 (native i32)) annotations=IsValueNode
               |-StringLiteral="y.hex == 0xAABBCCDD" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_f" ((alias CatBag) (alias Color)) (alias void))
-              |-MemberNode type=(intersection (fun "property_f" ((alias CatBag)) (alias Color)) (fun "property_f" ((alias CatBag) (alias Color)) (alias void)))
+              |-MemberNode type=(intersection (fun "property_f" ((alias CatBag)) (alias Color)) (fun "property_f" ((alias CatBag) (alias Color)) (alias void))) annotations=IsAssignationLHS
                 |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_17:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
@@ -2885,7 +2885,7 @@
                     |-NameIdentifierNode="tmp"
               |-StringLiteral="a.f == tmp" type=(alias bytes (native bytes)) annotations=IsValueNode
             |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void))
-              |-MemberNode type=(intersection (fun "property_g" ((alias CatBag)) (union (alias Red) (alias None))) (fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void)))
+              |-MemberNode type=(intersection (fun "property_g" ((alias CatBag)) (union (alias Red) (alias None))) (fun "property_g" ((alias CatBag) (union (alias Red) (alias None))) (alias void))) annotations=IsAssignationLHS
                 |-ReferenceNode type=(alias CatBag (struct f:<null> g:<null>)) annotations=Local(test::fixtures::execution::setStructValues::a_17:CatBag#0)
                   |-QNameNode=a
                     |-NameIdentifierNode="a"

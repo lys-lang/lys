@@ -18,6 +18,7 @@
  (type $16 (func (param i32 i64)))
  (type $17 (func (param i64 i64) (result i64)))
  (type $18 (func (param i64 i32) (result i32)))
+ (type $19 (func (param i64 i32 i32)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
@@ -25,27 +26,27 @@
  (import "env" "printf" (func $fimport$4 (param i32 i32)))
  (import "env" "printf" (func $fimport$5 (param i32 f64)))
  (memory $0 1)
- (data (i32.const 1130) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1157) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1190) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1217) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1250) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00L\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1285) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00L\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1326) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00M\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1361) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00M\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1402) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00L\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1437) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00L\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1478) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00M\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1513) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00M\00S\00B\00:\00 \00%\00X")
- (data (i32.const 1554) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00X")
- (data (i32.const 1581) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00X")
- (data (i32.const 1614) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
- (data (i32.const 1641) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
- (data (i32.const 1674) "\1a\00\00\00a\00s\00s\00e\00r\00t\00(\00f\00a\00l\00s\00e\00)")
- (data (i32.const 1088) "\08\00\00\00t\00r\00u\00e")
- (data (i32.const 1101) "\n\00\00\00f\00a\00l\00s\00e")
- (data (i32.const 1116) "\02\00\00\000")
- (data (i32.const 1123) "\02\00\00\000")
+ (data (i32.const 1269) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
+ (data (i32.const 1296) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
+ (data (i32.const 1329) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
+ (data (i32.const 1356) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
+ (data (i32.const 1389) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1424) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1465) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1500) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1541) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1576) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00L\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1617) "\1e\00\00\00 \00 \00g\00i\00v\00e\00n\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1652) "$\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00 \00M\00S\00B\00:\00 \00%\00X")
+ (data (i32.const 1693) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00X")
+ (data (i32.const 1720) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00X")
+ (data (i32.const 1753) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
+ (data (i32.const 1780) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
+ (data (i32.const 1813) "\1a\00\00\00a\00s\00s\00e\00r\00t\00(\00f\00a\00l\00s\00e\00)")
+ (data (i32.const 1227) "\08\00\00\00t\00r\00u\00e")
+ (data (i32.const 1240) "\n\00\00\00f\00a\00l\00s\00e")
+ (data (i32.const 1255) "\02\00\00\000")
+ (data (i32.const 1262) "\02\00\00\000")
  (data (i32.const 16) ".\00\00\00T\00e\00s\00t\00 \00b\00y\00t\00e\00 \00c\00o\00n\00c\00a\00t\00e\00n\00a\00t\00i\00o\00n")
  (data (i32.const 67) "\06\00\00\00a\00b\00c")
  (data (i32.const 78) "\08\00\00\001\002\003\004")
@@ -80,6 +81,9 @@
  (data (i32.const 945) "$\00\00\00\b5\00 \00a\00s\00s\00e\00r\00t\00i\00o\00n\00 \00f\00a\00i\00l\00e\00d")
  (data (i32.const 986) ".\00\00\000\00x\002\006\009\00C\00 \00a\00s\00s\00e\00r\00t\00i\00o\00n\00 \00f\00a\00i\00l\00e\00d")
  (data (i32.const 1037) ".\00\00\000\00x\00F\00E\000\00E\00 \00a\00s\00s\00e\00r\00t\00i\00o\00n\00 \00f\00a\00i\00l\00e\00d")
+ (data (i32.const 1088) "*\00\00\000\00x\000\00E\00 \00a\00s\00s\00e\00r\00t\00i\00o\00n\00 \00f\00a\00i\00l\00e\00d")
+ (data (i32.const 1135) "*\00\00\000\00x\00F\00E\00 \00a\00s\00s\00e\00r\00t\00i\00o\00n\00 \00f\00a\00i\00l\00e\00d")
+ (data (i32.const 1182) "(\00\00\000\00x\001\00 \00a\00s\00s\00e\00r\00t\00i\00o\00n\00 \00f\00a\00i\00l\00e\00d")
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -91,8 +95,8 @@
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $3))
  (export "test_getLastErrorMessage" (func $11))
- (export "main" (func $19))
- (start $20)
+ (export "main" (func $21))
+ (start $22)
  (func $0 (; 6 ;) (type $4) (param $0 i64) (param $1 i32)
   (call $fimport$3
    (i32.wrap_i64
@@ -317,11 +321,11 @@
    )
    (block
     (call $2
-     (i64.const 1130)
+     (i64.const 1269)
      (local.get $0)
     )
     (call $2
-     (i64.const 1157)
+     (i64.const 1296)
      (local.get $1)
     )
    )
@@ -342,11 +346,11 @@
    )
    (block
     (call $1
-     (i64.const 1554)
+     (i64.const 1693)
      (local.get $0)
     )
     (call $1
-     (i64.const 1581)
+     (i64.const 1720)
      (local.get $1)
     )
    )
@@ -367,11 +371,11 @@
    )
    (block
     (call $0
-     (i64.const 1614)
+     (i64.const 1753)
      (local.get $0)
     )
     (call $0
-     (i64.const 1641)
+     (i64.const 1780)
      (local.get $1)
     )
    )
@@ -379,7 +383,7 @@
  )
  (func $10 (; 16 ;) (type $14) (param $0 i64) (param $1 i64) (param $2 i64)
   (call $13
-   (call $18
+   (call $20
     (local.get $0)
     (local.get $1)
    )
@@ -586,7 +590,78 @@
   )
   (local.get $7)
  )
- (func $18 (; 24 ;) (type $12) (param $0 i64) (param $1 i64) (result i32)
+ (func $18 (; 24 ;) (type $18) (param $0 i64) (param $1 i32) (result i32)
+  (if
+   (i32.gt_u
+    (local.get $1)
+    (i32.load
+     (i32.wrap_i64
+      (local.get $0)
+     )
+    )
+   )
+   (unreachable)
+  )
+  (if
+   (i32.lt_u
+    (local.get $1)
+    (i32.const 0)
+   )
+   (unreachable)
+  )
+  (i32.load8_u
+   (i32.add
+    (local.get $1)
+    (i32.wrap_i64
+     (i64.extend_i32_s
+      (i32.add
+       (i32.wrap_i64
+        (local.get $0)
+       )
+       (i32.const 4)
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $19 (; 25 ;) (type $19) (param $0 i64) (param $1 i32) (param $2 i32)
+  (if
+   (i32.gt_u
+    (local.get $1)
+    (i32.load
+     (i32.wrap_i64
+      (local.get $0)
+     )
+    )
+   )
+   (unreachable)
+  )
+  (if
+   (i32.lt_u
+    (local.get $1)
+    (i32.const 0)
+   )
+   (unreachable)
+  )
+  (i32.store8
+   (i32.add
+    (local.get $1)
+    (i32.wrap_i64
+     (i64.extend_i32_s
+      (i32.add
+       (i32.wrap_i64
+        (local.get $0)
+       )
+       (i32.const 4)
+      )
+     )
+    )
+   )
+   (local.get $2)
+  )
+ )
+ (func $20 (; 26 ;) (type $12) (param $0 i64) (param $1 i64) (result i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -715,7 +790,7 @@
    (i32.const 0)
   )
  )
- (func $19 (; 25 ;) (type $2)
+ (func $21 (; 27 ;) (type $2)
   (local $0 i64)
   (local $1 i64)
   (call $12
@@ -959,9 +1034,54 @@
    (i32.const 65038)
    (i64.const 1037)
   )
+  (call $9
+   (call $18
+    (i64.load
+     (i32.wrap_i64
+      (local.get $0)
+     )
+    )
+    (i32.const 8)
+   )
+   (i32.const 14)
+   (i64.const 1088)
+  )
+  (call $9
+   (call $18
+    (i64.load
+     (i32.wrap_i64
+      (local.get $0)
+     )
+    )
+    (i32.const 9)
+   )
+   (i32.const 254)
+   (i64.const 1135)
+  )
+  (call $19
+   (i64.load
+    (i32.wrap_i64
+     (local.get $0)
+    )
+   )
+   (i32.const 8)
+   (i32.const 1)
+  )
+  (call $9
+   (call $18
+    (i64.load
+     (i32.wrap_i64
+      (local.get $0)
+     )
+    )
+    (i32.const 8)
+   )
+   (i32.const 1)
+   (i64.const 1182)
+  )
   (call $fimport$2)
  )
- (func $20 (; 26 ;) (type $2)
+ (func $22 (; 28 ;) (type $2)
   (global.set $global$0
    (i32.const 3)
   )

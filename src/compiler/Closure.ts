@@ -47,7 +47,7 @@ export class Closure {
       prefix = this.nameHint + prefix;
     }
 
-    prefix = prefix.replace(/([^A-Za-z:0-9_\.<>!+*&%$@-])/g, '_');
+    prefix = prefix.replace(/([^A-Za-z:0-9_\.<>!+*^&%$@~/=|-])/g, '_');
 
     return this.parsingContext.getInternalName(this.moduleName, prefix);
   }

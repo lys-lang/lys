@@ -546,6 +546,90 @@
                     |-NameIdentifierNode="i32"
               |-HexLiteral=65038 type=(alias i32 (native i32)) annotations=IsValueNode
               |-StringLiteral="0xFE0E assertion failed" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
+              |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) (fun "mustEqual" ((alias bytes) (alias bytes) (alias bytes)) (alias void)))
+                |-QNameNode=mustEqual
+                  |-NameIdentifierNode="mustEqual"
+              |-AsExpressionNode=(fun "as" ((alias u8)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BinaryExpressionNode=(fun "[]" ((alias bytes) (alias u32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
+                  |-MemberNode type=(alias bytes (native bytes)) annotations=IsValueNode,ImplicitCall(fun "property_data" ((alias String)) (alias bytes))
+                    |-ReferenceNode type=(alias String (struct data:<null>)) annotations=Local(test::fixtures::execution::strConcat::x_1:String#6)
+                      |-QNameNode=x
+                        |-NameIdentifierNode="x"
+                    |-NameIdentifierNode="data"
+                  |-NameIdentifierNode="[]"
+                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                    |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-ReferenceNode type=(type (alias u32 (native u32)))
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
+                |-ReferenceNode type=(type (alias i32 (native i32)))
+                  |-QNameNode=i32
+                    |-NameIdentifierNode="i32"
+              |-HexLiteral=14 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-StringLiteral="0x0E assertion failed" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
+              |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) (fun "mustEqual" ((alias bytes) (alias bytes) (alias bytes)) (alias void)))
+                |-QNameNode=mustEqual
+                  |-NameIdentifierNode="mustEqual"
+              |-AsExpressionNode=(fun "as" ((alias u8)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BinaryExpressionNode=(fun "[]" ((alias bytes) (alias u32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
+                  |-MemberNode type=(alias bytes (native bytes)) annotations=IsValueNode,ImplicitCall(fun "property_data" ((alias String)) (alias bytes))
+                    |-ReferenceNode type=(alias String (struct data:<null>)) annotations=Local(test::fixtures::execution::strConcat::x_1:String#6)
+                      |-QNameNode=x
+                        |-NameIdentifierNode="x"
+                    |-NameIdentifierNode="data"
+                  |-NameIdentifierNode="[]"
+                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                    |-IntegerLiteral=9 type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-ReferenceNode type=(type (alias u32 (native u32)))
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
+                |-ReferenceNode type=(type (alias i32 (native i32)))
+                  |-QNameNode=i32
+                    |-NameIdentifierNode="i32"
+              |-HexLiteral=254 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-StringLiteral="0xFE assertion failed" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-AssignmentNode type=(alias void (native void)) annotations=ImplicitCall(fun "[]" ((alias bytes) (alias u32) (alias u8)) (alias void))
+              |-BinaryExpressionNode type=(intersection (fun "[]" ((alias bytes) (alias u32)) (alias u8)) (fun "[]" ((alias bytes) (alias u32) (alias u8)) (alias void))) annotations=IsAssignationLHS
+                |-MemberNode type=(alias bytes (native bytes)) annotations=IsValueNode,ImplicitCall(fun "property_data" ((alias String)) (alias bytes))
+                  |-ReferenceNode type=(alias String (struct data:<null>)) annotations=Local(test::fixtures::execution::strConcat::x_1:String#6)
+                    |-QNameNode=x
+                      |-NameIdentifierNode="x"
+                  |-NameIdentifierNode="data"
+                |-NameIdentifierNode="[]"
+                |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-ReferenceNode type=(type (alias u32 (native u32)))
+                    |-QNameNode=u32
+                      |-NameIdentifierNode="u32"
+              |-AsExpressionNode=(fun "as" ((alias i32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
+                |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+                |-ReferenceNode type=(type (alias u8 (native u8)))
+                  |-QNameNode=u8
+                    |-NameIdentifierNode="u8"
+            |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
+              |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) (fun "mustEqual" ((alias bytes) (alias bytes) (alias bytes)) (alias void)))
+                |-QNameNode=mustEqual
+                  |-NameIdentifierNode="mustEqual"
+              |-AsExpressionNode=(fun "as" ((alias u8)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BinaryExpressionNode=(fun "[]" ((alias bytes) (alias u32)) (alias u8)) type=(alias u8 (native u8)) annotations=IsValueNode
+                  |-MemberNode type=(alias bytes (native bytes)) annotations=IsValueNode,ImplicitCall(fun "property_data" ((alias String)) (alias bytes))
+                    |-ReferenceNode type=(alias String (struct data:<null>)) annotations=Local(test::fixtures::execution::strConcat::x_1:String#6)
+                      |-QNameNode=x
+                        |-NameIdentifierNode="x"
+                    |-NameIdentifierNode="data"
+                  |-NameIdentifierNode="[]"
+                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                    |-IntegerLiteral=8 type=(alias i32 (native i32)) annotations=IsValueNode
+                    |-ReferenceNode type=(type (alias u32 (native u32)))
+                      |-QNameNode=u32
+                        |-NameIdentifierNode="u32"
+                |-ReferenceNode type=(type (alias i32 (native i32)))
+                  |-QNameNode=i32
+                    |-NameIdentifierNode="i32"
+              |-HexLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
+              |-StringLiteral="0x1 assertion failed" type=(alias bytes (native bytes)) annotations=IsValueNode
           |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=END
