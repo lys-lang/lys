@@ -9,26 +9,26 @@ fun identity(x: f32): f32 = x
 
 enum ErrorMessage {
   EmptyMessage
-  Message(message: bytes)
+  Message(message: string)
 }
 
 var lastErrorMessage: ErrorMessage = EmptyMessage
 
-fun mustEqual(given: f64, expected: f64, message: bytes): void = {
+fun mustEqual(given: f64, expected: f64, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
     support::env::printf("  given: %d", given)
     support::env::printf("  expected: %d", expected)
   }
 }
-fun mustEqual(given: f32, expected: f32, message: bytes): void = {
+fun mustEqual(given: f32, expected: f32, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
     support::env::printf("  given: %d", given)
     support::env::printf("  expected: %d", expected)
   }
 }
-fun mustEqual(given: u64, expected: u64, message: bytes): void = {
+fun mustEqual(given: u64, expected: u64, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
     support::env::printf("  given LSB: %X", (given >> 32) as u32)
@@ -38,7 +38,7 @@ fun mustEqual(given: u64, expected: u64, message: bytes): void = {
   }
 }
 
-fun mustEqual(given: i64, expected: i64, message: bytes): void = {
+fun mustEqual(given: i64, expected: i64, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
     support::env::printf("  given LSB: %X", (given as u64 >> 32) as u32)
@@ -48,14 +48,14 @@ fun mustEqual(given: i64, expected: i64, message: bytes): void = {
   }
 }
 
-fun mustEqual(given: u32, expected: u32, message: bytes): void = {
+fun mustEqual(given: u32, expected: u32, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
     support::env::printf("  given: %X", given)
     support::env::printf("  expected: %X", expected)
   }
 }
-fun mustEqual(given: i32, expected: i32, message: bytes): void = {
+fun mustEqual(given: i32, expected: i32, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
     support::env::printf("  given: %d", given)
@@ -63,10 +63,10 @@ fun mustEqual(given: i32, expected: i32, message: bytes): void = {
   }
 }
 
-fun mustEqual(given: boolean, expected: boolean, message: bytes): void = {
+fun mustEqual(given: boolean, expected: boolean, message: string): void = {
   verify(given == expected, message)
 }
-fun mustEqual(given: bytes, expected: bytes, message: bytes): void = {
+fun mustEqual(given: string, expected: string, message: string): void = {
   verify(given == expected, message)
 }
 
@@ -89,7 +89,7 @@ fun printNumber(number: i32): void = panic()
 
 #[extern "test" "printString"]
 fun printString(number: u32): void = panic()
-fun printString(str: bytes): void = printString(str.ptr - 4 as u32)
+fun printString(str: string): void = printString(str.ptr - 4 as u32)
 
 #[extern "test" "printMemory"]
 fun printMemory(start: u32, length: i32): void = panic()
@@ -101,17 +101,17 @@ fun printMemory(start: u32, length: u32): void = panic()
 
 #[extern "test" "pushTest"]
 fun START(title: u32): void = panic()
-fun START(title: bytes): void = START(title.ptr - 4 as u32)
+fun START(title: string): void = START(title.ptr - 4 as u32)
 
 #[extern "test" "registerAssertion"]
 fun verify(passed: boolean, title: u32): void = panic()
-fun verify(passed: boolean, title: bytes): void = verify(passed, title.ptr - 4 as u32)
+fun verify(passed: boolean, title: string): void = verify(passed, title.ptr - 4 as u32)
 
 #[extern "test" "popTest"]
 fun END(): void = panic()
 
 fun assert(condition: boolean): void = assert(condition, "assert(false)")
-fun assert(condition: boolean, message: bytes): void = {
+fun assert(condition: boolean, message: string): void = {
   verify(condition, message)
   if (condition == false) {
     lastErrorMessage = Message(message)

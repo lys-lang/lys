@@ -286,9 +286,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
-      const size = '00000000';
+      const discriminant = node.ofType!.getSchemaValue('discriminant');
+      const discriminantHex = ('00000000' + discriminant.toString(16)).substr(-8);
       const offset = ('00000000' + node.offset!.toString(16)).substr(-8);
-      return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + size + offset, 'i64')]);
+      return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + discriminantHex + offset, 'i64')]);
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {

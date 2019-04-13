@@ -130,7 +130,9 @@ function getTypeTypeType(node: Nodes.Node, type: Type, ctx: TypeResolutionContex
   if (type instanceof TypeType) {
     return type.of;
   } else {
-    ctx.parsingContext.messageCollector.error(new NotAValidType(node));
+    if (!ctx.parsingContext.messageCollector.hasErrorForBranch(node)) {
+      ctx.parsingContext.messageCollector.error(new NotAValidType(node));
+    }
     return INVALID_TYPE;
   }
 }
@@ -585,7 +587,9 @@ class MemberTypeResolver extends TypeResolver {
           return INVALID_TYPE;
         }
       } else {
-        ctx.parsingContext.messageCollector.error(new NotAValidType(opNode.lhs!));
+        if (!ctx.parsingContext.messageCollector.hasErrorForBranch(opNode.lhs)) {
+          ctx.parsingContext.messageCollector.error(new NotAValidType(opNode.lhs));
+        }
         return INVALID_TYPE;
       }
     }

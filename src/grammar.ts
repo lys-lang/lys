@@ -20,7 +20,7 @@ ImplInnerDirective::= FunctionDirective
                     | ValDirective
                     | VarDirective {fragment=true}
 
-ImportDirective   ::= IMPORT_KEYWORD ('*' WS+ 'from' WS+ QName | QName (WS+ 'as' WS+ NameIdentifier)?)
+ImportDirective   ::= IMPORT_KEYWORD QName (WS+ 'as' WS+ NameIdentifier)? {pin=1}
 FunctionDirective ::= (&'#[' Decorators)? PrivateModifier? FunDeclaration {pin=3}
 ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
@@ -288,7 +288,7 @@ MinusPreOperator  ::= '-'       !'-'
 AsKeyword         ::= 'as'      ![A-Za-z0-9_]
 IsKeyword         ::= 'is'      ![A-Za-z0-9_]
 MulOperator       ::= '**'  | '*'   | '/'  | '%'
-AddOperator       ::= '+'   | '-'
+AddOperator       ::= '++' | '+'   | '-'
 ShiftOperator     ::= '>>>' | '>>'  | '<<'
 RelOperator       ::= '>='  | '<='  | '>'  | '<'
 EqOperator        ::= '===' | '!==' | '~=' | '==' | '!='
