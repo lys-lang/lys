@@ -129,7 +129,7 @@ describe('Types', function() {
     checkMainType`
       val x = "a"[0 as u32]
       ---
-      x := (alias u8 (native u8))
+      x := (alias u16 (native u16))
     `;
 
     checkMainType`
@@ -326,7 +326,7 @@ describe('Types', function() {
         var a = "hello"
         var len = a.length
         ---
-        a := (alias bytes (native bytes))
+        a := (alias string (native string))
         len := (alias u32 (native u32))
       `;
     });
@@ -3085,7 +3085,7 @@ describe('Types', function() {
 
       describe('imports', () => {
         checkMainType`
-          import * from system::random
+          import system::random
 
           fun main(): f32 = nextInt()
           ---

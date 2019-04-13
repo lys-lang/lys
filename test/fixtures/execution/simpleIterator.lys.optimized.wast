@@ -225,11 +225,11 @@
    )
    (block
     (call $0
-     (i64.const 558)
+     (i64.const 98784248366)
      (local.get $0)
     )
     (call $0
-     (i64.const 585)
+     (i64.const 98784248393)
      (i32.const 55)
     )
    )

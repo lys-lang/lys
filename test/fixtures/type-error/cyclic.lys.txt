@@ -1,5 +1,5 @@
 test/fixtures/type-error/cyclic.lys
-    1│ var a = "hello"
+    1│ var a = 1
      │     ^ Cyclic dependency #0 origin
-    2│ var bytes = a.length
-     │             ^ Cyclic dependency #0 target
+    2│ var i32 = a
+     │           ^ Cyclic dependency #0 target

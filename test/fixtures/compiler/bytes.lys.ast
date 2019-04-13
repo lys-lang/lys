@@ -4,24 +4,28 @@
     |-QNameNode=system::core
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+  |-ImportDirectiveNode
+    |-QNameNode=system::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="string"
   |-ValDirectiveNode
     |-ValDeclarationNode annotations=Global(test::fixtures::compiler::bytes::a:<no-type>)
-      |-NameIdentifierNode="a" type=(alias bytes (native bytes))
-      |-StringLiteral="asdasd" type=(alias bytes (native bytes)) annotations=IsValueNode
+      |-NameIdentifierNode="a" type=(alias string (native string))
+      |-StringLiteral="asdasd" type=(alias string (native string)) annotations=IsValueNode
   |-ValDirectiveNode
     |-ValDeclarationNode annotations=Global(test::fixtures::compiler::bytes::b:<no-type>)
-      |-NameIdentifierNode="b" type=(alias bytes (native bytes))
-      |-StringLiteral="utf «【】»" type=(alias bytes (native bytes)) annotations=IsValueNode
-  |-OverloadedFunctionNode type=(fun "main" () (alias bytes)) annotations=Injected
-    |-NameIdentifierNode="main" type=(fun "main" () (alias bytes))
+      |-NameIdentifierNode="b" type=(alias string (native string))
+      |-StringLiteral="utf «【】»" type=(alias string (native string)) annotations=IsValueNode
+  |-OverloadedFunctionNode type=(fun "main" () (alias string)) annotations=Injected
+    |-NameIdentifierNode="main" type=(fun "main" () (alias string))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "main" () (alias bytes)) annotations=IsOverloaded
+      |-FunctionNode type=(fun "main" () (alias string)) annotations=IsOverloaded
         |-NameIdentifierNode="main" annotations=Export
-        |-ReferenceNode type=(type (alias bytes (native bytes)))
-          |-QNameNode=bytes
-            |-NameIdentifierNode="bytes"
-        |-ReferenceNode type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression,Global(test::fixtures::compiler::bytes::a:<no-type>)
+        |-ReferenceNode type=(type (alias string (native string)))
+          |-QNameNode=string
+            |-NameIdentifierNode="string"
+        |-ReferenceNode type=(alias string (native string)) annotations=IsValueNode,IsReturnExpression,Global(test::fixtures::compiler::bytes::a:<no-type>)
           |-QNameNode=a
             |-NameIdentifierNode="a"

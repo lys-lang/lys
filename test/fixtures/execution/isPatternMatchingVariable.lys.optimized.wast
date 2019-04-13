@@ -2,8 +2,8 @@
  (type $0 (func (param i32)))
  (type $1 (func (param i32 i32)))
  (type $2 (func))
- (type $3 (func (param i64) (result i64)))
- (type $4 (func (param i64) (result i32)))
+ (type $3 (func (param i64) (result i32)))
+ (type $4 (func (param i64) (result i64)))
  (type $5 (func (result i32)))
  (type $6 (func (param i32) (result i32)))
  (type $7 (func (param i32 i32 i32)))
@@ -206,7 +206,7 @@
      )
     )
    )
-   (i64.const 665)
+   (i64.const 124554052249)
   )
   (local.get $1)
  )
@@ -256,7 +256,7 @@
    )
   )
  )
- (func $6 (; 9 ;) (type $4) (param $0 i64) (result i32)
+ (func $6 (; 9 ;) (type $3) (param $0 i64) (result i32)
   (if (result i32)
    (i64.eq
     (i64.and
@@ -293,7 +293,7 @@
    )
   )
  )
- (func $7 (; 10 ;) (type $3) (param $0 i64) (result i64)
+ (func $7 (; 10 ;) (type $4) (param $0 i64) (result i64)
   (block $label$1 (result i64)
    (if
     (i64.ne

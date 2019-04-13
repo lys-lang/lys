@@ -1891,11 +1891,11 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-FunctionCallNode=(fun "START" ((alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias bytes)) (alias void)))
+          |-FunctionCallNode=(fun "START" ((alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias string)) (alias void)))
               |-QNameNode=START
                 |-NameIdentifierNode="START"
-            |-StringLiteral="Forest & Tree tests" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-StringLiteral="Forest & Tree tests" type=(alias string (native string)) annotations=IsValueNode
           |-VarDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::recursiveStruct::a_17:Nil#0)
             |-NameIdentifierNode="a" type=(alias Nil (struct))
             |-ReferenceNode type=(alias Nil (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias Nil))
@@ -1951,8 +1951,8 @@
               |-ReferenceNode type=(alias Nil (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias Nil))
                 |-QNameNode=Nil
                   |-NameIdentifierNode="Nil"
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
             |-IsExpressionNode=(fun "is" ((union (alias Nil) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
@@ -1962,9 +1962,9 @@
               |-ReferenceNode type=(type (alias Nil (struct)))
                 |-QNameNode=Nil
                   |-NameIdentifierNode="Nil"
-            |-StringLiteral="a is Nil" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+            |-StringLiteral="a is Nil" type=(alias string (native string)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
             |-IsExpressionNode=(fun "is" ((union (alias Forest) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
@@ -1974,9 +1974,9 @@
               |-ReferenceNode type=(type (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree:<null>)))))
                 |-QNameNode=Forest
                   |-NameIdentifierNode="Forest"
-            |-StringLiteral="a is Fores" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+            |-StringLiteral="a is Fores" type=(alias string (native string)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
             |-IsExpressionNode=(fun "is" ((union (alias Forest) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
@@ -1986,9 +1986,9 @@
               |-ReferenceNode type=(type (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree:<null>)))))
                 |-QNameNode=Forest
                   |-NameIdentifierNode="Forest"
-            |-StringLiteral="b is Fores" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+            |-StringLiteral="b is Fores" type=(alias string (native string)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
             |-IsExpressionNode=(fun "is" ((union (alias Cons) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
@@ -1998,9 +1998,9 @@
               |-ReferenceNode type=(type (alias Cons (struct tree:<null>)))
                 |-QNameNode=Cons
                   |-NameIdentifierNode="Cons"
-            |-StringLiteral="c is Cons" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+            |-StringLiteral="c is Cons" type=(alias string (native string)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
             |-IsExpressionNode=(fun "is" ((union (alias Node) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
@@ -2010,9 +2010,9 @@
               |-ReferenceNode type=(type (alias Node (struct a:<null>)))
                 |-QNameNode=Node
                   |-NameIdentifierNode="Node"
-            |-StringLiteral="e is Node" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias bytes)) (alias void)))
+            |-StringLiteral="e is Node" type=(alias string (native string)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
             |-IsExpressionNode=(fun "is" ((union (alias Tree) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
@@ -2022,7 +2022,7 @@
               |-ReferenceNode type=(type (alias Tree (union (alias Empty (struct)) (alias Node (struct a:<null>)))))
                 |-QNameNode=Tree
                   |-NameIdentifierNode="Tree"
-            |-StringLiteral="e is Tree" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-StringLiteral="e is Tree" type=(alias string (native string)) annotations=IsValueNode
           |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=END

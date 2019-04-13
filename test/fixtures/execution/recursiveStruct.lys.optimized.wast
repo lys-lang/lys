@@ -312,11 +312,11 @@
       )
       (call $5
        (i32.const 1)
-       (i64.const 59)
+       (i64.const 107374182459)
       )
       (call $5
        (i32.const 1)
-       (i64.const 80)
+       (i64.const 107374182480)
       )
       (call $5
        (i32.or
@@ -341,7 +341,7 @@
          (i32.const 0)
         )
        )
-       (i64.const 105)
+       (i64.const 107374182505)
       )
       (local.get $3)
      )
@@ -349,7 +349,7 @@
     )
     (i64.const 25769803776)
    )
-   (i64.const 130)
+   (i64.const 107374182530)
   )
   (call $5
    (i64.eq
@@ -359,7 +359,7 @@
     )
     (i64.const 12884901888)
    )
-   (i64.const 153)
+   (i64.const 107374182553)
   )
   (call $5
    (i32.or
@@ -384,7 +384,7 @@
      (i32.const 0)
     )
    )
-   (i64.const 176)
+   (i64.const 107374182576)
   )
   (call $fimport$2)
  )

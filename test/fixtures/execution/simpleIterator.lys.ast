@@ -1523,13 +1523,13 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-FunctionCallNode=(fun "START" ((alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias bytes)) (alias void)))
+          |-FunctionCallNode=(fun "START" ((alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias string)) (alias void)))
               |-QNameNode=START
                 |-NameIdentifierNode="START"
-            |-StringLiteral="Iterator test" type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) (fun "mustEqual" ((alias bytes) (alias bytes) (alias bytes)) (alias void)))
+            |-StringLiteral="Iterator test" type=(alias string (native string)) annotations=IsValueNode
+          |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias string)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias string)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias string)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias string)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias string)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias string)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias string)) (alias void)) (fun "mustEqual" ((alias string) (alias string) (alias string)) (alias void)))
               |-QNameNode=mustEqual
                 |-NameIdentifierNode="mustEqual"
             |-FunctionCallNode=(fun "test" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
@@ -1539,7 +1539,7 @@
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-IntegerLiteral=10 type=(alias i32 (native i32)) annotations=IsValueNode
             |-IntegerLiteral=55 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-StringLiteral="spec test 1" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-StringLiteral="spec test 1" type=(alias string (native string)) annotations=IsValueNode
           |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=END

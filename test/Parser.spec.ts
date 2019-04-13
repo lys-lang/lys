@@ -166,13 +166,6 @@ describe('Parser', () => {
 
     describe('imports', () => {
       test`
-        import * from module
-        import * from module2
-        import * from module::submodule
-        import * from github::menduz::aureum
-      `;
-
-      test`
         import module
         import module2
         import module::submodule

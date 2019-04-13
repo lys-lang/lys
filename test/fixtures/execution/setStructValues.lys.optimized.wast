@@ -271,7 +271,7 @@
     (local.get $0)
     (local.get $1)
    )
-   (i64.const 695)
+   (i64.const 107374183095)
   )
   (if
    (i64.ne
@@ -280,7 +280,7 @@
    )
    (block
     (call $5
-     (i64.const 1742)
+     (i64.const 107374184142)
      (i32.wrap_i64
       (i64.shr_s
        (local.get $0)
@@ -289,7 +289,7 @@
      )
     )
     (call $5
-     (i64.const 1777)
+     (i64.const 107374184177)
      (i32.wrap_i64
       (i64.shr_s
        (local.get $1)
@@ -298,13 +298,13 @@
      )
     )
     (call $5
-     (i64.const 1818)
+     (i64.const 107374184218)
      (i32.wrap_i64
       (local.get $0)
      )
     )
     (call $5
-     (i64.const 1853)
+     (i64.const 107374184253)
      (i32.wrap_i64
       (local.get $1)
      )
@@ -327,7 +327,7 @@
    )
    (block
     (call $5
-     (i64.const 1894)
+     (i64.const 107374184294)
      (i32.wrap_i64
       (i64.shr_s
        (local.get $0)
@@ -336,7 +336,7 @@
      )
     )
     (call $5
-     (i64.const 1929)
+     (i64.const 107374184329)
      (i32.wrap_i64
       (i64.shr_s
        (local.get $1)
@@ -345,13 +345,13 @@
      )
     )
     (call $5
-     (i64.const 1970)
+     (i64.const 107374184370)
      (i32.wrap_i64
       (local.get $0)
      )
     )
     (call $5
-     (i64.const 2005)
+     (i64.const 107374184405)
      (i32.wrap_i64
       (local.get $1)
      )
@@ -365,7 +365,7 @@
     (local.get $0)
     (local.get $1)
    )
-   (i64.const 198)
+   (i64.const 107374182598)
   )
   (if
    (i32.ne
@@ -374,11 +374,11 @@
    )
    (block
     (call $5
-     (i64.const 2046)
+     (i64.const 107374184446)
      (local.get $0)
     )
     (call $5
-     (i64.const 2073)
+     (i64.const 107374184473)
      (local.get $1)
     )
    )
@@ -399,11 +399,11 @@
    )
    (block
     (call $4
-     (i64.const 2106)
+     (i64.const 107374184506)
      (local.get $0)
     )
     (call $4
-     (i64.const 2133)
+     (i64.const 107374184533)
      (local.get $1)
     )
    )
@@ -547,7 +547,7 @@
  )
  (func $16 (; 22 ;) (type $2)
   (call $11
-   (i64.const 111)
+   (i64.const 107374182511)
   )
   (i32.store
    (i32.wrap_i64
@@ -574,19 +574,19 @@
  )
  (func $17 (; 23 ;) (type $2)
   (call $11
-   (i64.const 134)
+   (i64.const 107374182534)
   )
   (call $9
    (i32.const -1)
    (i32.const -1)
-   (i64.const 161)
+   (i64.const 107374182561)
   )
   (call $8
    (i32.const -1)
    (i32.const -1)
   )
   (call $11
-   (i64.const 16)
+   (i64.const 107374182416)
   )
   (call $9
    (i32.load
@@ -595,7 +595,7 @@
     )
    )
    (i32.const 0)
-   (i64.const 37)
+   (i64.const 107374182437)
   )
   (call $9
    (i32.load
@@ -604,12 +604,12 @@
     )
    )
    (i32.const 0)
-   (i64.const 74)
+   (i64.const 107374182474)
   )
   (call $fimport$3)
   (call $16)
   (call $4
-   (i64.const 263)
+   (i64.const 107374182663)
    (i32.load
     (i32.wrap_i64
      (global.get $global$8)
@@ -617,7 +617,7 @@
    )
   )
   (call $4
-   (i64.const 296)
+   (i64.const 107374182696)
    (i32.load
     (i32.wrap_i64
      (global.get $global$9)
@@ -627,7 +627,7 @@
   (call $7
    (i64.const -1412567295)
    (i64.const -1412567295)
-   (i64.const 329)
+   (i64.const 107374182729)
   )
   (call $9
    (i32.load
@@ -636,7 +636,7 @@
     )
    )
    (i32.const 3)
-   (i64.const 410)
+   (i64.const 107374182810)
   )
   (call $9
    (i32.load
@@ -645,7 +645,7 @@
     )
    )
    (i32.const -1412567295)
-   (i64.const 447)
+   (i64.const 107374182847)
   )
   (call $9
    (i32.load
@@ -654,7 +654,7 @@
     )
    )
    (i32.const -1412567295)
-   (i64.const 516)
+   (i64.const 107374182916)
   )
   (call $7
    (i64.extend_i32_s
@@ -665,7 +665,7 @@
     )
    )
    (i64.const -1412567295)
-   (i64.const 585)
+   (i64.const 107374182985)
   )
   (call $7
    (i64.extend_i32_s
@@ -676,7 +676,7 @@
     )
    )
    (i64.const -1412567295)
-   (i64.const 612)
+   (i64.const 107374183012)
   )
   (call $6
    (i64.extend_i32_s
@@ -695,7 +695,7 @@
     )
    )
    (i32.const 1)
-   (i64.const 778)
+   (i64.const 107374183178)
   )
   (call $9
    (i32.load8_u
@@ -707,7 +707,7 @@
     )
    )
    (i32.const 5)
-   (i64.const 833)
+   (i64.const 107374183233)
   )
   (call $fimport$3)
  )
@@ -718,7 +718,7 @@
   (local $3 i64)
   (local $4 i32)
   (call $11
-   (i64.const 902)
+   (i64.const 107374183302)
   )
   (call $fimport$0
    (i32.wrap_i64
@@ -732,7 +732,7 @@
    (i32.const 16)
   )
   (call $11
-   (i64.const 947)
+   (i64.const 107374183347)
   )
   (call $12
    (i64.eq
@@ -742,7 +742,7 @@
     )
     (i64.const 21474836480)
    )
-   (i64.const 1004)
+   (i64.const 107374183404)
   )
   (call $12
    (call $13
@@ -752,7 +752,7 @@
      )
     )
    )
-   (i64.const 1031)
+   (i64.const 107374183431)
   )
   (call $12
    (call $13
@@ -765,7 +765,7 @@
      )
     )
    )
-   (i64.const 1060)
+   (i64.const 107374183460)
   )
   (call $12
    (i64.eq
@@ -779,7 +779,7 @@
     )
     (i64.const 12884901888)
    )
-   (i64.const 1089)
+   (i64.const 107374183489)
   )
   (call $12
    (i64.eq
@@ -796,11 +796,11 @@
     )
     (i64.const 8589934592)
    )
-   (i64.const 1114)
+   (i64.const 107374183514)
   )
   (call $fimport$3)
   (call $11
-   (i64.const 1139)
+   (i64.const 107374183539)
   )
   (i32.store
    (i32.wrap_i64
@@ -827,7 +827,7 @@
     )
     (i32.const -1430532899)
    )
-   (i64.const 1158)
+   (i64.const 107374183558)
   )
   (i64.store
    (i32.wrap_i64
@@ -837,7 +837,7 @@
   )
   (call $12
    (i32.const 1)
-   (i64.const 1201)
+   (i64.const 107374183601)
   )
   (call $12
    (i64.eq
@@ -850,7 +850,7 @@
      )
     )
    )
-   (i64.const 1218)
+   (i64.const 107374183618)
   )
   (call $12
    (i64.eq
@@ -861,7 +861,7 @@
      )
     )
    )
-   (i64.const 1239)
+   (i64.const 107374183639)
   )
   (call $12
    (i64.eq
@@ -872,7 +872,7 @@
      )
     )
    )
-   (i64.const 1260)
+   (i64.const 107374183660)
   )
   (i64.store
    (i32.add
@@ -898,11 +898,11 @@
     )
     (i64.const 12884901888)
    )
-   (i64.const 1285)
+   (i64.const 107374183685)
   )
   (call $fimport$3)
   (call $11
-   (i64.const 1310)
+   (i64.const 107374183710)
   )
   (call $12
    (i64.eq
@@ -916,7 +916,7 @@
     )
     (i64.const 17179869184)
    )
-   (i64.const 1347)
+   (i64.const 107374183747)
   )
   (call $12
    (i64.eq
@@ -933,7 +933,7 @@
     )
     (i64.const 12884901888)
    )
-   (i64.const 1378)
+   (i64.const 107374183778)
   )
   (call $12
    (call $13
@@ -943,7 +943,7 @@
      )
     )
    )
-   (i64.const 1403)
+   (i64.const 107374183803)
   )
   (call $12
    (call $13
@@ -956,7 +956,7 @@
      )
     )
    )
-   (i64.const 1432)
+   (i64.const 107374183832)
   )
   (block $label$1
    (if
@@ -976,7 +976,7 @@
     (block
      (call $12
       (i32.const 0)
-      (i64.const 1543)
+      (i64.const 107374183943)
      )
      (br $label$1)
     )
@@ -1000,13 +1000,13 @@
         )
         (i32.const -1430532899)
        )
-       (i64.const 1461)
+       (i64.const 107374183861)
       )
       (local.get $4)
      )
      (i32.const -1430532899)
     )
-    (i64.const 1504)
+    (i64.const 107374183904)
    )
   )
   (call $fimport$3)

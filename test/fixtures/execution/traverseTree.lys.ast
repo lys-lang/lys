@@ -1181,13 +1181,13 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-FunctionCallNode=(fun "START" ((alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias bytes)) (alias void)))
+          |-FunctionCallNode=(fun "START" ((alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias string)) (alias void)))
               |-QNameNode=support::test::START
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
                 |-NameIdentifierNode="START"
-            |-StringLiteral="Traverse tree" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-StringLiteral="Traverse tree" type=(alias string (native string)) annotations=IsValueNode
           |-ValDeclarationNode type=(native void) annotations=Local(test::fixtures::execution::traverseTree::tree:Node#0)
             |-NameIdentifierNode="tree" type=(alias Node (struct value:<null> left:<null> right:<null>))
             |-FunctionCallNode=(fun "apply" ((alias i32) (alias Tree) (alias Tree)) (alias Node)) type=(alias Node (struct value:<null> left:<null> right:<null>)) annotations=IsValueNode
@@ -1213,8 +1213,8 @@
               |-ReferenceNode type=(alias Empty (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias Empty))
                 |-QNameNode=Empty
                   |-NameIdentifierNode="Empty"
-          |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) type=(alias void (native void))
-            |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias bytes)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias bytes)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias bytes)) (alias void)) (fun "mustEqual" ((alias bytes) (alias bytes) (alias bytes)) (alias void)))
+          |-FunctionCallNode=(fun "mustEqual" ((alias i32) (alias i32) (alias string)) (alias void)) type=(alias void (native void))
+            |-ReferenceNode type=(intersection (fun "mustEqual" ((alias f64) (alias f64) (alias string)) (alias void)) (fun "mustEqual" ((alias f32) (alias f32) (alias string)) (alias void)) (fun "mustEqual" ((alias u64) (alias u64) (alias string)) (alias void)) (fun "mustEqual" ((alias i64) (alias i64) (alias string)) (alias void)) (fun "mustEqual" ((alias u32) (alias u32) (alias string)) (alias void)) (fun "mustEqual" ((alias i32) (alias i32) (alias string)) (alias void)) (fun "mustEqual" ((alias boolean) (alias boolean) (alias string)) (alias void)) (fun "mustEqual" ((alias string) (alias string) (alias string)) (alias void)))
               |-QNameNode=support::test::mustEqual
                 |-NameIdentifierNode="support"
                 |-NameIdentifierNode="test"
@@ -1227,7 +1227,7 @@
                 |-QNameNode=tree
                   |-NameIdentifierNode="tree"
             |-IntegerLiteral=45 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-StringLiteral="sum(tree) returns 45" type=(alias bytes (native bytes)) annotations=IsValueNode
+            |-StringLiteral="sum(tree) returns 45" type=(alias string (native string)) annotations=IsValueNode
           |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
             |-ReferenceNode type=(fun "END" () (alias void))
               |-QNameNode=support::test::END

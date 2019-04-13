@@ -99,7 +99,7 @@
        )
       )
      )
-     (i64.const 560)
+     (i64.const 103079215664)
     )
     (global.set $global$0
      (local.get $1)

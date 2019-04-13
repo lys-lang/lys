@@ -80,11 +80,11 @@
    )
    (block
     (call $0
-     (i64.const 753)
+     (i64.const 81604379377)
      (local.get $0)
     )
     (call $0
-     (i64.const 780)
+     (i64.const 81604379404)
      (local.get $1)
     )
    )
@@ -163,7 +163,7 @@
  )
  (func $7 (; 11 ;) (type $2)
   (call $4
-   (i64.const 16)
+   (i64.const 81604378640)
   )
   (call $2
    (call $5
@@ -172,7 +172,7 @@
     (i32.const 1)
    )
    (i32.const 1836311903)
-   (i64.const 39)
+   (i64.const 81604378663)
   )
   (call $2
    (call $5
@@ -181,18 +181,18 @@
     (i32.const 1)
    )
    (i32.const 1836311903)
-   (i64.const 96)
+   (i64.const 81604378720)
   )
   (call $fimport$2)
   (call $4
-   (i64.const 183)
+   (i64.const 81604378807)
   )
   (call $2
    (call $6
     (i32.const 10)
    )
    (i32.const 3628800)
-   (i64.const 206)
+   (i64.const 81604378830)
   )
   (call $fimport$2)
  )

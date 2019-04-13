@@ -7,61 +7,52 @@ fun main(): void = {
   {
     val a = "abc"
     val b = "1234"
-    val c = concatBytes(a, b)
+    val c = string.concat(a, b)
 
-    mustEqual(a.length, 6 as u32, "a.length == 6")
-    mustEqual(b.length, 8 as u32, "a.length == 6")
-    mustEqual(c.length, 14 as u32, "c.length == 12")
+    mustEqual(a.length, 3 as u32, "a.length == 3")
+    mustEqual(b.length, 4 as u32, "b.length == 4")
+    mustEqual(c.length, 7 as u32, "c.length == 7")
     mustEqual(c, "abc1234", "c == 'abc1234' (1)")
 
-    val D = concatBytes(c, c)
+    val D = string.concat(c, c)
 
     mustEqual(c, "abc1234", "c == 'abc1234' (2)")
 
-    mustEqual(D.length, 28 as u32, "d.length == 28")
+    mustEqual(D.length, 14 as u32, "d.length == 28")
     mustEqual(D, "abc1234abc1234", D)
   }
   END()
 
   START("Test string operations")
   {
-    val str = String("asd❮𝐑")
+    val str = "asd❮𝐑"
     mustEqual(str.length, 6 as u32, "str.length == 6")
-    mustEqual(String.charAt(str, 0 as u32), 97 as u16, "char at 0")
-    mustEqual(String.charAt(str, 1 as u32), 115 as u16, "char at 1")
-    mustEqual(String.charAt(str, 2 as u32), 100 as u16, "char at 2")
-    mustEqual(String.charAt(str, 3 as u32), 10094 as u16, "char at 3")
-    mustEqual(String.charAt(str, 4 as u32), 55349 as u16, "char at 4")
-    mustEqual(String.charAt(str, 5 as u32), 56337 as u16, "char at 5")
+    mustEqual(str[0 as u32], 97 as u16, "char at 0")
+    mustEqual(str[1 as u32], 115 as u16, "char at 1")
+    mustEqual(str[2 as u32], 100 as u16, "char at 2")
+    mustEqual(str[3 as u32], 10094 as u16, "char at 3")
+    mustEqual(str[4 as u32], 55349 as u16, "char at 4")
+    mustEqual(str[5 as u32], 56337 as u16, "char at 5")
   }
   END()
 
   START("String concatenation")
   {
-    val x = (String("ds") + String("sa"))
-    mustEqual(x.length as i32, 4, "String.length must be 3")
-    mustEqual(x.data.length as i32, 8, "String.data.length must be 6")
+    val x = "ds" ++ "sa"
+    mustEqual(x.length, 4 as u32, "String.length must be 4")
   }
   END()
 
   START("String concatenation UTF16")
   {
-    val x = String("ab") + String("µ⚜︎")
+    val x = "ab" ++ "µ⚜︎"
 
-
-
-    mustEqual(String.charAt(x, 0 as u32) as i32, 0x0061, "a assertion failed")
-    mustEqual(String.charAt(x, 1 as u32) as i32, 0x0062, "b assertion failed")
-    mustEqual(String.charAt(x, 2 as u32) as i32, 0x00B5, "µ assertion failed")
-    mustEqual(String.charAt(x, 3 as u32) as i32, 0x269C, "0x269C assertion failed")
-    mustEqual(String.charAt(x, 4 as u32) as i32, 0xFE0E, "0xFE0E assertion failed")
-
-    mustEqual(x.data[8 as u32] as i32, 0x0E, "0x0E assertion failed")
-    mustEqual(x.data[9 as u32] as i32, 0xFE, "0xFE assertion failed")
-
-    x.data[8 as u32] = 1 as u8
-
-    mustEqual(x.data[8 as u32] as i32, 0x1, "0x1 assertion failed")
+    mustEqual(x.length, 5 as u32, "String.length must be 5")
+    mustEqual(x[0 as u32], 0x0061, "a assertion failed")
+    mustEqual(x[1 as u32], 0x0062, "b assertion failed")
+    mustEqual(x[2 as u32], 0x00B5, "µ assertion failed")
+    mustEqual(x[3 as u32], 0x269C, "0x269C assertion failed")
+    mustEqual(x[4 as u32], 0xFE0E, "0xFE0E assertion failed")
   }
   END()
 }

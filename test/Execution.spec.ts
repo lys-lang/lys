@@ -163,11 +163,11 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.len()).to.eq(6);
+        expect(x.exports.len()).to.eq(3);
         expect(x.exports.b(0)).to.eq(0);
-        expect(x.exports.b(1)).to.eq(2);
-        expect(x.exports.b(2)).to.eq(4);
-        expect(x.exports.b(3)).to.eq(6);
+        expect(x.exports.b(1)).to.eq(1);
+        expect(x.exports.b(2)).to.eq(2);
+        expect(x.exports.b(3)).to.eq(3);
         expect(() => x.exports.b(92)).to.throw();
       }
     );
@@ -175,12 +175,10 @@ describe('Execution tests', () => {
     test(
       'String.charAt',
       `
-          import system::string
+        val str = "asd❮𝐑"
 
-          val str = String("asd❮𝐑")
-
-          #[export] fun charAt(at: u32): u16 = String.charAt(str, at)
-          #[export] fun len(): u32 = str.length
+        #[export] fun charAt(at: u32): u16 = str[at]
+        #[export] fun len(): u32 = str.length
       `,
       async (x, err) => {
         if (err) throw err;
