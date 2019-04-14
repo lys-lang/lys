@@ -395,7 +395,7 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.VarDeclarationNode) {
       this.processVarDecl(node);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      const type = getTypeForIntValue(node.astNode!.text);
+      const type = getTypeForIntValue(node.astNode.text);
 
       this.resolveVariableByName(node, type, target);
     } else if (node instanceof Nodes.FloatLiteral) {
@@ -403,7 +403,7 @@ export class TypeGraphBuilder {
     } else if (node instanceof Nodes.BooleanLiteral) {
       this.resolveVariableByName(node, 'boolean', target);
     } else if (node instanceof Nodes.StringLiteral) {
-      this.resolveVariableByName(node, 'bytes', target);
+      this.resolveVariableByName(node, 'system::string::string', target);
     } else if (node instanceof Nodes.MatchLiteralNode) {
       Edge.addEdge(this.parsingContext, this.traverse(node.literal!), target, EdgeLabels.LHS);
       Edge.addEdge(this.parsingContext, this.traverse(node.rhs!), target, EdgeLabels.RHS);

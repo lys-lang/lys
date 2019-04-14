@@ -103,71 +103,71 @@
   )
   (call $2
    (i32.const 1)
-   (i64.const 61)
+   (i64.const 81604378685)
   )
   (call $2
    (i32.const 1)
-   (i64.const 68)
+   (i64.const 81604378692)
   )
   (call $2
    (i32.const 1)
-   (i64.const 85)
+   (i64.const 81604378709)
   )
   (call $2
    (i32.const 1)
-   (i64.const 104)
+   (i64.const 81604378728)
   )
   (call $2
    (i32.const 1)
-   (i64.const 125)
+   (i64.const 81604378749)
   )
   (call $2
    (i32.const 1)
-   (i64.const 132)
+   (i64.const 81604378756)
   )
   (call $2
    (i32.const 1)
-   (i64.const 177)
+   (i64.const 81604378801)
   )
   (call $2
    (i32.const 1)
-   (i64.const 222)
+   (i64.const 81604378846)
   )
   (call $2
    (i32.const 1)
-   (i64.const 229)
+   (i64.const 81604378853)
   )
   (call $2
    (i32.const 1)
-   (i64.const 236)
+   (i64.const 81604378860)
   )
   (call $2
    (i32.const 1)
-   (i64.const 243)
+   (i64.const 81604378867)
   )
   (call $2
    (i32.const 1)
-   (i64.const 250)
+   (i64.const 81604378874)
   )
   (call $2
    (i32.const 1)
-   (i64.const 257)
+   (i64.const 81604378881)
   )
   (call $2
    (i32.const 1)
-   (i64.const 264)
+   (i64.const 81604378888)
   )
   (call $2
    (i32.const 1)
-   (i64.const 271)
+   (i64.const 81604378895)
   )
   (call $2
    (i32.const 1)
-   (i64.const 280)
+   (i64.const 81604378904)
   )
   (call $2
    (i32.const 1)
-   (i64.const 299)
+   (i64.const 81604378923)
   )
   (call $fimport$2)
  )

@@ -1,17 +1,17 @@
 import system::string
 import support::test
 
-fun assertNumber(numberToSerialize: u64, expected: bytes): void =
-  assertEquals(String.stringify(numberToSerialize), expected)
-fun assertNumber(numberToSerialize: i64, expected: bytes): void =
-  assertEquals(String.stringify(numberToSerialize), expected)
-fun assertNumber(numberToSerialize: i32, expected: bytes): void =
+fun assertNumber(numberToSerialize: u64, expected: string): void =
+  assertEquals(string.stringify(numberToSerialize), expected)
+fun assertNumber(numberToSerialize: i64, expected: string): void =
+  assertEquals(string.stringify(numberToSerialize), expected)
+fun assertNumber(numberToSerialize: i32, expected: string): void =
   assertNumber(numberToSerialize as i64, expected)
-fun assertNumber(numberToSerialize: u32, expected: bytes): void =
+fun assertNumber(numberToSerialize: u32, expected: string): void =
   assertNumber(numberToSerialize as u64, expected)
 
 fun assertNumberLength(numberToSerialize: i64, expected: i32): void = {
-  val size = String.charLength(numberToSerialize)
+  val size = string.charLength(numberToSerialize)
   val result = size as i32 == expected
 
   if (!result) {
@@ -23,10 +23,8 @@ fun assertNumberLength(numberToSerialize: i64, expected: i32): void = {
   verify(result, "assertNumberLength")
 }
 
-fun assertEquals(given: bytes, expected: bytes): void = {
-  val msg = concatBytes(concatBytes(concatBytes(concatBytes(
-    "Given: '", given), "' Expected: '"), expected), "'"
-  )
+fun assertEquals(given: string, expected: string): void = {
+  val msg = "Given: '" ++ given ++ "' Expected: '" ++ expected ++ "'"
 
   val result = given == expected
 

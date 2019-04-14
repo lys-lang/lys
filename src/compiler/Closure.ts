@@ -31,7 +31,7 @@ export class Closure {
     if (moduleName && !this.importedModules.has(moduleName)) {
       this.importedModules.set(moduleName, new Set<string>());
     }
-    return this.importedModules.get(moduleName);
+    return this.importedModules.get(moduleName)!;
   }
 
   registerImport(moduleName: string, names: Set<string>) {
@@ -128,6 +128,7 @@ export class Closure {
       const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
       const ref = moduleDocument.closure!.getFromOutside(name);
       if (ref) {
+        this.registerForeginModule(moduleName);
         return ref.withModule(moduleName);
       }
     }

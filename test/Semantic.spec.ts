@@ -360,7 +360,7 @@ describe('Semantic', function() {
     testParseToken(
       `
         import system::core
-        import * from system::random
+        import system::random
 
         fun a(): void = {}
       `,

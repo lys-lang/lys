@@ -22,6 +22,22 @@ fun DJB2(input: bytes): u64 = {
 
   hash
 }
+
+fun DJB2(input: system::string::string): u64 = {
+  var hash = 5381 as u64
+  var i = 0 as u32
+
+  loop {
+    if (i >= input.length) break
+
+    hash = ((hash << 5) + hash) + input[i]
+
+    i = i + 1 as u32
+    continue
+  }
+
+  hash
+}
 ```
 
 #### main.lys
@@ -42,7 +58,7 @@ fun main(): void = {
 
   mustEqual(
     DJB2("1234567890 abcdefghijklmnopq"),
-    0xC0E869BCFF6D4DAB as u64,
+    0xE2D2EA72F299758B as u64,
     "long string hash"
   )
 

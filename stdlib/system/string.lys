@@ -1,25 +1,143 @@
+type string = %stack { lowLevelType="i64" byteSize=8 }
 
-struct String(data: bytes)
+impl string {
+  /**
+   * Returns the string length in UCS chars.
+   */
+  #[inline]
+  fun property_length(str: string): u32 =
+    u32.load(str as ref) / 2 as u32
 
-impl String {
-  fun property_length(str: String): u32 = str.data.length / 2 as u32
-
-  fun +(lhs: String, rhs: String): String = String(concatBytes(lhs.data, rhs.data))
-
-  fun charAt(str: String, at: u32): u16 = {
-    if (at > str.length) {
-      panic()
-    }
-    u16.load(str.data.ptr as ref, at * 2 as u32)
+  /**
+   * Returns the pointer of the string's content.
+   */
+  #[inline]
+  fun property_ptr(str: string): u32 = %wasm {
+    (i32.add
+      (i32.const 4)
+      (call $addressFromRef (get_local $str))
+    )
   }
 
-  fun charAt(str: bytes, at: u32): u16 = {
-    if (at > str.length / 2 as u32) {
+  /**
+   * Strings behave like objects.
+   * Can be explicitly converted to references.
+   */
+  #[explicit]
+  fun as(lhs: string): ref = %wasm { (get_local $lhs) }
+
+  /**
+   * Unless numbers, strings are concatenated, not added.
+   * We use a different operator to do it.
+   */
+  fun ++(lhs: string, rhs: string): string =
+    concat(lhs, rhs)
+
+  /**
+   * Index getter, it returns a char (u16)
+   */
+  fun [](data: string, at: u32): u16 = {
+    if (at > data.length) {
       panic()
     }
-    u16.load(str.ptr as ref, at * 2 as u32)
+    if (at < 0 as u32) {
+      panic()
+    }
+    u16.load(data.ptr as ref, at << 1)
   }
 
+  #[inline]
+  private fun getDiscriminant(): u64 = {
+    val discriminant: u32 = string.^discriminant
+    discriminant as u64 << 32
+  }
+
+  fun fromBytes(bytes: bytes): string = %wasm {
+    // TODO: verify correctness of length and size header
+    (i64.or
+      (call $getDiscriminant)
+      (i64.and
+        (i64.const 0xFFFFFFFF)
+        (local.get $bytes)
+      )
+    )
+  }
+}
+
+// UTILS
+impl string {
+  fun concat(lhs: string, rhs: string): string = {
+    val lhsLen = lhs.length * 2 as u32
+    val rhsLen = rhs.length * 2 as u32
+
+    val $ret = system::memory::allocBytes(lhsLen + rhsLen)
+
+    system::memory::memcpy(
+      system::memory::memcpy(
+        $ret.ptr,
+        lhs.ptr,
+        lhsLen
+      ),
+      rhs.ptr,
+      rhsLen
+    )
+
+    string.fromBytes($ret)
+  }
+
+  fun store(lhs: ref, rhs: string): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: string, offset: u32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): string = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: u32): string = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+
+  fun !=(lhs: string, rhs: string): boolean = !(lhs == rhs)
+  fun ==(lhs: string, rhs: string): boolean = {
+    if (lhs.length == rhs.length) {
+      if (lhs.ptr == rhs.ptr) {
+        true
+      } else {
+        val len = lhs.length
+        var equals = true
+        loop {
+          len = len - 1 as u32
+          if (lhs[len] != rhs[len]) {
+            equals = false
+            break
+          }
+          if (len > 0 as u32) continue
+        }
+        equals
+      }
+    } else {
+      false
+    }
+  }
+}
+
+// Aux functions
+impl string {
   fun charLength(value: i64): u32 = {
     if (value == 0 as i64) {
       1 as u32
@@ -92,7 +210,7 @@ impl String {
     }
   }
 
-  fun stringify(value: boolean): bytes = {
+  fun stringify(value: boolean): string = {
     if (value) {
       "true"
     } else {
@@ -100,27 +218,27 @@ impl String {
     }
   }
 
-  fun stringify(value: u8): bytes = {
+  fun stringify(value: u8): string = {
     stringify(value as u64)
   }
 
-  fun stringify(value: u16): bytes = {
+  fun stringify(value: u16): string = {
     stringify(value as u64)
   }
 
-  fun stringify(value: i16): bytes = {
+  fun stringify(value: i16): string = {
     stringify(value as i64)
   }
 
-  fun stringify(value: i32): bytes = {
+  fun stringify(value: i32): string = {
     stringify(value as i64)
   }
 
-  fun stringify(value: u32): bytes = {
+  fun stringify(value: u32): string = {
     stringify(value as u64)
   }
 
-  fun stringify(value: i64): bytes = {
+  fun stringify(value: i64): string = {
     if (value == 0) {
       "0"
     } else {
@@ -138,11 +256,11 @@ impl String {
         u16.store(ret.ptr as ref, 45 as u16, 0 as u32)
       }
 
-      ret
+      string.fromBytes(ret)
     }
   }
 
-  fun stringify(value: u64): bytes = {
+  fun stringify(value: u64): string = {
     if (value == 0 as u64) {
       "0"
     } else {
@@ -152,26 +270,7 @@ impl String {
 
       printToBytes(ret, value, len)
 
-      ret
+      string.fromBytes(ret)
     }
   }
-}
-
-fun concatBytes(lhs: bytes, rhs: bytes): bytes = {
-  val lhsLen = lhs.length
-  val rhsLen = rhs.length
-
-  val $ret = system::memory::allocBytes(lhsLen + rhsLen)
-
-  system::memory::memcpy(
-    system::memory::memcpy(
-      $ret.ptr,
-      lhs.ptr,
-      lhsLen
-    ),
-    rhs.ptr,
-    rhsLen
-  )
-
-  $ret
 }

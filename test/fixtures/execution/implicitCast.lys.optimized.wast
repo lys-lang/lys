@@ -67,7 +67,7 @@
     (local.get $0)
     (i32.const 10)
    )
-   (i64.const 67)
+   (i64.const 81604378691)
   )
   (if
    (i32.ne
@@ -76,11 +76,11 @@
    )
    (block
     (call $0
-     (i64.const 651)
+     (i64.const 81604379275)
      (local.get $0)
     )
     (call $0
-     (i64.const 678)
+     (i64.const 81604379302)
      (i32.const 10)
     )
    )
@@ -129,15 +129,15 @@
   )
   (call $4
    (i32.const 1)
-   (i64.const 108)
+   (i64.const 81604378732)
   )
   (call $4
    (i32.const 1)
-   (i64.const 127)
+   (i64.const 81604378751)
   )
   (call $4
    (i32.const 1)
-   (i64.const 146)
+   (i64.const 81604378770)
   )
   (call $fimport$2)
  )
