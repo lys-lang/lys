@@ -1,59 +1,120 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="x" type=(alias i32 (native i32))
       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-  |-OverloadedFunctionNode type=(fun "addOne" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="addOne" type=(fun "addOne" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="addOne" type=(intersection (fun "addOne" () (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "addOne" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="addOne"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="addOne" type=(fun "addOne" () (alias i32))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-VarDeclarationNode type=(native void)
+          |-VarDeclarationNode
             |-NameIdentifierNode="y" type=(alias i32 (native i32))
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=x
                 |-NameIdentifierNode="x"
           |-AssignmentNode type=(native void)
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS
+            |-ReferenceNode resolvedReference=y type=(alias i32 (native i32)) annotations=IsAssignationLHS
               |-QNameNode=y
                 |-NameIdentifierNode="y"
             |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode resolvedReference=y type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
               |-NameIdentifierNode="+"
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS
+            |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsAssignationLHS
               |-QNameNode=x
                 |-NameIdentifierNode="x"
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode resolvedReference=y type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=y
                 |-NameIdentifierNode="y"
-  |-OverloadedFunctionNode type=(fun "addOneNoReturn" () (alias void)) annotations=Injected
-    |-NameIdentifierNode="addOneNoReturn" type=(fun "addOneNoReturn" () (alias void))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="addOneNoReturn" type=(intersection (fun "addOneNoReturn" () (alias void)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "addOneNoReturn" () (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="addOneNoReturn"
-        |-ReferenceNode type=(type (alias void (native void)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="addOneNoReturn" type=(fun "addOneNoReturn" () (alias void))
+        |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
           |-AssignmentNode type=(native void)
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS
+            |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsAssignationLHS
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
               |-NameIdentifierNode="+"

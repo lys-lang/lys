@@ -440,23 +440,32 @@ const visitor = {
   },
   NumberLiteral(x: Nodes.ASTNode) {
     if (x.text.includes('.') || x.text.includes('E') || x.text.includes('e')) {
-      return new Nodes.FloatLiteral(x);
+      return new Nodes.FloatLiteral(x, 'f32');
     } else {
-      return new Nodes.IntegerLiteral(x);
+      let type = 'i64';
+
+      // tslint:disable-next-line:radix
+      const intValue = parseInt(x.text);
+      if (intValue >= -2147483648 && intValue <= 4294967295) {
+        type = 'i32';
+      }
+
+      return new Nodes.IntegerLiteral(x, type);
     }
   },
   NegNumberLiteral(x: Nodes.ASTNode) {
     if (x.text.includes('.') || x.text.includes('E') || x.text.includes('e')) {
-      return new Nodes.FloatLiteral(x);
+      return new Nodes.FloatLiteral(x, 'f32');
     } else {
-      return new Nodes.IntegerLiteral(x);
+      return new Nodes.IntegerLiteral(x, 'i32');
     }
   },
   HexLiteral(x: Nodes.ASTNode) {
-    return new Nodes.HexLiteral(x);
+    const typeName = x.text.length > '0x00000000'.length ? 'u64' : 'u32';
+    return new Nodes.HexLiteral(x, typeName);
   },
   StringLiteral(x: Nodes.ASTNode) {
-    const ret = new Nodes.StringLiteral(x);
+    const ret = new Nodes.StringLiteral(x, 'string');
     ret.value = JSON.parse(x.text);
     return ret;
   },
@@ -470,7 +479,7 @@ const visitor = {
     return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('-', x), visit(x.children[0]));
   },
   BooleanLiteral(x: Nodes.ASTNode) {
-    return new Nodes.BooleanLiteral(x);
+    return new Nodes.BooleanLiteral(x, 'boolean');
   },
   Document(astNode: Nodes.ASTNode) {
     const doc = new Nodes.DocumentNode(astNode);
@@ -633,12 +642,15 @@ export function getAST(fileName: string, moduleName: string, content: string, pa
   }
 
   process(parsingTree as any, parsingContext);
+
   try {
     let document = visit(parsingTree) as Nodes.DocumentNode;
 
     document.moduleName = moduleName;
     document.fileName = fileName;
     document.content = content;
+
+    parsingContext.modulesInContext.set(moduleName, document);
 
     return document;
   } catch (e) {
@@ -648,6 +660,8 @@ export function getAST(fileName: string, moduleName: string, content: string, pa
       document.moduleName = moduleName;
       document.fileName = fileName;
       document.content = content;
+
+      parsingContext.modulesInContext.set(moduleName, document);
 
       parsingContext.messageCollector.error(e);
 

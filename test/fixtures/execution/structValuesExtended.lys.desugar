@@ -201,7 +201,7 @@ impl Custom {
   }
 
   fun apply(hex: i32): Custom = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom.^allocationSize))
     property$0($ref, hex)
     $ref
   }
@@ -259,7 +259,7 @@ impl CatBag {
   }
 
   fun apply(a: i32, b: boolean, c: f32, d: i64, e: f64, f: Color, g: ((Red | None))): CatBag = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, CatBag.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, CatBag.^allocationSize))
     property$0($ref, a)
     property$1($ref, b)
     property$2($ref, c)

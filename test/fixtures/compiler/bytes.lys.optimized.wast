@@ -66,10 +66,10 @@
    (global.get $global$5)
   )
   (global.set $global$7
-   (i64.const 64424509456)
+   (i64.const 12884901904)
   )
   (global.set $global$8
-   (i64.const 64424509473)
+   (i64.const 12884901921)
   )
  )
 )

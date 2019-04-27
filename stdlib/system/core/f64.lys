@@ -1,0 +1,72 @@
+import system::core::boolean
+import system::core::bytes
+import system::core::f32
+import system::core::i16
+import system::core::i32
+import system::core::i64
+import system::core::string
+import system::core::native
+import system::core::u16
+import system::core::u32
+import system::core::u64
+import system::core::u8
+
+type f64 = %stack { lowLevelType="f64" byteSize=8 }
+
+impl f64 {
+  #[explicit]
+  fun as(lhs: f64): f32 = %wasm { (f32.demote/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): i64 = %wasm { (i64.trunc_s/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): u64 = %wasm { (i64.trunc_u/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): i32 = %wasm { (i32.trunc_s/f64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: f64): u32 = %wasm { (i32.trunc_u/f64 (get_local $lhs)) }
+
+  fun +(lhs: f64, rhs: f64): f64 = %wasm { (f64.add (get_local $lhs) (get_local $rhs)) }
+  fun -(lhs: f64, rhs: f64): f64 = %wasm { (f64.sub (get_local $lhs) (get_local $rhs)) }
+  fun -(rhs: f64): f64 = %wasm { (f64.neg (get_local $rhs)) }
+  fun *(lhs: f64, rhs: f64): f64 = %wasm { (f64.mul (get_local $lhs) (get_local $rhs)) }
+  fun /(lhs: f64, rhs: f64): f64 = %wasm { (f64.div (get_local $lhs) (get_local $rhs)) }
+  fun ==(lhs: f64, rhs: f64): boolean = %wasm { (f64.eq (get_local $lhs) (get_local $rhs)) }
+  fun >=(lhs: f64, rhs: f64): boolean = %wasm { (f64.ge (get_local $lhs) (get_local $rhs)) }
+  fun <=(lhs: f64, rhs: f64): boolean = %wasm { (f64.le (get_local $lhs) (get_local $rhs)) }
+  fun >(lhs: f64, rhs: f64): boolean = %wasm { (f64.gt (get_local $lhs) (get_local $rhs)) }
+  fun <(lhs: f64, rhs: f64): boolean = %wasm { (f64.lt (get_local $lhs) (get_local $rhs)) }
+  fun !=(lhs: f64, rhs: f64): boolean = %wasm { (f64.ne (get_local $lhs) (get_local $rhs)) }
+
+  fun sqrt(n: f64): f64 = %wasm { (f64.sqrt (local.get $n)) }
+
+  fun store(lhs: ref, rhs: f64): void = %wasm {
+    (f64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: f64, offset: u32): void = %wasm {
+    (f64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): f64 = %wasm {
+    (f64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: u32): f64 = %wasm {
+    (f64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+}

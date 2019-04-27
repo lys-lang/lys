@@ -14,7 +14,7 @@ type Object = %struct { }
 
 impl Object {
   fun apply(size: i32): Object = %wasm {
-    (call $system::memory::calloc (i32.add (i32.const 16) (get_local $size)))
+    (call $system::core::memory::calloc (i32.add (i32.const 16) (get_local $size)))
   }
 
   fun link(parent: ref, child: ref): void = {}

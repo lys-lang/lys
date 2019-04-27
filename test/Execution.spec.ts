@@ -7,6 +7,23 @@ import { readBytes } from '../dist/utils/execution';
 const getBytes = require('utf8-bytes');
 
 describe('Execution tests', () => {
+  describe('injected wasm', () => {
+    test(
+      'x + 44',
+      `
+        #[export] fun otherFunction(): i32 = 44
+
+        #[export] fun main(x: i32): i32 = %wasm {
+          (i32.add (local.get $x) (call $otherFunction))
+        }
+      `,
+      async x => {
+        expect(x.exports.main(1)).to.eq(45);
+        expect(x.exports.main(2)).to.eq(46);
+      }
+    );
+  });
+
   describe('numbers', () => {
     test(
       'casts',
@@ -216,7 +233,7 @@ describe('Execution tests', () => {
         }
 
         #[export] fun topMemory(): u32 = {
-          system::memory::getMaxMemory()
+          system::core::memory::getMaxMemory()
         }
       `,
       async (x, err) => {
@@ -532,10 +549,10 @@ describe('Execution tests', () => {
 
         #[export] fun assert(): void = {
           support::test::assert(i32.load(x) == 3, "i32.load(x) == 3")
-          support::test::assert(i32.load(y) as u32 == 0xABCDEF01 as u32, "i32.load(y) as u32 == 0xABCDEF01")
-          support::test::assert(i32.load(y) == 0xABCDEF01, "i32.load(y) == 0xABCDEF01 as i32")
-          support::test::assert(i32.load(y) as i64 == 0xABCDEF01 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
-          support::test::assert(u8.load(y) as i32 == 0x01, "u8.load(y) as i32 == 0x01")
+          support::test::assert(i32.load(y) as u32 == 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
+          support::test::assert(i32.load(y) == 0xABCDEF01 as i32, "i32.load(y) == 0xABCDEF01 as i32")
+          support::test::assert(i32.load(y) as i64 == 0xABCDEF01 as i32 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
+          support::test::assert(u8.load(y) as i32 == 0x01 as i32, "u8.load(y) as i32 == 0x01 as i32")
           support::test::assert(u8.load(y, 5 as u32) as i32 == 5, "u8.load(y, 5 as u32) as i32 == 5")
         }
       `,
@@ -566,8 +583,8 @@ describe('Execution tests', () => {
           i32.store(y, 5, 5 as u32)
 
           support::test::assert(i32.load(x) == 3)
-          support::test::assert(i32.load(y) == 0xABCDEF01)
-          support::test::assert(u8.load(y) as i32 == 0x01)
+          support::test::assert(i32.load(y) == 0xABCDEF01 as i32)
+          support::test::assert(u8.load(y) as i32 == 0x01 as i32)
           support::test::assert(u8.load(y, 5 as u32) as i32 == 5)
         }
 
@@ -653,19 +670,6 @@ describe('Execution tests', () => {
       `,
       async x => {
         expect(x.exports.main()).to.eq(undefined);
-      }
-    );
-  });
-
-  describe('injected wasm', () => {
-    test(
-      'x + 44',
-      `
-        #[export] fun main(x: i32): i32 = %wasm { (i32.add (local.get $x) (i32.const 44)) }
-      `,
-      async x => {
-        expect(x.exports.main(1)).to.eq(45);
-        expect(x.exports.main(2)).to.eq(46);
       }
     );
   });

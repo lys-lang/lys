@@ -1,16 +1,24 @@
 declare var describe, it, console;
 
 import { folderBasedTest, PhasesResult } from './TestHelpers';
-import { print } from '../dist/utils/typeGraphPrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
 import { expect } from 'chai';
 import { annotations } from '../dist/compiler/annotations';
 import { Nodes, PhaseFlags } from '../dist/compiler/nodes';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { UnionType, StructType, RefType, TypeAlias, Type, StackType, NativeTypes } from '../dist/compiler/types';
+import {
+  UnionType,
+  StructType,
+  RefType,
+  TypeAlias,
+  Type,
+  StackType,
+  NativeTypes,
+  TypeHelpers
+} from '../dist/compiler/types';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printAST } from '../dist/utils/astPrinter';
-import { AstNodeError } from '../dist/compiler/NodeError';
+import { AstNodeError, LysScopeError } from '../dist/compiler/NodeError';
 import { nodeSystem } from '../dist/support/NodeSystem';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
 
@@ -21,9 +29,14 @@ parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
 const phases = function(txt: string, fileName: string): PhasesResult {
   parsingContext.reset();
+
   const moduleName = parsingContext.getModuleFQNForFile(fileName);
   parsingContext.invalidateModule(moduleName);
-  parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+  const document = parsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
+
+  if (txt.includes(`#![no-std]`)) {
+    document.annotate(new annotations.NoStd());
+  }
 
   return { document: parsingContext.getPhase(moduleName, PhaseFlags.TypeCheck), parsingContext };
 };
@@ -41,16 +54,29 @@ describe('Types', function() {
   function checkMainType(literals, ...placeholders) {
     function test(program: string, expectedType: string, expectedError: string) {
       const number = n++;
-      it(`type inference test #${number}`, async function() {
+      let label = '';
+
+      program.replace(/\/\/\/(.+)$/gm, (_, group: any) => {
+        label = label + group;
+        return '';
+      });
+
+      label = label.trim();
+
+      if (!label) label = `type inference test #${number}`;
+
+      it(label, async function() {
         this.timeout(10000);
 
-        const phaseResult = phases(program, `types_${number}.lys`);
+        let document: Nodes.DocumentNode;
 
-        const document = phaseResult.document;
-        const parsingContext = phaseResult.parsingContext;
-
-        const expectedResult = normalizeResult(expectedType);
         try {
+          const phaseResult = phases(program, `types_${number}.lys`);
+
+          document = phaseResult.document;
+
+          const expectedResult = normalizeResult(expectedType);
+
           const givenResult = normalizeResult(
             document.directives
               .map($ => {
@@ -58,10 +84,12 @@ describe('Types', function() {
                   $ instanceof Nodes.OverloadedFunctionNode &&
                   !$.functions.some($ => $.hasAnnotation(annotations.Injected))
                 ) {
-                  return $.ofType + '';
+                  return TypeHelpers.getNodeType($.functionName) + '';
                 } else if ($ instanceof Nodes.VarDirectiveNode) {
                   return `${$.decl.variableName.name} := ${
-                    $.decl.variableName.ofType ? $.decl.variableName.ofType.inspect(1) : '<ofType is NULL>'
+                    TypeHelpers.getNodeType($.decl.variableName)
+                      ? TypeHelpers.getNodeType($.decl.variableName).inspect(1)
+                      : '<ofType is NULL>'
                   }`;
                 }
               })
@@ -76,6 +104,9 @@ describe('Types', function() {
               failWithErrors('type phase', phaseResult.parsingContext);
               throw new Error('x');
             } catch (e) {
+              if ((e.message + '').includes('Hit max analysis pass count')) {
+                throw e;
+              }
               if (e.message === 'x') {
                 throw new Error("Didn't fail (expecting " + expectedError + ')');
               } else {
@@ -92,9 +123,23 @@ describe('Types', function() {
           }
         } catch (e) {
           console.log(printErrors(parsingContext));
-          console.log(printNode(document));
-          console.log(printAST(document));
-          console.log(print(document.typeGraph));
+
+          if (document) {
+            console.log(printNode(document));
+            console.log(printAST(document));
+          }
+
+          if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {
+            parsingContext.modulesInContext.forEach(document => {
+              if (document.closure) {
+                console.log(document.closure.inspect());
+              } else {
+                console.log(document.moduleName + ' has no closure!');
+              }
+            });
+          }
+
+          // console.log(printTypeGraph(document.typeGraph));
           throw e;
         }
       });
@@ -112,41 +157,862 @@ describe('Types', function() {
     const parts = result.split('---');
 
     test(parts[0], parts[1], parts[2]);
-
-    // describe('XXX', function() {
-    //   const path =
-    //     this.fullTitle()
-    //       .replace(/\s+/g, '/')
-    //       .replace('XXX', n)
-    //       .toLowerCase() + '.lys';
-    //   const folder = dirname(path);
-    //   mkdirSync(folder, { recursive: true } as any);
-    //   writeFileSync('fixtures/' + path, result);
-    // });
   }
 
-  describe('index selector', () => {
-    checkMainType`
-      val x = "a"[0 as u32]
+  describe('unit no-std', () => {
+    checkMainType`// #![no-std]
+      /// empty blocks must resolve to void
+
+      type void = %injected
+
+      fun abc(): void = {/* empty block */}
       ---
-      x := (alias u16 (native u16))
+      fun() -> void
+    `;
+
+    // checkMainType`// #![no-std]
+    //   /// self declaration must fail
+
+    //   var x = x
+    //   ---
+    //   x := (never)
+    //   ---
+    //   Error
+    // `;
+
+    checkMainType`// #![no-std]
+      /// use apply after declaration/definition
+
+      type Test = %struct{}
+
+      impl Test {
+        fun apply(): Test = ???
+      }
+
+      var a = Test()
+      ---
+      a := (alias Test (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// use apply before declaration/definition
+
+      type Test = %struct{}
+
+      var a = Test()
+
+      impl Test {
+        fun apply(): Test = ???
+      }
+
+      ---
+      a := (alias Test (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// use a variable as type must fail.
+      /// the final type must be infered from the value of the declaration
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      var b = 1
+      var a: b = 1
+      ---
+      b := (alias i32 (native i32))
+      a := (alias i32 (native i32))
+      ---
+      This is not a type
+    `;
+
+    checkMainType`// #![no-std]
+      /// the 'is' operation must resolve to boolean.
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+
+      type Test = %struct{}
+
+      impl Test {
+        fun apply(): Test = ???
+        fun is(a: Test): boolean = ???
+      }
+
+      var a = Test()
+      var b = a is Test
+      ---
+      a := (alias Test (struct))
+      b := (alias boolean (native boolean))
+    `;
+
+    checkMainType`// #![no-std]
+      /// the 'as' operation must resolve to the target type
+
+      type Out = %struct{}
+      type Test = %struct{}
+
+      impl Test {
+        fun apply(): Test = ???
+        fun as(a: Test): Out = ???
+      }
+
+      var a = Test()
+      var b = a as Out
+      ---
+      a := (alias Test (struct))
+      b := (alias Out (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// infix operations must resolve to the return type of the overload
+
+      type Int = %struct{}
+      type Real = %struct{}
+
+      impl Int {
+        fun apply(): Int = ???
+        fun +(a: Int, b: Int): Real = ???
+      }
+
+      var a = Int()
+      var b = Int()
+      var x = a + b
+      ---
+      a := (alias Int (struct))
+      b := (alias Int (struct))
+      x := (alias Real (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// prefix operations must resolve to the return type of the overload
+
+      type Int = %struct{}
+      type Real = %struct{}
+
+      impl Int {
+        fun apply(): Int = ???
+        fun ~(a: Int): Real = ???
+      }
+
+      var a = Int()
+      var x = ~a
+      ---
+      a := (alias Int (struct))
+      x := (alias Real (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// overload resolution (prefix & infix)
+
+      type Int = %struct{}
+      type Real = %struct{}
+
+      impl Int {
+        fun apply(): Int = ???
+        fun -(a: Int): Real = ???
+        fun -(a: Int, b: Int): Int = ???
+      }
+
+      var a = Int()
+      var b = Int()
+      var x = -a
+      var y = a - b
+      ---
+      a := (alias Int (struct))
+      b := (alias Int (struct))
+      x := (alias Real (struct))
+      y := (alias Int (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// sugar syntax of index selector (getter)
+      type string = %struct{}
+      type char = %struct{}
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl string {
+        fun [](self: string, a: i32): char = ???
+      }
+
+      val a = "a string"
+      val b = 1
+
+      val x = a[b]
+      val y = "asd"[123]
+      ---
+      a := (alias string (struct))
+      b := (alias i32 (native i32))
+      x := (alias char (struct))
+      y := (alias char (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// property getter
+      type char = %struct{}
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        fun property_byteLength(self: char): i32 = ???
+      }
+
+      val a: char = ???
+      val x = a.byteLength
+      ---
+      a := (alias char (struct))
+      x := (alias i32 (native i32))
+    `;
+
+    checkMainType`// #![no-std]
+      /// property setter
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        fun property_byteLength(self: char): i32 = ???
+        fun property_byteLength(self: char, a: i32): void = ???
+      }
+
+      val a: char = ???
+      val x = a.byteLength
+
+      fun y(): void = {
+        a.byteLength = 10
+      }
+      ---
+      a := (alias char (struct))
+      x := (alias i32 (native i32))
+      fun() -> void
+    `;
+
+    checkMainType`// #![no-std]
+      /// sugar syntax of index selector (getter & setter)
+      type string = %struct{}
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl string {
+        fun [](self: string, a: i32): char = ???
+        fun [](self: string, a: i32, value: i32): void = ???
+      }
+
+      val a = "a string"
+      val b = 1
+
+      fun main(): void = {
+        a[b] = b
+        "asd"[123] = b
+      }
+
+      val x = a[b]
+      val y = "asd"[123]
+      ---
+      a := (alias string (struct))
+      b := (alias i32 (native i32))
+      fun() -> void
+      x := (alias char (struct))
+      y := (alias char (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// constructor overload
+      type Test = %struct{}
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl Test {
+        fun apply(a: i32): Test = ???
+        fun apply(): Test = ???
+      }
+
+      var a = Test(1)
+      var b = Test()
+      ---
+      a := (alias Test (struct))
+      b := (alias Test (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// implicit casting
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type i64 = %stack { lowLevelType="i64" byteSize=8 }
+
+      impl i32 {
+        fun as(x: i32): i64 = ???
+      }
+
+      fun print(x: i64): i64 = ???
+      fun main(): i64 = print(1)
+      ---
+      fun(x: i64) -> i64
+      fun() -> i64
+    `;
+
+    checkMainType`// #![no-std]
+      /// implicit casting in pattern matching comparison
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type i64 = %stack { lowLevelType="i64" byteSize=8 }
+
+      impl i32 {
+        fun as(x: i32): i64 = ???
+      }
+
+      impl i64 {
+        fun ==(a: i64, b: i64): boolean = ???
+      }
+
+      fun print(x: i64): i64 = match x {
+        case 1 -> 0
+        else -> 0
+      }
+      ---
+      fun(x: i64) -> i64
+    `;
+
+    checkMainType`// #![no-std]
+      /// explicit casting
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type i64 = %stack { lowLevelType="i64" byteSize=8 }
+
+      impl i32 {
+        #[explicit]
+        fun as(x: i32): i64 = ???
+      }
+
+      fun print(x: i64): i64 = ???
+      fun main(): i64 = print(1)
+      ---
+      fun(x: i64) -> i64
+      fun() -> i64
+      ---
+      Expecting arguments type (i64) but got (i32)
+    `;
+
+    checkMainType`// #![no-std]
+      /// useless cast warning, no failure
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      var a = 1 as i32
+      ---
+      a := (alias i32 (native i32))
+    `;
+
+    checkMainType`// #![no-std]
+      /// combination of operations
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type f32 = %stack { lowLevelType="f32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl boolean {
+        fun +(x: boolean, y: i32): f32 = 1.0
+      }
+
+      fun main(): f32 = true + 3
+      ---
+      fun() -> f32
+    `;
+
+    checkMainType`// #![no-std]
+      /// combination of operations 2
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type f32 = %stack { lowLevelType="f32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl boolean {
+        fun +(x: boolean, y: i32): i32 = 1123
+      }
+      impl i32 {
+        fun +(x: i32, y: f32): f32 = 1.0
+      }
+
+      fun main(): f32 = true + 3 + 1.0
+      ---
+      fun() -> f32
+    `;
+
+    checkMainType`// #![no-std]
+      /// combination of operations + implicit casting
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type f32 = %stack { lowLevelType="f32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl boolean {
+        fun +(x: boolean, y: i32): i32 = 1
+      }
+      impl i32 {
+        fun as(x: i32): f32 = ???
+      }
+
+      fun main(): f32 = true + 3
+      ---
+      fun() -> f32
+    `;
+
+    checkMainType`// #![no-std]
+      /// validate assignability of function return types
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      type CC = %struct {}
+      impl CC {
+        fun gta(): i32 = 1
+      }
+
+      fun test(a: i32): boolean = CC.gta()
+      ---
+      fun(a: i32) -> boolean
+      ---
+      Type "i32" is not assignable to "boolean"
+    `;
+
+    checkMainType`// #![no-std]
+      /// "is" should throw an error on impossible cases
+
+      type A = %struct {}
+      type B = %struct {}
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      var a: A = ???
+      var b = a is B
+      ---
+      a := (alias A (struct))
+      b := (alias boolean (native boolean))
+      ---
+      This statement is always false, type "A" can never be "B"
+    `;
+
+    checkMainType`// #![no-std]
+      /// property assignability should fail if there are no overloads
+
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        fun property_byteLength(self: char, a: i32): void = ???
+      }
+
+      fun y(): void = {
+        val a: char = ???
+        a.byteLength = false
+      }
+      ---
+      fun() -> void
+      ---
+      Overload not found
+    `;
+
+    checkMainType`// #![no-std]
+      /// type discriminant present in type alias as u32
+
+      type u32 = %stack { lowLevelType="i32" byteSize=4 }
+      type char = %struct{}
+
+      var x: u32 = char.^discriminant
+      ---
+      x := (alias u32 (native u32))
+    `;
+
+    checkMainType`// #![no-std]
+      /// schema property in non-types must raise an error and be unresolved type
+
+      type u32 = %stack { lowLevelType="i32" byteSize=4 }
+      type char = %struct{}
+
+      var x: u32 = char.^discriminant
+      var y = x.^discriminant
+      ---
+      x := (alias u32 (native u32))
+      y := (never)
+      ---
+      This is not a type
+    `;
+
+    checkMainType`// #![no-std]
+      /// invalid schema property must throw an error and yield unresolved type
+
+      type char = %struct{}
+
+      var x = char.^asd
+      ---
+      x := (never)
+      ---
+      Invalid schema property
+    `;
+
+    checkMainType`// #![no-std]
+      /// invalid cast must throw and resolve yield RHS type
+
+      type char = %struct{}
+      type stub = %struct{}
+      type string = %struct{}
+
+      impl char {
+        fun as(self: char): stub = ???
+      }
+
+      var a: char = ???
+      var x = a as string
+      ---
+      a := (alias char (struct))
+      x := (never)
+      ---
+      Cannot convert type "char" into "string"
+    `;
+
+    checkMainType`// #![no-std]
+      /// check schema type assignability
+
+      type char = %struct{}
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      var x: boolean = char.^discriminant
+      ---
+      x := (alias boolean (native boolean))
+      ---
+      Type "u32" is not assignable to "boolean"
+    `;
+
+    checkMainType`// #![no-std]
+      /// invalid comparison must converge
+
+      type char = %struct{}
+      type boolean = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl boolean {
+        fun ==(a: boolean, b: boolean): boolean = false
+      }
+
+      var a: boolean = ???
+      var b: char = ???
+
+      var x: boolean = a == b
+      ---
+      a := (alias boolean (native boolean))
+      b := (alias char (struct))
+      x := (alias boolean (native boolean))
+      ---
+      Invalid signature
+    `;
+
+    checkMainType`// #![no-std]
+      /// invalid overload must converge
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      fun test(a: i32): i32 = ???
+
+      val x = test(1,2,3,4,5,6,7,8,9)
+      ---
+      fun(a: i32) -> i32
+      x := (never)
+      ---
+      Invalid signature.
+    `;
+
+    checkMainType`// #![no-std]
+      /// invalid property must converge
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        fun property_a(self: i32): i32 = ???
+      }
+      val a = (123).a
+      val x = (123).unexistent
+      ---
+      a := (alias i32 (native i32))
+      x := (never)
+      ---
+      not a valid property getter
+    `;
+
+    checkMainType`// #![no-std]
+      /// non-assignable types must fail in MatchLiteral. Must mark unreachable.
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+
+      fun matcher(x: i32): i32 =
+        match x {
+          case false -> 1
+          else -> 2
+        }
+      ---
+      fun(x: i32) -> i32
+      ---
+      Type "i32" is not assignable to "boolean"
+      Unreachable
+    `;
+
+    checkMainType`// #![no-std]
+      /// assignable files must be comparable in MatchLiteral
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+
+      impl i32 {
+        fun ==(a:i32, b: boolean): boolean = ???
+      }
+
+      fun matcher(x: i32): i32 =
+        match x {
+          case false -> 1
+          else -> 2
+        }
+      ---
+      fun(x: i32) -> i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// recursive structs declarations
+
+      type A = %struct { field: B }
+      type B = %struct { field: A }
+
+      var a: A = ???
+      var b: B = ???
+      ---
+      a := (alias A (struct))
+      b := (alias B (struct))
+    `;
+
+    checkMainType`// #![no-std]
+      /// ref must work in pattern matching with "is"
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+      type ref = %injected
+
+      impl A {
+        fun is(a: A | ref): boolean = ???
+      }
+
+      fun x(value: ref): i32 =
+        match value {
+          case is A -> 1
+          else -> 2
+        }
+      ---
+      fun(value: ref) -> i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// ref must work with "is" and a struct type
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+      type ref = %injected
+
+      impl A {
+        fun is(a: A | ref): boolean = ???
+      }
+
+      var a: ref = ???
+      var x = a is A
+      ---
+      a := (alias ref (ref ?))
+      x := (alias boolean (native boolean))
+    `;
+
+    checkMainType`// #![no-std]
+      /// (never) name resolution must converge
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+
+      var a: A = ???
+      var x = a.test
+      ---
+      a := (alias A (struct))
+      x := (never)
+      ---
+      Type "A" has no members.
+      A.property_test is not a valid property getter
+    `;
+
+    checkMainType`// #![no-std]
+      /// (never) name resolution must converge in "is"
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+
+      var a: A = ???
+      var value = a.test
+      var x = value is A
+      ---
+      a := (alias A (struct))
+      value := (never)
+      x := (alias boolean (native boolean))
+      ---
+      Type "A" has no members.
+      A.property_test is not a valid property getter
+    `;
+
+    checkMainType`// #![no-std]
+      /// (never) name resolution must converge in "==" (BinOp)
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+
+      var a: A = ???
+      var value = a.test
+      var x = value == a
+      ---
+      a := (alias A (struct))
+      value := (never)
+      x := (never)
+      ---
+      Type "A" has no members.
+      A.property_test is not a valid property getter
     `;
 
     checkMainType`
-      fun x(x: bytes, y: u8): void = {
-        x[0 as u32] = y
+      /// unions
+
+      struct A(value: B)
+      struct B(value: A)
+
+      type X = (A | B)
+
+      var a: A = ???
+      var b: B = ???
+      var x: X = a
+      ---
+      a := (alias A (struct))
+      b := (alias B (struct))
+      x := (alias X (union (alias A) (alias B)))
+    `;
+
+    checkMainType`
+      /// recursive types
+
+      enum Maybe {
+        None
+        Some(tree: Maybe)
+      }
+
+      var x: Maybe = ???
+      ---
+      x := (alias Maybe (union (alias None) (alias Some)))
+    `;
+
+    checkMainType`
+      /// deconstruct (same name variables)
+
+      enum Color {
+        Red
+        Custom(r: i32, g: i32, b: i32)
+      }
+
+      fun isRed(color: Color): boolean = {
+        match color {
+          case is Red -> true
+          case is Custom(r, g, b) ->
+            r == 255 && g == 0 && b == 0
+        }
       }
       ---
-      fun(x: bytes, y: u8) -> void
+      fun(color: Color) -> boolean
     `;
+
+    checkMainType`
+      /// mutual recursive types
+
+      enum Maybe {
+        None
+        Some(tree: Maybe | Number)
+      }
+
+      enum Number {
+        NaN
+        MaybeNumber(x: Maybe)
+      }
+
+      var x: Maybe = ???
+      var y: MaybeNumber = ???
+      ---
+      x := (alias Maybe (union (alias None) (alias Some)))
+      y := (alias MaybeNumber (struct))
+    `;
+
+    /// if nodes must return the union of two types
+    /// match nodes must return the union of all the matchers
+    /// match result must be coerced automatically to the declaration's type
   });
 
   describe('unit', () => {
+    checkMainType`
+      /// unary minus in "u32" must produce a readable error
+      var a: u32 = 0xffffffff
+      var x = -a
+      ---
+      a := (alias u32 (native u32))
+      x := (alias u32 (native u32))
+      ---
+      Cannot apply operator "-" in type "u32"
+    `;
+
+    checkMainType`
+      /// unary minus in "false" must produce an error
+      var a = false
+      var x = -a
+      ---
+      a := (alias boolean (native boolean))
+      x := (alias boolean (native boolean))
+      ---
+      Property "-" doesn't exist in type "boolean".
+    `;
+
     checkMainType`
       fun abc(): void = {/* empty block */}
       ---
       fun() -> void
     `;
+
+    checkMainType`
+      var int: i32 = 1
+      var float: f32 = 1.0
+      var bool: boolean = true
+      ---
+      int := (alias i32 (native i32))
+      float := (alias f32 (native f32))
+      bool := (alias boolean (native boolean))
+    `;
+
+    describe('scope', () => {
+      checkMainType`
+        import test::test
+
+        var TestingContext: i32 = 1
+        fun main(): i32 = TestingContext
+        ---
+        TestingContext := (alias i32 (native i32))
+        fun() -> i32
+      `;
+    });
+
+    describe('inference', () => {
+      checkMainType`
+        import test::test
+
+        var TestingContext = 1
+        fun main(): i32 = TestingContext
+        ---
+        TestingContext := (alias i32 (native i32))
+        fun() -> i32
+      `;
+
+      checkMainType`
+        var int = 1
+        var float = 1.0
+        var bool = true
+        ---
+        int := (alias i32 (native i32))
+        float := (alias f32 (native f32))
+        bool := (alias boolean (native boolean))
+      `;
+    });
 
     // checkMainType`
     //   var i32 = 1
@@ -169,6 +1035,22 @@ describe('Types', function() {
     //   bytes := <ofType is NULL>
     // `;
 
+    describe('index selector', () => {
+      checkMainType`
+        val x = "a"[0 as u32]
+        ---
+        x := (alias u16 (native u16))
+      `;
+
+      checkMainType`
+        fun x(x: bytes, y: u8): void = {
+          x[0 as u32] = y
+        }
+        ---
+        fun(x: bytes, y: u8) -> void
+      `;
+    });
+
     checkMainType`
       var b = 1
       var a: b = 1
@@ -177,16 +1059,6 @@ describe('Types', function() {
       a := (alias i32 (native i32))
       ---
       This is not a type
-    `;
-
-    checkMainType`
-      var int = 1
-      var float = 1.0
-      var bool = true
-      ---
-      int := (alias i32 (native i32))
-      float := (alias f32 (native f32))
-      bool := (alias boolean (native boolean))
     `;
 
     describe('numbers', () => {
@@ -291,33 +1163,21 @@ describe('Types', function() {
         fun(x: f32) -> u8 & fun(x: f32) -> i16 & fun(x: f32) -> u16 & fun(x: f32) -> i32 & fun(x: f32) -> u32 & fun(x: f32) -> i64 & fun(x: f32) -> u64 & fun(x: f32) -> f32 & fun(x: f32) -> f64
         fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64
         ---
-        Cannot convert type i16 into u16
-        Cannot convert type i16 into u64
-        Cannot convert type u16 into i16
-        Cannot convert type u32 into u8
-        Cannot convert type u32 into u16
-        Cannot convert type i64 into u8
-        Cannot convert type i64 into i16
-        Cannot convert type i64 into u16
-        Cannot convert type u64 into i16
-        Cannot convert type f32 into u8
-        Cannot convert type f32 into i16
-        Cannot convert type f32 into u16
-        Cannot convert type f64 into u8
-        Cannot convert type f64 into i16
-        Cannot convert type f64 into u16
+        Cannot convert type "i16" into "u16"
+        Cannot convert type "i16" into "u64"
+        Cannot convert type "u16" into "i16"
+        Cannot convert type "u32" into "u16"
+        Cannot convert type "i64" into "u8"
+        Cannot convert type "i64" into "i16"
+        Cannot convert type "i64" into "u16"
+        Cannot convert type "u64" into "i16"
+        Cannot convert type "f32" into "u8"
+        Cannot convert type "f32" into "i16"
+        Cannot convert type "f32" into "u16"
+        Cannot convert type "f64" into "u8"
+        Cannot convert type "f64" into "i16"
+        Cannot convert type "f64" into "u16"
         This cast is useless
-      `;
-    });
-    describe('scope', () => {
-      checkMainType`
-        import test::test
-
-        var TestingContext = 1
-        fun main(): i32 = TestingContext
-        ---
-        TestingContext := (alias i32 (native i32))
-        fun() -> i32
       `;
     });
 
@@ -419,19 +1279,6 @@ describe('Types', function() {
         `;
 
         checkMainType`
-          type CC = %struct {}
-          impl CC {
-            fun gta(): i32 = 1
-          }
-
-          fun test(a: i32): boolean = CC.gta()
-          ---
-          fun(a: i32) -> boolean
-          ---
-          Type "i32" is not assignable to "boolean"
-        `;
-
-        checkMainType`
           type BB = %struct {}
           type CC = %struct {}
           impl CC {
@@ -442,7 +1289,7 @@ describe('Types', function() {
           ---
           fun(a: i32) -> boolean
           ---
-          Cannot find name 'gta' in (alias BB)
+          Type "BB" has no members
         `;
       });
 
@@ -728,27 +1575,26 @@ describe('Types', function() {
           fun(x: f32) -> u8 & fun(x: f32) -> i16 & fun(x: f32) -> u16 & fun(x: f32) -> i32 & fun(x: f32) -> u32 & fun(x: f32) -> i64 & fun(x: f32) -> u64 & fun(x: f32) -> f32 & fun(x: f32) -> f64
           fun(x: f64) -> u8 & fun(x: f64) -> i16 & fun(x: f64) -> u16 & fun(x: f64) -> i32 & fun(x: f64) -> u32 & fun(x: f64) -> i64 & fun(x: f64) -> u64 & fun(x: f64) -> f32 & fun(x: f64) -> f64          ---
           This cast is useless
-          Cannot convert type i16 into u16
-          Cannot convert type i16 into u64
-          Cannot convert type u16 into i16
+          Cannot convert type "i16" into "u16"
+          Cannot convert type "i16" into "u64"
+          Cannot convert type "u16" into "i16"
           This cast is useless
           This cast is useless
-          Cannot convert type u32 into u8
-          Cannot convert type u32 into u16
+          Cannot convert type "u32" into "u16"
           This cast is useless
-          Cannot convert type i64 into u8
-          Cannot convert type i64 into i16
-          Cannot convert type i64 into u16
+          Cannot convert type "i64" into "u8"
+          Cannot convert type "i64" into "i16"
+          Cannot convert type "i64" into "u16"
           This cast is useless
-          Cannot convert type u64 into i16
+          Cannot convert type "u64" into "i16"
           This cast is useless
-          Cannot convert type f32 into u8
-          Cannot convert type f32 into i16
-          Cannot convert type f32 into u16
+          Cannot convert type "f32" into "u8"
+          Cannot convert type "f32" into "i16"
+          Cannot convert type "f32" into "u16"
           This cast is useless
-          Cannot convert type f64 into u8
-          Cannot convert type f64 into i16
-          Cannot convert type f64 into u16
+          Cannot convert type "f64" into "u8"
+          Cannot convert type "f64" into "i16"
+          Cannot convert type "f64" into "u16"
           This cast is useless
         `;
       });
@@ -1255,7 +2101,7 @@ describe('Types', function() {
         ---
         fun(i: i32) -> void & fun(t: Nila) -> void & fun() -> void
         ---
-        Cannot find name 'apply' in (alias x)
+        Property "apply" doesn't exist in type "x"
       `;
 
       checkMainType`
@@ -1485,7 +2331,7 @@ describe('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Cannot find name 'apply' in (alias f32)
+        Property "apply" doesn't exist in type "f32".
       `;
 
       checkMainType`
@@ -1493,7 +2339,7 @@ describe('Types', function() {
         ---
         fun() -> f32
         ---
-        Cannot find name 'apply' in (alias f32)
+        Property "apply" doesn't exist in type "f32".
       `;
     });
 
@@ -1618,7 +2464,7 @@ describe('Types', function() {
         y3 := (alias boolean (native boolean))
         z3 := (alias boolean (native boolean))
         ---
-        This statement is always false, type A can never be B
+        This statement is always false, type "A" can never be "B"
       `;
 
       checkMainType`
@@ -2589,6 +3435,8 @@ describe('Types', function() {
       `;
 
       checkMainType`
+        /// same "is" matcher twice should yield unreachable code
+
         enum Enum {
           A
           B
@@ -2681,7 +3529,7 @@ describe('Types', function() {
         ---
         fun(x: u64) -> i32
         ---
-        "is" expression can only be used with reference types, used with: u64
+        "is" expression can only be used with reference types, used with: "u64"
       `;
 
       checkMainType`
@@ -2769,7 +3617,7 @@ describe('Types', function() {
           ---
           fun(color: Color) -> i32
           ---
-          Cannot find name 'property_unexistentProperty'
+          Property "property_unexistentProperty"
         `;
 
         checkMainType`
@@ -2988,7 +3836,7 @@ describe('Types', function() {
         fun main(): i32 = {
           val ptr = offset()
           val newPtr = (ptr + 1 + AL_MASK()) & ~(AL_MASK())
-          val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >>> 16
+          val pagesNeeded = ((newPtr - ptr + 0xffff as i32) & ~(0xffff as i32)) >>> 16
           val pagesBefore = currentMemory()
           max(pagesBefore, pagesNeeded)
         }
@@ -3020,54 +3868,6 @@ describe('Types', function() {
       `;
 
       checkMainType`
-        type i32 = %stack { lowLevelType="i32" byteSize=4 }
-        type f32 = %stack { lowLevelType="f32" byteSize=4 }
-        type boolean = %stack { lowLevelType="i32" byteSize=4 }
-
-        impl boolean {
-          fun +(x: boolean, y: i32): i32 = 1
-        }
-        impl i32 {
-          fun as(x: i32): f32 = ???
-        }
-
-        fun main(): f32 = true + 3
-        ---
-        fun() -> f32
-      `;
-
-      checkMainType`
-        type i32 = %stack { lowLevelType="i32" byteSize=4 }
-        type f32 = %stack { lowLevelType="f32" byteSize=4 }
-        type boolean = %stack { lowLevelType="i32" byteSize=4 }
-
-        impl boolean {
-          fun +(x: boolean, y: i32): f32 = 1.0
-        }
-
-        fun main(): f32 = true + 3
-        ---
-        fun() -> f32
-      `;
-
-      checkMainType`
-        type i32 = %stack { lowLevelType="i32" byteSize=4 }
-        type f32 = %stack { lowLevelType="f32" byteSize=4 }
-        type boolean = %stack { lowLevelType="i32" byteSize=4 }
-
-        impl boolean {
-          fun +(x: boolean, y: i32): i32 = 1123
-        }
-        impl i32 {
-          fun +(x: i32, y: f32): f32 = 1.0
-        }
-
-        fun main(): f32 = true + 3 + 1.0
-        ---
-        fun() -> f32
-      `;
-
-      checkMainType`
         fun main(): i32 = ~1
         ---
         fun() -> i32
@@ -3076,7 +3876,7 @@ describe('Types', function() {
       checkMainType`
         fun max(a: i32, b: i32): i32 = if (a>b) a else b
         fun main(): i32 = max(c(), -1)
-        fun c(): i32 = 0xffff
+        fun c(): i32 = 123123
         ---
         fun(a: i32, b: i32) -> i32
         fun() -> i32
@@ -3131,18 +3931,6 @@ describe('Types', function() {
           ---
           fun() -> f32
         `;
-
-        checkMainType`
-          fun matcher(x: i32): i32 =
-            match x {
-              case 1.5 -> 1
-              else -> 2
-            }
-          ---
-          fun(x: i32) -> i32
-          ---
-          Type "f32" is not assignable to "i32"
-        `;
       });
       checkMainType`
 
@@ -3172,16 +3960,27 @@ describe('Types', function() {
       `;
 
       checkMainType`
-
-        fun matcher(x: i32): i32 =
+        fun matcher(x: i32): f32 =
           match x {
             case 1.5 -> 1
             else -> 2
           }
         ---
-        fun(x: i32) -> i32
+        fun(x: i32) -> f32
         ---
-        Type "f32" is not assignable to "i32"
+        Type mismatch: Type "i32" is not assignable to "f32"
+      `;
+
+      checkMainType`
+        fun matcher(x: i32): f32 =
+          match x {
+            case 1.5 -> false
+            else -> false
+          }
+        ---
+        fun(x: i32) -> f32
+        ---
+        Type "boolean" is not assignable to "f32"
       `;
 
       checkMainType`
@@ -3559,23 +4358,6 @@ describe('Types', function() {
   });
 
   describe('file based tests', () => {
-    describe('Resolution', () => {
-      folderBasedTest(
-        '**/types/*.lys',
-        phases,
-        async (result, e) => {
-          if (e) throw e;
-
-          if (!result.document.typeGraph) {
-            failWithErrors('document has not typeGraph', result.parsingContext);
-          }
-
-          return print(result.document.typeGraph);
-        },
-        '.dot'
-      );
-    });
-
     describe('Resolution-ast', () => {
       folderBasedTest(
         '**/types/*.lys',

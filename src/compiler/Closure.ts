@@ -1,8 +1,9 @@
 import { Nodes, PhaseFlags } from './nodes';
 import { Reference } from './Reference';
 import { ParsingContext } from './ParsingContext';
-import { AstNodeError } from './NodeError';
+import { LysScopeError } from './NodeError';
 import { indent } from '../utils/astPrinter';
+import { TypeHelpers } from './types';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
@@ -68,7 +69,7 @@ export class Closure {
     if (localName === '_') return null;
 
     if (this.localScopeDeclares.has(localName)) {
-      throw new AstNodeError(`"${localName}" is already declared`, nameNode);
+      throw new LysScopeError(`"${localName}" is already declared`, nameNode);
     }
 
     this.nameMappings[localName] = new Reference(nameNode, this, type, null);
@@ -89,7 +90,7 @@ export class Closure {
   canResolveName(localName: string) {
     try {
       return !!this.get(localName);
-    } catch {
+    } catch (e) {
       return false;
     }
   }
@@ -107,10 +108,10 @@ export class Closure {
   }
 
   getFromOutside(localName: string): Reference | null {
-    if (!this.canGetFromOutside(localName)) {
-      throw new Error(`Name ${localName} is private in module ${this.name}`);
-    }
     if (localName in this.nameMappings) {
+      if (!this.canGetFromOutside(localName)) {
+        throw new Error(`Name ${localName} is private in module ${this.name}`);
+      }
       return this.nameMappings[localName];
     }
     return null;
@@ -156,49 +157,37 @@ export class Closure {
     throw new Error("Cannot find name '" + localName + "'");
   }
 
-  inspect(content: string = '') {
-    let imports = '';
+  inspect(voidIfEmpty = false, includePrivate = false) {
+    let ret: string[] = [];
 
-    if (this.importedModules.size) {
-      imports = '\n';
-      this.importedModules.forEach(($, moduleName) => {
-        let names: string[] = [];
-        $.forEach($ => names.push($));
-        imports = imports + '  import ' + names.join(',') + ' from ' + moduleName + '\n';
-      });
+    for (let name in this.nameMappings) {
+      const ref = this.nameMappings[name];
+      const type = TypeHelpers.getNodeType(ref.referencedNode);
+
+      if (includePrivate || this.exportedNames.has(name)) {
+        const priv = this.exportedNames.has(name) ? '' : 'private ';
+        const typeStr = type ? ': ' + type.inspect(10) : '';
+
+        ret.push(priv + 'let ' + name + typeStr);
+      }
     }
 
-    let localContent = `${this.name}: {${imports}\n${Object.keys(this.nameMappings)
-      .map($ => 'let ' + $)
-      .join('\n')
-      .replace(/^(.*)/gm, '  $1')}`;
-
-    if (content) {
-      localContent = localContent + `\n${content.toString().replace(/^(.*)/gm, '  $1')}`;
-    }
-
-    return localContent + '\n}';
-  }
-
-  deepInspect(): string {
-    return this.inspect(this.childrenScopes.map($ => $.deepInspect()).join('\n'));
-  }
-
-  inspectExportedNames(voidIfEmpty = false) {
-    let exportedNames: string[] = [];
-
-    this.exportedNames.forEach($ => exportedNames.push('let ' + $));
+    this.importedModules.forEach((set, $) => {
+      let list: string[] = [];
+      set.forEach($ => list.push($));
+      ret.push('import ' + $ + '::{' + list.join(', ') + '}');
+    });
 
     this.childrenScopes.forEach($ => {
-      const ret = $.inspectExportedNames(true);
-      if (ret.trim().length) {
-        exportedNames.push(ret);
+      const childScope = $.inspect(true, includePrivate);
+      if (childScope.trim().length) {
+        ret.push(childScope);
       }
     });
 
-    if (!exportedNames.length && voidIfEmpty) return '';
+    if (!ret.length && voidIfEmpty) return '';
 
-    return `${this.name}: {\n${indent(exportedNames.join('\n'))}\n}`;
+    return `${this.name}: {\n${indent(ret.join('\n'))}\n}`;
   }
 
   newChildClosure(nameHint: string): Closure {

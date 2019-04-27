@@ -13,8 +13,8 @@ import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
 import { findParentType } from '../nodeHelpers';
-import { FunctionType, Type } from '../types';
-import { AstNodeError } from '../NodeError';
+import { FunctionType, TypeHelpers, IntersectionType } from '../types';
+import { LysCompilerError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { printAST } from '../../utils/astPrinter';
 import { getModuleSet } from './helpers';
@@ -63,7 +63,7 @@ function getStarterFunction(statements: any[]) {
 }
 
 function getTypeForFunction(fn: Nodes.FunctionNode) {
-  const fnType = fn.ofType;
+  const fnType = TypeHelpers.getNodeType(fn.functionName);
 
   if (fnType && fnType instanceof FunctionType) {
     if (fnType.returnType) {
@@ -79,11 +79,11 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
         retType
       );
     }
-    throw new AstNodeError(fnType + ' has no return type', fn);
+    throw new LysCompilerError(fnType + ' has no return type', fn);
   } else if (fnType) {
-    throw new AstNodeError(fnType + ' is not a function', fn);
+    throw new LysCompilerError(fnType + ' is not a function', fn);
   } else {
-    throw new AstNodeError('Function did not resolve any type', fn);
+    throw new LysCompilerError('Function did not resolve any type', fn);
   }
 }
 
@@ -96,7 +96,7 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
     t.instruction('local', [t.identifier($.name), t.valtypeLiteral($.type!.binaryenType)])
   );
 
-  if (!fn.body) throw new AstNodeError('Function has no body', fn);
+  if (!fn.body) throw new LysCompilerError('Function has no body', fn);
 
   const moduleFun = t.func(
     t.identifier(fn.functionName.internalIdentifier), // name
@@ -141,7 +141,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
 
-        if (!ofType) throw new AstNodeError('resolvedFunctionType is not resolved', node);
+        if (!ofType) throw new LysCompilerError('MatchLiteralNode.resolvedFunctionType is not resolved', node);
 
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
@@ -158,7 +158,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
 
-        if (!ofType) throw new AstNodeError('resolvedFunctionType is not resolved', node);
+        if (!ofType) throw new LysCompilerError('MatchCaseIsNode.resolvedFunctionType is not resolved', node);
 
         const local = match.getAnnotation(annotations.LocalIdentifier).local;
 
@@ -172,7 +172,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
           body
         };
       }
-      throw new AstNodeError("I don't know how handle this", node);
+      throw new LysCompilerError("I don't know how handle this", node);
     })
     .filter($ => !!$);
   const exitBlock = 'B' + getFunctionSeqId(match);
@@ -194,9 +194,11 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
     return ret;
   }, breaks);
 
-  if (!match.ofType) throw new AstNodeError('ofType not defined', match);
+  const matchType = TypeHelpers.getNodeType(match);
 
-  return t.blockInstruction(t.identifier(exitBlock), flatten([lhs, ret]), match.ofType.binaryenType);
+  if (!matchType) throw new LysCompilerError('ofType not defined', match);
+
+  return t.blockInstruction(t.identifier(exitBlock), flatten([lhs, ret]), matchType.binaryenType);
 }
 
 function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode) {
@@ -209,12 +211,22 @@ function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode
 
 function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode): any {
   if (node instanceof Nodes.ReferenceNode) {
-    const ofType = node.ofType as FunctionType | Type;
+    let ofType = TypeHelpers.getNodeType(node);
 
-    if (ofType && 'name' in ofType) {
+    if (ofType instanceof IntersectionType) {
+      if (ofType.of.length > 1) {
+        throw new LysCompilerError(
+          'This reference has multiple overloads. From WASM you can only reference non-overloaded functions',
+          node
+        );
+      }
+      ofType = ofType.of[0];
+    }
+
+    if (ofType instanceof FunctionType) {
       return t.identifier(ofType.name.internalIdentifier);
     } else {
-      return t.identifier(node.variable.text);
+      return t.identifier(node.resolvedReference!.referencedNode.internalIdentifier!);
     }
   }
 
@@ -242,8 +254,8 @@ function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
 
   const ofType = implicitCallData.implicitCall.resolvedFunctionType;
 
-  if (!ofType) throw new AstNodeError('ofType not defined', node);
-  if (false === ofType instanceof FunctionType) throw new AstNodeError('implicit call is not a function', node);
+  if (!ofType) throw new LysCompilerError('ofType not defined', node);
+  if (false === ofType instanceof FunctionType) throw new LysCompilerError('implicit call is not a function', node);
 
   return t.callInstruction(
     t.identifier(ofType.name.internalIdentifier),
@@ -263,10 +275,10 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       }
 
       if (!funType) {
-        throw new AstNodeError(`funType is falsy`, node);
+        throw new LysCompilerError(`funType is falsy`, node);
       }
 
-      if (!funType.name.internalIdentifier) throw new AstNodeError(`${funType}.internalIdentifier is falsy`, node);
+      if (!funType.name.internalIdentifier) throw new LysCompilerError(`${funType}.internalIdentifier is falsy`, node);
 
       return t.callInstruction(
         t.identifier(funType.name.internalIdentifier),
@@ -281,12 +293,12 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       const loopLabel = node.getAnnotation(annotations.CurrentLoop).loop.getAnnotation(annotations.LabelId);
       return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
-      const type = node.ofType!.binaryenType;
+      const type = TypeHelpers.getNodeType(node)!.binaryenType;
       return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.astNode!.text)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
-      const discriminant = node.ofType!.getSchemaValue('discriminant');
+      const discriminant = TypeHelpers.getNodeType(node)!.getSchemaValue('discriminant');
       const discriminantHex = ('00000000' + discriminant.toString(16)).substr(-8);
       const offset = ('00000000' + node.offset!.toString(16)).substr(-8);
       return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + discriminantHex + offset, 'i64')]);
@@ -317,7 +329,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
                 t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]),
                 t.instruction('global.get', [t.identifier(local.name)])
               ],
-              node.rhs.ofType!.binaryenType
+              TypeHelpers.getNodeType(node.rhs)!.binaryenType
             );
           } else {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier).local;
@@ -330,16 +342,17 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BlockNode) {
       // a if (!node.label) throw new Error('Block node without label');
       const label = t.identifier(node.label || 'B' + getFunctionSeqId(node));
-      const type = node.ofType!.binaryenType;
+      const type = TypeHelpers.getNodeType(node)!.binaryenType;
       let instr: any[] = [];
 
       node.statements.forEach($ => {
         // TODO: Drop here things
         let emited = emit($, document);
+        const type = TypeHelpers.getNodeType($);
 
-        if ($.ofType && $.ofType.binaryenType !== undefined && !$.hasAnnotation(annotations.IsValueNode)) {
+        if (type && type.binaryenType !== undefined && !$.hasAnnotation(annotations.IsValueNode)) {
           if (emited instanceof Array) {
-            throw new AstNodeError(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`, $);
+            throw new LysCompilerError(`\n\n\nshould drop: ${JSON.stringify(emited, null, 2)}`, $);
           } else {
             emited = t.instruction('drop', [emited]);
           }
@@ -357,14 +370,14 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.ifInstruction(
         t.identifier('IF' + getFunctionSeqId(node)),
         [emit(node.condition, document)],
-        node.ofType!.binaryenType,
+        TypeHelpers.getNodeType(node)!.binaryenType,
         emitList(node.truePart, document),
         node.falsePart ? emitList(node.falsePart, document) : []
       );
     } else if (node instanceof Nodes.BinaryExpressionNode) {
       const ofType = node.resolvedFunctionType;
 
-      if (!ofType) throw new AstNodeError('ofType not defined', node);
+      if (!ofType) throw new LysCompilerError('ofType not defined', node);
 
       return t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
         emit(node.lhs, document),
@@ -376,31 +389,31 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.instruction(instr, [t.identifier(local.name)]);
     } else if (node instanceof Nodes.MemberNode) {
       if (node.operator === '.^') {
-        const schemaType = node.lhs.ofType;
+        const schemaType = TypeHelpers.getNodeType(node.lhs);
 
-        if (!schemaType) throw new AstNodeError('schemaType not defined', node);
+        if (!schemaType) throw new LysCompilerError('schemaType not defined', node);
 
         const type = schemaType.schema()[node.memberName.name];
         try {
           const value = schemaType.getSchemaValue(node.memberName.name);
           if (value === null || isNaN(value)) {
-            throw new AstNodeError(`Value was undefined`, node.memberName);
+            throw new LysCompilerError(`Value was undefined`, node.memberName);
           }
           return t.objectInstruction('const', type.binaryenType, [t.numberLiteralFromRaw(value)]);
         } catch (e) {
-          if (e instanceof AstNodeError) throw e;
-          throw new AstNodeError(e.message, node.memberName);
+          if (e instanceof LysCompilerError) throw e;
+          throw new LysCompilerError(e.message, node.memberName);
         }
       }
       console.trace();
     }
 
-    throw new AstNodeError(`This node cannot be emited ${node.nodeName}\n${printAST(node)}`, node);
+    throw new LysCompilerError(`This node cannot be emited ${node.nodeName}\n${printAST(node)}`, node);
   }
 
   const generatedNode = _emit();
 
-  if (!generatedNode) throw new AstNodeError(`Could not emit any code for node ${node.nodeName}`, node);
+  if (!generatedNode) throw new LysCompilerError(`Could not emit any code for node ${node.nodeName}`, node);
 
   return generatedNode;
 }
@@ -415,11 +428,7 @@ export class CodeGenerationPhaseResult {
     try {
       this.execute();
     } catch (e) {
-      if (e instanceof AstNodeError) {
-        this.parsingContext.messageCollector.error(e);
-      } else {
-        this.parsingContext.messageCollector.error(e, this.document);
-      }
+      this.parsingContext.messageCollector.error(e, this.document.astNode);
     }
   }
 
@@ -438,7 +447,7 @@ export class CodeGenerationPhaseResult {
       wabtModule.validate();
     } catch (e) {
       this.parsingContext.system.write(text);
-      this.parsingContext.messageCollector.error(e, this.document);
+      this.parsingContext.messageCollector.error(e, this.document.astNode);
       throw e;
     }
 
@@ -452,7 +461,7 @@ export class CodeGenerationPhaseResult {
       module.runPasses(['remove-unused-module-elements']);
 
       if (module.validate() === 0) {
-        this.parsingContext.messageCollector.error(new AstNodeError('binaryen validation failed', this.document));
+        this.parsingContext.messageCollector.error(new LysCompilerError('binaryen validation failed', this.document));
       }
 
       if (optimize) {
@@ -555,7 +564,7 @@ export class CodeGenerationPhaseResult {
       // TODO: If the value is a literal, do not defer initialization to starters
 
       const mut = 'var'; // TODO: $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
-      const binaryenType = $.decl.variableName.ofType!.binaryenType;
+      const binaryenType = TypeHelpers.getNodeType($.decl.variableName)!.binaryenType;
       const local = $.decl.getAnnotation(annotations.LocalIdentifier).local;
       const identifier = t.identifier(local.name);
 

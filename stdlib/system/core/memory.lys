@@ -1,3 +1,13 @@
+import system::core::native
+import system::core::u8
+import system::core::u32
+import system::core::u64
+import system::core::i32
+import system::core::i64
+import system::core::bytes
+import system::core::boolean
+import system::core::string
+
 /** Number of alignment bits. */
 val AL_BITS = 3
 
@@ -31,6 +41,11 @@ private fun currentMemory(): u32 = %wasm {
 
 private fun max(a: u32, b: u32): u32 = if (a > b) a else b
 
+private fun bytesDiscriminant(): u64 = {
+  val discriminant: u32 = bytes.^discriminant
+  discriminant as u64 << 32
+}
+
 fun allocBytes(size: u32): bytes = %wasm {
   (local $allocation i32)
   (local $allocationSize i32)
@@ -47,11 +62,8 @@ fun allocBytes(size: u32): bytes = %wasm {
   // store the size in the first int
   (i32.store (get_local $allocation) (get_local $size))
   (i64.or
+    (call $bytesDiscriminant)
     (i64.extend_u/i32 (get_local $allocation))
-    (i64.shl
-      (i64.extend_u/i32 (i32.const 0))
-      (i64.const 32)
-    )
   )
 }
 
@@ -73,7 +85,7 @@ fun malloc(size: u32): u32 = {
   val newPtr = (ptr + max(size, 8 as u32) + AL_MASK) & ~AL_MASK
   val pagesBefore = currentMemory()
   if (newPtr > pagesBefore << 16) {
-    val pagesNeeded = ((newPtr - ptr + 0xffff as u32) & ~(0xffff as u32)) >> 16
+    val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >> 16
     val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
     if (growMemory(pagesWanted) < 0 as u32) {
       if (growMemory(pagesNeeded) < 0 as u32) {

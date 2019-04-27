@@ -2,11 +2,12 @@ import { Nodes, Local, Global, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { findParentType } from '../nodeHelpers';
 import { ParsingContext } from '../ParsingContext';
-import { AstNodeError } from '../NodeError';
+import { LysCompilerError } from '../NodeError';
 import { annotations } from '../annotations';
-import { FunctionType } from '../types';
+import { FunctionType, TypeHelpers } from '../types';
 import { last } from '../helpers';
 import { fixParents } from './helpers';
+import assert = require('assert');
 
 const resolveLocals = walkPreOrder(
   (node: Nodes.Node, _: ParsingContext, _parent: Nodes.Node | null) => {
@@ -19,15 +20,16 @@ const resolveLocals = walkPreOrder(
        */
       const fn = findParentType(node, Nodes.FunctionNode);
       if (fn) {
-        if (node.lhs.ofType) {
-          const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(node.lhs.ofType));
+        const type = TypeHelpers.getNodeType(node.lhs);
+        if (type) {
+          const localAnnotation = new annotations.LocalIdentifier(fn.getTempLocal(type));
           node.annotate(localAnnotation);
 
           node.matchingSet.forEach($ => {
             $.annotate(localAnnotation);
           });
         } else {
-          throw new AstNodeError('node.lhs.ofType is undefined', node.lhs);
+          throw new LysCompilerError('node.lhs.ofType is undefined', node.lhs);
         }
       } else {
         // TODO: what if we reach here?
@@ -66,18 +68,18 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: Parsing
           const declLocal = decl.getAnnotation(annotations.LocalIdentifier);
 
           if (!declLocal) {
-            throw new AstNodeError(`Node ${decl.nodeName} has no .local`, decl);
+            throw new LysCompilerError(`Node ${decl.nodeName} has no .local`, decl);
           }
 
           node.annotate(declLocal);
         } else {
-          throw new AstNodeError(`Value node has no local`, decl!);
+          throw new LysCompilerError(`Value node has no local`, decl!);
         }
       }
     } else {
-      if (!parsingContext.messageCollector.hasErrorForBranch(node)) {
-        throw new AstNodeError(`Reference was not resolved`, node);
-      }
+      parsingContext.messageCollector.errorIfBranchDoesntHaveAny(
+        new LysCompilerError(`Reference was not resolved`, node)
+      );
     }
   }
 });
@@ -90,7 +92,9 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
       const fn = findParentType(node, Nodes.FunctionNode);
 
       if (fn) {
-        node.annotate(new annotations.LocalIdentifier(fn.addLocal(node.value.ofType!, node.variableName)));
+        node.annotate(
+          new annotations.LocalIdentifier(fn.addLocal(TypeHelpers.getNodeType(node.value)!, node.variableName))
+        );
       }
     }
   }
@@ -167,7 +171,7 @@ function isRecursiveCallExpression(functionNode: Nodes.FunctionNode, node: Nodes
 function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.FunctionCallNode) {
   if (fcn.functionNode instanceof Nodes.ReferenceNode) {
     // Make sure the variable reference points to the same function
-    const referencedType = fcn.functionNode.ofType;
+    const referencedType = TypeHelpers.getNodeType(fcn.functionNode);
 
     const functionNode = findParentType(fcn, Nodes.FunctionNode);
 
@@ -185,8 +189,10 @@ function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.F
   return false;
 }
 
-export function executeCompilationPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
-  if (document.phasesRun & PhaseFlags.Compilation) return;
+export function executeCompilationPhase(moduleName: string, parsingContext: ParsingContext) {
+  const document = parsingContext.getPhase(moduleName, PhaseFlags.Compilation - 1);
+
+  assert(document.analysis.nextPhase === PhaseFlags.Compilation);
 
   fixParents(document, parsingContext, null);
 
@@ -199,5 +205,5 @@ export function executeCompilationPhase(document: Nodes.DocumentNode, parsingCon
 
   fixParents(document, parsingContext, null);
 
-  document.phasesRun |= PhaseFlags.Compilation;
+  document.analysis.nextPhase = PhaseFlags.CodeGeneration;
 }

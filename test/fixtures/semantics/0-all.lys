@@ -128,10 +128,10 @@ impl String {
     val lhsLen = lhsData.length
     val rhsLen = rhsData.length
 
-    var newData = system::memory::allocBytes(lhsLen + rhsLen)
+    var newData = system::core::memory::allocBytes(lhsLen + rhsLen)
 
-    system::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
-    system::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
+    system::core::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
+    system::core::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
 
     String(newData)
   }

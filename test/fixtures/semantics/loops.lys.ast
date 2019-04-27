@@ -1,15 +1,76 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="test"
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="test"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::native::void
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode
@@ -19,18 +80,18 @@
           |-LoopNode
             |-BlockNode
               |-AssignmentNode
-                |-ReferenceNode annotations=IsAssignationLHS
+                |-ReferenceNode resolvedReference=x annotations=IsAssignationLHS
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
                 |-BinaryExpressionNode annotations=IsValueNode
-                  |-ReferenceNode annotations=IsValueNode
+                  |-ReferenceNode resolvedReference=x annotations=IsValueNode
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
                   |-NameIdentifierNode="+"
                   |-IntegerLiteral=1 annotations=IsValueNode
               |-IfNode
                 |-BinaryExpressionNode annotations=IsValueNode
-                  |-ReferenceNode annotations=IsValueNode
+                  |-ReferenceNode resolvedReference=x annotations=IsValueNode
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
                   |-NameIdentifierNode=">"
@@ -39,7 +100,7 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="test"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::native::void
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode
@@ -49,11 +110,11 @@
           |-LoopNode
             |-BlockNode
               |-AssignmentNode
-                |-ReferenceNode annotations=IsAssignationLHS
+                |-ReferenceNode resolvedReference=x annotations=IsAssignationLHS
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
                 |-BinaryExpressionNode annotations=IsValueNode
-                  |-ReferenceNode annotations=IsValueNode
+                  |-ReferenceNode resolvedReference=x annotations=IsValueNode
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
                   |-NameIdentifierNode="+"

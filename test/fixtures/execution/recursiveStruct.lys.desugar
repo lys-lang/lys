@@ -81,7 +81,7 @@ impl Node {
   }
 
   fun apply(a: ((Tree | Forest))): Node = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Node.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Node.^allocationSize))
     property$0($ref, a)
     $ref
   }
@@ -214,7 +214,7 @@ impl Cons {
   }
 
   fun apply(tree: ((Tree | Forest))): Cons = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Cons.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Cons.^allocationSize))
     property$0($ref, tree)
     $ref
   }

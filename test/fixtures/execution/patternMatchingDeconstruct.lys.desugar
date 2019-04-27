@@ -161,7 +161,7 @@ impl Custom {
   }
 
   fun apply(r: i32, g: i32, b: i32): Custom = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom.^allocationSize))
     property$0($ref, r)
     property$1($ref, g)
     property$2($ref, b)

@@ -1,4 +1,5 @@
 import { Nodes } from './nodes';
+import { isValidType } from './types/typeHelpers';
 
 export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
 
@@ -75,10 +76,20 @@ export abstract class Type {
   abstract getSchemaValue(name: string): any;
 }
 
+export function areEqualTypes(typeA: Type | null | void, typeB: Type | null | void): boolean {
+  if (!typeA && !typeB) {
+    return true;
+  }
+  if (typeA && typeB && typeA.equals(typeB)) {
+    return true;
+  }
+  return false;
+}
+
 export class FunctionType extends Type {
-  nativeType: NativeTypes = NativeTypes.func;
-  parameterTypes?: Type[];
-  parameterNames?: string[];
+  readonly nativeType: NativeTypes = NativeTypes.func;
+  readonly parameterTypes: Type[] = [];
+  readonly parameterNames: string[] = [];
   returnType?: Type;
 
   constructor(public name: Nodes.NameIdentifierNode) {
@@ -86,27 +97,38 @@ export class FunctionType extends Type {
   }
 
   equals(type: Type) {
+    if (!type) return false;
     if (!(type instanceof FunctionType)) return false;
-    if (this.parameterTypes!.length !== type.parameterTypes!.length) return false;
-    if (!this.returnType!.equals(type.returnType!)) return false;
-    if (this.parameterTypes!.some(($, $$) => !$.equals(type.parameterTypes![$$]))) return false;
+    if (this.name !== type.name) return false;
+    if (this.parameterTypes.length !== type.parameterTypes.length) return false;
+    if (!areEqualTypes(this.returnType, type.returnType)) return false;
+    if (this.parameterTypes.some(($, $$) => !areEqualTypes($, type.parameterTypes[$$]))) return false;
     return true;
   }
 
   toString() {
-    return `fun(${this.parameterTypes!.map(($, $$) => {
-      if (this.parameterNames![$$]) {
-        return this.parameterNames![$$] + ': ' + $;
-      } else {
-        return $;
-      }
-    }).join(', ')}) -> ${this.returnType}`;
+    const params = this.parameterNames.map(($, ix) => {
+      const type = this.parameterTypes && this.parameterTypes[ix];
+
+      return $ + ': ' + (type || '?');
+    });
+
+    return `fun(${params.join(', ')}) -> ${this.returnType ? this.returnType : '?'}`;
   }
 
   inspect(_depth: number) {
-    return `(fun ${JSON.stringify(this.name.name)} (${this.parameterTypes!.map($ => $.inspect(0)).join(
-      ' '
-    )}) ${this.returnType!.inspect(0)})`;
+    const params = this.parameterNames.map((_, ix) => {
+      const type = this.parameterTypes && this.parameterTypes[ix];
+      if (!type) {
+        return '(?)';
+      } else {
+        return type.inspect(0);
+      }
+    });
+
+    return `(fun ${JSON.stringify(this.name.name)} (${params.join(' ')}) ${(this.returnType &&
+      this.returnType.inspect(0)) ||
+      '?'})`;
   }
 
   schema() {
@@ -157,13 +179,10 @@ export class StructType extends Type {
     const types =
       level > 1
         ? this.parameters
-            .map(
-              $ =>
-                ' ' +
-                $.parameterName.name +
-                ':' +
-                ($.parameterType && $.parameterType.ofType ? $.parameterType.ofType.inspect(level - 1) : '<null>')
-            )
+            .map($ => {
+              const type = $.parameterType && TypeHelpers.getNodeType($.parameterType);
+              return ' ' + $.parameterName.name + ': ' + (type ? type.inspect(level - 1) : '(?)');
+            })
             .join('')
         : '';
     return `(struct${types})`;
@@ -184,12 +203,22 @@ export class StructType extends Type {
 }
 
 export class StackType extends Type {
+  private static nativeTypes = new Map<string, StackType>();
   private constructor(public typeName: string, public nativeType: NativeTypes, public byteSize: number) {
     super();
   }
 
-  static of(name: string, nativeType: NativeTypes, byteSize: number): any {
-    return new StackType(name, nativeType, byteSize);
+  static of(name: string, nativeType: NativeTypes, byteSize: number): StackType {
+    const key = '_' + name + '_' + nativeType + '_' + byteSize;
+
+    let ret = StackType.nativeTypes.get(key);
+
+    if (!ret) {
+      ret = new StackType(name, nativeType, byteSize);
+      StackType.nativeTypes.set(key, ret);
+    }
+
+    return ret;
   }
 
   equals(other: Type): boolean {
@@ -304,11 +333,12 @@ export class IntersectionType extends Type {
   }
 
   toString() {
-    return this.of.join(' & ');
+    if (this.of.length === 0) return '(empty intersection)';
+    return this.of.map($ => ($ || '?').toString()).join(' & ');
   }
 
   inspect(levels: number = 0) {
-    return '(intersection ' + this.of.map($ => $.inspect(levels - 1)).join(' ') + ')';
+    return '(intersection ' + this.of.map($ => ($ ? $.inspect(levels - 1) : '(?)')).join(' ') + ')';
   }
 
   simplify() {
@@ -328,8 +358,11 @@ export class IntersectionType extends Type {
 
   equals(other: Type): boolean {
     if (!other) return false;
-    // TODO: flatMap
-    return other instanceof IntersectionType && other.of.every($ => this.of.includes($));
+    return (
+      other instanceof IntersectionType &&
+      this.of.length === other.of.length &&
+      this.of.every(($, ix) => areEqualTypes($, other.of[ix]))
+    );
   }
 
   schema() {
@@ -369,7 +402,7 @@ export class UnionType extends Type {
     }
   }
 
-  constructor(public readonly of: Type[] = [], public readonly simplified = false) {
+  constructor(public of: Type[] = [], public readonly simplified = false) {
     super();
   }
 
@@ -386,12 +419,12 @@ export class UnionType extends Type {
 
   toString() {
     if (this.of.length === 0) return '(empty union)';
-    return this.of.map($ => $.toString()).join(' | ');
+    return this.of.map($ => ($ || '?').toString()).join(' | ');
   }
 
   inspect(levels: number = 0) {
     if (this.of.length === 0) return `(union EMPTY)`;
-    return '(union ' + this.of.map($ => $.inspect(levels - 1)).join(' ') + ')';
+    return '(union ' + this.of.map($ => ($ ? $.inspect(levels - 1) : '(?)')).join(' ') + ')';
   }
 
   canBeAssignedTo(otherType: Type) {
@@ -402,7 +435,9 @@ export class UnionType extends Type {
     if (!other) return false;
 
     return (
-      other instanceof UnionType && other.of.every($ => this.of.includes($)) && this.of.every($ => other.of.includes($))
+      other instanceof UnionType &&
+      this.of.length === other.of.length &&
+      this.of.every(($, ix) => areEqualTypes($, other.of[ix]))
     );
   }
 
@@ -445,7 +480,8 @@ export class UnionType extends Type {
    * This method removes an element from the union
    * @param type type to subtract
    */
-  subtract(type: Type): Type {
+  subtract(type: Type | null): Type {
+    if (!type) return this;
     const removingRefType = RefType.isRefTypeStrict(type);
 
     if (!this.simplified) {
@@ -496,7 +532,7 @@ export class UnionType extends Type {
     this.of.forEach($ => {
       if (NeverType.isNeverType($)) return;
 
-      if (!newTypes.some($1 => $1.equals($))) {
+      if (!newTypes.some($1 => areEqualTypes($1, $)) && $) {
         newTypes.push($);
       }
     });
@@ -616,6 +652,7 @@ export class TypeAlias extends Type {
   get nativeType(): NativeTypes {
     return this.of.nativeType as NativeTypes;
   }
+
   discriminant: number | null = null;
 
   constructor(public name: Nodes.NameIdentifierNode, public readonly of: Type) {
@@ -627,7 +664,12 @@ export class TypeAlias extends Type {
   }
 
   equals(other: Type): boolean {
-    return other === this;
+    if (!(other instanceof TypeAlias)) return false;
+    if (other.name !== this.name) return false;
+    if (other.discriminant !== this.discriminant) return false;
+    if (!areEqualTypes(this.of, other.of)) return false;
+
+    return true;
   }
 
   toString(): string {
@@ -635,7 +677,8 @@ export class TypeAlias extends Type {
   }
 
   inspect(levels: number = 0) {
-    return '(alias ' + this.name.name + (levels > 0 ? ' ' + this.of.inspect(levels - 1) : '') + ')';
+    const ofString = levels > 0 ? ' ' + (this.of ? this.of.inspect(levels - 1) : '(?)') : '';
+    return `(alias ${this.name.name}${ofString})`;
   }
 
   schema() {
@@ -675,7 +718,7 @@ export class TypeAlias extends Type {
           let offset = 0;
 
           for (let prop of properties) {
-            const fn = getNonVoidFunction(prop.name.ofType as IntersectionType);
+            const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType);
             offset += fn!.returnType!.getSchemaValue('byteSize');
           }
 
@@ -696,13 +739,13 @@ export class TypeAlias extends Type {
               if (prop.index === index) {
                 break;
               }
-              const fn = getNonVoidFunction(prop.name.ofType as IntersectionType);
+              const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType);
               offset += fn!.returnType!.getSchemaValue('allocationSize');
             }
 
             return offset;
           } else if (name.endsWith('_allocationSize')) {
-            const fn = getNonVoidFunction(property.name.ofType as IntersectionType);
+            const fn = getNonVoidFunction(TypeHelpers.getNodeType(property.name) as IntersectionType);
             return fn!.returnType!.getSchemaValue('allocationSize');
           }
         }
@@ -737,7 +780,7 @@ export class TypeAlias extends Type {
 function getNonVoidFunction(type: IntersectionType): FunctionType | null {
   const functions = type.of as FunctionType[];
   for (let fn of functions) {
-    if (!voidType.canBeAssignedTo(fn.returnType)) {
+    if (fn.returnType && !voidType.canBeAssignedTo(fn.returnType)) {
       return fn;
     }
   }
@@ -769,7 +812,7 @@ export class TypeType extends Type {
 
   equals(other: Type): boolean {
     if (!other) return false;
-    return other instanceof TypeType && other.of.equals(this.of);
+    return other instanceof TypeType && areEqualTypes(other.of, this.of);
   }
 
   inspect(levels: number = 0) {
@@ -830,6 +873,7 @@ export class NeverType extends Type {
   schema() {
     return {};
   }
+
   getSchemaValue(name: string) {
     throw new Error(`Cannot read schema property ${name} of ${this.inspect()}`);
   }
@@ -868,3 +912,19 @@ export const InjectableTypes = Object.assign(Object.create(null) as unknown, {
   AnyType: TypeType.of(new AnyType()),
   Any: new AnyType()
 });
+
+export const UNRESOLVED_TYPE = new NeverType();
+
+export namespace TypeHelpers {
+  const ofTypeSymbol = Symbol('ofType');
+
+  export function getNodeType(node: Nodes.Node): Type | null {
+    return (node as any)[ofTypeSymbol] || null;
+  }
+
+  export function setNodeType(node: Nodes.Node, type: Type | null): void {
+    (node as any)[ofTypeSymbol] = type;
+
+    node.isTypeResolved = isValidType(type);
+  }
+}

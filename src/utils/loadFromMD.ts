@@ -1,6 +1,7 @@
 import { parseMD } from './MDParser';
 import { ParsingContext } from '../compiler/ParsingContext';
 import { LysError } from './errorPrinter';
+import { annotations } from '../compiler/annotations';
 
 export function loadFromMD(parsingContext: ParsingContext, mdContent: string) {
   const parsedMD = parseMD(mdContent);
@@ -18,7 +19,11 @@ export function loadFromMD(parsingContext: ParsingContext, mdContent: string) {
         const moduleName = parsingContext.getModuleFQNForFile($.fileName.text);
         parsingContext.invalidateModule(moduleName);
         lysFiles[$.fileName.text] = moduleName;
-        parsingContext.getParsingPhaseForContent($.fileName.text, moduleName, $.codeBlock.text!);
+        const document = parsingContext.getParsingPhaseForContent($.fileName.text, moduleName, $.codeBlock.text!);
+
+        if ($.codeBlock.text!.includes(`#![no-std]`)) {
+          document.annotate(new annotations.NoStd());
+        }
       }
       if ($.fileName.text.endsWith('.js')) {
         // tslint:disable-next-line:no-eval

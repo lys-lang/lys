@@ -4,7 +4,6 @@ import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGeneratio
 import { ParsingContext } from '../dist/compiler/ParsingContext';
 import { printNode } from '../dist/utils/nodePrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
-import { print as printTypeGraph } from '../dist/utils/typeGraphPrinter';
 import { printAST } from '../dist/utils/astPrinter';
 import { hexDump, readString } from '../dist/utils/execution';
 import { generateTestInstance } from '../dist/utils/testEnvironment';
@@ -18,6 +17,7 @@ import envLib from '../dist/utils/libs/env';
 import testLib, { getTestResults } from '../dist/utils/libs/test';
 import { NodeSystem } from '../dist/support/NodeSystem';
 import { PhaseFlags } from '../dist/compiler/nodes';
+import { failWithErrors } from '../dist/compiler/findAllErrors';
 
 declare var it;
 
@@ -63,6 +63,8 @@ async function testSrc(content: string, customTest: (document: any, error?: Erro
       compilationPhaseResult = phasesForContent(content, fileName);
     }
 
+    failWithErrors('CodeGen', compilationPhaseResult.parsingContext, true);
+
     await compilationPhaseResult.validate(false, true);
 
     const instance = await generateTestInstance(compilationPhaseResult.buffer, libs);
@@ -77,17 +79,16 @@ async function testSrc(content: string, customTest: (document: any, error?: Erro
           customAssertions[path](() => instance);
         }
       } catch (e) {
-        const maxMemory = instance.exports.test_getMaxMemory();
+        // const maxMemory = instance.exports.test_getMaxMemory();
 
         console.log(printErrors(compilationPhaseResult.parsingContext));
-        console.log(printAST(compilationPhaseResult.document));
-        console.log(printTypeGraph(compilationPhaseResult.document.typeGraph));
-        console.log(hexDump(instance.exports.memory.buffer, maxMemory));
-        console.error(printNode(compilationPhaseResult.document));
-        console.error('NON OPTIMIZED VERSION');
-        console.log(printWAST(compilationPhaseResult.programAST));
+        // console.log(printAST(compilationPhaseResult.document));
+        // console.log(hexDump(instance.exports.memory.buffer, maxMemory));
+        // console.error(printNode(compilationPhaseResult.document));
+        // console.error('NON OPTIMIZED VERSION');
+        // console.log(printWAST(compilationPhaseResult.programAST));
         await compilationPhaseResult.validate(true);
-        console.log(compilationPhaseResult.emitText());
+        // console.log(compilationPhaseResult.emitText());
 
         if (e.message.includes('unreachable')) {
           const text = instance.exports.test_getLastErrorMessage();

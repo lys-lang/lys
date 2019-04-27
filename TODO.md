@@ -10,6 +10,7 @@
 - emit text should be parsed and emited again correctly, final result must be the same as the begin
 - OR binary op should stop evaluation after the first non-zero result is yielded
 - AND binary op should stop evaluation after the first zero result is yielded
+- test file with self reference
 
 rename closures to scopes
 arrays
@@ -68,6 +69,10 @@ https://en.wikipedia.org/wiki/Entropy_(information_theory)
 https://en.wikipedia.org/wiki/Nullary_constructor
 
 grammar changes:
+
+```
+privatefun is tokenized as two tokens
+```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
 

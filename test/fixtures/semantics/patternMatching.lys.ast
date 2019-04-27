@@ -1,9 +1,70 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::string
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::native
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="test"
     |-FunDirectiveNode
@@ -11,14 +72,14 @@
         |-NameIdentifierNode="test"
         |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::i32::i32
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::boolean::boolean
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
         |-PatternMatcherNode annotations=IsValueNode
-          |-ReferenceNode annotations=IsValueNode
+          |-ReferenceNode resolvedReference=a annotations=IsValueNode
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-MatchLiteralNode annotations=IsValueNode
@@ -29,23 +90,23 @@
   |-TypeDirectiveNode
     |-NameIdentifierNode="Number"
     |-UnionTypeNode
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=Infinity
         |-QNameNode=Infinity
           |-NameIdentifierNode="Infinity"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=NDet
         |-QNameNode=NDet
           |-NameIdentifierNode="NDet"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=Real
         |-QNameNode=Real
           |-NameIdentifierNode="Real"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=Natural
         |-QNameNode=Natural
           |-NameIdentifierNode="Natural"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=Complex
         |-QNameNode=Complex
           |-NameIdentifierNode="Complex"
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=Number
       |-QNameNode=Number
         |-NameIdentifierNode="Number"
     |-OverloadedFunctionNode annotations=Injected
@@ -56,13 +117,13 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
             |-UnionTypeNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Number
                 |-QNameNode=Number
                   |-NameIdentifierNode="Number"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::native::ref
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode annotations=IsValueNode
@@ -71,42 +132,42 @@
                 |-BinaryExpressionNode annotations=IsValueNode
                   |-BinaryExpressionNode annotations=IsValueNode
                     |-IsExpressionNode annotations=IsValueNode
-                      |-ReferenceNode annotations=IsValueNode
+                      |-ReferenceNode resolvedReference=a annotations=IsValueNode
                         |-QNameNode=a
                           |-NameIdentifierNode="a"
-                      |-ReferenceNode
+                      |-ReferenceNode resolvedReference=Infinity
                         |-QNameNode=Infinity
                           |-NameIdentifierNode="Infinity"
                     |-NameIdentifierNode="||"
                     |-IsExpressionNode annotations=IsValueNode
-                      |-ReferenceNode annotations=IsValueNode
+                      |-ReferenceNode resolvedReference=a annotations=IsValueNode
                         |-QNameNode=a
                           |-NameIdentifierNode="a"
-                      |-ReferenceNode
+                      |-ReferenceNode resolvedReference=NDet
                         |-QNameNode=NDet
                           |-NameIdentifierNode="NDet"
                   |-NameIdentifierNode="||"
                   |-IsExpressionNode annotations=IsValueNode
-                    |-ReferenceNode annotations=IsValueNode
+                    |-ReferenceNode resolvedReference=a annotations=IsValueNode
                       |-QNameNode=a
                         |-NameIdentifierNode="a"
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=Real
                       |-QNameNode=Real
                         |-NameIdentifierNode="Real"
                 |-NameIdentifierNode="||"
                 |-IsExpressionNode annotations=IsValueNode
-                  |-ReferenceNode annotations=IsValueNode
+                  |-ReferenceNode resolvedReference=a annotations=IsValueNode
                     |-QNameNode=a
                       |-NameIdentifierNode="a"
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=Natural
                     |-QNameNode=Natural
                       |-NameIdentifierNode="Natural"
               |-NameIdentifierNode="||"
               |-IsExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=a annotations=IsValueNode
                   |-QNameNode=a
                     |-NameIdentifierNode="a"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Complex
                   |-QNameNode=Complex
                     |-NameIdentifierNode="Complex"
     |-OverloadedFunctionNode annotations=Injected
@@ -118,10 +179,10 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Number
               |-QNameNode=Number
                 |-NameIdentifierNode="Number"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
@@ -135,23 +196,23 @@
           |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BinaryExpressionNode annotations=IsValueNode
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=lhs annotations=IsValueNode
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
             |-NameIdentifierNode="=="
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=rhs annotations=IsValueNode
               |-QNameNode=rhs
                 |-NameIdentifierNode="rhs"
     |-OverloadedFunctionNode annotations=Injected
@@ -161,23 +222,23 @@
           |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BinaryExpressionNode annotations=IsValueNode
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=lhs annotations=IsValueNode
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
             |-NameIdentifierNode="!="
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=rhs annotations=IsValueNode
               |-QNameNode=rhs
                 |-NameIdentifierNode="rhs"
     |-OverloadedFunctionNode annotations=Injected
@@ -187,20 +248,20 @@
           |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Number
               |-QNameNode=Number
                 |-NameIdentifierNode="Number"
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-WasmExpressionNode
@@ -210,7 +271,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -226,15 +287,15 @@
           |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
@@ -244,14 +305,14 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=Infinity
       |-QNameNode=Infinity
         |-NameIdentifierNode="Infinity"
     |-OverloadedFunctionNode annotations=Injected
@@ -261,10 +322,10 @@
           |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
@@ -278,10 +339,10 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
@@ -295,26 +356,26 @@
           |-NameIdentifierNode="inline"
         |-FunctionNode
           |-NameIdentifierNode="Infinity$discriminant" annotations=Inline
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::i64::i64
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Infinity
                   |-QNameNode=Infinity
                     |-NameIdentifierNode="Infinity"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode annotations=IsValueNode
               |-AsExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=discriminant annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=system::core::i64::i64
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
               |-NameIdentifierNode="<<"
@@ -324,12 +385,12 @@
       |-FunDirectiveNode
         |-FunctionNode
           |-NameIdentifierNode="apply"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Infinity
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Infinity$discriminant
                 |-QNameNode=Infinity$discriminant
                   |-NameIdentifierNode="Infinity$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -340,13 +401,13 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
             |-UnionTypeNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Infinity
                 |-QNameNode=Infinity
                   |-NameIdentifierNode="Infinity"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::native::ref
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -358,7 +419,7 @@
                   |-QNameNode=$a
                     |-NameIdentifierNode="$a"
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Infinity$discriminant
                   |-QNameNode=Infinity$discriminant
                     |-NameIdentifierNode="Infinity$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -368,15 +429,15 @@
           |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -394,15 +455,15 @@
           |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -420,20 +481,20 @@
           |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-WasmExpressionNode
@@ -443,7 +504,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -459,15 +520,15 @@
           |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Infinity
             |-QNameNode=Infinity
               |-NameIdentifierNode="Infinity"
           |-WasmExpressionNode annotations=IsValueNode
@@ -477,14 +538,14 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=NDet
       |-QNameNode=NDet
         |-NameIdentifierNode="NDet"
     |-OverloadedFunctionNode annotations=Injected
@@ -494,10 +555,10 @@
           |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=NDet
               |-QNameNode=NDet
                 |-NameIdentifierNode="NDet"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
@@ -511,10 +572,10 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=NDet
               |-QNameNode=NDet
                 |-NameIdentifierNode="NDet"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
@@ -528,26 +589,26 @@
           |-NameIdentifierNode="inline"
         |-FunctionNode
           |-NameIdentifierNode="NDet$discriminant" annotations=Inline
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::i64::i64
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=NDet
                   |-QNameNode=NDet
                     |-NameIdentifierNode="NDet"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode annotations=IsValueNode
               |-AsExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=discriminant annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=system::core::i64::i64
                   |-QNameNode=i64
                     |-NameIdentifierNode="i64"
               |-NameIdentifierNode="<<"
@@ -557,12 +618,12 @@
       |-FunDirectiveNode
         |-FunctionNode
           |-NameIdentifierNode="apply"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=NDet
             |-QNameNode=NDet
               |-NameIdentifierNode="NDet"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=NDet$discriminant
                 |-QNameNode=NDet$discriminant
                   |-NameIdentifierNode="NDet$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -573,13 +634,13 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
             |-UnionTypeNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=NDet
                 |-QNameNode=NDet
                   |-NameIdentifierNode="NDet"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::native::ref
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -591,7 +652,7 @@
                   |-QNameNode=$a
                     |-NameIdentifierNode="$a"
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=NDet$discriminant
                   |-QNameNode=NDet$discriminant
                     |-NameIdentifierNode="NDet$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -601,15 +662,15 @@
           |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=NDet
               |-QNameNode=NDet
                 |-NameIdentifierNode="NDet"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -627,15 +688,15 @@
           |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=NDet
               |-QNameNode=NDet
                 |-NameIdentifierNode="NDet"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -653,20 +714,20 @@
           |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=NDet
               |-QNameNode=NDet
                 |-NameIdentifierNode="NDet"
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-WasmExpressionNode
@@ -676,7 +737,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -692,15 +753,15 @@
           |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=NDet
             |-QNameNode=NDet
               |-NameIdentifierNode="NDet"
           |-WasmExpressionNode annotations=IsValueNode
@@ -710,14 +771,14 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=Real
       |-QNameNode=Real
         |-NameIdentifierNode="Real"
     |-OverloadedFunctionNode annotations=Injected
@@ -727,10 +788,10 @@
           |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
@@ -744,10 +805,10 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
@@ -761,26 +822,26 @@
           |-NameIdentifierNode="inline"
         |-FunctionNode
           |-NameIdentifierNode="Real$discriminant" annotations=Inline
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::u64::u64
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Real
                   |-QNameNode=Real
                     |-NameIdentifierNode="Real"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode annotations=IsValueNode
               |-AsExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=discriminant annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=system::core::u64::u64
                   |-QNameNode=u64
                     |-NameIdentifierNode="u64"
               |-NameIdentifierNode="<<"
@@ -792,46 +853,47 @@
           |-NameIdentifierNode="apply"
           |-ParameterNode annotations=Local(number:<no-type>#0)
             |-NameIdentifierNode="number"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Real
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
           |-BlockNode annotations=IsValueNode
             |-VarDeclarationNode
               |-NameIdentifierNode="$ref"
               |-FunctionCallNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=fromPointer
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
                 |-FunctionCallNode annotations=IsValueNode
-                  |-ReferenceNode
-                    |-QNameNode=system::memory::calloc
+                  |-ReferenceNode resolvedReference=system::core::memory::calloc
+                    |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
+                      |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
                   |-AsExpressionNode annotations=IsValueNode
                     |-IntegerLiteral=1 annotations=IsValueNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=system::core::u32::u32
                       |-QNameNode=u32
                         |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=Real
                       |-QNameNode=Real
                         |-NameIdentifierNode="Real"
                     |-NameIdentifierNode="allocationSize"
             |-FunctionCallNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=property$0
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=number annotations=IsValueNode
                 |-QNameNode=number
                   |-NameIdentifierNode="number"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode annotations=Injected
@@ -841,16 +903,16 @@
           |-NameIdentifierNode="fromPointer"
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Real
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Real$discriminant
                   |-QNameNode=Real$discriminant
                     |-NameIdentifierNode="Real$discriminant"
               |-WasmAtomNode
@@ -864,15 +926,15 @@
           |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -890,15 +952,15 @@
           |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -916,17 +978,17 @@
           |-NameIdentifierNode="property_number"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::f32::f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
           |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$0
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
@@ -934,25 +996,25 @@
           |-NameIdentifierNode="property_number"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$0
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
     |-OverloadedFunctionNode annotations=Injected
@@ -964,23 +1026,23 @@
           |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::f32::f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
           |-FunctionCallNode annotations=IsValueNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::f32::f32
                 |-QNameNode=f32
                   |-NameIdentifierNode="f32"
               |-NameIdentifierNode="load"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Real
                 |-QNameNode=Real
                   |-NameIdentifierNode="Real"
               |-NameIdentifierNode="property$0_offset"
@@ -991,31 +1053,31 @@
           |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::f32::f32
                 |-QNameNode=f32
                   |-NameIdentifierNode="f32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Real
                 |-QNameNode=Real
                   |-NameIdentifierNode="Real"
               |-NameIdentifierNode="property$0_offset"
@@ -1027,13 +1089,13 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
             |-UnionTypeNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Real
                 |-QNameNode=Real
                   |-NameIdentifierNode="Real"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::native::ref
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1045,7 +1107,7 @@
                   |-QNameNode=$a
                     |-NameIdentifierNode="$a"
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Real$discriminant
                   |-QNameNode=Real$discriminant
                     |-NameIdentifierNode="Real$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -1055,20 +1117,20 @@
           |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-WasmExpressionNode
@@ -1078,7 +1140,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -1094,15 +1156,15 @@
           |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Real
             |-QNameNode=Real
               |-NameIdentifierNode="Real"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1112,14 +1174,14 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=Natural
       |-QNameNode=Natural
         |-NameIdentifierNode="Natural"
     |-OverloadedFunctionNode annotations=Injected
@@ -1129,10 +1191,10 @@
           |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1146,10 +1208,10 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1163,26 +1225,26 @@
           |-NameIdentifierNode="inline"
         |-FunctionNode
           |-NameIdentifierNode="Natural$discriminant" annotations=Inline
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::u64::u64
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Natural
                   |-QNameNode=Natural
                     |-NameIdentifierNode="Natural"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode annotations=IsValueNode
               |-AsExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=discriminant annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=system::core::u64::u64
                   |-QNameNode=u64
                     |-NameIdentifierNode="u64"
               |-NameIdentifierNode="<<"
@@ -1194,46 +1256,47 @@
           |-NameIdentifierNode="apply"
           |-ParameterNode annotations=Local(number:<no-type>#0)
             |-NameIdentifierNode="number"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::i32::i32
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Natural
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
           |-BlockNode annotations=IsValueNode
             |-VarDeclarationNode
               |-NameIdentifierNode="$ref"
               |-FunctionCallNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=fromPointer
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
                 |-FunctionCallNode annotations=IsValueNode
-                  |-ReferenceNode
-                    |-QNameNode=system::memory::calloc
+                  |-ReferenceNode resolvedReference=system::core::memory::calloc
+                    |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
+                      |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
                   |-AsExpressionNode annotations=IsValueNode
                     |-IntegerLiteral=1 annotations=IsValueNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=system::core::u32::u32
                       |-QNameNode=u32
                         |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=Natural
                       |-QNameNode=Natural
                         |-NameIdentifierNode="Natural"
                     |-NameIdentifierNode="allocationSize"
             |-FunctionCallNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=property$0
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=number annotations=IsValueNode
                 |-QNameNode=number
                   |-NameIdentifierNode="number"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode annotations=Injected
@@ -1243,16 +1306,16 @@
           |-NameIdentifierNode="fromPointer"
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Natural
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Natural$discriminant
                   |-QNameNode=Natural$discriminant
                     |-NameIdentifierNode="Natural$discriminant"
               |-WasmAtomNode
@@ -1266,15 +1329,15 @@
           |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1292,15 +1355,15 @@
           |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1318,17 +1381,17 @@
           |-NameIdentifierNode="property_number"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::i32::i32
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
           |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$0
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
@@ -1336,25 +1399,25 @@
           |-NameIdentifierNode="property_number"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::i32::i32
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$0
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
     |-OverloadedFunctionNode annotations=Injected
@@ -1366,23 +1429,23 @@
           |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::i32::i32
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
           |-FunctionCallNode annotations=IsValueNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::i32::i32
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="load"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Natural
                 |-QNameNode=Natural
                   |-NameIdentifierNode="Natural"
               |-NameIdentifierNode="property$0_offset"
@@ -1393,31 +1456,31 @@
           |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::i32::i32
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::i32::i32
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Natural
                 |-QNameNode=Natural
                   |-NameIdentifierNode="Natural"
               |-NameIdentifierNode="property$0_offset"
@@ -1429,13 +1492,13 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
             |-UnionTypeNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Natural
                 |-QNameNode=Natural
                   |-NameIdentifierNode="Natural"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::native::ref
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1447,7 +1510,7 @@
                   |-QNameNode=$a
                     |-NameIdentifierNode="$a"
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Natural$discriminant
                   |-QNameNode=Natural$discriminant
                     |-NameIdentifierNode="Natural$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -1457,20 +1520,20 @@
           |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-WasmExpressionNode
@@ -1480,7 +1543,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -1496,15 +1559,15 @@
           |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Natural
             |-QNameNode=Natural
               |-NameIdentifierNode="Natural"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1514,14 +1577,14 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=Complex
       |-QNameNode=Complex
         |-NameIdentifierNode="Complex"
     |-OverloadedFunctionNode annotations=Injected
@@ -1531,10 +1594,10 @@
           |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1548,10 +1611,10 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1565,26 +1628,26 @@
           |-NameIdentifierNode="inline"
         |-FunctionNode
           |-NameIdentifierNode="Complex$discriminant" annotations=Inline
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::u64::u64
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
             |-ValDeclarationNode
               |-NameIdentifierNode="discriminant"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Complex
                   |-QNameNode=Complex
                     |-NameIdentifierNode="Complex"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode annotations=IsValueNode
               |-AsExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=discriminant annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=system::core::u64::u64
                   |-QNameNode=u64
                     |-NameIdentifierNode="u64"
               |-NameIdentifierNode="<<"
@@ -1596,61 +1659,62 @@
           |-NameIdentifierNode="apply"
           |-ParameterNode annotations=Local(real:<no-type>#0)
             |-NameIdentifierNode="real"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
           |-ParameterNode annotations=Local(imaginary:<no-type>#1)
             |-NameIdentifierNode="imaginary"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Complex
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
           |-BlockNode annotations=IsValueNode
             |-VarDeclarationNode
               |-NameIdentifierNode="$ref"
               |-FunctionCallNode annotations=IsValueNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=fromPointer
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
                 |-FunctionCallNode annotations=IsValueNode
-                  |-ReferenceNode
-                    |-QNameNode=system::memory::calloc
+                  |-ReferenceNode resolvedReference=system::core::memory::calloc
+                    |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
+                      |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
                   |-AsExpressionNode annotations=IsValueNode
                     |-IntegerLiteral=1 annotations=IsValueNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=system::core::u32::u32
                       |-QNameNode=u32
                         |-NameIdentifierNode="u32"
                   |-MemberNode annotations=IsValueNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=Complex
                       |-QNameNode=Complex
                         |-NameIdentifierNode="Complex"
                     |-NameIdentifierNode="allocationSize"
             |-FunctionCallNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=property$0
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=real annotations=IsValueNode
                 |-QNameNode=real
                   |-NameIdentifierNode="real"
             |-FunctionCallNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=property$1
                 |-QNameNode=property$1
                   |-NameIdentifierNode="property$1"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
                 |-QNameNode=$ref
                   |-NameIdentifierNode="$ref"
-              |-ReferenceNode annotations=IsValueNode
+              |-ReferenceNode resolvedReference=imaginary annotations=IsValueNode
                 |-QNameNode=imaginary
                   |-NameIdentifierNode="imaginary"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
     |-OverloadedFunctionNode annotations=Injected
@@ -1660,16 +1724,16 @@
           |-NameIdentifierNode="fromPointer"
           |-ParameterNode annotations=Local(ptr:<no-type>#0)
             |-NameIdentifierNode="ptr"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Complex
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Complex$discriminant
                   |-QNameNode=Complex$discriminant
                     |-NameIdentifierNode="Complex$discriminant"
               |-WasmAtomNode
@@ -1683,15 +1747,15 @@
           |-NameIdentifierNode="=="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1709,15 +1773,15 @@
           |-NameIdentifierNode="!="
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(b:<no-type>#1)
             |-NameIdentifierNode="b"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1735,17 +1799,17 @@
           |-NameIdentifierNode="property_real"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::f32::f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
           |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$0
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
@@ -1753,25 +1817,25 @@
           |-NameIdentifierNode="property_real"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$0
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
     |-OverloadedFunctionNode annotations=Injected
@@ -1783,23 +1847,23 @@
           |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::f32::f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
           |-FunctionCallNode annotations=IsValueNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::f32::f32
                 |-QNameNode=f32
                   |-NameIdentifierNode="f32"
               |-NameIdentifierNode="load"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Complex
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-NameIdentifierNode="property$0_offset"
@@ -1810,31 +1874,31 @@
           |-NameIdentifierNode="property$0" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::f32::f32
                 |-QNameNode=f32
                   |-NameIdentifierNode="f32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Complex
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-NameIdentifierNode="property$0_offset"
@@ -1845,17 +1909,17 @@
           |-NameIdentifierNode="property_imaginary"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::f32::f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
           |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$1
               |-QNameNode=property$1
                 |-NameIdentifierNode="property$1"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
@@ -1863,25 +1927,25 @@
           |-NameIdentifierNode="property_imaginary"
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=property$1
               |-QNameNode=property$1
                 |-NameIdentifierNode="property$1"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
     |-OverloadedFunctionNode annotations=Injected
@@ -1893,23 +1957,23 @@
           |-NameIdentifierNode="property$1" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::f32::f32
             |-QNameNode=f32
               |-NameIdentifierNode="f32"
           |-FunctionCallNode annotations=IsValueNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::f32::f32
                 |-QNameNode=f32
                   |-NameIdentifierNode="f32"
               |-NameIdentifierNode="load"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Complex
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-NameIdentifierNode="property$1_offset"
@@ -1920,31 +1984,31 @@
           |-NameIdentifierNode="property$1" annotations=Inline
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(value:<no-type>#1)
             |-NameIdentifierNode="value"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::f32::f32
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-FunctionCallNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::f32::f32
                 |-QNameNode=f32
                   |-NameIdentifierNode="f32"
               |-NameIdentifierNode="store"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=self annotations=IsValueNode
               |-QNameNode=self
                 |-NameIdentifierNode="self"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=value annotations=IsValueNode
               |-QNameNode=value
                 |-NameIdentifierNode="value"
             |-MemberNode annotations=IsValueNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Complex
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
               |-NameIdentifierNode="property$1_offset"
@@ -1956,13 +2020,13 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a"
             |-UnionTypeNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=Complex
                 |-QNameNode=Complex
                   |-NameIdentifierNode="Complex"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=system::core::native::ref
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-WasmExpressionNode annotations=IsValueNode
@@ -1974,7 +2038,7 @@
                   |-QNameNode=$a
                     |-NameIdentifierNode="$a"
               |-WasmAtomNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=Complex$discriminant
                   |-QNameNode=Complex$discriminant
                     |-NameIdentifierNode="Complex$discriminant"
     |-OverloadedFunctionNode annotations=Injected
@@ -1984,20 +2048,20 @@
           |-NameIdentifierNode="store"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(rhs:<no-type>#1)
             |-NameIdentifierNode="rhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-ParameterNode annotations=Local(offset:<no-type>#2)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::native::void
             |-QNameNode=void
               |-NameIdentifierNode="void"
           |-WasmExpressionNode
@@ -2007,7 +2071,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -2023,15 +2087,15 @@
           |-NameIdentifierNode="load"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::native::ref
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
           |-ParameterNode annotations=Local(offset:<no-type>#1)
             |-NameIdentifierNode="offset"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::u32::u32
               |-QNameNode=u32
                 |-NameIdentifierNode="u32"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Complex
             |-QNameNode=Complex
               |-NameIdentifierNode="Complex"
           |-WasmExpressionNode annotations=IsValueNode
@@ -2041,7 +2105,7 @@
                   |-QNameNode=$offset
                     |-NameIdentifierNode="$offset"
                 |-WasmAtomNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=system::core::native::addressFromRef
                     |-QNameNode=addressFromRef
                       |-NameIdentifierNode="addressFromRef"
                   |-WasmAtomNode
@@ -2058,7 +2122,7 @@
     |-StructTypeNode
       |-ParameterNode
         |-NameIdentifierNode="number"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::f32::f32
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
   |-TypeDirectiveNode annotations=Injected
@@ -2066,7 +2130,7 @@
     |-StructTypeNode
       |-ParameterNode
         |-NameIdentifierNode="number"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
   |-TypeDirectiveNode annotations=Injected
@@ -2074,12 +2138,12 @@
     |-StructTypeNode
       |-ParameterNode
         |-NameIdentifierNode="real"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::f32::f32
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
       |-ParameterNode
         |-NameIdentifierNode="imaginary"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::f32::f32
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
   |-OverloadedFunctionNode annotations=Injected
@@ -2089,32 +2153,32 @@
         |-NameIdentifierNode="isComplex"
         |-ParameterNode annotations=Local(number:<no-type>#0)
           |-NameIdentifierNode="number"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=Number
             |-QNameNode=Number
               |-NameIdentifierNode="Number"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::boolean::boolean
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
         |-PatternMatcherNode annotations=IsValueNode
-          |-ReferenceNode annotations=IsValueNode
+          |-ReferenceNode resolvedReference=number annotations=IsValueNode
             |-QNameNode=number
               |-NameIdentifierNode="number"
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="x"
             |-BooleanLiteral=false annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Real
               |-QNameNode=Real
                 |-NameIdentifierNode="Real"
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="x"
             |-BooleanLiteral=false annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
           |-MatchCaseIsNode annotations=IsValueNode
             |-NameIdentifierNode="$"
             |-BooleanLiteral=false annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Infinity
               |-QNameNode=Infinity
                 |-NameIdentifierNode="Infinity"
           |-MatchCaseIsNode annotations=IsValueNode
@@ -2123,17 +2187,17 @@
               |-ValDeclarationNode
                 |-NameIdentifierNode="x"
                 |-MemberNode annotations=IsValueNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=aNaturalNumber
                     |-QNameNode=aNaturalNumber
                       |-NameIdentifierNode="aNaturalNumber"
                   |-NameIdentifierNode="x"
               |-BinaryExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=x annotations=IsValueNode
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
                 |-NameIdentifierNode="=="
                 |-IntegerLiteral=0 annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Natural
               |-QNameNode=Natural
                 |-NameIdentifierNode="Natural"
           |-MatchCaseIsNode annotations=IsValueNode
@@ -2142,17 +2206,17 @@
               |-ValDeclarationNode
                 |-NameIdentifierNode="imaginary"
                 |-MemberNode annotations=IsValueNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=$
                     |-QNameNode=$
                       |-NameIdentifierNode="$"
                   |-NameIdentifierNode="imaginary"
               |-BinaryExpressionNode annotations=IsValueNode
-                |-ReferenceNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=imaginary annotations=IsValueNode
                   |-QNameNode=imaginary
                     |-NameIdentifierNode="imaginary"
                 |-NameIdentifierNode="!="
                 |-FloatLiteral=0 annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Complex
               |-QNameNode=Complex
                 |-NameIdentifierNode="Complex"
           |-MatchDefaultNode annotations=IsValueNode

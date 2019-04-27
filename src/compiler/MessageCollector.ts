@@ -1,21 +1,28 @@
-import { IErrorPositionCapable, AstNodeError, PositionCapableError, isSamePosition } from './NodeError';
+import {
+  IErrorPositionCapable,
+  PositionCapableError,
+  isSamePosition,
+  isSamePositionOrInside,
+  LysCompilerError,
+  IPositionCapable
+} from './NodeError';
 import { Nodes } from './nodes';
 
 export class MessageCollector {
   errors: IErrorPositionCapable[] = [];
 
   error(error: IErrorPositionCapable): void;
-  error(message: string | Error, node: Nodes.Node): void;
-  error(error: string | Error, node?: Nodes.Node): void {
+  error(message: string | Error, position: IPositionCapable): void;
+  error(error: string | Error, position?: IPositionCapable): void {
     if (error instanceof PositionCapableError) {
       if (!this.errors.some($ => $.message === error.message && isSamePosition($.position, error.position))) {
         this.errors.push(error);
       }
     } else {
       const message = error instanceof Error ? error.message : error;
-      if (node) {
-        if (!this.errors.some($ => $.message === message && isSamePosition($.position, node.astNode))) {
-          const err = new AstNodeError(message, node);
+      if (position) {
+        if (!this.errors.some($ => $.message === message && isSamePosition($.position, position))) {
+          const err = new PositionCapableError(message, position);
           if (error instanceof Error && error.stack) {
             err.stack = error.stack;
           }
@@ -33,21 +40,24 @@ export class MessageCollector {
     }
   }
 
-  warning(message: string, node: Nodes.Node) {
-    if (!this.errors.some($ => $.message === message && isSamePosition($.position, node.astNode))) {
-      this.errors.push(new AstNodeError(message, node, true));
+  errorIfBranchDoesntHaveAny(message: PositionCapableError): void;
+  errorIfBranchDoesntHaveAny(message: string, node: Nodes.Node): void;
+  errorIfBranchDoesntHaveAny(message: string | PositionCapableError, node?: Nodes.Node) {
+    const position = (message instanceof PositionCapableError && message.position) || (node && node.astNode);
+
+    if (!this.hasErrorForBranch(position!)) {
+      this.error(message, position!);
     }
   }
 
-  hasErrorFor(node: Nodes.Node): any {
-    return this.errors.some($ => $.node === node);
+  warning(message: string, node: Nodes.Node) {
+    if (!this.errors.some($ => $.message === message && isSamePosition($.position, node.astNode))) {
+      this.errors.push(new LysCompilerError(message, node, true));
+    }
   }
 
-  hasErrorForBranch(node: Nodes.Node): any {
-    return (
-      this.errors.some($ => isSamePosition($.position, node.astNode)) ||
-      node.children.some($ => this.hasErrorForBranch($))
-    );
+  hasErrorForBranch(position: IPositionCapable): any {
+    return this.errors.some($ => isSamePositionOrInside(position, $.position) && !$.warning);
   }
 
   hasErrors() {
@@ -59,7 +69,7 @@ export class MessageCollector {
    * @param otherMessageCollector
    */
   mergeWith(otherMessageCollector: MessageCollector) {
-    this.errors = this.errors.concat(otherMessageCollector.errors);
+    otherMessageCollector.errors.forEach(error => this.error(error));
     otherMessageCollector.errors.length = 0;
   }
 }

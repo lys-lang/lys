@@ -138,7 +138,7 @@ impl String {
   }
 
   fun apply(data: bytes): String = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, String.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, String.^allocationSize))
     property$0($ref, data)
     $ref
   }
@@ -187,9 +187,9 @@ impl String {
     val rhsData = rhs.data
     val lhsLen = lhsData.length
     val rhsLen = rhsData.length
-    var newData = system::memory::allocBytes(lhsLen + rhsLen)
-    system::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
-    system::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
+    var newData = system::core::memory::allocBytes(lhsLen + rhsLen)
+    system::core::memory::memcpy(newData.ptr, lhsData.ptr, lhsLen)
+    system::core::memory::memcpy(newData.ptr + lhsLen, rhs.data.ptr, rhsLen)
     String(newData)
   }
 
@@ -422,7 +422,7 @@ impl Node {
   }
 
   fun apply(a: ((Tree | Forest))): Node = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Node.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Node.^allocationSize))
     property$0($ref, a)
     $ref
   }
@@ -555,7 +555,7 @@ impl Cons {
   }
 
   fun apply(tree: ((Tree | Forest))): Cons = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Cons.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Cons.^allocationSize))
     property$0($ref, tree)
     $ref
   }
@@ -649,7 +649,7 @@ impl Color {
   }
 
   fun apply(r: i32, g: i32, b: i32): Color = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Color.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Color.^allocationSize))
     property$0($ref, r)
     property$1($ref, g)
     property$2($ref, b)
@@ -842,7 +842,7 @@ impl Iterator {
   }
 
   fun apply(current: i32, target: i32): Iterator = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Iterator.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Iterator.^allocationSize))
     property$0($ref, current)
     property$1($ref, target)
     $ref
@@ -985,7 +985,7 @@ impl Some {
   }
 
   fun apply(value: i32): Some = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Some.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Some.^allocationSize))
     property$0($ref, value)
     $ref
   }

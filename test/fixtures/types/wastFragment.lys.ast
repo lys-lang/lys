@@ -1,36 +1,97 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=(fun "malloc" ((alias i32)) (alias i32)) annotations=Injected
-    |-NameIdentifierNode="malloc" type=(fun "malloc" ((alias i32)) (alias i32))
+      |-NameIdentifierNode="native"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="malloc" type=(intersection (fun "malloc" ((alias i32)) (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "malloc" ((alias i32)) (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="malloc"
-        |-ParameterNode annotations=Local(size:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="malloc" type=(fun "malloc" ((alias i32)) (alias i32))
+        |-ParameterNode annotations=Local(size:<no-type>#0)
           |-NameIdentifierNode="size" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-WasmExpressionNode type=(never) annotations=IsValueNode
           |-WasmAtomNode
             |-QNameNode=$size
               |-NameIdentifierNode="$size"
-  |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="main" type=(intersection (fun "main" () (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="main"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-FunctionCallNode=(fun "malloc" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-          |-ReferenceNode type=(fun "malloc" ((alias i32)) (alias i32))
+          |-ReferenceNode resolvedReference=malloc type=(intersection (fun "malloc" ((alias i32)) (alias i32)))
             |-QNameNode=malloc
               |-NameIdentifierNode="malloc"
           |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode

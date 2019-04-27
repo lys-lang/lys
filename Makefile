@@ -8,8 +8,10 @@ build:
 GREP="."
 TEST_FILE=*
 
+DEBUG_TYPES=0
+
 just-test:
-	node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000 "test/$(TEST_FILE).spec.js"
+	DEBUG_TYPES=$(DEBUG_TYPES) node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000 "test/$(TEST_FILE).spec.js" --baila
 
 test: | build just-test
 
@@ -25,9 +27,9 @@ lint:
 	node_modules/.bin/tslint src/**/*.ts --project tsconfig.json
 
 e2e:
+	$(MAKE) md-tests
 	cd test/fixtures/cli/smoke && ../../../../dist/bin.js main.lys --test --debug --wast
 	cd test/fixtures/cli/custom-lib && ../../../../dist/bin.js main.lys --test --debug --wast --lib lib.js
-	$(MAKE) md-tests
 
 md-tests:
 	node test/RunModulesFolder.js

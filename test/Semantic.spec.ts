@@ -65,7 +65,7 @@ describe('Semantic', function() {
   let semanticTestCount = 0;
 
   function getFileName() {
-    return `semantic_tests_${semanticTestCount++}.lys`;
+    return `tests/semantic_tests_${semanticTestCount++}.lys`;
   }
 
   function test(literals, ...placeholders) {
@@ -111,7 +111,7 @@ describe('Semantic', function() {
         if (!didFail) {
           console.log(result);
           console.log(printAST(result.document));
-          console.log(result.document.closure.deepInspect());
+          console.log(result.document.closure.inspect());
         }
         expect(didFail).toEqual(true);
       },
@@ -352,7 +352,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core::native')).toEqual(true);
       },
       scopePhases
     );
@@ -382,7 +382,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core::i32')).toEqual(true);
       },
       scopePhases
     );
@@ -395,7 +395,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure.importedModules.has('system::core::i32')).toEqual(true);
       },
       scopePhases
     );
@@ -426,11 +426,11 @@ describe('Semantic', function() {
     `;
 
     test`
-      import system::string
+      import system::core::string
     `;
 
     testToFail`
-      import system::stringThatDoesNotExist
+      import system::moduleThatDoesNotExist
     `;
 
     test`

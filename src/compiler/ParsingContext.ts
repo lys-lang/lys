@@ -1,5 +1,4 @@
 import { MessageCollector } from './MessageCollector';
-import { TypeGraph } from './types/TypeGraph';
 import { getAST } from './phases/canonicalPhase';
 import { System } from './System';
 import { Nodes, PhaseFlags } from './nodes';
@@ -11,8 +10,6 @@ export class ParsingContext {
 
   public modulesInContext = new Map<string, Nodes.DocumentNode>();
 
-  public typeGraph = new TypeGraph([], null);
-
   private typeNumbers = new Map<string, number>();
 
   constructor(public system: System) {
@@ -21,15 +18,30 @@ export class ParsingContext {
 
   reset() {
     this.typeNumbers.clear();
-    this.modulesInContext.clear();
     this.messageCollector.errors.length = 0;
-    this.typeGraph.reset();
   }
 
+  /**
+   * Invalidates a module and it's dependencies. This function should be called
+   * after modification of any source file.
+   * @param moduleName
+   */
   invalidateModule(moduleName: string) {
-    this.modulesInContext.delete(moduleName);
+    const currentModule = this.modulesInContext.get(moduleName);
+    if (currentModule) {
+      this.modulesInContext.delete(moduleName);
+      currentModule.importedBy.forEach(importedBy => {
+        this.invalidateModule(importedBy);
+      });
+    }
   }
 
+  /**
+   * Gets an internal identifier used for compilation time. It returns a unique
+   * name every time.
+   * @param moduleName
+   * @param name
+   */
   getInternalName(moduleName: string, name: string): string {
     const moduleDocument = this.getExistingParsingPhaseForModule(moduleName);
     if (!moduleDocument) throw new Error('There is no ' + moduleName + ' document loaded');
@@ -49,6 +61,11 @@ export class ParsingContext {
     }
   }
 
+  /**
+   * Returns a type discriminant number for the specified name
+   * @param moduleName
+   * @param typeName
+   */
   getTypeDiscriminant(moduleName: string, typeName: string): number {
     const fqn = moduleName + '::' + typeName;
     let typeNumber = this.typeNumbers.get(fqn);
@@ -62,24 +79,18 @@ export class ParsingContext {
     return typeNumber;
   }
 
+  /**
+   * Gets the internal representation of the desired moduleName if exists.
+   * @param moduleName
+   */
   getExistingParsingPhaseForModule(moduleName: string) {
     return this.modulesInContext.get(moduleName);
   }
 
-  getParsingPhaseForFile(fileName: string, moduleName: string) {
-    if (this.modulesInContext.has(moduleName)) {
-      return this.modulesInContext.get(moduleName)!;
-    } else {
-      const content = this.system.readFile(fileName);
-
-      if (content === undefined) {
-        throw new Error(`File ${fileName} does not exist`);
-      }
-
-      return this.getParsingPhaseForContent(fileName, moduleName, content);
-    }
-  }
-
+  /**
+   * Loads a module using a moduleName if exists.
+   * @param moduleName
+   */
   getParsingPhaseForModule(moduleName: string) {
     if (this.modulesInContext.has(moduleName)) {
       return this.modulesInContext.get(moduleName)!;
@@ -90,6 +101,12 @@ export class ParsingContext {
     }
   }
 
+  /**
+   * Loads a module into the context using `fileName`, `moduleName` and `content`
+   * @param fileName
+   * @param moduleName
+   * @param content
+   */
   getParsingPhaseForContent(fileName: string, moduleName: string, content: string) {
     if (this.modulesInContext.has(moduleName)) {
       return this.modulesInContext.get(moduleName)!;
@@ -102,11 +119,17 @@ export class ParsingContext {
   }
 
   getPhase(moduleName: string, phase: PhaseFlags, debug = false): Nodes.DocumentNode {
-    const document = this.getParsingPhaseForModule(moduleName);
-    analyze(document, this, phase, debug);
-    return document;
+    if (!this.modulesInContext.has(moduleName)) {
+      this.getParsingPhaseForModule(moduleName);
+    }
+    analyze(moduleName, this, phase, debug);
+    return this.getExistingParsingPhaseForModule(moduleName)!;
   }
 
+  /**
+   * Obtains the fully qyalified name of a file.
+   * @param file
+   */
   getModuleFQNForFile(file: string) {
     try {
       const fullFile = this.resolveFileInPath(file);
@@ -143,6 +166,45 @@ export class ParsingContext {
       .replace(/(\\|\/)/g, '::');
   }
 
+  outline(): string {
+    const ret: string[] = [];
+
+    this.modulesInContext.forEach((v, k) => {
+      if (!k.includes('#') && v.closure) {
+        ret.push(v.closure.inspect(false));
+      }
+    });
+
+    return ret.join('\n');
+  }
+
+  /**
+   * Gets or loads a module by fileName & moduleName.
+   *
+   * If the module exists in the current context it gets it. Otherwise it is
+   * loaded.
+   *
+   * @param fileName
+   * @param moduleName
+   */
+  private getParsingPhaseForFile(fileName: string, moduleName: string) {
+    if (this.modulesInContext.has(moduleName)) {
+      return this.modulesInContext.get(moduleName)!;
+    } else {
+      const content = this.system.readFile(fileName);
+
+      if (content === undefined) {
+        throw new Error(`File ${fileName} does not exist`);
+      }
+
+      return this.getParsingPhaseForContent(fileName, moduleName, content);
+    }
+  }
+
+  /**
+   * Resolves a file in the context's path list
+   * @param file
+   */
   private resolveFileInPath(file: string): string {
     const paths = [this.system.getCurrentDirectory(), ...this.paths];
 
@@ -159,6 +221,10 @@ export class ParsingContext {
     throw new Error(`File ${file} is not part of this project`);
   }
 
+  /**
+   * Tries to resolve a fileName using a moduleName as input.
+   * @param moduleName
+   */
   private resolveModule(moduleName: string) {
     const absolutePath = moduleName.replace(/::/g, '/') + '.lys';
 

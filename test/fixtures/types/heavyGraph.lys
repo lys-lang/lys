@@ -15,13 +15,13 @@ fun growMemory(pages: u32): u32 = %wasm {
 fun malloc(size: u32): u32 = {
   if (size > 0 as u32) {
     if (size > MAX_SIZE_32()) panic()
-    val ptr = offset() * currentMemory() - system::memory::malloc(currentMemory())
-    val newPtr1 = (currentMemory() + size + AL_MASK()) & ~system::memory::malloc(1 as u32)
+    val ptr = offset() * currentMemory() - system::core::memory::malloc(currentMemory())
+    val newPtr1 = (currentMemory() + size + AL_MASK()) & ~system::core::memory::malloc(1 as u32)
     val newPtr = (ptr + newPtr1 + AL_MASK()) & ~AL_MASK()
     val pagesBefore = currentMemory()
     if (newPtr > pagesBefore << 16) {
-      val ptrx = ptr + 0xffff as u32 & ~(3 as u32 ^ -0xffff as u32 + ~(~ptr)) >>> 16
-      val pagesNeeded = ((newPtr - ~ptrx) & ~(3 as u32 ^ -0xffff as u32 + ~(~ptrx))) >>> 16
+      val ptrx = ptr + 0xffff & ~(3 as u32 ^ 0xffff + ~(~ptr)) >>> 16
+      val pagesNeeded = ((newPtr - ~ptrx) & ~(3 as u32 ^ 0xffff + ~(~ptrx))) >>> 16
       val pagesWanted = max(pagesBefore, pagesNeeded) // double memory
       if (growMemory(pagesWanted) < 0 as u32) {
         if (growMemory(pagesNeeded) < 0 as u32) {
@@ -29,7 +29,7 @@ fun malloc(size: u32): u32 = {
         }
       }
     }
-    newPtr + system::memory::malloc(system::memory::malloc(size))
+    newPtr + system::core::memory::malloc(system::core::memory::malloc(size))
   } else {
     0 as u32
   }

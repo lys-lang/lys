@@ -1,3 +1,17 @@
+import system::core::boolean
+import system::core::bytes
+import system::core::f32
+import system::core::f64
+import system::core::i16
+import system::core::i32
+import system::core::i64
+import system::core::native
+import system::core::u16
+import system::core::u32
+import system::core::u64
+import system::core::u8
+
+
 type string = %stack { lowLevelType="i64" byteSize=8 }
 
 impl string {
@@ -5,17 +19,17 @@ impl string {
    * Returns the string length in UCS chars.
    */
   #[inline]
-  fun property_length(str: string): u32 =
-    u32.load(str as ref) / 2 as u32
+  fun property_length(self: string): u32 =
+    u32.load(self as ref) / 2 as u32
 
   /**
    * Returns the pointer of the string's content.
    */
   #[inline]
-  fun property_ptr(str: string): u32 = %wasm {
+  fun property_ptr(self: string): u32 = %wasm {
     (i32.add
       (i32.const 4)
-      (call $addressFromRef (get_local $str))
+      (call $addressFromRef (get_local $self))
     )
   }
 
@@ -24,7 +38,7 @@ impl string {
    * Can be explicitly converted to references.
    */
   #[explicit]
-  fun as(lhs: string): ref = %wasm { (get_local $lhs) }
+  fun as(self: string): ref = %wasm { (get_local $self) }
 
   /**
    * Unless numbers, strings are concatenated, not added.
@@ -36,14 +50,14 @@ impl string {
   /**
    * Index getter, it returns a char (u16)
    */
-  fun [](data: string, at: u32): u16 = {
-    if (at > data.length) {
+  fun [](self: string, at: u32): u16 = {
+    if (at > self.length) {
       panic()
     }
     if (at < 0 as u32) {
       panic()
     }
-    u16.load(data.ptr as ref, at << 1)
+    u16.load(self.ptr as ref, at << 1)
   }
 
   #[inline]
@@ -70,10 +84,10 @@ impl string {
     val lhsLen = lhs.length * 2 as u32
     val rhsLen = rhs.length * 2 as u32
 
-    val $ret = system::memory::allocBytes(lhsLen + rhsLen)
+    val $ret = system::core::memory::allocBytes(lhsLen + rhsLen)
 
-    system::memory::memcpy(
-      system::memory::memcpy(
+    system::core::memory::memcpy(
+      system::core::memory::memcpy(
         $ret.ptr,
         lhs.ptr,
         lhsLen
@@ -244,7 +258,7 @@ impl string {
     } else {
       var len = charLength(value)
 
-      val ret = system::memory::allocBytes(len << 1)
+      val ret = system::core::memory::allocBytes(len << 1)
 
       if (value > 0)
         printToBytes(ret, value as u64, len)
@@ -266,7 +280,7 @@ impl string {
     } else {
       var len = charLength(value)
 
-      val ret = system::memory::allocBytes(len << 1)
+      val ret = system::core::memory::allocBytes(len << 1)
 
       printToBytes(ret, value, len)
 

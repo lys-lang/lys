@@ -23,7 +23,7 @@ fun DJB2(input: bytes): u64 = {
   hash
 }
 
-fun DJB2(input: system::string::string): u64 = {
+fun DJB2(input: string): u64 = {
   var hash = 5381 as u64
   var i = 0 as u32
 
@@ -45,13 +45,14 @@ fun DJB2(input: system::string::string): u64 = {
 ```dwl
 import support::test
 import hash::DJB2
+import system::core::memory
 
 #[export]
 fun main(): void = {
   START("Test hashing function")
 
   mustEqual(
-    DJB2(""),
+    DJB2(bytes.fromString("")),
     5381,
     "empty string hash"
   )
@@ -63,25 +64,25 @@ fun main(): void = {
   )
 
   {
-    var mutableBytes = system::memory::allocBytes(0 as u32)
+    var mutableBytes = allocBytes(0 as u32)
     mustEqual(DJB2(mutableBytes), 5381, "empty mutable string hash")
   }
 
   {
-    var mutableBytes = system::memory::allocBytes(1 as u32)
+    var mutableBytes = allocBytes(1 as u32)
     mutableBytes[0 as u32] = 65 as u8
     mustEqual(DJB2(mutableBytes), 177638, "[1: 65]")
   }
 
   {
-    var mutableBytes = system::memory::allocBytes(2 as u32)
+    var mutableBytes = allocBytes(2 as u32)
     mutableBytes[0 as u32] = 65 as u8
     mutableBytes[1 as u32] = 99 as u8
     mustEqual(DJB2(mutableBytes), 5862153, "[2: 65 99]")
   }
 
   {
-    var mutableBytes = system::memory::allocBytes(256 as u32)
+    var mutableBytes = allocBytes(256 as u32)
     mutableBytes[0 as u32] = 65 as u8
     mutableBytes[1 as u32] = 99 as u8
     mustEqual(DJB2(mutableBytes), 0xC831703075A63CC9 as u64, "[256: 65 99 00 .. 00]")

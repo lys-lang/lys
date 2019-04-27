@@ -1,5 +1,3 @@
-import system::string
-
 struct TestStruct()
 
 fun identity(x: i32): i32 = x
@@ -33,8 +31,8 @@ fun mustEqual(given: u64, expected: u64, message: string): void = {
   if (given != expected) {
     support::env::printf("  given LSB: %X", (given >> 32) as u32)
     support::env::printf("  expected LSB: %X", (expected >> 32) as u32)
-    support::env::printf("  given MSB: %X", (given & 0xFFFFFFFF as u32))
-    support::env::printf("  expected MSB: %X", (expected & 0xFFFFFFFF as u32))
+    support::env::printf("  given MSB: %X", (given & 0xFFFFFFFF))
+    support::env::printf("  expected MSB: %X", (expected & 0xFFFFFFFF))
   }
 }
 
@@ -43,8 +41,8 @@ fun mustEqual(given: i64, expected: i64, message: string): void = {
   if (given != expected) {
     support::env::printf("  given LSB: %X", (given as u64 >> 32) as u32)
     support::env::printf("  expected LSB: %X", (expected as u64 >> 32) as u32)
-    support::env::printf("  given MSB: %X", (given & 0xFFFFFFFF as u32))
-    support::env::printf("  expected MSB: %X", (expected & 0xFFFFFFFF as u32))
+    support::env::printf("  given MSB: %X", (given & 0xFFFFFFFF))
+    support::env::printf("  expected MSB: %X", (expected & 0xFFFFFFFF))
   }
 }
 
