@@ -1,10 +1,11 @@
 import { Nodes, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
-import { AstNodeError } from '../NodeError';
+import { LysSemanticError } from '../NodeError';
 import { annotations } from '../annotations';
 import { ParsingContext } from '../ParsingContext';
 import { printNode } from '../../utils/nodePrinter';
 import { getAST } from './canonicalPhase';
+import assert = require('assert');
 
 function externDecorator(
   decorator: Nodes.DecoratorNode,
@@ -14,7 +15,7 @@ function externDecorator(
   if (decorator.args.length !== 2) {
     parsingContext.messageCollector.error(
       '"extern" requires two arguments, module and function name',
-      decorator.decoratorName
+      decorator.decoratorName.astNode
     );
   }
 
@@ -25,7 +26,7 @@ function externDecorator(
     if (decorator.args[0] instanceof Nodes.StringLiteral && decorator.args[0].value.length) {
       moduleName = decorator.args[0].value;
     } else {
-      parsingContext.messageCollector.error('module must be a string', decorator.args[0]);
+      parsingContext.messageCollector.error('module must be a string', decorator.args[0].astNode);
     }
   }
 
@@ -33,7 +34,7 @@ function externDecorator(
     if (decorator.args[1] instanceof Nodes.StringLiteral && decorator.args[1].value.length) {
       functionName = decorator.args[1].value;
     } else {
-      parsingContext.messageCollector.error('functionName must be a string', decorator.args[1]);
+      parsingContext.messageCollector.error('functionName must be a string', decorator.args[1].astNode);
     }
   }
 
@@ -41,6 +42,7 @@ function externDecorator(
     target.functionNode.functionName.annotate(new annotations.Extern(moduleName, functionName));
   }
 }
+
 function exportDecorator(
   decorator: Nodes.DecoratorNode,
   parsingContext: ParsingContext,
@@ -49,7 +51,7 @@ function exportDecorator(
   if (decorator.args.length > 1) {
     parsingContext.messageCollector.error(
       '"export" accepts one argument, the name of the exported element',
-      decorator.decoratorName
+      decorator.decoratorName.astNode
     );
   }
 
@@ -59,7 +61,7 @@ function exportDecorator(
     if (decorator.args[0] instanceof Nodes.StringLiteral && decorator.args[0].value.length) {
       exportedName = decorator.args[0].value;
     } else {
-      parsingContext.messageCollector.error('exportedName must be a string', decorator.args[0]);
+      parsingContext.messageCollector.error('exportedName must be a string', decorator.args[0].astNode);
     }
   } else {
     exportedName = target.functionNode.functionName!.name;
@@ -76,7 +78,7 @@ function inlineDecorator(
   target: Nodes.FunDirectiveNode
 ) {
   if (decorator.args.length !== 0) {
-    parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName);
+    parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName.astNode);
   }
 
   target.functionNode.functionName!.annotate(new annotations.Inline());
@@ -88,13 +90,13 @@ function explicitDecorator(
   target: Nodes.FunDirectiveNode
 ) {
   if (decorator.args.length !== 0) {
-    parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName);
+    parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName.astNode);
   }
 
   target.functionNode.functionName!.annotate(new annotations.Explicit());
 }
 
-function processDecorations(node: Nodes.FunDirectiveNode, parsingContext: ParsingContext) {
+function processFunctionDecorations(node: Nodes.FunDirectiveNode, parsingContext: ParsingContext) {
   if (node.decorators && node.decorators.length) {
     node.decorators.forEach($ => {
       switch ($.decoratorName.name) {
@@ -107,7 +109,10 @@ function processDecorations(node: Nodes.FunDirectiveNode, parsingContext: Parsin
         case 'export':
           return exportDecorator($, parsingContext, node);
         default:
-          parsingContext.messageCollector.error(`Unknown decorator "${$.decoratorName.name}"`, $.decoratorName);
+          parsingContext.messageCollector.error(
+            `Unknown decorator "${$.decoratorName.name}" for Function`,
+            $.decoratorName.astNode
+          );
       }
     });
   }
@@ -121,7 +126,7 @@ const overloadFunctions = function(
 
   document.directives.slice().forEach((node: Nodes.Node, ix: number) => {
     if (node instanceof Nodes.FunDirectiveNode) {
-      processDecorations(node, parsingContext);
+      processFunctionDecorations(node, parsingContext);
       const functionName = node.functionNode.functionName!.name;
       const x = overloadedFunctions.get(functionName);
       if (x && x instanceof Nodes.OverloadedFunctionNode) {
@@ -280,7 +285,7 @@ function processStruct(
 
               fun apply(${args}): ${typeName} = {
                 var $ref = fromPointer(
-                  system::memory::calloc(1 as u32, ${typeName}.^allocationSize)
+                  system::core::memory::calloc(1 as u32, ${typeName}.^allocationSize)
                 )
 
                 ${callRefs}
@@ -466,7 +471,7 @@ const processUnions = function(
       const { valueType, variableName } = node;
 
       if (!valueType) {
-        parsingContext.messageCollector.error(`Missing type value`, variableName);
+        parsingContext.messageCollector.error(`Missing type value`, variableName.astNode);
         return;
       }
 
@@ -544,21 +549,21 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: N
       if (used.indexOf(param.parameterName.name) === -1) {
         used.push(param.parameterName.name);
       } else {
-        parsingContext.messageCollector.error(`Duplicated parameter "${param.parameterName.name}"`, param);
+        parsingContext.messageCollector.error(`Duplicated parameter "${param.parameterName.name}"`, param.astNode);
       }
     });
 
     if (!node.functionReturnType) {
-      parsingContext.messageCollector.error('Missing return type in function declaration', node);
+      parsingContext.messageCollector.error('Missing return type in function declaration', node.astNode);
     }
   }
 
   if (node instanceof Nodes.PatternMatcherNode) {
     if (node.matchingSet.length === 0) {
-      throw new AstNodeError(`Invalid match expression, there are no matchers`, node);
+      throw new LysSemanticError(`Invalid match expression, there are no matchers`, node);
     }
     if (node.matchingSet.length === 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
-      throw new AstNodeError(`This match is useless`, node);
+      throw new LysSemanticError(`This match is useless`, node);
     }
   }
 });
@@ -567,10 +572,10 @@ const validateInjectedWasm = walkPreOrder((node: Nodes.Node, _, _1: Nodes.Node |
   if (node instanceof Nodes.WasmAtomNode) {
     if (node.symbol === 'call' || node.symbol === 'global.get' || node.symbol === 'global.set') {
       if (!node.args[0]) {
-        throw new AstNodeError(`Missing name`, node);
+        throw new LysSemanticError(`Missing name`, node);
       }
       if (node.args[0] instanceof Nodes.ReferenceNode === false) {
-        throw new AstNodeError(`Here you need a fully qualified name starting with $`, node.args[0]);
+        throw new LysSemanticError(`Here you need a fully qualified name starting with $`, node.args[0]);
       }
     }
   }
@@ -627,8 +632,10 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _, _parent: Nodes.Nod
   }
 });
 
-export function executeSemanticPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
-  if (document.phasesRun & PhaseFlags.Semantic) return;
+export function executeSemanticPhase(moduleName: string, parsingContext: ParsingContext) {
+  const document = parsingContext.getParsingPhaseForModule(moduleName);
+
+  assert(document.analysis.nextPhase === PhaseFlags.Semantic);
 
   preprocessStructs(document, parsingContext, document);
   processUnions(document, parsingContext, document);
@@ -641,5 +648,5 @@ export function executeSemanticPhase(document: Nodes.DocumentNode, parsingContex
   validateSignatures(document, parsingContext);
   validateInjectedWasm(document, parsingContext);
 
-  document.phasesRun |= PhaseFlags.Semantic;
+  document.analysis.nextPhase = PhaseFlags.NameInitialization;
 }

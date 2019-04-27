@@ -1,12 +1,16 @@
 import { Nodes, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { annotations } from '../annotations';
-import { AstNodeError, UnreachableCode } from '../NodeError';
+import { UnreachableCode, LysScopeError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
 import { findParentDelegate } from '../nodeHelpers';
-import { getDocument, fixParents } from './helpers';
+import { getDocument, fixParents, collectImports } from './helpers';
 import { Closure } from '../Closure';
+import assert = require('assert');
+import { LysError } from '../../utils/errorPrinter';
+
+const CORE_LIB = 'system::core';
 
 const valueNodeAnnotation = new annotations.IsValueNode();
 
@@ -115,7 +119,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
           node.deconstructorNames.forEach($ => {
             if ($.name !== '_') {
               if (takenNames.has($.name)) {
-                parsingContext.messageCollector.error(new AstNodeError('Duplicated name', $));
+                parsingContext.messageCollector.error(new LysScopeError('Duplicated name', $));
               } else {
                 takenNames.set($.name, $);
                 node.rhs.closure!.set($, 'VALUE', false);
@@ -129,7 +133,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
     } else if (node instanceof Nodes.VarDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
-          new AstNodeError('Cannot declare a variable with the name of an system type', node.variableName)
+          new LysScopeError('Cannot declare a variable with the name of an system type', node.variableName)
         );
       }
       node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_VarDeclaration');
@@ -152,7 +156,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
       }
 
       if (!node.body) {
-        parsingContext.messageCollector.error(new AstNodeError('Function has no body', node));
+        parsingContext.messageCollector.error(new LysScopeError('Function has no body', node));
       } else {
         if (node.functionName) {
           node.body.closure = node.closure!.newChildClosure(node.functionName.name + '_Body');
@@ -187,14 +191,15 @@ function collectNamespaces(
     if (namespaceNames.has(nameNode.name) && namespaceNames.get(nameNode.name) !== nameNode) {
       parsingContext.messageCollector.error(
         `The name "${nameNode.name}" is already registered in the namespace "${namespace.name}"`,
-        nameNode
+        nameNode.astNode
       );
       parsingContext.messageCollector.error(
         `This is the registered name "${nameNode.name}" of "${namespace.name}"`,
-        namespaceNames.get(nameNode.name)!
+        namespaceNames.get(nameNode.name)!.astNode
       );
     } else {
       namespaceNames.set(nameNode.name, nameNode);
+      nameNode.parentNamespace = namespace;
     }
   }
 
@@ -206,15 +211,30 @@ function collectNamespaces(
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       registerNameIdentifier(node.variableName);
     } else {
-      parsingContext.messageCollector.error(`Don't know how to register this directive ${node.nodeName}`, node);
+      parsingContext.messageCollector.error(`Don't know how to register this directive ${node.nodeName}`, node.astNode);
     }
   });
 }
 
 const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingContext: ParsingContext) => {
-  if (node instanceof Nodes.ReferenceNode) {
+  if (node instanceof Nodes.IsExpressionNode || node instanceof Nodes.IfNode || node instanceof Nodes.MatcherNode) {
+    const typeName = 'boolean';
+    if (!node.closure!.canResolveName(typeName)) {
+      throw new LysScopeError(`Cannot find name '${typeName}' ` + node.closure!.inspect(), node);
+    }
+    const resolved = node.closure!.get(typeName);
+    node.booleanReference = resolved;
+    node.closure!.incrementUsage(typeName);
+  } else if (node instanceof Nodes.LiteralNode) {
+    if (!node.closure!.canResolveName(node.typeName)) {
+      throw new LysScopeError(`Cannot find name '${node.typeName}' ` + node.closure!.inspect(), node);
+    }
+    const resolved = node.closure!.get(node.typeName);
+    node.resolvedReference = resolved;
+    node.closure!.incrementUsage(node.typeName);
+  } else if (node instanceof Nodes.ReferenceNode) {
     if (!node.closure!.canResolveQName(node.variable)) {
-      throw new AstNodeError(`Cannot find name '${node.variable.text}'`, node.variable);
+      throw new LysScopeError(`Cannot find name '${node.variable.text}' ` + node.closure!.inspect(), node.variable);
     }
     const resolved = node.closure!.getQName(node.variable);
     const document = getDocument(node);
@@ -226,24 +246,34 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
     if (node.reference.resolvedReference) {
       collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, parsingContext);
     } else {
-      throw new AstNodeError(`Impl is not resolved`, node);
+      throw new LysScopeError(`Impl is not resolved`, node);
     }
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
       parsingContext.getPhase(node.module.text, PhaseFlags.NameInitialization);
     } catch (e) {
-      parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node);
+      parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node.astNode);
     }
   }
 });
 
-const findImplicitImports = walkPreOrder((node: Nodes.Node, _: ParsingContext) => {
+const findImplicitImports = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext) => {
   if (node instanceof Nodes.ImportDirectiveNode) {
+    const document = getDocument(node);
+    if (node.module.text === document.moduleName) {
+      // TODO: test this
+      parsingContext.messageCollector.error('Self import is not allowed', node.astNode);
+    }
     const importAll = node.allItems ? new Set(['*']) : new Set();
     node.closure!.registerImport(node.module.text, importAll);
   } else if (node instanceof Nodes.ReferenceNode) {
     if (node.variable.names.length > 1) {
       const { moduleName, variable } = node.variable.deconstruct();
+      const document = getDocument(node);
+      if (moduleName === document.moduleName) {
+        // TODO: test this
+        parsingContext.messageCollector.error('Self import is not allowed', node.astNode);
+      }
       node.closure!.registerImport(moduleName, new Set([variable]));
     }
   }
@@ -263,18 +293,38 @@ const injectImplicitCalls = walkPreOrder((node: Nodes.Node, _: ParsingContext) =
   }
 });
 
-function injectCoreImport(document: Nodes.DocumentNode) {
-  // TODO: Fix this horrible hack, check correctly if we are in a stdlib
-  // context. If so, do not inject the system::core import
+function injectCoreImport(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  if (document.moduleName.startsWith(CORE_LIB)) {
+    return;
+  }
 
-  if (document.moduleName === 'system::core') return;
+  if (document.hasAnnotation(annotations.NoStd)) {
+    return;
+  }
 
-  const module = Nodes.QNameNode.fromString('system::core', document.astNode);
-  const coreModuleImport = new Nodes.ImportDirectiveNode(document.astNode, module);
+  const coreLib = parsingContext.getPhase(CORE_LIB, PhaseFlags.Semantic, false);
 
-  coreModuleImport.allItems = true;
+  coreLib.directives.reverse().forEach(directive => {
+    if (directive instanceof Nodes.ImportDirectiveNode) {
+      const newDirective = new Nodes.ImportDirectiveNode(directive.astNode, directive.module);
+      newDirective.allItems = directive.allItems;
+      newDirective.alias = directive.alias;
+      document.directives.unshift(newDirective);
+    } else {
+      throw new LysError('Only import directives are allowed in system::core, found: ' + directive.nodeName);
+    }
+  });
+}
 
-  document.directives.unshift(coreModuleImport);
+function summarizeImports(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
+  collectImports(document.importedModules, document, parsingContext);
+  document.importedModules.delete(document.moduleName);
+  document.importedModules.forEach(moduleName => {
+    const requiredDocument = parsingContext.getPhase(moduleName, PhaseFlags.Semantic);
+    if (requiredDocument !== document) {
+      requiredDocument.importedBy.add(document.moduleName);
+    }
+  });
 }
 
 const unreachableAnnotation = new annotations.IsUnreachable();
@@ -292,11 +342,11 @@ const validateLoops = walkPreOrder(
         node.annotate(new annotations.CurrentLoop(relevantParent));
       } else {
         if (relevantParent instanceof Nodes.FunctionNode) {
-          parsingContext.messageCollector.error(`Invalid location: No loop was found`, node);
+          parsingContext.messageCollector.error(`Invalid location: No loop was found`, node.astNode);
         } else {
-          parsingContext.messageCollector.error(`Invalid location. Parent block must return a value`, node);
+          parsingContext.messageCollector.error(`Invalid location. Parent block must return a value`, node.astNode);
           if (relevantParent) {
-            parsingContext.messageCollector.error(`Not all paths return a value`, relevantParent);
+            parsingContext.messageCollector.error(`Not all paths return a value`, relevantParent.astNode);
           }
         }
       }
@@ -321,12 +371,14 @@ const validateLoops = walkPreOrder(
   }
 );
 
-export function executeNameInitializationPhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
-  if (document.phasesRun & PhaseFlags.NameInitialization) return;
+export function executeNameInitializationPhase(moduleName: string, parsingContext: ParsingContext) {
+  const document = parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization - 1);
+  assert(document.analysis.nextPhase === PhaseFlags.NameInitialization);
+  assert(document.moduleName === moduleName);
 
   document.closure = new Closure(parsingContext, document.moduleName, null, '[DocumentScope]');
 
-  injectCoreImport(document);
+  injectCoreImport(document, parsingContext);
 
   createClosures(document, parsingContext, null);
 
@@ -334,18 +386,20 @@ export function executeNameInitializationPhase(document: Nodes.DocumentNode, par
 
   findImplicitImports(document, parsingContext, null);
 
-  document.phasesRun |= PhaseFlags.NameInitialization;
+  document.analysis.nextPhase = PhaseFlags.Scope;
 
   return;
 }
 
-export function executeScopePhase(document: Nodes.DocumentNode, parsingContext: ParsingContext) {
-  if (document.phasesRun & PhaseFlags.Scope) return;
+export function executeScopePhase(moduleName: string, parsingContext: ParsingContext) {
+  const document = parsingContext.getPhase(moduleName, PhaseFlags.Scope - 1);
+  assert(document.analysis.nextPhase === PhaseFlags.Scope);
 
   resolveVariables(document, parsingContext, null);
   findValueNodes(document, parsingContext, null);
   injectImplicitCalls(document, parsingContext, null);
   validateLoops(document, parsingContext);
+  summarizeImports(document, parsingContext);
 
-  document.phasesRun |= PhaseFlags.Scope;
+  document.analysis.nextPhase = PhaseFlags.TypeInitialization;
 }

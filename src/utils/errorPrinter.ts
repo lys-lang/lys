@@ -3,6 +3,7 @@ import { IErrorPositionCapable } from '../compiler/NodeError';
 import { ParsingContext } from '../compiler/ParsingContext';
 import { indent } from './astPrinter';
 import { gutterStyleSequence, formatColorAndReset, ForegroundColors, gutterSeparator } from './colors';
+import { MessageCollector } from '../compiler/MessageCollector';
 
 function mapSet<T, V>(set: Set<T>, fn: (x: T) => V): V[] {
   const out: V[] = [];
@@ -28,10 +29,12 @@ const ansiRegex = new RegExp(
   'g'
 );
 
-export function printErrors(parsingContext: ParsingContext, stripAnsi = false) {
+export function printErrors(parsingContext: ParsingContext, stripAnsi = false, messageCollector?: MessageCollector) {
   const errorByFile = new Map<string, IErrorPositionCapable[]>();
 
-  parsingContext.messageCollector.errors.forEach($ => {
+  const messageCollectorToPrint = messageCollector || parsingContext.messageCollector;
+
+  messageCollectorToPrint.errors.forEach($ => {
     const document = ($.position && $.position.moduleName) || '(no document)';
     if (!errorByFile.has(document)) {
       errorByFile.set(document, []);
@@ -59,6 +62,7 @@ function printErrors_(
   const parsing = parsingContext.getExistingParsingPhaseForModule(moduleName);
 
   if (!parsing) {
+    throw new Error('Cannot find moduleName:' + moduleName);
     errors.forEach((err: IErrorPositionCapable & Error) => {
       printLines.push(formatColorAndReset(err.message, ForegroundColors.Red));
       if (err.stack) {

@@ -75,6 +75,7 @@ export namespace annotations {
   export class IsValueNode extends Annotation {}
   export class IsAssignationLHS extends Annotation {}
   export class IsTypeNode extends Annotation {}
+  export class NoStd extends Annotation {}
 
   export class IsReturnExpression extends Annotation {
     targetLocal: null | Local = null;

@@ -1,5 +1,5 @@
 import { Nodes, PhaseFlags } from '../nodes';
-import { AstNodeError } from '../NodeError';
+import { LysSemanticError } from '../NodeError';
 import { walkPreOrder, walk } from '../walker';
 import { ParsingContext } from '../ParsingContext';
 
@@ -14,7 +14,7 @@ export function getDocument(node: Nodes.Node): Nodes.DocumentNode {
     return current;
   }
 
-  throw new AstNodeError('cannot find parent document', node);
+  throw new LysSemanticError('cannot find parent document', node);
 }
 
 export const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
@@ -57,20 +57,39 @@ export function getModuleSet(document: Nodes.DocumentNode, parsingContext: Parsi
 
   collectImports(moduleList, document, parsingContext);
 
-  let added = true;
+  let added = false;
 
   do {
     added = false;
 
     moduleList.forEach($ => {
-      const scope = parsingContext.getPhase($, PhaseFlags.Scope);
-      if (scope) {
-        added = collectImports(moduleList, scope, parsingContext);
-      } else {
+      try {
+        const scope = parsingContext.getPhase($, PhaseFlags.Scope);
+        if (scope) {
+          added = collectImports(moduleList, scope, parsingContext);
+        } else {
+          // ERROR
+        }
+      } catch (e) {
         // ERROR
       }
     });
   } while (added);
 
   return moduleList;
+}
+
+export function forEachModuleWithPhase(
+  mainModule: string,
+  parsingContext: ParsingContext,
+  phase: PhaseFlags,
+  debug = false,
+  cb?: (node: Nodes.DocumentNode) => void
+) {
+  const document = parsingContext.getPhase(mainModule, phase, debug);
+  const modules = getModuleSet(document, parsingContext);
+  modules.forEach($ => {
+    const doc = parsingContext.getPhase($, phase, debug);
+    if (cb) cb(doc);
+  });
 }

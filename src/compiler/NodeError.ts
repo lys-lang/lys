@@ -18,6 +18,13 @@ export function isSamePosition(lhs: IPositionCapable, rhs: IPositionCapable) {
   return lhs === rhs || (lhs.moduleName === rhs.moduleName && lhs.end === rhs.end && lhs.start === rhs.start);
 }
 
+export function isSamePositionOrInside(parent: IPositionCapable, child: IPositionCapable) {
+  return (
+    isSamePosition(parent, child) ||
+    (parent.moduleName === child.moduleName && parent.end >= child.end && parent.start <= child.start)
+  );
+}
+
 export class PositionCapableError extends Error implements IErrorPositionCapable {
   constructor(public message: string, public readonly position: IPositionCapable, public warning: boolean = false) {
     super(message);
@@ -28,7 +35,7 @@ export class PositionCapableError extends Error implements IErrorPositionCapable
   }
 }
 
-export class AstNodeError extends PositionCapableError implements IErrorPositionCapable {
+export abstract class AstNodeError extends PositionCapableError implements IErrorPositionCapable {
   constructor(public message: string, public node: Nodes.Node, public warning: boolean = false) {
     super(message, AstNodeError.ensureNodePosition(node), warning);
   }
@@ -44,31 +51,36 @@ export class AstNodeError extends PositionCapableError implements IErrorPosition
   }
 }
 
-export class TypeMismatch extends AstNodeError {
+export class LysScopeError extends AstNodeError {}
+export class LysTypeError extends AstNodeError {}
+export class LysSemanticError extends AstNodeError {}
+export class LysCompilerError extends AstNodeError {}
+
+export class TypeMismatch extends LysTypeError {
   constructor(public givenType: Type, public expectedType: Type, node: Nodes.Node) {
     super(`Type mismatch: Type "${givenType}" is not assignable to "${expectedType}"`, node);
   }
 }
 
-export class CannotInferReturnType extends AstNodeError {
+export class CannotInferReturnType extends LysTypeError {
   constructor(node: Nodes.Node) {
     super(`Cannot infer return type`, node);
   }
 }
 
-export class NotAValidType extends AstNodeError {
+export class NotAValidType extends LysTypeError {
   constructor(node: Nodes.Node) {
     super(`This is not a type`, node);
   }
 }
 
-export class UnexpectedType extends AstNodeError {
+export class UnexpectedType extends LysTypeError {
   constructor(public type: Type, node: Nodes.Node) {
     super(`${type} ${type.inspect(100)} is not a value, constructor or function.`, node);
   }
 }
 
-export class InvalidOverload extends AstNodeError {
+export class InvalidOverload extends LysTypeError {
   constructor(public functionType: IntersectionType, public givenTypes: Type[], node: Nodes.Node) {
     super(
       `Could not find a valid overload for function of type ${functionType} with the arguments of type (${givenTypes.join(
@@ -79,7 +91,7 @@ export class InvalidOverload extends AstNodeError {
   }
 }
 
-export class InvalidCall extends AstNodeError {
+export class InvalidCall extends LysTypeError {
   constructor(public expectedTypes: Type[], public givenTypes: Type[], node: Nodes.Node) {
     super(
       `Invalid signature. Expecting arguments type (${expectedTypes.join(', ')}) but got (${givenTypes.join(', ')})`,
@@ -88,13 +100,13 @@ export class InvalidCall extends AstNodeError {
   }
 }
 
-export class UnreachableCode extends AstNodeError {
+export class UnreachableCode extends LysSemanticError {
   constructor(node: Nodes.Node) {
     super(`Unreachable code`, node);
   }
 }
 
-export class NotAFunction extends AstNodeError {
+export class NotAFunction extends LysTypeError {
   constructor(public givenType: Type, node: Nodes.Node) {
     super(`Type mismatch: Type "${givenType}" is not a function`, node);
   }

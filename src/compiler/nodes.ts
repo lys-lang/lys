@@ -25,13 +25,13 @@ export class Local implements LocalGlobalHeapReference {
 }
 
 export enum PhaseFlags {
-  Semantic = 1,
-  NameInitialization = 2,
-  Scope = 4,
-  TypeInitialization = 8,
-  TypeGraph = 16,
-  TypeCheck = 32,
-  Compilation = 64
+  Semantic = 0,
+  NameInitialization,
+  Scope,
+  TypeInitialization,
+  TypeCheck,
+  Compilation,
+  CodeGeneration
 }
 
 export namespace Nodes {
@@ -46,11 +46,15 @@ export namespace Nodes {
   }
 
   export abstract class Node {
+    // TODO: remove this VVVVVVVVVV
     hasParentheses: boolean = false;
+    isTypeResolved = false;
+
     closure?: Closure;
     parent?: Node;
-    ofType?: Type;
-    typeNode?: any; // TypeNode
+
+    // ofType?: Type;
+    // typeNode?: any; // TypeNode
 
     private annotations?: Set<Annotation>;
 
@@ -134,6 +138,7 @@ export namespace Nodes {
   export class NameIdentifierNode extends Node {
     internalIdentifier?: string;
     namespaceNames?: Map<string, NameIdentifierNode>;
+    parentNamespace?: NameIdentifierNode;
 
     get childrenOrEmpty(): Node[] {
       return [];
@@ -251,7 +256,7 @@ export namespace Nodes {
   export class MemberNode extends ExpressionNode {
     constructor(
       astNode: ASTNode,
-      public readonly lhs: Node,
+      public readonly lhs: ExpressionNode,
       public readonly operator: string,
       public readonly memberName: NameIdentifierNode
     ) {
@@ -288,14 +293,17 @@ export namespace Nodes {
     fileName!: string;
     content!: string;
 
-    phasesRun: PhaseFlags = 0;
-
-    // thanks, javascript. TypeGraph cannot me imported because of circular
-    // imports
-    typeGraph?: any;
+    analysis = {
+      version: 0,
+      nextPhase: PhaseFlags.Semantic,
+      isTypeAnalysisPassNeeded: true,
+      areTypesResolved: false
+    };
 
     typeNumbers: Map<string, number> = new Map();
     nameIdentifiers: Set<string> = new Set();
+    importedModules: Set<string> = new Set<string>();
+    importedBy: Set<string> = new Set<string>();
 
     get childrenOrEmpty() {
       return this.directives;
@@ -315,7 +323,7 @@ export namespace Nodes {
     }
   }
 
-  export class FunctionNode extends ExpressionNode {
+  export class FunctionNode extends Node {
     functionReturnType?: TypeNode;
     parameters: ParameterNode[] = [];
     body?: ExpressionNode;
@@ -604,8 +612,9 @@ export namespace Nodes {
   export abstract class LiteralNode<T> extends ExpressionNode {
     value?: T;
     rawValue: string = '';
+    resolvedReference?: Reference;
 
-    constructor(astNode: ASTNode) {
+    constructor(astNode: ASTNode, public typeName: string) {
       super(astNode);
       if (astNode) {
         this.rawValue = astNode.text;
@@ -800,6 +809,7 @@ export namespace Nodes {
     set lhs(value: ExpressionNode) {
       this.argumentsNode[0] = value;
     }
+    booleanReference?: Reference;
     argumentsNode: ExpressionNode[] = [];
     rhs: TypeNode;
 
@@ -818,10 +828,10 @@ export namespace Nodes {
     get rhs() {
       return this.argumentsNode[0];
     }
-    set rhs(value: ExpressionNode) {
+    set rhs(value: TypeNode) {
       this.argumentsNode[0] = value;
     }
-    argumentsNode: ExpressionNode[] = [];
+    argumentsNode: Node[] = [];
 
     constructor(astNode: ASTNode, public readonly operator: NameIdentifierNode, rhs: TypeNode) {
       super(astNode);
@@ -834,7 +844,7 @@ export namespace Nodes {
     }
   }
 
-  export class WasmAtomNode extends ExpressionNode {
+  export class WasmAtomNode extends Node {
     constructor(astNode: ASTNode, public readonly symbol: string, public readonly args: ExpressionNode[]) {
       super(astNode);
     }
@@ -856,6 +866,8 @@ export namespace Nodes {
 
   export abstract class MatcherNode extends ExpressionNode {
     declaredName?: NameIdentifierNode;
+    parent?: PatternMatcherNode;
+    booleanReference?: Reference;
 
     constructor(astNode: ASTNode, public readonly rhs: ExpressionNode) {
       super(astNode);
@@ -867,6 +879,8 @@ export namespace Nodes {
   }
 
   export class IfNode extends ExpressionNode {
+    booleanReference?: Reference;
+
     constructor(
       astNode: ASTNode,
       public readonly condition: ExpressionNode,
@@ -962,11 +976,13 @@ export namespace Nodes {
   export class MatchDefaultNode extends MatcherNode {}
 
   export class PatternMatcherNode extends ExpressionNode {
+    carryType?: Type;
+
     constructor(astNode: ASTNode, public readonly lhs: ExpressionNode, public readonly matchingSet: MatcherNode[]) {
       super(astNode);
     }
 
-    get childrenOrEmpty() {
+    get childrenOrEmpty(): Node[] {
       return [this.lhs, ...(this.matchingSet || [])];
     }
   }
