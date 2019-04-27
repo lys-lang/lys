@@ -1,0 +1,64 @@
+import system::core::boolean
+import system::core::u32
+
+type void = %stack { lowLevelType="void" byteSize=0 }
+type ref = %injected
+type never = %injected
+
+fun addressFromRef(pointer: ref): u32 = %wasm {
+  (i32.wrap_i64 (get_local $pointer))
+}
+
+fun panic(): never = %wasm { (unreachable) }
+
+impl never {
+  fun apply(): never = %wasm {
+    (unreachable)
+  }
+}
+
+impl ref {
+  fun is(lhs: ref): boolean = true
+  fun ==(lhs: ref, rhs: ref): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
+  fun !=(lhs: ref, rhs: ref): boolean = !(lhs == rhs)
+
+  fun store(lhs: ref, rhs: ref): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: ref, offset: u32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): ref = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: u32): ref = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+}
+
+/**
+ * Safe conversions:
+ *   u8     i16, u16, i32, u32, i64, u64, f32, f64
+ *   i16    i32, i64, f32, f64
+ *   u16    i32, u32, i64, u64, f32, f64
+ *   i32    i64, f32, f64
+ *   u32    i64, u64, f32, f64
+ *   i64    f32, f64
+ *   char   u16, i32, u32, i64, u64, f32, f64
+ *   f32    f64
+ *   u64    f32, f64
+ */

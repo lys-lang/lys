@@ -1,0 +1,61 @@
+import system::core::native
+import system::core::u32
+import system::core::i32
+
+type boolean = %stack { lowLevelType="i32" byteSize=1 }
+
+impl boolean {
+  fun &&(lhs: boolean, rhs: boolean): boolean = %wasm {
+    (i32.and
+      (i32.ne (get_local $lhs) (i32.const 0))
+      (i32.ne (get_local $rhs) (i32.const 0))
+    )
+  }
+
+  fun ==(lhs: boolean, rhs: boolean): boolean = %wasm {
+    (i32.eq
+      (i32.eqz (get_local $lhs))
+      (i32.eqz (get_local $rhs))
+    )
+  }
+
+  fun ||(lhs: boolean, rhs: boolean): boolean = %wasm {
+    (i32.or
+      (i32.ne (get_local $lhs) (i32.const 0))
+      (i32.ne (get_local $rhs) (i32.const 0))
+    )
+  }
+
+  fun !(rhs: boolean): boolean =
+    if (rhs)
+      false
+    else
+      true
+
+  fun store(lhs: ref, rhs: boolean): void = %wasm {
+    (i32.store8 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: boolean, offset: u32): void = %wasm {
+    (i32.store8
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): boolean = %wasm {
+    (i32.load8_u (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: u32): boolean = %wasm {
+    (i32.load8_u
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+}

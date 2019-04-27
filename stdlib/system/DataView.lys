@@ -1,0 +1,16 @@
+struct DataView(buffer: bytes)
+
+/**
+ * Read only slice of an array
+ */
+impl DataView {
+  fun [](self: DataView, at: u32): u8 = {
+    if (at > self.buffer.length) {
+      panic()
+    }
+    if (at < 0 as u32) {
+      panic()
+    }
+    u8.load(self.buffer.ptr as ref, at)
+  }
+}

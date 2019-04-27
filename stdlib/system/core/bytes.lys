@@ -1,0 +1,126 @@
+import system::core::boolean
+import system::core::f32
+import system::core::f64
+import system::core::i16
+import system::core::i32
+import system::core::i64
+import system::core::string
+import system::core::native
+import system::core::u16
+import system::core::u32
+import system::core::u64
+import system::core::u8
+
+type bytes = %stack { lowLevelType="i64" byteSize=8 }
+
+impl bytes {
+  // bytes is a structure
+
+  fun toAddr(str: bytes): u32 = %wasm {
+    (call $addressFromRef (get_local $str))
+  }
+
+  #[explicit]
+  fun as(lhs: bytes): ref = %wasm { (get_local $lhs) }
+
+  fun property_length(str: bytes): u32 = u32.load(str as ref)
+
+  fun property_ptr(str: bytes): u32 = {
+    toAddr(str) + 4 as u32
+  }
+
+  fun [](data: bytes, at: u32): u8 = {
+    if (at > data.length) {
+      panic()
+    }
+    if (at < 0 as u32) {
+      panic()
+    }
+    u8.load(data.ptr as ref, at)
+  }
+
+  fun [](data: bytes, at: u32, value: u8): void = {
+    if (at > data.length) {
+      panic()
+    }
+    if (at < 0 as u32) {
+      panic()
+    }
+    u8.store(data.ptr as ref, value, at)
+  }
+
+  fun fromString(str: string): bytes = %wasm {
+    (get_local $str)
+  }
+
+  fun get(data: bytes, at: u32): u8 = {
+    if (at > data.length) {
+      panic()
+    }
+    u8.load(data.ptr as ref, at)
+  }
+
+  fun set(data: bytes, at: u32, value: u16): void = {
+    if (at + 1 as u32 > data.length) {
+      panic()
+    }
+    u16.store(data.ptr as ref, value, at)
+  }
+
+  fun set(data: bytes, at: u32, value: u8): void = {
+    if (at > data.length) {
+      panic()
+    }
+    u8.store(data.ptr as ref, value, at)
+  }
+
+  fun store(lhs: ref, rhs: bytes): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: bytes, offset: u32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): bytes = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: u32): bytes = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+
+  fun !=(lhs: bytes, rhs: bytes): boolean = !(lhs == rhs)
+  fun ==(lhs: bytes, rhs: bytes): boolean = {
+    if (lhs.length == rhs.length) {
+      if (lhs.ptr == rhs.ptr) {
+        true
+      } else {
+        val len = lhs.length
+        var equals = true
+        loop {
+          len = len - 1 as u32
+          if (bytes.get(lhs, len) != bytes.get(rhs, len)) {
+            equals = false
+            break
+          }
+          if (len > 0 as u32) continue
+        }
+        equals
+      }
+    } else {
+      false
+    }
+  }
+}

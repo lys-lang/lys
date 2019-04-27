@@ -1,0 +1,96 @@
+import system::core::boolean
+import system::core::bytes
+import system::core::f32
+import system::core::f64
+import system::core::i16
+import system::core::i32
+import system::core::string
+import system::core::native
+import system::core::u16
+import system::core::u32
+import system::core::u64
+import system::core::u8
+
+type i64 = %stack { lowLevelType="i64" byteSize=8 }
+
+impl i64 {
+  fun as(lhs: i64): f32 = %wasm { (f32.convert_i64_s (get_local $lhs)) }
+  fun as(lhs: i64): f64 = %wasm { (f64.convert_i64_s (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i64): u64 = %wasm { (get_local $lhs) }
+
+  #[explicit]
+  fun as(lhs: i64): i32 = %wasm { (i32.wrap_i64 (get_local $lhs)) }
+
+  #[explicit]
+  fun as(lhs: i64): u32 = %wasm { (i32.wrap_i64 (get_local $lhs)) }
+
+  fun ==(lhs: i64, rhs: i64): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
+  fun ==(lhs: i64, rhs: i32): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_s (get_local $rhs))) }
+  // fun ==(lhs: i64, rhs: i16): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i16_s (get_local $rhs))) }
+  fun ==(lhs: i64, rhs: u8): boolean = %wasm { (i64.eq (get_local $lhs) (i64.extend_i32_u (get_local $rhs))) }
+
+  fun !=(lhs: i64, rhs: i64): boolean = %wasm { (i64.ne (get_local $lhs) (get_local $rhs)) }
+  fun +(lhs: i64, rhs: i64): i64 = %wasm { (i64.add (get_local $lhs) (get_local $rhs)) }
+  fun -(lhs: i64): i64 = %wasm { (i64.mul (get_local $lhs) (i64.const -1)) }
+  fun -(lhs: i64, rhs: i64): i64 = %wasm { (i64.sub (get_local $lhs) (get_local $rhs)) }
+  fun *(lhs: i64, rhs: i64): i64 = %wasm { (i64.mul (get_local $lhs) (get_local $rhs)) }
+  fun /(lhs: i64, rhs: i64): i64 = %wasm { (i64.div_s (get_local $lhs) (get_local $rhs)) }
+  fun ~(rhs: i64): i64 = %wasm { (i64.xor (i64.const 0xFFFFFFFFFFFFFFFF) (get_local $rhs)) }
+  fun >>>(lhs: i64, rhs: i32): i64 = lhs >>> (rhs as i64)
+  fun >>(lhs: i64, rhs: i32): i64 = lhs >> (rhs as i64)
+  fun <<(lhs: i64, rhs: i32): i64 = lhs << (rhs as i64)
+  fun >>>(lhs: i64, rhs: i64): i64 = %wasm { (i64.shr_u (get_local $lhs) (get_local $rhs)) }
+  fun >>(lhs: i64, rhs: i64): i64 = %wasm { (i64.shr_s (get_local $lhs) (get_local $rhs)) }
+  fun <<(lhs: i64, rhs: i64): i64 = %wasm { (i64.shl (get_local $lhs) (get_local $rhs)) }
+  fun >=(lhs: i64, rhs: i64): boolean = %wasm { (i64.ge_s (get_local $lhs) (get_local $rhs)) }
+  fun <=(lhs: i64, rhs: i64): boolean = %wasm { (i64.le_s (get_local $lhs) (get_local $rhs)) }
+  fun >(lhs: i64, rhs: i64): boolean = %wasm { (i64.gt_s (get_local $lhs) (get_local $rhs)) }
+  fun <(lhs: i64, rhs: i64): boolean = %wasm { (i64.lt_s (get_local $lhs) (get_local $rhs)) }
+  fun %(lhs: i64, rhs: i64): i64 = %wasm { (i64.rem_s (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: i64, rhs: i64): i64 = %wasm { (i64.and (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: i64, rhs: i32): i32 = (lhs as i32) & rhs
+  fun &(lhs: i64, rhs: u32): u32 = (lhs as u32) & rhs
+  fun |(lhs: i64, rhs: i64): i64 = %wasm { (i64.or (get_local $lhs) (get_local $rhs)) }
+  fun ^(lhs: i64, rhs: i64): i64 = %wasm { (i64.xor (get_local $lhs) (get_local $rhs)) }
+
+  fun rotl(value: i64, shift: i64): i64 = %wasm { (i64.rotl (get_local $value) (get_local $shift))  }
+  fun rotr(value: i64, shift: i64): i64 = %wasm { (i64.rotr (get_local $value) (get_local $shift))  }
+
+  fun store(lhs: ref, rhs: i64): void = %wasm {
+    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+  }
+
+  fun store(lhs: ref, rhs: i64, offset: u32): void = %wasm {
+    (i64.store
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+      (get_local $rhs)
+    )
+  }
+
+  fun load(lhs: ref): i64 = %wasm {
+    (i64.load (call $addressFromRef (get_local $lhs)))
+  }
+
+  fun load(lhs: ref, offset: u32): i64 = %wasm {
+    (i64.load
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+
+  fun load8_u(lhs: ref, offset: u32): i64 = %wasm {
+    (i64.load8_u
+      (i32.add
+        (get_local $offset)
+        (call $addressFromRef (get_local $lhs))
+      )
+    )
+  }
+}
