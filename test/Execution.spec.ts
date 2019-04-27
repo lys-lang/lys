@@ -135,7 +135,7 @@ describe('Execution tests', () => {
       }
     );
   });
-  describe.only('loops', () => {
+  describe('loops', () => {
     test(
       'loop one',
       `
