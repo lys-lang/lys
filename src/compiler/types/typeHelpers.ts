@@ -59,8 +59,13 @@ export function getTypeTypeType(node: Nodes.Node, type: Type | null, messageColl
 export function getTypeFromTypeNode(node: Nodes.Node, messageCollector: MessageCollector): Type | null {
   if (node instanceof Nodes.ReferenceNode) {
     return getTypeTypeType(node, TypeHelpers.getNodeType(node), messageCollector);
-  } else if (node instanceof Nodes.IntersectionTypeNode || node instanceof Nodes.UnionTypeNode) {
-    // TODO: unhack this
+  } else if (
+    node instanceof Nodes.IntersectionTypeNode ||
+    node instanceof Nodes.UnionTypeNode ||
+    node instanceof Nodes.InjectedTypeNode ||
+    node instanceof Nodes.StructTypeNode ||
+    node instanceof Nodes.StackTypeNode
+  ) {
     return TypeHelpers.getNodeType(node);
   } else {
     messageCollector.errorIfBranchDoesntHaveAny(new NotAValidType(node));

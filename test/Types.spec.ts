@@ -849,6 +849,48 @@ describe('Types', function() {
       A.property_test is not a valid property getter
     `;
 
+    // describe('type alias', () => {
+    //   checkMainType`
+    //     type int = i32
+    //     type Integer = int
+    //     type Long = i64
+    //     fun add(a: i32, b: int): int = a + b
+    //     fun add2(a: i32, b: int): Integer = a + b
+    //     fun add3(a: Integer, b: int): Integer = a + b
+    //     fun add4(a: Integer, b: i32): i32 = a + b
+    //     fun add5(a: Long, b: i32): i64 = (a + b as i64)
+    //     ---
+    //     fun(a: i32, b: int) -> int
+    //     fun(a: i32, b: int) -> Integer
+    //     fun(a: Integer, b: int) -> Integer
+    //     fun(a: Integer, b: i32) -> i32
+    //     fun(a: Long, b: i32) -> i64
+    //   `;
+    // });
+
+    checkMainType`// #![no-std]
+      /// type alias resolves to usable type (reference)
+
+      type A = %stack { lowLevelType="i32" byteSize=1 }
+      type X = A
+
+      var x: X = ???
+      ---
+      x := (alias X (alias A))
+    `;
+
+    // checkMainType`
+    //   /// type alias resolves to usable type (union)
+
+    //   type A = %stack { lowLevelType="i32" byteSize=1 }
+    //   type B = %stack { lowLevelType="i32" byteSize=1 }
+    //   type X = A | B
+
+    //   var x: X = ???
+    //   ---
+    //   x := (alias X (union (alias A) (alias B)))
+    // `;
+
     checkMainType`// #![no-std]
       /// (never) name resolution must converge in "==" (BinOp)
 
@@ -2405,25 +2447,6 @@ describe('Types', function() {
         fun isRed(color: Color): void = ???
         ---
         fun(color: Color) -> void
-      `;
-    });
-
-    describe.skip('type alias', () => {
-      checkMainType`
-        type int = i32
-        type Integer = int
-        type Long = i64
-        fun add(a: i32, b: int): int = a + b
-        fun add2(a: i32, b: int): Integer = a + b
-        fun add3(a: Integer, b: int): Integer = a + b
-        fun add4(a: Integer, b: i32): i32 = a + b
-        fun add5(a: Long, b: i32): i64 = (a + b as i64)
-        ---
-        fun(a: i32, b: int) -> int
-        fun(a: i32, b: int) -> Integer
-        fun(a: Integer, b: int) -> Integer
-        fun(a: Integer, b: i32) -> i32
-        fun(a: Long, b: i32) -> i64
       `;
     });
 

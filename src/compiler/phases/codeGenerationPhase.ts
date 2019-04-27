@@ -284,6 +284,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         t.identifier(funType.name.internalIdentifier),
         node.argumentsNode.map($ => emit($, document))
       );
+    } else if (node instanceof Nodes.UnknownExpressionNode) {
+      return t.instruction('unreachable', []);
     } else if (node instanceof Nodes.WasmExpressionNode) {
       return flatten(node.atoms.map($ => emitWast($, document)));
     } else if (node instanceof Nodes.ContinueNode) {

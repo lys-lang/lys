@@ -4,6 +4,7 @@ import system::core::u32
 type void = %stack { lowLevelType="void" byteSize=0 }
 type ref = %injected
 type never = %injected
+type UnsafeCPointer = %stack { lowLevelType="i32" byteSize=4 }
 
 fun addressFromRef(pointer: ref): u32 = %wasm {
   (i32.wrap_i64 (get_local $pointer))
@@ -21,6 +22,13 @@ impl ref {
   fun is(lhs: ref): boolean = true
   fun ==(lhs: ref, rhs: ref): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
   fun !=(lhs: ref, rhs: ref): boolean = !(lhs == rhs)
+
+  /**
+   * CPointer implicit coercion.
+   */
+  fun as(self: ref): UnsafeCPointer = %wasm {
+    (call $addressFromRef (get_local $self))
+  }
 
   fun store(lhs: ref, rhs: ref): void = %wasm {
     (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
