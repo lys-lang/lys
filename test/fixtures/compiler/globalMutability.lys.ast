@@ -1,9 +1,70 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::globalMutability::x:<no-type>)
       |-NameIdentifierNode="x" type=(alias i32 (native i32))
@@ -15,41 +76,41 @@
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::globalMutability::a:<no-type>)
       |-NameIdentifierNode="a" type=(alias i32 (native i32))
-      |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
         |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::bc:<no-type>)
+          |-ReferenceNode resolvedReference=bc type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::bc:<no-type>)
             |-QNameNode=bc
               |-NameIdentifierNode="bc"
           |-NameIdentifierNode="-"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::x:<no-type>)
+          |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::x:<no-type>)
             |-QNameNode=x
               |-NameIdentifierNode="x"
-  |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="main" type=(intersection (fun "main" () (alias i32)))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="main" annotations=Export
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="main" type=(fun "main" () (alias i32)) annotations=Export
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
           |-AssignmentNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsAssignationLHS,Global(test::fixtures::compiler::globalMutability::x:<no-type>)
+            |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsAssignationLHS,Global(test::fixtures::compiler::globalMutability::x:<no-type>)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
               |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-                |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::x:<no-type>)
+                |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::x:<no-type>)
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
                 |-NameIdentifierNode="+"
                 |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
               |-NameIdentifierNode="-"
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::a:<no-type>)
+              |-ReferenceNode resolvedReference=a type=(alias i32 (native i32)) annotations=IsValueNode,Global(test::fixtures::compiler::globalMutability::a:<no-type>)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"

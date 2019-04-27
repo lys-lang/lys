@@ -9,16 +9,16 @@ test/fixtures/type-error/instanceSuperType.lys
     8│ fun qq(x: Custom): i32 = ???
     9│ 
    10│ fun a(): void = x(Custom(1))
-     │                 ^ Cannot find name 'apply' in (alias x)
+     │                 ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load
    11│ fun b(t: Custom): void = x(t)
-     │                          ^ Cannot find name 'apply' in (alias x)
+     │                          ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load
    12│ fun c(t: x): void = x(t)
-     │                     ^ Cannot find name 'apply' in (alias x)
+     │                     ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load
    13│ fun d(i: i32): void = x(Custom(i))
-     │                       ^ Cannot find name 'apply' in (alias x)
+     │                       ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load
    14│ fun d(t: Nila): void = x(t)
-     │                        ^ Cannot find name 'apply' in (alias x)
+     │                        ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load
    15│ fun d(): void = x(Nila)
-     │                 ^ Cannot find name 'apply' in (alias x)
+     │                 ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load
    16│ fun e(): void = x()
-     │                 ^ Cannot find name 'apply' in (alias x)
+     │                 ^ Property "apply" doesn't exist in type "x". Possible are: is, as, ==, !=, store, load

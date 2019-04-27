@@ -4,7 +4,7 @@ import support::env
 enum Color {
   None
   Red
-  Custom(hex: i32)
+  Custom(hex: u32)
 }
 
 struct CatBag(f: Color, g: Red | None)
@@ -32,7 +32,7 @@ private fun testStore(): void = {
 
 private fun testNumbers(): void = {
   START("testNumbers")
-    support::test::mustEqual(0xFFFFFFFF, -1, "0xFFFFFFFF == -1")
+    support::test::mustEqual(0xFFFFFFFF as i32, -1, "0xFFFFFFFF == -1")
     support::test::mustEqual(0xFFFFFFFF as u32, -1 as u32, "0xFFFFFFFF as u32 == -1 as u32")
 
     testLoad()
@@ -42,19 +42,19 @@ private fun testNumbers(): void = {
     support::env::printf("i32.load(y) %X", i32.load(y))
     support::test::mustEqual(0xABCDEF01 as i64, 0xABCDEF01 as i64, "0xABCDEF01 as i64 == 0xABCDEF01 as i64")
     support::test::mustEqual(i32.load(x), 3, "i32.load(x) == 3")
-    support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
-    support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) == 0xABCDEF01 as i32")
+    support::test::mustEqual(i32.load(y) as u32, 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
+    support::test::mustEqual(i32.load(y), 0xABCDEF01 as i32, "i32.load(y) == 0xABCDEF01 as i32")
 
     {
-      val VAR = i32.load(y) as i64
-      val VAR2 = 0xABCDEF01 as i64
+      val VAR = i32.load(y) as i32 as i64
+      val VAR2 = 0xABCDEF01 as i32 as i64
 
       support::test::mustEqual(VAR, VAR2, "VAR == VAR2")
     }
 
-    support::test::mustEqual(i32.load(y) as i64, 0xABCDEF01 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
-    support::test::mustEqual(i32.load(y) as u64, 0xABCDEF01 as u64, "i32.load(y) as u64 == 0xABCDEF01 as u64")
-    support::test::mustEqual(u8.load(y) as i32, 0x01, "u8.load(y) as i32 == 0x01")
+    support::test::mustEqual(i32.load(y) as i64, 0xABCDEF01 as i32 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
+    support::test::mustEqual(i32.load(y) as u64, 0xABCDEF01 as i32 as u64, "i32.load(y) as u64 == 0xABCDEF01 as u64")
+    support::test::mustEqual(u8.load(y) as i32, 0x01 as i32, "u8.load(y) as i32 == 0x01")
     support::test::mustEqual(u8.load(y, 5 as u32) as i32, 5, "u8.load(y, 5 as u32) as i32 == 5")
   END()
 }

@@ -1,20 +1,81 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
   |-TypeDirectiveNode
     |-NameIdentifierNode="void" type=(type (alias void (native void)))
-    |-InjectedTypeNode
-  |-OverloadedFunctionNode type=(fun "x" () (alias void)) annotations=Injected
-    |-NameIdentifierNode="x" type=(fun "x" () (alias void))
+    |-InjectedTypeNode type=(native void)
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="x" type=(intersection (fun "x" () (alias void)))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "x" () (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="x" annotations=Export
-        |-ReferenceNode type=(type (alias void (native void)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="x" type=(fun "x" () (alias void)) annotations=Export
+        |-ReferenceNode resolvedReference=void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)

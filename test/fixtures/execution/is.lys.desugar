@@ -312,7 +312,7 @@ impl Custom {
   }
 
   fun apply(a: i32): Custom = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom.^allocationSize))
     property$0($ref, a)
     $ref
   }

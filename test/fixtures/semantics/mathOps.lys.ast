@@ -1,14 +1,75 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::string
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::native
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
   |-TypeDirectiveNode
     |-NameIdentifierNode="test"
     |-StructTypeNode
   |-ImplDirective
-    |-ReferenceNode
+    |-ReferenceNode resolvedReference=test
       |-QNameNode=test
         |-NameIdentifierNode="test"
     |-OverloadedFunctionNode annotations=Injected
@@ -16,7 +77,7 @@
       |-FunDirectiveNode
         |-FunctionNode
           |-NameIdentifierNode="x"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=system::core::i32::i32
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
           |-IntegerLiteral=1 annotations=IsValueNode
@@ -27,7 +88,7 @@
         |-NameIdentifierNode="x"
         |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 annotations=IsValueNode
@@ -36,7 +97,7 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x1"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BinaryExpressionNode annotations=IsValueNode
@@ -60,11 +121,11 @@
         |-NameIdentifierNode="x2"
         |-ParameterNode annotations=Local(x:<no-type>#0)
           |-NameIdentifierNode="x"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-UnaryExpressionNode annotations=IsValueNode
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=x
             |-QNameNode=x
               |-NameIdentifierNode="x"
   |-OverloadedFunctionNode annotations=Injected
@@ -74,11 +135,11 @@
         |-NameIdentifierNode="x3"
         |-ParameterNode annotations=Local(x:<no-type>#0)
           |-NameIdentifierNode="x"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-UnaryExpressionNode annotations=IsValueNode
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=x
             |-QNameNode=x
               |-NameIdentifierNode="x"
   |-OverloadedFunctionNode annotations=Injected
@@ -86,7 +147,7 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x4"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-UnaryExpressionNode annotations=IsValueNode
@@ -96,13 +157,13 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x5"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-UnaryExpressionNode annotations=IsValueNode
           |-FunctionCallNode
             |-MemberNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=test
                 |-QNameNode=test
                   |-NameIdentifierNode="test"
               |-NameIdentifierNode="x"
@@ -111,7 +172,7 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x6"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::boolean::boolean
           |-QNameNode=boolean
             |-NameIdentifierNode="boolean"
         |-UnaryExpressionNode annotations=IsValueNode

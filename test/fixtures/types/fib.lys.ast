@@ -1,95 +1,156 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::string
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-NameIdentifierNode="fibo" type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
+      |-NameIdentifierNode="string"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::native
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="fibo" type=(intersection (fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="fibo"
-        |-ParameterNode annotations=Local(n:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="fibo" type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
+        |-ParameterNode annotations=Local(n:<no-type>#0)
           |-NameIdentifierNode="n" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ParameterNode annotations=Local(x1:i32#1)
+        |-ParameterNode annotations=Local(x1:<no-type>#1)
           |-NameIdentifierNode="x1" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ParameterNode annotations=Local(x2:i32#2)
+        |-ParameterNode annotations=Local(x2:<no-type>#2)
           |-NameIdentifierNode="x2" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode
           |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode resolvedReference=n type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
             |-NameIdentifierNode=">"
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
           |-FunctionCallNode=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
+            |-ReferenceNode resolvedReference=fibo type=(intersection (fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)))
               |-QNameNode=fibo
                 |-NameIdentifierNode="fibo"
             |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode resolvedReference=n type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=n
                   |-NameIdentifierNode="n"
               |-NameIdentifierNode="-"
               |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+            |-ReferenceNode resolvedReference=x2 type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=x2
                 |-NameIdentifierNode="x2"
             |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode resolvedReference=x1 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x1
                   |-NameIdentifierNode="x1"
               |-NameIdentifierNode="+"
-              |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+              |-ReferenceNode resolvedReference=x2 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x2
                   |-NameIdentifierNode="x2"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode resolvedReference=x1 type=(alias i32 (native i32)) annotations=IsValueNode
             |-QNameNode=x1
               |-NameIdentifierNode="x1"
-  |-OverloadedFunctionNode type=(fun "fib" ((alias i32)) (alias i32)) annotations=Injected
-    |-NameIdentifierNode="fib" type=(fun "fib" ((alias i32)) (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="fib" type=(intersection (fun "fib" ((alias i32)) (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "fib" ((alias i32)) (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="fib"
-        |-ParameterNode annotations=Local(n:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="fib" type=(fun "fib" ((alias i32)) (alias i32))
+        |-ParameterNode annotations=Local(n:<no-type>#0)
           |-NameIdentifierNode="n" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-FunctionCallNode=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-          |-ReferenceNode type=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
+          |-ReferenceNode resolvedReference=fibo type=(intersection (fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)))
             |-QNameNode=fibo
               |-NameIdentifierNode="fibo"
-          |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode
+          |-ReferenceNode resolvedReference=n type=(alias i32 (native i32)) annotations=IsValueNode
             |-QNameNode=n
               |-NameIdentifierNode="n"
           |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
           |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-  |-OverloadedFunctionNode type=(fun "test" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="test" type=(fun "test" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="test" type=(intersection (fun "test" () (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "test" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="test"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="test" type=(fun "test" () (alias i32))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-FunctionCallNode=(fun "fib" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-          |-ReferenceNode type=(fun "fib" ((alias i32)) (alias i32))
+          |-ReferenceNode resolvedReference=fib type=(intersection (fun "fib" ((alias i32)) (alias i32)))
             |-QNameNode=fib
               |-NameIdentifierNode="fib"
           |-IntegerLiteral=46 type=(alias i32 (native i32)) annotations=IsValueNode

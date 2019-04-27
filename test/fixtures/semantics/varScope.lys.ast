@@ -1,9 +1,70 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::string
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::native
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="a"
@@ -11,7 +72,7 @@
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="b"
-      |-ReferenceNode annotations=IsValueNode
+      |-ReferenceNode resolvedReference=a annotations=IsValueNode
         |-QNameNode=a
           |-NameIdentifierNode="a"
   |-VarDirectiveNode
@@ -21,7 +82,7 @@
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="d"
-      |-ReferenceNode annotations=IsValueNode
+      |-ReferenceNode resolvedReference=c annotations=IsValueNode
         |-QNameNode=c
           |-NameIdentifierNode="c"
   |-OverloadedFunctionNode annotations=Injected
@@ -29,18 +90,18 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x1"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
           |-FunctionNode
             |-NameIdentifierNode="Y"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::i32::i32
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
             |-IntegerLiteral=1 annotations=IsValueNode
           |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Y
               |-QNameNode=Y
                 |-NameIdentifierNode="Y"
   |-OverloadedFunctionNode annotations=Injected
@@ -48,7 +109,7 @@
     |-FunDirectiveNode
       |-FunctionNode
         |-NameIdentifierNode="x2"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=system::core::i32::i32
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
@@ -57,13 +118,13 @@
             |-IntegerLiteral=1 annotations=IsValueNode
           |-FunctionNode
             |-NameIdentifierNode="Y"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=system::core::i32::i32
               |-QNameNode=i32
                 |-NameIdentifierNode="i32"
-            |-ReferenceNode annotations=IsValueNode
+            |-ReferenceNode resolvedReference=n annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
           |-FunctionCallNode annotations=IsValueNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=Y
               |-QNameNode=Y
                 |-NameIdentifierNode="Y"

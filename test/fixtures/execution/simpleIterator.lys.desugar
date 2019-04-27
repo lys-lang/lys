@@ -10,7 +10,7 @@ impl Iterator {
   }
 
   fun apply(current: i32, target: i32): Iterator = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Iterator.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Iterator.^allocationSize))
     property$0($ref, current)
     property$1($ref, target)
     $ref
@@ -153,7 +153,7 @@ impl Some {
   }
 
   fun apply(value: i32): Some = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Some.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Some.^allocationSize))
     property$0($ref, value)
     $ref
   }

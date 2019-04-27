@@ -1,62 +1,123 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::string
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=(fun "assert" ((alias boolean)) (alias void)) annotations=Injected
-    |-NameIdentifierNode="assert" type=(fun "assert" ((alias boolean)) (alias void))
+      |-NameIdentifierNode="string"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::native
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="assert" type=(intersection (fun "assert" ((alias boolean)) (alias void)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "assert" ((alias boolean)) (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="assert"
-        |-ParameterNode annotations=Local(x:boolean#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="assert" type=(fun "assert" ((alias boolean)) (alias void))
+        |-ParameterNode annotations=Local(x:<no-type>#0)
           |-NameIdentifierNode="x" type=(alias boolean (native boolean))
-          |-ReferenceNode type=(type (alias boolean (native boolean)))
+          |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-        |-ReferenceNode type=(type (alias void (native void)))
+        |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-IfNode type=(native void)
           |-BinaryExpressionNode=(fun "==" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-ReferenceNode type=(alias boolean (native boolean)) annotations=IsValueNode,Local(x:boolean#0)
+            |-ReferenceNode resolvedReference=x type=(alias boolean (native boolean)) annotations=IsValueNode,Local(x:<no-type>#0)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-NameIdentifierNode="=="
             |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
           |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
-            |-ReferenceNode type=(fun "panic" () (alias never))
+            |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
               |-QNameNode=panic
                 |-NameIdentifierNode="panic"
-  |-OverloadedFunctionNode type=(fun "test" ((alias i32)) (alias void)) annotations=Injected
-    |-NameIdentifierNode="test" type=(fun "test" ((alias i32)) (alias void))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="test" type=(intersection (fun "test" ((alias i32)) (alias void)))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "test" ((alias i32)) (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="test" annotations=Export
-        |-ParameterNode annotations=Local(x:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="test" type=(fun "test" ((alias i32)) (alias void)) annotations=Export
+        |-ParameterNode annotations=Local(x:<no-type>#0)
           |-NameIdentifierNode="x" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias void (native void)))
+        |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
           |-PatternMatcherNode type=(native void) annotations=Local(var$1:i32#1)
-            |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:i32#0)
+            |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:<no-type>#0)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-MatchLiteralNode type=(native void) annotations=Local(var$1:i32#1)
               |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
-                |-ReferenceNode type=(fun "assert" ((alias boolean)) (alias void))
+                |-ReferenceNode resolvedReference=assert type=(intersection (fun "assert" ((alias boolean)) (alias void)))
                   |-QNameNode=assert
                     |-NameIdentifierNode="assert"
                 |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
               |-IntegerLiteral=1 type=(alias i32 (native i32))
             |-MatchDefaultNode type=(native void) annotations=Local(var$1:i32#1)
               |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
-                |-ReferenceNode type=(fun "panic" () (alias never))
+                |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
                   |-QNameNode=panic
                     |-NameIdentifierNode="panic"

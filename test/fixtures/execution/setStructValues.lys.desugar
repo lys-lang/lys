@@ -122,8 +122,8 @@ impl Custom {
     discriminant as u64 << 32
   }
 
-  fun apply(hex: i32): Custom = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom.^allocationSize))
+  fun apply(hex: u32): Custom = {
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom.^allocationSize))
     property$0($ref, hex)
     $ref
   }
@@ -140,13 +140,13 @@ impl Custom {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_hex(self: Custom): i32 = property$0(self)
-  fun property_hex(self: Custom, value: i32): void = property$0(self, value)
+  fun property_hex(self: Custom): u32 = property$0(self)
+  fun property_hex(self: Custom, value: u32): void = property$0(self, value)
 
   #[inline]
-  private fun property$0(self: Custom): i32 = i32.load(self, Custom.^property$0_offset)
+  private fun property$0(self: Custom): u32 = u32.load(self, Custom.^property$0_offset)
   #[inline]
-  private fun property$0(self: Custom, value: i32): void = i32.store(self, value, Custom.^property$0_offset)
+  private fun property$0(self: Custom, value: u32): void = u32.store(self, value, Custom.^property$0_offset)
 
   fun is(a: (Custom | ref)): boolean = %wasm {
     (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom$discriminant))
@@ -165,7 +165,7 @@ type None = %struct {  }
 
 type Red = %struct {  }
 
-type Custom = %struct { hex: i32 }
+type Custom = %struct { hex: u32 }
 
 type CatBag = %struct { f: Color, g: (Red | None) }
 
@@ -177,7 +177,7 @@ impl CatBag {
   }
 
   fun apply(f: Color, g: ((Red | None))): CatBag = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, CatBag.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, CatBag.^allocationSize))
     property$0($ref, f)
     property$1($ref, g)
     $ref
@@ -249,7 +249,7 @@ impl Custom2 {
   }
 
   fun apply(r: i32, g: i32): Custom2 = {
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Custom2.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom2.^allocationSize))
     property$0($ref, r)
     property$1($ref, g)
     $ref
@@ -322,7 +322,7 @@ private fun testStore(): void = {
 
 private fun testNumbers(): void = {
   START("testNumbers")
-  support::test::mustEqual(0xFFFFFFFF, -1, "0xFFFFFFFF == -1")
+  support::test::mustEqual(0xFFFFFFFF as i32, -1, "0xFFFFFFFF == -1")
   support::test::mustEqual(0xFFFFFFFF as u32, -1 as u32, "0xFFFFFFFF as u32 == -1 as u32")
   testLoad()
   testStore()
@@ -330,16 +330,16 @@ private fun testNumbers(): void = {
   support::env::printf("i32.load(y) %X", i32.load(y))
   support::test::mustEqual(0xABCDEF01 as i64, 0xABCDEF01 as i64, "0xABCDEF01 as i64 == 0xABCDEF01 as i64")
   support::test::mustEqual(i32.load(x), 3, "i32.load(x) == 3")
-  support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
-  support::test::mustEqual(i32.load(y), 0xABCDEF01, "i32.load(y) == 0xABCDEF01 as i32")
+  support::test::mustEqual(i32.load(y) as u32, 0xABCDEF01, "i32.load(y) as u32 == 0xABCDEF01")
+  support::test::mustEqual(i32.load(y), 0xABCDEF01 as i32, "i32.load(y) == 0xABCDEF01 as i32")
   {
-    val VAR = i32.load(y) as i64
-    val VAR2 = 0xABCDEF01 as i64
+    val VAR = i32.load(y) as i32 as i64
+    val VAR2 = 0xABCDEF01 as i32 as i64
     support::test::mustEqual(VAR, VAR2, "VAR == VAR2")
   }
-  support::test::mustEqual(i32.load(y) as i64, 0xABCDEF01 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
-  support::test::mustEqual(i32.load(y) as u64, 0xABCDEF01 as u64, "i32.load(y) as u64 == 0xABCDEF01 as u64")
-  support::test::mustEqual(u8.load(y) as i32, 0x01, "u8.load(y) as i32 == 0x01")
+  support::test::mustEqual(i32.load(y) as i64, 0xABCDEF01 as i32 as i64, "i32.load(y) as i64 == 0xABCDEF01 as i64")
+  support::test::mustEqual(i32.load(y) as u64, 0xABCDEF01 as i32 as u64, "i32.load(y) as u64 == 0xABCDEF01 as u64")
+  support::test::mustEqual(u8.load(y) as i32, 0x01 as i32, "u8.load(y) as i32 == 0x01")
   support::test::mustEqual(u8.load(y, 5 as u32) as i32, 5, "u8.load(y, 5 as u32) as i32 == 5")
   END()
 }

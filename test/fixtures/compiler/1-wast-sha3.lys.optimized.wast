@@ -12,6 +12,10 @@
  (type $10 (func (param i32 i32)))
  (type $11 (func (param i32 i32 i32)))
  (memory $0 1)
+ (data (i32.const 16) "\08\00\00\00t\00r\00u\00e")
+ (data (i32.const 29) "\n\00\00\00f\00a\00l\00s\00e")
+ (data (i32.const 44) "\02\00\00\000")
+ (data (i32.const 51) "\02\00\00\000")
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -48,8 +52,11 @@
    (local.get $1)
    (local.get $0)
   )
-  (i64.extend_i32_u
-   (local.get $1)
+  (i64.or
+   (i64.extend_i32_u
+    (local.get $1)
+   )
+   (i64.const 38654705664)
   )
  )
  (func $2 (; 2 ;) (type $2) (param $0 i32) (result i32)
@@ -249,7 +256,7 @@
       (i64.extend_i32_u
        (local.get $2)
       )
-      (i64.const 64424509440)
+      (i64.const 4294967296)
      )
     )
    )

@@ -4,7 +4,7 @@ fun add(a: i32, b: i32): i32 = %wasm {
   (local $t i32)
   (set_local $t (i32.const 3))
   (call $xx)
-  (drop (call $system::memory::malloc (i32.const 1)))
+  (drop (call $system::core::memory::malloc (i32.const 1)))
   (i32.mul (i32.add (get_local $a) (get_local $b)) (get_local $t))
 }
 

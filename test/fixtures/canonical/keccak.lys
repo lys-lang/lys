@@ -752,7 +752,7 @@ private fun keccak_init(context_offset: i32): void = %wasm {
 //
 private fun keccak_reset(context_offset: i32): void = {
   // clear out the context memory
-  system::memory::memset(context_offset, 0, 400 as u32)
+  system::core::memory::memset(context_offset, 0, 400 as u32)
 }
 
 //
@@ -783,7 +783,7 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
       )
 
       // fill up the residue buffer
-      (call $system::memory::memcpy
+      (call $system::core::memory::memcpy
         (i32.add (get_local $residue_buffer) (get_local $residue_index))
         (get_local $input_offset)
         (get_local $tmp)
@@ -821,7 +821,7 @@ private fun keccak_update(context_offset: i32, input_offset: i32, input_length: 
   // copy to the residue buffer
   (if (i32.gt_u (get_local $input_length) (i32.const 0))
     (then
-      (call $system::memory::memcpy
+      (call $system::core::memory::memcpy
         (i32.add (get_local $residue_buffer) (get_local $residue_index))
         (get_local $input_offset)
         (get_local $input_length)
@@ -853,7 +853,7 @@ private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm
   (set_local $tmp (get_local $residue_index))
 
   // clear the rest of the residue buffer
-  (call $system::memory::memset (i32.add (get_local $residue_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
+  (call $system::core::memory::memset (i32.add (get_local $residue_buffer) (get_local $tmp)) (i32.const 0) (i32.sub (i32.const 136) (get_local $tmp)))
 
   // ((char*)ctx->message)[ctx->rest] |= 0x01;
   (set_local $tmp (i32.add (get_local $residue_buffer) (get_local $residue_index)))
@@ -876,15 +876,15 @@ private fun keccak_finish(context_offset: i32, output_offset: i32): void = %wasm
 // Calculate the hash. Helper method incorporating the above three.
 //
 fun keccak(input: bytes): bytes = {
-  val context = system::memory::calloc(616 as u32, 1 as u32)
+  val context = system::core::memory::calloc(616 as u32, 1 as u32)
 
-  val ret = system::memory::allocBytes(32 as u32)
+  val ret = system::core::memory::allocBytes(32 as u32)
 
   keccak_init(context)
   keccak_update(context, input.ptr, input.length)
   keccak_finish(context, ret.ptr)
 
-  system::memory::free(context)
+  system::core::memory::free(context)
 
   ret
 }

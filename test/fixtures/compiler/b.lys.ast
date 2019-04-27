@@ -1,78 +1,139 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=(fun "innerFunctionArgs" ((alias i32)) (alias i32)) annotations=Injected
-    |-NameIdentifierNode="innerFunctionArgs" type=(fun "innerFunctionArgs" ((alias i32)) (alias i32))
+      |-NameIdentifierNode="native"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="innerFunctionArgs" type=(intersection (fun "innerFunctionArgs" ((alias i32)) (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "innerFunctionArgs" ((alias i32)) (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="innerFunctionArgs"
-        |-ParameterNode annotations=Local(a:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="innerFunctionArgs" type=(fun "innerFunctionArgs" ((alias i32)) (alias i32))
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:i32#0)
+        |-ReferenceNode resolvedReference=a type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:<no-type>#0)
           |-QNameNode=a
             |-NameIdentifierNode="a"
-  |-OverloadedFunctionNode type=(fun "innerFunction" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="innerFunction" type=(fun "innerFunction" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="innerFunction" type=(intersection (fun "innerFunction" () (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "innerFunction" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="innerFunction"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="innerFunction" type=(fun "innerFunction" () (alias i32))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-FunctionCallNode=(fun "innerFunctionArgs" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-          |-ReferenceNode type=(fun "innerFunctionArgs" ((alias i32)) (alias i32))
+          |-ReferenceNode resolvedReference=innerFunctionArgs type=(intersection (fun "innerFunctionArgs" ((alias i32)) (alias i32)))
             |-QNameNode=innerFunctionArgs
               |-NameIdentifierNode="innerFunctionArgs"
           |-IntegerLiteral=3 type=(alias i32 (native i32)) annotations=IsValueNode
-  |-OverloadedFunctionNode type=(intersection (fun "over" () (alias i32)) (fun "over" ((alias i32)) (alias i32))) annotations=Injected
+  |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="over" type=(intersection (fun "over" () (alias i32)) (fun "over" ((alias i32)) (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "over" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="over"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="over" type=(fun "over" () (alias i32))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "over" ((alias i32)) (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="over"
-        |-ParameterNode annotations=Local(a:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="over" type=(fun "over" ((alias i32)) (alias i32))
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:i32#0)
+        |-ReferenceNode resolvedReference=a type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression,Local(a:<no-type>#0)
           |-QNameNode=a
             |-NameIdentifierNode="a"
-  |-OverloadedFunctionNode type=(fun "outerFunction" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="outerFunction" type=(fun "outerFunction" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="outerFunction" type=(intersection (fun "outerFunction" () (alias i32)))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "outerFunction" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="outerFunction" annotations=Export
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="outerFunction" type=(fun "outerFunction" () (alias i32)) annotations=Export
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
           |-FunctionCallNode=(fun "innerFunction" () (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(fun "innerFunction" () (alias i32))
+            |-ReferenceNode resolvedReference=innerFunction type=(intersection (fun "innerFunction" () (alias i32)))
               |-QNameNode=innerFunction
                 |-NameIdentifierNode="innerFunction"
           |-NameIdentifierNode="+"
           |-FunctionCallNode=(fun "over" () (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-            |-ReferenceNode type=(intersection (fun "over" () (alias i32)) (fun "over" ((alias i32)) (alias i32)))
+            |-ReferenceNode resolvedReference=over type=(intersection (fun "over" () (alias i32)) (fun "over" ((alias i32)) (alias i32)))
               |-QNameNode=over
                 |-NameIdentifierNode="over"

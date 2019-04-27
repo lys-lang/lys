@@ -2,7 +2,9 @@ test/fixtures/type-error/scope-failure.lys
     1│ fun isComplex(number: ref): boolean =
     2│   match number {
     3│     case x is Real(_) -> false
-     │               ^^^^ Cannot find name 'Real'
-     │               ^^^^ Cannot find name 'Real'
+     │               ^^^^ Cannot find name 'Real' test::fixtures::type-error::scope-failure::isComplex_Body[child_scope]: {
+
+}
+     │               ^^^^ Unable to resolve name 2
     4│     else -> false
     5│   }

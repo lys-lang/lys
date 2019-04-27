@@ -1,34 +1,95 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::string
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-  |-OverloadedFunctionNode type=(fun "xx" () (alias void)) annotations=Injected
-    |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
+      |-NameIdentifierNode="string"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::boolean
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::native
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="xx" type=(intersection (fun "xx" () (alias void)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "xx" () (alias void)) annotations=IsOverloaded
-        |-NameIdentifierNode="xx"
-        |-ReferenceNode type=(type (alias void (native void)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="xx" type=(fun "xx" () (alias void))
+        |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-  |-OverloadedFunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=Injected
-    |-NameIdentifierNode="add" type=(fun "add" ((alias i32) (alias i32)) (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="add" type=(intersection (fun "add" ((alias i32) (alias i32)) (alias i32)))
     |-FunDirectiveNode
-      |-FunctionNode type=(fun "add" ((alias i32) (alias i32)) (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="add"
-        |-ParameterNode annotations=Local(a:i32#0)
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="add" type=(fun "add" ((alias i32) (alias i32)) (alias i32))
+        |-ParameterNode annotations=Local(a:<no-type>#0)
           |-NameIdentifierNode="a" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ParameterNode annotations=Local(b:i32#1)
+        |-ParameterNode annotations=Local(b:<no-type>#1)
           |-NameIdentifierNode="b" type=(alias i32 (native i32))
-          |-ReferenceNode type=(type (alias i32 (native i32)))
+          |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
@@ -41,20 +102,21 @@
             |-QNameNode=$t
               |-NameIdentifierNode="$t"
             |-WasmAtomNode
-              |-IntegerLiteral=3
+              |-IntegerLiteral=3 type=(alias i32 (native i32))
           |-WasmAtomNode
-            |-ReferenceNode type=(fun "xx" () (alias void))
+            |-ReferenceNode resolvedReference=xx type=(intersection (fun "xx" () (alias void)))
               |-QNameNode=xx
                 |-NameIdentifierNode="xx"
           |-WasmAtomNode
             |-WasmAtomNode
-              |-ReferenceNode type=(fun "malloc" ((alias u32)) (alias u32))
-                |-QNameNode=system::memory::malloc
+              |-ReferenceNode resolvedReference=system::core::memory::malloc type=(intersection (fun "malloc" ((alias u32)) (alias u32)))
+                |-QNameNode=system::core::memory::malloc
                   |-NameIdentifierNode="system"
+                  |-NameIdentifierNode="core"
                   |-NameIdentifierNode="memory"
                   |-NameIdentifierNode="malloc"
               |-WasmAtomNode
-                |-IntegerLiteral=1
+                |-IntegerLiteral=1 type=(alias i32 (native i32))
           |-WasmAtomNode
             |-WasmAtomNode
               |-WasmAtomNode
@@ -66,18 +128,18 @@
             |-WasmAtomNode
               |-QNameNode=$t
                 |-NameIdentifierNode="$t"
-  |-OverloadedFunctionNode type=(fun "main" () (alias i32)) annotations=Injected
-    |-NameIdentifierNode="main" type=(fun "main" () (alias i32))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="main" type=(intersection (fun "main" () (alias i32)))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "main" () (alias i32)) annotations=IsOverloaded
-        |-NameIdentifierNode="main" annotations=Export
-        |-ReferenceNode type=(type (alias i32 (native i32)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="main" type=(fun "main" () (alias i32)) annotations=Export
+        |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-FunctionCallNode=(fun "add" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-          |-ReferenceNode type=(fun "add" ((alias i32) (alias i32)) (alias i32))
+          |-ReferenceNode resolvedReference=add type=(intersection (fun "add" ((alias i32) (alias i32)) (alias i32)))
             |-QNameNode=add
               |-NameIdentifierNode="add"
           |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode

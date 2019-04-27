@@ -1,12 +1,69 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
+      |-NameIdentifierNode="native"
   |-ImportDirectiveNode
-    |-QNameNode=system::string
+    |-QNameNode=system::core::boolean
       |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="boolean"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u8
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
       |-NameIdentifierNode="string"
   |-ValDirectiveNode
     |-ValDeclarationNode annotations=Global(test::fixtures::compiler::bytes::a:<no-type>)
@@ -16,16 +73,16 @@
     |-ValDeclarationNode annotations=Global(test::fixtures::compiler::bytes::b:<no-type>)
       |-NameIdentifierNode="b" type=(alias string (native string))
       |-StringLiteral="utf «【】»" type=(alias string (native string)) annotations=IsValueNode
-  |-OverloadedFunctionNode type=(fun "main" () (alias string)) annotations=Injected
-    |-NameIdentifierNode="main" type=(fun "main" () (alias string))
+  |-OverloadedFunctionNode annotations=Injected
+    |-NameIdentifierNode="main" type=(intersection (fun "main" () (alias string)))
     |-FunDirectiveNode
       |-DecoratorNode
         |-NameIdentifierNode="export"
-      |-FunctionNode type=(fun "main" () (alias string)) annotations=IsOverloaded
-        |-NameIdentifierNode="main" annotations=Export
-        |-ReferenceNode type=(type (alias string (native string)))
+      |-FunctionNode annotations=IsOverloaded
+        |-NameIdentifierNode="main" type=(fun "main" () (alias string)) annotations=Export
+        |-ReferenceNode resolvedReference=system::core::string::string type=(type (alias string (native string)))
           |-QNameNode=string
             |-NameIdentifierNode="string"
-        |-ReferenceNode type=(alias string (native string)) annotations=IsValueNode,IsReturnExpression,Global(test::fixtures::compiler::bytes::a:<no-type>)
+        |-ReferenceNode resolvedReference=a type=(alias string (native string)) annotations=IsValueNode,IsReturnExpression,Global(test::fixtures::compiler::bytes::a:<no-type>)
           |-QNameNode=a
             |-NameIdentifierNode="a"

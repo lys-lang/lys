@@ -3,30 +3,30 @@
   |-ValDirectiveNode
     |-ValDeclarationNode
       |-NameIdentifierNode="AL_BITS"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-IntegerLiteral=3
   |-ValDirectiveNode
     |-ValDeclarationNode
       |-NameIdentifierNode="AL_SIZE"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
         |-IntegerLiteral=1
         |-NameIdentifierNode="<<"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=AL_BITS
             |-NameIdentifierNode="AL_BITS"
   |-ValDirectiveNode
     |-ValDeclarationNode
       |-NameIdentifierNode="AL_MASK"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=AL_SIZE
             |-NameIdentifierNode="AL_SIZE"
         |-NameIdentifierNode="-"
@@ -34,7 +34,7 @@
   |-ValDirectiveNode
     |-ValDeclarationNode
       |-NameIdentifierNode="MAX_SIZE_32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
@@ -48,36 +48,36 @@
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="startOffset"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BinaryExpressionNode
         |-BinaryExpressionNode
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=HEAP_BASE
               |-NameIdentifierNode="HEAP_BASE"
           |-NameIdentifierNode="+"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=AL_MASK
               |-NameIdentifierNode="AL_MASK"
         |-NameIdentifierNode="&"
         |-UnaryExpressionNode
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=AL_MASK
               |-NameIdentifierNode="AL_MASK"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="offset"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=startOffset
           |-NameIdentifierNode="startOffset"
   |-VarDirectiveNode
     |-VarDeclarationNode
       |-NameIdentifierNode="lastPtr"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-IntegerLiteral=0
@@ -86,10 +86,10 @@
       |-NameIdentifierNode="growMemory"
       |-ParameterNode
         |-NameIdentifierNode="pages"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-WasmExpressionNode
@@ -100,7 +100,7 @@
   |-FunDirectiveNode
     |-FunctionNode
       |-NameIdentifierNode="currentMemory"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-WasmExpressionNode
@@ -110,30 +110,30 @@
       |-NameIdentifierNode="max"
       |-ParameterNode
         |-NameIdentifierNode="a"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="b"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-IfNode
         |-BinaryExpressionNode
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=a
               |-NameIdentifierNode="a"
           |-NameIdentifierNode=">"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=b
               |-NameIdentifierNode="b"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=a
             |-NameIdentifierNode="a"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=b
             |-NameIdentifierNode="b"
   |-FunDirectiveNode
@@ -141,10 +141,10 @@
       |-NameIdentifierNode="allocBytes"
       |-ParameterNode
         |-NameIdentifierNode="size"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=bytes
           |-NameIdentifierNode="bytes"
       |-WasmExpressionNode
@@ -157,7 +157,7 @@
           |-QNameNode=$allocation
             |-NameIdentifierNode="$allocation"
           |-WasmAtomNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=malloc
                 |-NameIdentifierNode="malloc"
             |-WasmAtomNode
@@ -186,49 +186,49 @@
       |-NameIdentifierNode="calloc"
       |-ParameterNode
         |-NameIdentifierNode="itemCount"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="itemSize"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode
         |-ValDeclarationNode
           |-NameIdentifierNode="size"
           |-BinaryExpressionNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=itemCount
                 |-NameIdentifierNode="itemCount"
             |-NameIdentifierNode="*"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=itemSize
                 |-NameIdentifierNode="itemSize"
         |-ValDeclarationNode
           |-NameIdentifierNode="$ret"
           |-FunctionCallNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=malloc
                 |-NameIdentifierNode="malloc"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=size
                 |-NameIdentifierNode="size"
         |-FunctionCallNode
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=memset
               |-NameIdentifierNode="memset"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=$ret
               |-NameIdentifierNode="$ret"
-          |-ReferenceNode
+          |-ReferenceNode resolvedReference=<null>
             |-QNameNode=size
               |-NameIdentifierNode="size"
           |-IntegerLiteral=0
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=$ret
             |-NameIdentifierNode="$ret"
   |-FunDirectiveNode
@@ -236,16 +236,16 @@
       |-NameIdentifierNode="malloc"
       |-ParameterNode
         |-NameIdentifierNode="size"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode
         |-IfNode
           |-BinaryExpressionNode
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=size
                 |-NameIdentifierNode="size"
             |-NameIdentifierNode=">"
@@ -253,21 +253,21 @@
           |-BlockNode
             |-IfNode
               |-BinaryExpressionNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=<null>
                   |-QNameNode=size
                     |-NameIdentifierNode="size"
                 |-NameIdentifierNode=">"
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=<null>
                   |-QNameNode=MAX_SIZE_32
                     |-NameIdentifierNode="MAX_SIZE_32"
               |-BlockNode
                 |-FunctionCallNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=<null>
                     |-QNameNode=panic
                       |-NameIdentifierNode="panic"
             |-ValDeclarationNode
               |-NameIdentifierNode="ptr"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=<null>
                 |-QNameNode=offset
                   |-NameIdentifierNode="offset"
             |-ValDeclarationNode
@@ -275,36 +275,36 @@
               |-BinaryExpressionNode
                 |-BinaryExpressionNode
                   |-BinaryExpressionNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=<null>
                       |-QNameNode=ptr
                         |-NameIdentifierNode="ptr"
                     |-NameIdentifierNode="+"
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=<null>
                       |-QNameNode=size
                         |-NameIdentifierNode="size"
                   |-NameIdentifierNode="+"
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=<null>
                     |-QNameNode=AL_MASK
                       |-NameIdentifierNode="AL_MASK"
                 |-NameIdentifierNode="&"
                 |-UnaryExpressionNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=<null>
                     |-QNameNode=AL_MASK
                       |-NameIdentifierNode="AL_MASK"
             |-ValDeclarationNode
               |-NameIdentifierNode="pagesBefore"
               |-FunctionCallNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=<null>
                   |-QNameNode=currentMemory
                     |-NameIdentifierNode="currentMemory"
             |-IfNode
               |-BinaryExpressionNode
-                |-ReferenceNode
+                |-ReferenceNode resolvedReference=<null>
                   |-QNameNode=newPtr
                     |-NameIdentifierNode="newPtr"
                 |-NameIdentifierNode=">"
                 |-BinaryExpressionNode
-                  |-ReferenceNode
+                  |-ReferenceNode resolvedReference=<null>
                     |-QNameNode=pagesBefore
                       |-NameIdentifierNode="pagesBefore"
                   |-NameIdentifierNode="<<"
@@ -316,11 +316,11 @@
                     |-BinaryExpressionNode
                       |-BinaryExpressionNode
                         |-BinaryExpressionNode
-                          |-ReferenceNode
+                          |-ReferenceNode resolvedReference=<null>
                             |-QNameNode=newPtr
                               |-NameIdentifierNode="newPtr"
                           |-NameIdentifierNode="-"
-                          |-ReferenceNode
+                          |-ReferenceNode resolvedReference=<null>
                             |-QNameNode=ptr
                               |-NameIdentifierNode="ptr"
                         |-NameIdentifierNode="+"
@@ -333,22 +333,22 @@
                 |-ValDeclarationNode
                   |-NameIdentifierNode="pagesWanted"
                   |-FunctionCallNode
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=<null>
                       |-QNameNode=max
                         |-NameIdentifierNode="max"
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=<null>
                       |-QNameNode=pagesBefore
                         |-NameIdentifierNode="pagesBefore"
-                    |-ReferenceNode
+                    |-ReferenceNode resolvedReference=<null>
                       |-QNameNode=pagesNeeded
                         |-NameIdentifierNode="pagesNeeded"
                 |-IfNode
                   |-BinaryExpressionNode
                     |-FunctionCallNode
-                      |-ReferenceNode
+                      |-ReferenceNode resolvedReference=<null>
                         |-QNameNode=growMemory
                           |-NameIdentifierNode="growMemory"
-                      |-ReferenceNode
+                      |-ReferenceNode resolvedReference=<null>
                         |-QNameNode=pagesWanted
                           |-NameIdentifierNode="pagesWanted"
                     |-NameIdentifierNode="<"
@@ -357,27 +357,27 @@
                     |-IfNode
                       |-BinaryExpressionNode
                         |-FunctionCallNode
-                          |-ReferenceNode
+                          |-ReferenceNode resolvedReference=<null>
                             |-QNameNode=growMemory
                               |-NameIdentifierNode="growMemory"
-                          |-ReferenceNode
+                          |-ReferenceNode resolvedReference=<null>
                             |-QNameNode=pagesNeeded
                               |-NameIdentifierNode="pagesNeeded"
                         |-NameIdentifierNode="<"
                         |-IntegerLiteral=0
                       |-BlockNode
                         |-FunctionCallNode
-                          |-ReferenceNode
+                          |-ReferenceNode resolvedReference=<null>
                             |-QNameNode=panic
                               |-NameIdentifierNode="panic"
             |-AssignmentNode
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=<null>
                 |-QNameNode=offset
                   |-NameIdentifierNode="offset"
-              |-ReferenceNode
+              |-ReferenceNode resolvedReference=<null>
                 |-QNameNode=newPtr
                   |-NameIdentifierNode="newPtr"
-            |-ReferenceNode
+            |-ReferenceNode resolvedReference=<null>
               |-QNameNode=ptr
                 |-NameIdentifierNode="ptr"
           |-BlockNode
@@ -387,10 +387,10 @@
       |-NameIdentifierNode="free"
       |-ParameterNode
         |-NameIdentifierNode="ptr"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-BlockNode
@@ -399,10 +399,10 @@
       |-NameIdentifierNode="discriminant"
       |-ParameterNode
         |-NameIdentifierNode="v"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=ref
             |-NameIdentifierNode="ref"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=u64
           |-NameIdentifierNode="u64"
       |-WasmExpressionNode
@@ -417,20 +417,20 @@
       |-NameIdentifierNode="memcpy"
       |-ParameterNode
         |-NameIdentifierNode="to"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="from"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="len"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
@@ -499,20 +499,20 @@
       |-NameIdentifierNode="memset"
       |-ParameterNode
         |-NameIdentifierNode="ptr"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="content"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
       |-ParameterNode
         |-NameIdentifierNode="len"
-        |-ReferenceNode
+        |-ReferenceNode resolvedReference=<null>
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-      |-ReferenceNode
+      |-ReferenceNode resolvedReference=<null>
         |-QNameNode=void
           |-NameIdentifierNode="void"
       |-WasmExpressionNode
