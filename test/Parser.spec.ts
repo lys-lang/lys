@@ -42,7 +42,7 @@ describe('Parser', () => {
   let testCount = 0;
 
   function getFileName() {
-    return `parser_tests_${testCount++}.lys`;
+    return `tests/parser_tests_${testCount++}.lys`;
   }
 
   describe('Basic sanity tests', function() {

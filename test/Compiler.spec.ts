@@ -18,7 +18,7 @@ const compilationPhases = function(txt: string, fileName: string): PhasesResult 
   compilerTestParsingContext.invalidateModule(moduleName);
   compilerTestParsingContext.getParsingPhaseForContent(fileName, moduleName, txt);
   const compiler = compilerTestParsingContext.getPhase(moduleName, PhaseFlags.Compilation);
-  failWithErrors('Compilation phase', compilerTestParsingContext);
+  failWithErrors('Compilation phase', compilerTestParsingContext, true);
   return { parsingContext: compilerTestParsingContext, document: compiler };
 };
 

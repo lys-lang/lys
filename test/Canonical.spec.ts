@@ -29,7 +29,7 @@ describe('Canonical', function() {
   let testCount = 0;
 
   function getFileName() {
-    return `canonical_tests_${testCount++}.lys`;
+    return `tests/canonical_tests_${testCount++}.lys`;
   }
 
   function test(literals, ...placeholders) {

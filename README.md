@@ -278,7 +278,7 @@ impl Node {
   fun apply(value: i32, left: Tree, right: Tree): Node = {
     // a pointer is allocated. Then using the function `fromPointer` it is converted
     // to a valid Node reference
-    var $ref = fromPointer(system::memory::calloc(1 as u32, Node.^allocationSize))
+    var $ref = fromPointer(system::core::memory::calloc(1 as u32, Node.^allocationSize))
     property$0($ref, value)
     property$1($ref, left)
     property$2($ref, right)
