@@ -6,7 +6,6 @@ import { AstNodeError } from '../NodeError';
 import { fixParents } from './helpers';
 import { TypeAnalyzer, DEBUG_TYPES, MaxAnalysisPassCount } from '../types/TypeAnalyzer';
 import assert = require('assert');
-import { MessageCollector } from '../MessageCollector';
 
 const initializeTypes = walkPreOrder<Nodes.Node>(
   (_node, _phase) => {
@@ -132,7 +131,7 @@ function iterate(moduleName: string, parsingContext: ParsingContext, _debug = fa
   }
 
   if (DEBUG_TYPES) console.log('Will analyze: ' + analysisQueue.map($ => $.moduleName).join(', '));
-  const messageCollectors = new Map<string, MessageCollector>();
+  const analyzers = new Map<string, TypeAnalyzer>();
 
   while (true) {
     let documentToAnalyze = analysisQueue.shift();
@@ -148,10 +147,9 @@ function iterate(moduleName: string, parsingContext: ParsingContext, _debug = fa
     // mark all of its dependencies as needing to be reanalyzed.
     let didAnalysisChange = false;
     while (true) {
-      let messageCollector = messageCollectors.get(documentToAnalyze.moduleName) || new MessageCollector();
-      messageCollectors.set(documentToAnalyze.moduleName, messageCollector);
+      const analyzer = new TypeAnalyzer(documentToAnalyze, parsingContext);
 
-      const analyzer = new TypeAnalyzer(documentToAnalyze, parsingContext, messageCollector);
+      analyzers.set(documentToAnalyze.moduleName, analyzer);
 
       if (!analyzer.analyze()) {
         if (DEBUG_TYPES) console.log('  Nothing changed.');
@@ -202,8 +200,11 @@ function iterate(moduleName: string, parsingContext: ParsingContext, _debug = fa
     }
   }
 
-  messageCollectors.forEach($ => {
-    parsingContext.messageCollector.mergeWith($);
+  analyzers.forEach($ => {
+    parsingContext.messageCollector.mergeWith($.messageCollector);
+    $.nodeAnnotations.forEach((annotations, node) => {
+      annotations.forEach($ => node.annotate($));
+    });
   });
 }
 

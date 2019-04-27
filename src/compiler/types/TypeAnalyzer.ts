@@ -27,7 +27,7 @@ import {
   resolveTypeMember,
   getTypeFromTypeNode
 } from './typeHelpers';
-import { annotations } from '../annotations';
+import { annotations, Annotation } from '../annotations';
 import {
   UnexpectedType,
   NotAValidType,
@@ -59,6 +59,7 @@ function createTypeAlias(name: Nodes.NameIdentifierNode, value: Type, parsingCon
 
 export abstract class TypeResolver {
   public didAnalysisChange = false;
+  public nodeAnnotations = new Map<Nodes.Node, Set<Annotation>>();
 
   private nonResolvedNodes = new Set<Nodes.Node>();
 
@@ -67,7 +68,7 @@ export abstract class TypeResolver {
   constructor(
     public documentNode: Nodes.DocumentNode,
     public parsingContext: ParsingContext,
-    public messageCollector: MessageCollector
+    public messageCollector: MessageCollector = new MessageCollector()
   ) {}
 
   analyze() {
@@ -75,6 +76,7 @@ export abstract class TypeResolver {
 
     this.messageCollector.errors.length = 0;
     this.nonResolvedNodes.clear();
+    this.nodeAnnotations.clear();
 
     this.walk(this.documentNode, this.parsingContext);
 
@@ -174,6 +176,16 @@ export abstract class TypeResolver {
     if (!areEqual && type) {
       this.setAnalysisChanged();
     }
+  }
+
+  protected annotateNode(node: Nodes.Node, annotation: Annotation) {
+    const annotations = this.nodeAnnotations.get(node) || new Set();
+
+    if (!this.nodeAnnotations.has(node)) {
+      this.nodeAnnotations.set(node, annotations);
+    }
+
+    annotations.add(annotation);
   }
 
   protected getType(node: Nodes.Node): Type | null {
@@ -302,7 +314,7 @@ export class TypeAnalyzer extends TypeResolver {
           if (lhsType.equals(rhsType) && rhsType.equals(lhsType)) {
             this.messageCollector.warning(`This cast is useless "${lhsType}" as "${rhsType}"`, node);
             if (!node.hasAnnotation(annotations.ByPassFunction)) {
-              node.annotate(new annotations.ByPassFunction());
+              this.annotateNode(node, new annotations.ByPassFunction());
             }
             this.setType(node, rhsType);
             return;
@@ -718,7 +730,7 @@ export class TypeAnalyzer extends TypeResolver {
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       const incomingTypes = node.functions.map(fun => {
         if (!fun.functionNode!.hasAnnotation(annotations.IsOverloaded)) {
-          fun.functionNode!.annotate(new annotations.IsOverloaded());
+          this.annotateNode(fun.functionNode, new annotations.IsOverloaded());
         }
         return this.getType(fun.functionNode.functionName);
       });
@@ -802,7 +814,7 @@ export class TypeAnalyzer extends TypeResolver {
     if (NeverType.isNeverType(carryType)) {
       this.messageCollector.error(new UnreachableCode(node.rhs));
       this.messageCollector.error(carryType.inspect(10), node.rhs.astNode);
-      node.rhs.annotate(new annotations.IsUnreachable());
+      this.annotateNode(node.rhs, new annotations.IsUnreachable());
       this.setType(node, UNRESOLVED_TYPE);
       return;
     }
@@ -832,7 +844,7 @@ export class TypeAnalyzer extends TypeResolver {
         } else {
           this.messageCollector.error(new TypeMismatch(carryType, argumentType, node.literal));
           this.messageCollector.error(new UnreachableCode(node.rhs));
-          node.rhs.annotate(new annotations.IsUnreachable());
+          this.annotateNode(node.rhs, new annotations.IsUnreachable());
         }
       }
     } else if (node instanceof Nodes.MatchCaseIsNode) {
@@ -854,7 +866,7 @@ export class TypeAnalyzer extends TypeResolver {
       } else if (!canBeAssigned(carryType, argumentType) && !canBeAssigned(argumentType, carryType)) {
         this.messageCollector.error(new TypeMismatch(carryType, argumentType, node.typeReference));
         this.messageCollector.error(new UnreachableCode(node.rhs));
-        node.rhs.annotate(new annotations.IsUnreachable());
+        this.annotateNode(node.rhs, new annotations.IsUnreachable());
       } else {
         const eqFunction = resolveTypeMember(node.typeReference, argumentType, 'is', this.messageCollector);
 
@@ -880,7 +892,7 @@ export class TypeAnalyzer extends TypeResolver {
           } else {
             this.messageCollector.error(new TypeMismatch(carryType, argumentType, node.typeReference));
             this.messageCollector.error(new UnreachableCode(node.rhs));
-            node.rhs.annotate(new annotations.IsUnreachable());
+            this.annotateNode(node.rhs, new annotations.IsUnreachable());
           }
         }
       }
