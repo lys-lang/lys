@@ -11,7 +11,7 @@ TEST_FILE=*
 DEBUG_TYPES=0
 
 just-test:
-	DEBUG_TYPES=$(DEBUG_TYPES) node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000 "test/$(TEST_FILE).spec.js" --bail
+	DEBUG_TYPES=$(DEBUG_TYPES) node ./node_modules/mocha/bin/_mocha --require source-map-support/register --grep "$(GREP)" --timeout 10000 "test/$(TEST_FILE).spec.js" --baila
 
 test: | build just-test
 

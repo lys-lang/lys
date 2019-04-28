@@ -495,7 +495,7 @@
       |-QNameNode=Node
         |-NameIdentifierNode="Node"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Node)) (alias Tree)) (fun "as" ((alias Node)) (alias ref)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Node)) (alias Tree)) (fun "as" ((alias Node)) (alias UnsafeCPointer)) (fun "as" ((alias Node)) (alias ref)))
       |-FunDirectiveNode
         |-FunctionNode annotations=IsOverloaded
           |-NameIdentifierNode="as" type=(fun "as" ((alias Node)) (alias Tree))
@@ -511,6 +511,25 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias Node)) (alias UnsafeCPointer))
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self" type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
+            |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer type=(type (alias UnsafeCPointer (native UnsafeCPointer)))
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef type=(intersection (fun "addressFromRef" ((alias ref)) (alias u32)))
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -1432,7 +1451,7 @@
       |-QNameNode=Cons
         |-NameIdentifierNode="Cons"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Cons)) (alias Forest)) (fun "as" ((alias Cons)) (alias ref)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Cons)) (alias Forest)) (fun "as" ((alias Cons)) (alias UnsafeCPointer)) (fun "as" ((alias Cons)) (alias ref)))
       |-FunDirectiveNode
         |-FunctionNode annotations=IsOverloaded
           |-NameIdentifierNode="as" type=(fun "as" ((alias Cons)) (alias Forest))
@@ -1448,6 +1467,25 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias Cons)) (alias UnsafeCPointer))
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
+            |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer type=(type (alias UnsafeCPointer (native UnsafeCPointer)))
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef type=(intersection (fun "addressFromRef" ((alias ref)) (alias u32)))
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
