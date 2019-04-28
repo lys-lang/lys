@@ -24,6 +24,24 @@ describe('Execution tests', () => {
     );
   });
 
+  describe('namespaces', () => {
+    test(
+      'resolve variable declarations in namespaces',
+      `
+        type A = %struct { }
+
+        impl A {
+          val x: boolean = true
+        }
+
+        #[export] fun main(): boolean = A.x
+      `,
+      async x => {
+        expect(x.exports.main()).to.eq(1);
+      }
+    );
+  });
+
   describe('numbers', () => {
     test(
       'casts',

@@ -4,8 +4,8 @@
  (type $2 (func))
  (type $3 (func (result i32)))
  (type $4 (func (param i32) (result i32)))
- (type $5 (func (param i64) (result i64)))
- (type $6 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i64) (result i64)))
  (type $7 (func (param i32 i64)))
  (type $8 (func (param i32) (result i32)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
@@ -171,7 +171,7 @@
   )
   (local.get $0)
  )
- (func $3 (; 6 ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $3 (; 6 ;) (type $5) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
    (i32.add
     (local.get $0)
@@ -238,7 +238,7 @@
    )
   )
  )
- (func $6 (; 9 ;) (type $5) (param $0 i64) (result i64)
+ (func $6 (; 9 ;) (type $6) (param $0 i64) (result i64)
   (local $1 i64)
   (i64.store
    (i32.wrap_i64
@@ -257,7 +257,7 @@
   )
   (local.get $1)
  )
- (func $7 (; 10 ;) (type $5) (param $0 i64) (result i64)
+ (func $7 (; 10 ;) (type $6) (param $0 i64) (result i64)
   (local $1 i64)
   (i64.store
    (i32.wrap_i64

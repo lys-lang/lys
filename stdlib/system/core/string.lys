@@ -94,7 +94,7 @@ impl string {
     val lhsLen = lhs.length * 2 as u32
     val rhsLen = rhs.length * 2 as u32
 
-    val $ret = system::core::memory::allocBytes(lhsLen + rhsLen)
+    val $ret = bytes(lhsLen + rhsLen)
 
     system::core::memory::memcpy(
       system::core::memory::memcpy(
@@ -268,7 +268,7 @@ impl string {
     } else {
       var len = charLength(value)
 
-      val ret = system::core::memory::allocBytes(len << 1)
+      val ret = bytes(len << 1)
 
       if (value > 0)
         printToBytes(ret, value as u64, len)
@@ -290,7 +290,7 @@ impl string {
     } else {
       var len = charLength(value)
 
-      val ret = system::core::memory::allocBytes(len << 1)
+      val ret = bytes(len << 1)
 
       printToBytes(ret, value, len)
 

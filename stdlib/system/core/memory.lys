@@ -12,15 +12,15 @@ import system::core::string
 val AL_BITS = 3
 
 /** Number of possible alignment values. */
-val AL_SIZE: u32 = 1 as u32 << AL_BITS
+val AL_SIZE: u32 = 0x1 << AL_BITS
 
 /** Mask to obtain just the alignment bits. */
-val AL_MASK: u32 = AL_SIZE - 1  as u32
+val AL_MASK: u32 = AL_SIZE - 0x1
 
 /** Maximum 32-bit allocation size. */
-val MAX_SIZE_32: u32 = (1 << 30) as u32 // 1G
+val MAX_SIZE_32: u32 = 0x1 << 0x1E // 1G
 
-val HEAP_BASE: u32 = (64 * 1024) as u32 // TODO: this must be dynamic
+val HEAP_BASE: u32 = (0x40 * 0x400) // TODO: this must be dynamic
 
 private var startOffset: u32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
 private var offset: u32 = startOffset
@@ -40,32 +40,6 @@ private fun currentMemory(): u32 = %wasm {
 }
 
 private fun max(a: u32, b: u32): u32 = if (a > b) a else b
-
-private fun bytesDiscriminant(): u64 = {
-  val discriminant: u32 = bytes.^discriminant
-  discriminant as u64 << 32
-}
-
-fun allocBytes(size: u32): bytes = %wasm {
-  (local $allocation i32)
-  (local $allocationSize i32)
-  // allocate header + size
-  (local.set $allocationSize (i32.add (get_local $size) (i32.const 4)))
-
-  // allocate the memory and save the pointer
-  (local.set $allocation
-    (call $malloc (local.get $allocationSize))
-  )
-
-  (call $memset (get_local $allocation) (i32.const 0) (local.get $allocationSize))
-
-  // store the size in the first int
-  (i32.store (get_local $allocation) (get_local $size))
-  (i64.or
-    (call $bytesDiscriminant)
-    (i64.extend_u/i32 (get_local $allocation))
-  )
-}
 
 fun calloc(itemCount: u32, itemSize: u32): u32 = {
   val size = itemCount * itemSize
@@ -99,13 +73,6 @@ fun malloc(size: u32): u32 = {
 
 fun free(ptr: i32): void = {
   // stub
-}
-
-fun discriminant(v: ref): u64 = %wasm {
-  (i64.and
-    (i64.const 0xffffffff00000000)
-    (get_local $v)
-  )
 }
 
 fun memcpy(dst: u32, src: u32, length: u32): u32 = {

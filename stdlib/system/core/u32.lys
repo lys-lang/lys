@@ -44,8 +44,8 @@ impl u32 {
   fun /(lhs: u32, rhs: u32): u32 = %wasm { (i32.div_u (get_local $lhs) (get_local $rhs)) }
   fun ~(rhs: u32): u32 = %wasm { (i32.xor (i32.const 0xFFFFFFFF) (get_local $rhs)) }
   fun >>>(lhs: u32, rhs: i32): u32 = %wasm { (i32.shr_u (get_local $lhs) (get_local $rhs)) }
-  fun >>(lhs: u32, rhs: i32): u32 = %wasm { (i32.shr_s (get_local $lhs) (get_local $rhs)) }
-  fun <<(lhs: u32, rhs: i32): u32 = %wasm { (i32.shl (get_local $lhs) (get_local $rhs)) }
+  fun >>(lhs: u32, rhs: i32 | u32): u32 = %wasm { (i32.shr_s (get_local $lhs) (get_local $rhs)) }
+  fun <<(lhs: u32, rhs: i32 | u32): u32 = %wasm { (i32.shl (get_local $lhs) (get_local $rhs)) }
   fun ^(lhs: u32, rhs: u32): u32 = %wasm { (i32.xor (get_local $lhs) (get_local $rhs)) }
   fun >=(lhs: u32, rhs: u32): boolean = %wasm { (i32.ge_u (get_local $lhs) (get_local $rhs)) }
   fun <=(lhs: u32, rhs: u32): boolean = %wasm { (i32.le_u (get_local $lhs) (get_local $rhs)) }

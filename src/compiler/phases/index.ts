@@ -3,7 +3,7 @@ import { ParsingContext } from '../ParsingContext';
 import { executeSemanticPhase } from './semanticPhase';
 import { executeScopePhase, executeNameInitializationPhase } from './scopePhase';
 import { executeTypeCheck, executeTypeInitialization } from './typePhase';
-import { executeCompilationPhase } from './compilationPhase';
+import { executeCompilationPhase, executePreCompilationPhase } from './compilationPhase';
 
 export function analyze(moduleName: string, parsingContext: ParsingContext, desiredPhase: PhaseFlags, debug = false) {
   const document = parsingContext.getExistingParsingPhaseForModule(moduleName)!;
@@ -20,6 +20,8 @@ export function analyze(moduleName: string, parsingContext: ParsingContext, desi
         executeTypeInitialization(moduleName, parsingContext);
       } else if (PhaseFlags.TypeCheck === nextPhase) {
         executeTypeCheck(moduleName, parsingContext, debug);
+      } else if (PhaseFlags.PreCompilation === nextPhase) {
+        executePreCompilationPhase(moduleName, parsingContext);
       } else if (PhaseFlags.Compilation === nextPhase) {
         executeCompilationPhase(moduleName, parsingContext);
       }

@@ -386,7 +386,7 @@ export function executeNameInitializationPhase(moduleName: string, parsingContex
 
   findImplicitImports(document, parsingContext, null);
 
-  document.analysis.nextPhase = PhaseFlags.Scope;
+  document.analysis.nextPhase++;
 
   return;
 }
@@ -401,5 +401,5 @@ export function executeScopePhase(moduleName: string, parsingContext: ParsingCon
   validateLoops(document, parsingContext);
   summarizeImports(document, parsingContext);
 
-  document.analysis.nextPhase = PhaseFlags.TypeInitialization;
+  document.analysis.nextPhase++;
 }

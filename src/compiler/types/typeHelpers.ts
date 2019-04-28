@@ -79,7 +79,7 @@ export function resolveTypeMember(
   type: Type,
   memberName: string,
   messageCollector: MessageCollector
-): Type | false {
+): { type: Type; referencedNode?: Nodes.NameIdentifierNode } | false {
   if (type && type instanceof TypeAlias) {
     const resolvedName = type.name.namespaceNames && type.name.namespaceNames.get(memberName);
 
@@ -87,7 +87,7 @@ export function resolveTypeMember(
       const memberType = TypeHelpers.getNodeType(resolvedName);
 
       if (isValidType(memberType)) {
-        return memberType;
+        return { type: memberType, referencedNode: resolvedName };
       }
 
       if (errorNode) {
@@ -113,7 +113,7 @@ export function resolveTypeMember(
       }
       // Since the members are calculated in the scope phase we return
       // `never` type so the type check execution can continue
-      return InjectableTypes.never;
+      return { type: InjectableTypes.never };
     }
   } else {
     if (errorNode) {
@@ -292,7 +292,7 @@ function findImplicitTypeCasting(
       const fnType = resolveTypeMember(errorNode, from, 'as', messageCollector);
 
       if (fnType) {
-        const fun = findFunctionOverload(fnType, [from], null, to, true, messageCollector, true);
+        const fun = findFunctionOverload(fnType.type, [from], null, to, true, messageCollector, true);
 
         if (fun instanceof FunctionType) {
           if (!fun.name.hasAnnotation(annotations.Explicit)) {
