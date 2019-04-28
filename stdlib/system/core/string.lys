@@ -41,6 +41,16 @@ impl string {
   fun as(self: string): ref = %wasm { (get_local $self) }
 
   /**
+   * CPointer implicit coercion.
+   */
+  fun as(self: string): UnsafeCPointer = %wasm {
+    (i32.add
+      (i32.const 4)
+      (call $addressFromRef (get_local $self))
+    )
+  }
+
+  /**
    * Unless numbers, strings are concatenated, not added.
    * We use a different operator to do it.
    */

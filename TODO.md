@@ -72,6 +72,14 @@ grammar changes:
 
 ```
 privatefun is tokenized as two tokens
+
+comments are not allowed between function parameters
+comments are not allowed between struct parameters
+comments are not allowed between enum parameters
+
+??? is invalid
+
+index selectors and function name
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?

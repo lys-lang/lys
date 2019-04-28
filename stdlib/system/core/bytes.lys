@@ -16,6 +16,10 @@ type bytes = %stack { lowLevelType="i64" byteSize=8 }
 impl bytes {
   // bytes is a structure
 
+  fun apply(size: u32): bytes = {
+    system::core::memory::allocBytes(size)
+  }
+
   fun toAddr(str: bytes): u32 = %wasm {
     (call $addressFromRef (get_local $str))
   }
@@ -27,6 +31,16 @@ impl bytes {
 
   fun property_ptr(str: bytes): u32 = {
     toAddr(str) + 4 as u32
+  }
+
+  /**
+   * CPointer implicit coercion.
+   */
+  fun as(self: bytes): UnsafeCPointer = %wasm {
+    (i32.add
+      (i32.const 4)
+      (call $addressFromRef (get_local $self))
+    )
   }
 
   fun [](data: bytes, at: u32): u8 = {

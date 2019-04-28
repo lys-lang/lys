@@ -981,7 +981,7 @@
       |-QNameNode=Custom
         |-NameIdentifierNode="Custom"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Custom)) (alias Color)) (fun "as" ((alias Custom)) (alias ref)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Custom)) (alias Color)) (fun "as" ((alias Custom)) (alias UnsafeCPointer)) (fun "as" ((alias Custom)) (alias ref)))
       |-FunDirectiveNode
         |-FunctionNode annotations=IsOverloaded
           |-NameIdentifierNode="as" type=(fun "as" ((alias Custom)) (alias Color))
@@ -997,6 +997,25 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias Custom)) (alias UnsafeCPointer))
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self" type=(alias Custom (struct r: (type (alias i32 (native i32))) g: (type (alias i32 (native i32))) b: (type (alias i32 (native i32)))))
+            |-ReferenceNode resolvedReference=Custom type=(type (alias Custom (struct r: (type (alias i32 (native i32))) g: (type (alias i32 (native i32))) b: (type (alias i32 (native i32))))))
+              |-QNameNode=Custom
+                |-NameIdentifierNode="Custom"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer type=(type (alias UnsafeCPointer (native UnsafeCPointer)))
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef type=(intersection (fun "addressFromRef" ((alias ref)) (alias u32)))
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"

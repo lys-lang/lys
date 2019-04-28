@@ -712,14 +712,18 @@ export class TypeAnalyzer extends TypeResolver {
         }
       }
     } else if (node instanceof Nodes.TypeDirectiveNode) {
-      const valueType = node.valueType ? this.getType(node.valueType) : InjectableTypes.never;
+      if (node.valueType) {
+        let valueType = getTypeFromTypeNode(node.valueType, this.messageCollector);
 
-      if (isValidType(valueType)) {
-        const type = createTypeAlias(node.variableName, valueType, this.parsingContext);
+        if (isValidType(valueType)) {
+          const type = createTypeAlias(node.variableName, valueType, this.parsingContext);
 
-        this.setType(node.variableName, TypeType.of(type));
+          this.setType(node.variableName, TypeType.of(type));
+        } else {
+          this.messageCollector.errorIfBranchDoesntHaveAny('Invalid type', node.valueType || node);
+        }
       } else {
-        this.messageCollector.errorIfBranchDoesntHaveAny('Invalid type', node.valueType || node);
+        this.messageCollector.errorIfBranchDoesntHaveAny('Missing value type', node);
       }
     } else if (node instanceof Nodes.IntersectionTypeNode) {
       const of = node.of.map($ => getTypeTypeType($, this.getType($), this.messageCollector)) as Type[];

@@ -123,7 +123,7 @@ export async function main(cwd: string, argv: string[]) {
 
   const optimize = !args['--no-optimize'];
 
-  await codeGen.validate(optimize, !optimize);
+  await codeGen.validate(optimize, DEBUG);
 
   if (args['--wast']) {
     nodeSystem.writeFile(outFileFullWithoutExtension + '.wast', codeGen.emitText());

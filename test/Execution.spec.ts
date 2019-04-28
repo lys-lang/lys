@@ -145,11 +145,16 @@ describe('Execution tests', () => {
           var ret = 0
           loop {
             ret = ret + 1
-            current = current - 1
-            if (current == 0)
-              break
-            else
-              continue
+
+            if (1 == 1){
+              current = current - 1
+              if (current == 0)
+                break
+              else
+                continue
+            }
+
+            panic()
           }
           ret
         }

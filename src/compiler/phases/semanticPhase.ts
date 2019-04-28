@@ -293,6 +293,14 @@ function processStruct(
                 $ref
               }
 
+
+              /**
+               * CPointer implicit coercion.
+               */
+              fun as(self: ${typeName}): UnsafeCPointer = %wasm {
+                (call $addressFromRef (get_local $self))
+              }
+
               private fun fromPointer(ptr: u32): ${typeName} = %wasm {
                 (i64.or
                   (call $${typeName}$discriminant)

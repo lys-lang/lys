@@ -107,6 +107,9 @@ impl Real {
   fun as(lhs: Real): Number = %wasm {
     (local.get $lhs)
   }
+  fun as(self: Real): UnsafeCPointer = %wasm {
+    (call addressFromRef (get_local $self))
+  }
   #[explicit]
   fun as(lhs: Real): ref = %wasm {
     (local.get $lhs)
@@ -161,6 +164,9 @@ impl Natural {
   fun as(lhs: Natural): Number = %wasm {
     (local.get $lhs)
   }
+  fun as(self: Natural): UnsafeCPointer = %wasm {
+    (call addressFromRef (get_local $self))
+  }
   #[explicit]
   fun as(lhs: Natural): ref = %wasm {
     (local.get $lhs)
@@ -214,6 +220,9 @@ impl Natural {
 impl Complex {
   fun as(lhs: Complex): Number = %wasm {
     (local.get $lhs)
+  }
+  fun as(self: Complex): UnsafeCPointer = %wasm {
+    (call addressFromRef (get_local $self))
   }
   #[explicit]
   fun as(lhs: Complex): ref = %wasm {

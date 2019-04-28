@@ -1230,7 +1230,7 @@
       |-QNameNode=Custom
         |-NameIdentifierNode="Custom"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Custom)) (alias Color)) (fun "as" ((alias Custom)) (alias ref)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias Custom)) (alias Color)) (fun "as" ((alias Custom)) (alias UnsafeCPointer)) (fun "as" ((alias Custom)) (alias ref)))
       |-FunDirectiveNode
         |-FunctionNode annotations=IsOverloaded
           |-NameIdentifierNode="as" type=(fun "as" ((alias Custom)) (alias Color))
@@ -1246,6 +1246,25 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias Custom)) (alias UnsafeCPointer))
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self" type=(alias Custom (struct hex: (type (alias i32 (native i32)))))
+            |-ReferenceNode resolvedReference=Custom type=(type (alias Custom (struct hex: (type (alias i32 (native i32))))))
+              |-QNameNode=Custom
+                |-NameIdentifierNode="Custom"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer type=(type (alias UnsafeCPointer (native UnsafeCPointer)))
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef type=(intersection (fun "addressFromRef" ((alias ref)) (alias u32)))
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -1869,6 +1888,44 @@
             |-ReferenceNode resolvedReference=$ref type=(alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct))))) annotations=IsValueNode,IsReturnExpression,Local(test::fixtures::execution::structValuesExtended::$ref_1:CatBag#7)
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias CatBag)) (alias UnsafeCPointer)) (fun "as" ((alias CatBag)) (alias ref)))
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias CatBag)) (alias UnsafeCPointer))
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self" type=(alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct)))))
+            |-ReferenceNode resolvedReference=CatBag type=(type (alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct))))))
+              |-QNameNode=CatBag
+                |-NameIdentifierNode="CatBag"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer type=(type (alias UnsafeCPointer (native UnsafeCPointer)))
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef type=(intersection (fun "addressFromRef" ((alias ref)) (alias u32)))
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias CatBag)) (alias ref)) annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs" type=(alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct)))))
+            |-ReferenceNode resolvedReference=CatBag type=(type (alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct))))))
+              |-QNameNode=CatBag
+                |-NameIdentifierNode="CatBag"
+          |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="fromPointer" type=(intersection (fun "fromPointer" ((alias u32)) (alias CatBag)))
       |-FunDirectiveNode
@@ -2907,25 +2964,6 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-    |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias CatBag)) (alias ref)))
-      |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
-        |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias CatBag)) (alias ref)) annotations=Explicit
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct)))))
-            |-ReferenceNode resolvedReference=CatBag type=(type (alias CatBag (struct a: (type (alias i32 (native i32))) b: (type (alias boolean (native boolean))) c: (type (alias f32 (native f32))) d: (type (alias i64 (native i64))) e: (type (alias f64 (native f64))) f: (type (alias Color (union (alias None (struct)) (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct hex: (type (alias i32 (native i32)))))))) g: (union (alias Red (struct)) (alias None (struct))))))
-              |-QNameNode=CatBag
-                |-NameIdentifierNode="CatBag"
-          |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
-          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="main" type=(intersection (fun "main" () (alias void)))
     |-FunDirectiveNode

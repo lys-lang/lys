@@ -1,0 +1,97 @@
+private fun push(index: u32, array: bytes, value: u32): u32 = {
+  array[index] = value as u8
+  index + 0x1
+}
+
+/**
+ * Measures the length in bytes of the UCS string
+ */
+private fun utf8Len(str: string): u32 = {
+  var len = 0x0
+  var i = 0x0
+
+  loop {
+    if (i >= str.length) {
+      break
+    }
+
+    val c = str[i] as u32
+
+    if (c >= 0xd800 && c <= 0xdbff && (i + 0x1) < str.length) {
+      var cn = str[i + 0x1] as u32
+
+      if (cn >= 0xdc00 && cn <= 0xdfff) {
+        len = len + 0x4
+        i = i + 0x2
+        continue
+      }
+    }
+
+    if (c >= 0x800) {
+      len = len + 0x3
+    } else if (c >= 0x80) {
+      len = len + 0x2
+    } else {
+      len = len + 0x1
+    }
+
+    i = i + 0x1
+    continue
+  }
+
+  len
+}
+
+/**
+ * Converts a UCS string into an UTF-8 byte array.
+ */
+fun toUtf8(str: string): bytes = {
+  var out = bytes(utf8Len(str) + 0x1)
+
+  var i = 0x0
+  var j = 0x0
+
+  loop {
+    if (i >= str.length) {
+      break
+    }
+
+    val c = str[i] as u32
+
+    if (c >= 0xd800 && c <= 0xdbff && (i + 0x1) < str.length) {
+      var cn = str[i + 0x1] as u32
+
+      if (cn >= 0xdc00 && cn <= 0xdfff) {
+        var pt = (c - 0xd800) * 0x400 + cn - 0xdc00 + 0x10000
+
+        j = push(j, out, 0xf0 + (pt / 0x40 / 0x40 / 0x40))
+        j = push(j, out, 0x80 + (pt / 0x40 / 0x40) % 0x40)
+        j = push(j, out, 0x80 + (pt / 0x40) % 0x40)
+        j = push(j, out, 0x80 + pt % 0x40)
+
+        i = i + 0x2
+        continue
+      }
+    }
+
+    if (c >= 0x800) {
+      j = push(j, out, 0xe0 + (c / 0x40 / 0x40))
+      j = push(j, out, 0x80 + (c / 0x40) % 0x40)
+      j = push(j, out, 0x80 + c % 0x40)
+    } else if (c >= 0x80) {
+      j = push(j, out, 0xc0 + c / 0x40)
+      j = push(j, out, 0x80 + c % 0x40)
+    } else {
+      j = push(j, out, c)
+    }
+
+    i = i + 0x1
+
+    continue
+  }
+
+  // make it a null terminated string
+  j = push(j, out, 0x0)
+
+  out
+}
