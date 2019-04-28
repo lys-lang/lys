@@ -656,5 +656,5 @@ export function executeSemanticPhase(moduleName: string, parsingContext: Parsing
   validateSignatures(document, parsingContext);
   validateInjectedWasm(document, parsingContext);
 
-  document.analysis.nextPhase = PhaseFlags.NameInitialization;
+  document.analysis.nextPhase++;
 }

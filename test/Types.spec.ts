@@ -816,6 +816,21 @@ describe('Types', function() {
     `;
 
     checkMainType`// #![no-std]
+      /// resolve variable declarations in namespaces
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+
+      impl A {
+        val x: boolean = ???
+      }
+
+      var y = A.x
+      ---
+      y := (alias boolean (native boolean))
+    `;
+
+    checkMainType`// #![no-std]
       /// (never) name resolution must converge
 
       type boolean = %stack { lowLevelType="i32" byteSize=1 }

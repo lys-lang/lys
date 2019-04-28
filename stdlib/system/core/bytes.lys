@@ -14,13 +14,40 @@ import system::core::u8
 type bytes = %stack { lowLevelType="i64" byteSize=8 }
 
 impl bytes {
-  // bytes is a structure
-
-  fun apply(size: u32): bytes = {
-    system::core::memory::allocBytes(size)
+  private fun bytesDiscriminant(): u64 = {
+    val discriminant: u32 = bytes.^discriminant
+    discriminant as u64 << 32
   }
 
-  fun toAddr(str: bytes): u32 = %wasm {
+  // bytes
+  fun apply(size: u32): bytes = %wasm {
+    (local $allocation i32)
+    (local $allocationSize i32)
+
+    // allocate header + size
+    (local.set $allocationSize (i32.add (get_local $size) (i32.const 4)))
+
+    // allocate the memory and save the pointer
+    (local.set $allocation
+      (call $system::core::memory::malloc (local.get $allocationSize))
+    )
+
+    (call $system::core::memory::memset
+      (get_local $allocation)
+      (i32.const 0)
+      (local.get $allocationSize)
+    )
+
+    // store the size in the first int
+    (i32.store (get_local $allocation) (get_local $size))
+
+    (i64.or
+      (call $bytesDiscriminant)
+      (i64.extend_u/i32 (get_local $allocation))
+    )
+  }
+
+  private fun toAddr(str: bytes): u32 = %wasm {
     (call $addressFromRef (get_local $str))
   }
 

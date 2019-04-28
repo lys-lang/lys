@@ -3,8 +3,8 @@
  (type $1 (func (result i32)))
  (type $2 (func (param i32) (result i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i64) (result i64)))
- (type $5 (func (param i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i64) (result i64)))
  (type $6 (func (param i32 i32) (result i64)))
  (memory $0 1)
  (data (i32.const 16) "\08\00\00\00t\00r\00u\00e\00\00")
@@ -139,7 +139,7 @@
   )
   (local.get $0)
  )
- (func $3 (; 3 ;) (type $5) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $3 (; 3 ;) (type $4) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
    (i32.add
     (local.get $0)
@@ -201,7 +201,7 @@
   )
   (local.get $2)
  )
- (func $5 (; 5 ;) (type $4) (param $0 i64) (result i64)
+ (func $5 (; 5 ;) (type $5) (param $0 i64) (result i64)
   (local $1 i32)
   (local $2 i64)
   (if (result i64)

@@ -4,9 +4,9 @@
  (type $2 (func))
  (type $3 (func (result i32)))
  (type $4 (func (param i32) (result i32)))
- (type $5 (func (param i64) (result i64)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i64) (result i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i64) (result i32)))
+ (type $7 (func (param i64) (result i64)))
  (type $8 (func (result i64)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
@@ -150,7 +150,7 @@
   )
   (local.get $0)
  )
- (func $2 (; 5 ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $2 (; 5 ;) (type $5) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
    (i32.add
     (local.get $0)
@@ -256,7 +256,7 @@
    )
   )
  )
- (func $6 (; 9 ;) (type $7) (param $0 i64) (result i32)
+ (func $6 (; 9 ;) (type $6) (param $0 i64) (result i32)
   (if (result i32)
    (i64.eq
     (i64.and
@@ -293,7 +293,7 @@
    )
   )
  )
- (func $7 (; 10 ;) (type $5) (param $0 i64) (result i64)
+ (func $7 (; 10 ;) (type $7) (param $0 i64) (result i64)
   (block $label$1 (result i64)
    (if
     (i64.ne

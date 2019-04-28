@@ -30,6 +30,7 @@ export enum PhaseFlags {
   Scope,
   TypeInitialization,
   TypeCheck,
+  PreCompilation,
   Compilation,
   CodeGeneration
 }
@@ -254,6 +255,8 @@ export namespace Nodes {
   }
 
   export class MemberNode extends ExpressionNode {
+    resolvedReference?: Reference;
+
     constructor(
       astNode: ASTNode,
       public readonly lhs: ExpressionNode,

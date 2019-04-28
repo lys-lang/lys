@@ -6,8 +6,8 @@
  (type $4 (func (result i32)))
  (type $5 (func (param i32) (result i32)))
  (type $6 (func (param i32 i32) (result i32)))
- (type $7 (func (param i64) (result i64)))
- (type $8 (func (param i32 i32 i32)))
+ (type $7 (func (param i32 i32 i32)))
+ (type $8 (func (param i64) (result i64)))
  (type $9 (func (param i32)))
  (type $10 (func (result i64)))
  (type $11 (func (result i32)))
@@ -177,7 +177,7 @@
   )
   (local.get $0)
  )
- (func $4 (; 8 ;) (type $8) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $4 (; 8 ;) (type $7) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
    (i32.add
     (local.get $0)
@@ -290,7 +290,7 @@
   )
   (local.get $0)
  )
- (func $8 (; 12 ;) (type $7) (param $0 i64) (result i64)
+ (func $8 (; 12 ;) (type $8) (param $0 i64) (result i64)
   (local $1 i32)
   (local $2 i64)
   (if (result i64)

@@ -55,7 +55,7 @@ const resolveLocals = walkPreOrder(
 );
 
 const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext) => {
-  if (node instanceof Nodes.ReferenceNode) {
+  if (node instanceof Nodes.ReferenceNode || node instanceof Nodes.MemberNode) {
     if (node.resolvedReference) {
       if (node.resolvedReference.type === 'VALUE') {
         const decl = node.resolvedReference!.referencedNode.parent; // NameIdentifierNode#parent
@@ -77,14 +77,16 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: Parsing
         }
       }
     } else {
-      parsingContext.messageCollector.errorIfBranchDoesntHaveAny(
-        new LysCompilerError(`Reference was not resolved`, node)
-      );
+      if (node instanceof Nodes.ReferenceNode) {
+        parsingContext.messageCollector.errorIfBranchDoesntHaveAny(
+          new LysCompilerError(`Reference was not resolved`, node)
+        );
+      }
     }
   }
 });
 
-const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
+const resolveDeclarations = walkPreOrder((node: Nodes.Node, parsingContext) => {
   if (node instanceof Nodes.VarDeclarationNode) {
     if (node.parent instanceof Nodes.DirectiveNode) {
       node.annotate(new annotations.LocalIdentifier(new Global(node.variableName)));
@@ -95,6 +97,8 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node) => {
         node.annotate(
           new annotations.LocalIdentifier(fn.addLocal(TypeHelpers.getNodeType(node.value)!, node.variableName))
         );
+      } else {
+        parsingContext.messageCollector.errorIfBranchDoesntHaveAny("Don't know how to generate a local for this", node);
       }
     }
   }
@@ -189,10 +193,28 @@ function isRecursiveFunctionCall(_functionNode: Nodes.FunctionNode, fcn: Nodes.F
   return false;
 }
 
-export function executeCompilationPhase(moduleName: string, parsingContext: ParsingContext) {
-  const document = parsingContext.getPhase(moduleName, PhaseFlags.Compilation - 1);
+function findImportedModulesRecursive(
+  moduleName: string,
+  parsingContext: ParsingContext,
+  queue: Nodes.DocumentNode[],
+  visited = new Set<string>()
+) {
+  if (visited.has(moduleName)) return;
+  visited.add(moduleName);
+  const document = parsingContext.getPhase(moduleName, PhaseFlags.TypeInitialization);
+  document.importedModules.forEach(moduleName => {
+    findImportedModulesRecursive(moduleName, parsingContext, queue, visited);
+  });
 
-  assert(document.analysis.nextPhase === PhaseFlags.Compilation);
+  if (!queue.includes(document)) {
+    queue.push(document);
+  }
+}
+
+export function executePreCompilationPhase(moduleName: string, parsingContext: ParsingContext) {
+  const document = parsingContext.getPhase(moduleName, PhaseFlags.PreCompilation - 1);
+
+  assert(document.analysis.nextPhase === PhaseFlags.PreCompilation);
 
   fixParents(document, parsingContext, null);
 
@@ -200,10 +222,29 @@ export function executeCompilationPhase(moduleName: string, parsingContext: Pars
   detectTailCall(document, parsingContext, null);
 
   resolveDeclarations(document, parsingContext, null);
+
+  document.analysis.nextPhase++;
+}
+
+export function executeCompilationPhase(moduleName: string, parsingContext: ParsingContext) {
+  const document = parsingContext.getPhase(moduleName, PhaseFlags.Compilation - 1);
+
+  const analysisQueue: Nodes.DocumentNode[] = [];
+
+  // Find every dependency
+  findImportedModulesRecursive(moduleName, parsingContext, analysisQueue);
+
+  // Ensure every dependency has executed the PreCompilation phase
+  analysisQueue.forEach(document => {
+    parsingContext.getPhase(document.moduleName, PhaseFlags.PreCompilation);
+  });
+
+  assert(document.analysis.nextPhase === PhaseFlags.Compilation);
+
   resolveLocals(document, parsingContext, null);
   resolveVariables(document, parsingContext, null);
 
   fixParents(document, parsingContext, null);
 
-  document.analysis.nextPhase = PhaseFlags.CodeGeneration;
+  document.analysis.nextPhase++;
 }

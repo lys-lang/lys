@@ -1370,12 +1370,11 @@
             |-VarDeclarationNode
               |-NameIdentifierNode="newData"
               |-FunctionCallNode annotations=IsValueNode
-                |-ReferenceNode resolvedReference=system::core::memory::allocBytes
-                  |-QNameNode=system::core::memory::allocBytes
-                    |-NameIdentifierNode="system"
-                    |-NameIdentifierNode="core"
-                    |-NameIdentifierNode="memory"
-                    |-NameIdentifierNode="allocBytes"
+                |-MemberNode
+                  |-ReferenceNode resolvedReference=system::core::bytes::bytes
+                    |-QNameNode=bytes
+                      |-NameIdentifierNode="bytes"
+                  |-NameIdentifierNode="apply"
                 |-BinaryExpressionNode annotations=IsValueNode
                   |-ReferenceNode resolvedReference=lhsLen annotations=IsValueNode
                     |-QNameNode=lhsLen

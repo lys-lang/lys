@@ -406,7 +406,12 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
           if (e instanceof LysCompilerError) throw e;
           throw new LysCompilerError(e.message, node.memberName);
         }
+      } else if (node.resolvedReference) {
+        const instr = node.resolvedReference.isLocalReference ? 'local.get' : 'global.get';
+        const local = node.getAnnotation(annotations.LocalIdentifier).local;
+        return t.instruction(instr, [t.identifier(local.name)]);
       }
+
       console.trace();
     }
 

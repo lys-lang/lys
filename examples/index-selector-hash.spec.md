@@ -64,25 +64,25 @@ fun main(): void = {
   )
 
   {
-    var mutableBytes = allocBytes(0 as u32)
+    var mutableBytes = bytes(0 as u32)
     mustEqual(DJB2(mutableBytes), 5381, "empty mutable string hash")
   }
 
   {
-    var mutableBytes = allocBytes(1 as u32)
+    var mutableBytes = bytes(1 as u32)
     mutableBytes[0 as u32] = 65 as u8
     mustEqual(DJB2(mutableBytes), 177638, "[1: 65]")
   }
 
   {
-    var mutableBytes = allocBytes(2 as u32)
+    var mutableBytes = bytes(2 as u32)
     mutableBytes[0 as u32] = 65 as u8
     mutableBytes[1 as u32] = 99 as u8
     mustEqual(DJB2(mutableBytes), 5862153, "[2: 65 99]")
   }
 
   {
-    var mutableBytes = allocBytes(256 as u32)
+    var mutableBytes = bytes(256 as u32)
     mutableBytes[0 as u32] = 65 as u8
     mutableBytes[1 as u32] = 99 as u8
     mustEqual(DJB2(mutableBytes), 0xC831703075A63CC9 as u64, "[256: 65 99 00 .. 00]")

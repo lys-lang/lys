@@ -94,7 +94,7 @@ export function executeTypeInitialization(moduleName: string, parsingContext: Pa
   fixParents(document, parsingContext);
   initializeTypes(document, parsingContext);
 
-  document.analysis.nextPhase = PhaseFlags.TypeCheck;
+  document.analysis.nextPhase++;
 }
 
 function findNonFinalizedImportsRecursive(
@@ -224,5 +224,5 @@ export function executeTypeCheck(moduleName: string, parsingContext: ParsingCont
     }
   }
 
-  document.analysis.nextPhase = PhaseFlags.Compilation;
+  document.analysis.nextPhase++;
 }

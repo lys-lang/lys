@@ -40,6 +40,7 @@ import { last } from '../helpers';
 import { MessageCollector } from '../MessageCollector';
 import { printAST } from '../../utils/astPrinter';
 import { getDocument } from '../phases/helpers';
+import { Reference } from '../Reference';
 
 export const DEBUG_TYPES = process.env.DEBUG_TYPES === '1' || process.env.DEBUG_TYPES === 'true';
 
@@ -218,7 +219,7 @@ export class TypeAnalyzer extends TypeResolver {
               const fnType = resolveTypeMember(node, type.of, 'apply', this.messageCollector);
               // TODO: a better error would be X is not callable
               if (fnType) {
-                const fun = findFunctionOverload(fnType, [], node, null, false, this.messageCollector, true);
+                const fun = findFunctionOverload(fnType.type, [], node, null, false, this.messageCollector, true);
 
                 if (isValidType(fun) && fun instanceof FunctionType) {
                   annotateImplicitCall(node, fun, [], this.messageCollector);
@@ -285,7 +286,15 @@ export class TypeAnalyzer extends TypeResolver {
           const valueType = resolveTypeMember(node.rhs, rhsType, 'is', this.messageCollector);
 
           if (valueType) {
-            const fun = findFunctionOverload(valueType!, [rhsType], node, null, false, this.messageCollector, false);
+            const fun = findFunctionOverload(
+              valueType.type,
+              [rhsType],
+              node,
+              null,
+              false,
+              this.messageCollector,
+              false
+            );
 
             if (fun instanceof FunctionType) {
               node.resolvedFunctionType = fun;
@@ -324,7 +333,7 @@ export class TypeAnalyzer extends TypeResolver {
 
           if (memberType) {
             const fun = findFunctionOverload(
-              memberType,
+              memberType.type,
               [lhsType],
               node,
               rhsType,
@@ -361,7 +370,7 @@ export class TypeAnalyzer extends TypeResolver {
         if (memberType) {
           if (isValidType(rhsType)) {
             const argTypes = [lhsType, rhsType];
-            const result = processFunctionCall(node, memberType, argTypes, this.messageCollector);
+            const result = processFunctionCall(node, memberType.type, argTypes, this.messageCollector);
 
             if (isValidType(result)) {
               this.setType(node, result);
@@ -387,7 +396,7 @@ export class TypeAnalyzer extends TypeResolver {
 
         if (memberType) {
           const argTypes = [rhsType];
-          const result = processFunctionCall(node, memberType, argTypes, new MessageCollector());
+          const result = processFunctionCall(node, memberType.type, argTypes, new MessageCollector());
 
           if (isValidType(result)) {
             this.setType(node, result);
@@ -675,7 +684,19 @@ export class TypeAnalyzer extends TypeResolver {
           const memberType = resolveTypeMember(node.memberName, lhsType.of, memberName, this.messageCollector);
 
           if (memberType) {
-            this.setType(node, memberType);
+            if (node.hasAnnotation(annotations.IsValueNode)) {
+              if (memberType.referencedNode) {
+                node.resolvedReference = new Reference(
+                  memberType.referencedNode,
+                  node.closure!,
+                  'VALUE',
+                  memberType.referencedNode.astNode.moduleName
+                );
+              } else {
+                this.messageCollector.errorIfBranchDoesntHaveAny(new NotAValidType(node.lhs));
+              }
+            }
+            this.setType(node, memberType.type);
           } else {
             this.setType(node, UNRESOLVED_TYPE);
           }
@@ -686,7 +707,15 @@ export class TypeAnalyzer extends TypeResolver {
           if (memberType) {
             const isGetter = !node.hasAnnotation(annotations.IsAssignationLHS);
             if (isGetter) {
-              const fun = findFunctionOverload(memberType, [lhsType], node, null, false, this.messageCollector, false);
+              const fun = findFunctionOverload(
+                memberType.type,
+                [lhsType],
+                node,
+                null,
+                false,
+                this.messageCollector,
+                false
+              );
 
               if (isValidType(fun) && fun instanceof FunctionType) {
                 annotateImplicitCall(node, fun, [node.lhs], this.messageCollector);
@@ -699,7 +728,7 @@ export class TypeAnalyzer extends TypeResolver {
                 this.setType(node, UNRESOLVED_TYPE);
               }
             } else {
-              this.setType(node, memberType);
+              this.setType(node, memberType.type);
             }
           } else {
             this.setType(node, UNRESOLVED_TYPE);
@@ -837,7 +866,15 @@ export class TypeAnalyzer extends TypeResolver {
       if (eqFunction) {
         const argTypes = [carryType, argumentType];
 
-        const fun = findFunctionOverload(eqFunction, argTypes, node.literal, null, false, new MessageCollector(), true);
+        const fun = findFunctionOverload(
+          eqFunction.type,
+          argTypes,
+          node.literal,
+          null,
+          false,
+          new MessageCollector(),
+          true
+        );
 
         if (isValidType(fun) && fun instanceof FunctionType) {
           node.resolvedFunctionType = fun;
@@ -876,7 +913,7 @@ export class TypeAnalyzer extends TypeResolver {
 
         if (eqFunction) {
           const fun = findFunctionOverload(
-            eqFunction,
+            eqFunction.type,
             [argumentType],
             node,
             null,
