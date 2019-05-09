@@ -1,9 +1,9 @@
-declare var describe, it;
+declare var describe: any, it: any;
 import { parseMD } from '../dist/utils/MDParser';
 import { expect } from 'chai';
 
 describe('MDParser tests', () => {
-  const EQ = (a, b) => expect(JSON.stringify(a, null, 2)).to.eq(JSON.stringify(b, null, 2));
+  const EQ = (a: any, b: any) => expect(JSON.stringify(a, null, 2)).to.eq(JSON.stringify(b, null, 2));
 
   it('must parse an empty document', () => {
     const result = parseMD(``);

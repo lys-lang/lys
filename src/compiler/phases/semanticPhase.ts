@@ -64,11 +64,11 @@ function exportDecorator(
       parsingContext.messageCollector.error('exportedName must be a string', decorator.args[0].astNode);
     }
   } else {
-    exportedName = target.functionNode.functionName!.name;
+    exportedName = target.functionNode.functionName.name;
   }
 
   if (exportedName) {
-    target.functionNode.functionName!.annotate(new annotations.Export(exportedName));
+    target.functionNode.functionName.annotate(new annotations.Export(exportedName));
   }
 }
 
@@ -81,7 +81,7 @@ function inlineDecorator(
     parsingContext.messageCollector.error('"inline" takes no arguments', decorator.decoratorName.astNode);
   }
 
-  target.functionNode.functionName!.annotate(new annotations.Inline());
+  target.functionNode.functionName.annotate(new annotations.Inline());
 }
 
 function explicitDecorator(
@@ -93,7 +93,7 @@ function explicitDecorator(
     parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName.astNode);
   }
 
-  target.functionNode.functionName!.annotate(new annotations.Explicit());
+  target.functionNode.functionName.annotate(new annotations.Explicit());
 }
 
 function processFunctionDecorations(node: Nodes.FunDirectiveNode, parsingContext: ParsingContext) {
@@ -127,7 +127,7 @@ const overloadFunctions = function(
   document.directives.slice().forEach((node: Nodes.Node, ix: number) => {
     if (node instanceof Nodes.FunDirectiveNode) {
       processFunctionDecorations(node, parsingContext);
-      const functionName = node.functionNode.functionName!.name;
+      const functionName = node.functionNode.functionName.name;
       const x = overloadedFunctions.get(functionName);
       if (x && x instanceof Nodes.OverloadedFunctionNode) {
         x.functions.push(node);
@@ -135,7 +135,7 @@ const overloadFunctions = function(
       } else {
         const overloaded = new Nodes.OverloadedFunctionNode(
           node.astNode,
-          new Nodes.NameIdentifierNode(node.functionNode.functionName!.astNode, functionName)
+          new Nodes.NameIdentifierNode(node.functionNode.functionName.astNode, functionName)
         );
         overloaded.isPublic = node.isPublic;
         overloaded.annotate(new annotations.Injected());

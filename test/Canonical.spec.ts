@@ -1,4 +1,4 @@
-declare var describe, it;
+declare var describe: any, it: any;
 
 import { testParseToken, folderBasedTest, PhasesResult } from './TestHelpers';
 import { printAST } from '../dist/utils/astPrinter';
@@ -18,11 +18,27 @@ const phases = function(txt: string, fileName: string): PhasesResult {
 };
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/canonical/*.lys', phases, async result => printAST(result.document), '.ast');
+  folderBasedTest(
+    'test/fixtures/canonical/*.lys',
+    phases,
+    async result => {
+      if (!result) throw new Error('No result');
+      return printAST(result.document);
+    },
+    '.ast'
+  );
 });
 
 describe('FileBasedCanonical', () => {
-  folderBasedTest('test/fixtures/canonical/*.lys', phases, async result => printAST(result.document), '.ast');
+  folderBasedTest(
+    'test/fixtures/canonical/*.lys',
+    phases,
+    async result => {
+      if (!result) throw new Error('No result');
+      return printAST(result.document);
+    },
+    '.ast'
+  );
 });
 
 describe('Canonical', function() {
@@ -32,7 +48,7 @@ describe('Canonical', function() {
     return `tests/canonical_tests_${testCount++}.lys`;
   }
 
-  function test(literals, ...placeholders) {
+  function test(literals: any, ...placeholders: any[]) {
     let result = '';
 
     // interleave the literals with the placeholders
@@ -43,7 +59,7 @@ describe('Canonical', function() {
 
     // add the last literal
     result += literals[literals.length - 1];
-    testParseToken(result, getFileName(), 'Document', null, phases);
+    testParseToken(result, getFileName(), 'Document', async () => void 0, phases);
   }
 
   test`var a = 1`;

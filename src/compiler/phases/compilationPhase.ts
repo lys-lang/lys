@@ -58,7 +58,7 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: Parsing
   if (node instanceof Nodes.ReferenceNode || node instanceof Nodes.MemberNode) {
     if (node.resolvedReference) {
       if (node.resolvedReference.type === 'VALUE') {
-        const decl = node.resolvedReference!.referencedNode.parent; // NameIdentifierNode#parent
+        const decl = node.resolvedReference.referencedNode.parent; // NameIdentifierNode#parent
         if (
           decl instanceof Nodes.ParameterNode ||
           decl instanceof Nodes.VarDeclarationNode ||
