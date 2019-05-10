@@ -27,7 +27,7 @@ export function isValidType(type: Type | null | void): type is Type {
   }
 
   if (type instanceof FunctionType) {
-    return isValidType(type.returnType) && type.parameterTypes!.every(isValidType);
+    return isValidType(type.returnType) && type.parameterTypes.every(isValidType);
   }
 
   if (type instanceof TypeAlias) {
@@ -251,7 +251,7 @@ export function findFunctionOverload(
         messageCollector.error(new InvalidOverload(incommingType, argTypes, errorNode));
       } else {
         const fun = incommingType.of[0] as FunctionType;
-        messageCollector.error(new InvalidCall(fun.parameterTypes!, argTypes, errorNode));
+        messageCollector.error(new InvalidCall(fun.parameterTypes, argTypes, errorNode));
       }
 
       return null;
@@ -263,7 +263,7 @@ export function findFunctionOverload(
 
     if (!queryResult) {
       if (errorNode) {
-        messageCollector.error(new InvalidCall(incommingType.parameterTypes!, argTypes, errorNode));
+        messageCollector.error(new InvalidCall(incommingType.parameterTypes, argTypes, errorNode));
       } else {
         return null;
       }
@@ -334,20 +334,20 @@ function acceptsTypes(
   strict: boolean,
   automaticCoercion: boolean
 ): { score: number; casts: (FunctionType | null)[] } | null {
-  if (type.parameterTypes!.length !== types.length) {
+  if (type.parameterTypes.length !== types.length) {
     return null;
   }
 
   let score = 1;
   let casts = [];
 
-  if (type.parameterTypes!.length === 0) {
+  if (type.parameterTypes.length === 0) {
     return { score: Infinity, casts: [] };
   }
 
   for (let index = 0; index < types.length; index++) {
     const argumentType = types[index];
-    const parameterType = type.parameterTypes![index];
+    const parameterType = type.parameterTypes[index];
 
     const equals = argumentType.equals(parameterType);
 
@@ -399,7 +399,7 @@ function downToRefTypes(type: Type): (RefType | StructType)[] {
     } else if (argType instanceof TypeAlias) {
       argType = argType.of;
     } else if (argType instanceof UnionType) {
-      return flatten((argType as UnionType).of.map($ => downToRefTypes($)));
+      return flatten(argType.of.map($ => downToRefTypes($)));
     } else {
       return [];
     }
@@ -500,7 +500,7 @@ function ensureArgumentCoercion(
     const argType = argsTypes[i];
 
     if (argType) {
-      const ret = ensureCanBeAssignedWithImplicitConversion(argType, fun.parameterTypes![i], argNode, messageCollector);
+      const ret = ensureCanBeAssignedWithImplicitConversion(argType, fun.parameterTypes[i], argNode, messageCollector);
       node.argumentsNode[i] = ret.node;
     } else {
       messageCollector.error(new LysTypeError('type is undefined', node.argumentsNode[i]));

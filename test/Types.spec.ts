@@ -1,4 +1,4 @@
-declare var describe, it, console;
+declare var describe: any, it: any, console: any;
 
 import { folderBasedTest, PhasesResult } from './TestHelpers';
 import { printErrors } from '../dist/utils/errorPrinter';
@@ -51,7 +51,7 @@ describe('Types', function() {
       .filter($ => $.length)
       .join('\n');
   }
-  function checkMainType(literals, ...placeholders) {
+  function checkMainType(literals: any, ...placeholders: any) {
     function test(program: string, expectedType: string, expectedError: string) {
       const number = n++;
       let label = '';
@@ -65,10 +65,10 @@ describe('Types', function() {
 
       if (!label) label = `type inference test #${number}`;
 
-      it(label, async function() {
+      it(label, async function(this: any) {
         this.timeout(10000);
 
-        let document: Nodes.DocumentNode;
+        let document: Nodes.DocumentNode | void = void 0;
 
         try {
           const phaseResult = phases(program, `types_${number}.lys`);
@@ -88,7 +88,7 @@ describe('Types', function() {
                 } else if ($ instanceof Nodes.VarDirectiveNode) {
                   return `${$.decl.variableName.name} := ${
                     TypeHelpers.getNodeType($.decl.variableName)
-                      ? TypeHelpers.getNodeType($.decl.variableName).inspect(1)
+                      ? TypeHelpers.getNodeType($.decl.variableName)!.inspect(1)
                       : '<ofType is NULL>'
                   }`;
                 }
@@ -2946,7 +2946,7 @@ describe('Types', function() {
     describe('UnionType', () => {
       const aliasOf = (name: string, type: Type) =>
         new TypeAlias(Nodes.NameIdentifierNode.fromString(name, null as any), type);
-      const struct = (name: string) => new StructType([]);
+      const struct = (_name: string) => new StructType([]);
       const union = (...of: Type[]) => new UnionType(of);
       const namedUnion = (name: string, ...of: Type[]) => aliasOf(name, union(...of));
       const structAlias = (name: string) => aliasOf(name, struct(name));
@@ -4408,7 +4408,7 @@ describe('Types', function() {
             }
             throw e;
           }
-
+          if (!result) throw new Error('No result');
           try {
             return printAST(result.document);
           } catch (e) {
@@ -4429,16 +4429,18 @@ describe('Types', function() {
         phases,
         async (result, e) => {
           if (e) throw e;
-
-          try {
-            failWithErrors('should have errors', result.parsingContext);
-          } catch (e) {
-            if (!result.parsingContext.messageCollector.errors.length) {
-              throw e;
+          if (result) {
+            try {
+              failWithErrors('should have errors', result.parsingContext);
+            } catch (e) {
+              if (!result.parsingContext.messageCollector.errors.length) {
+                throw e;
+              }
             }
-          }
 
-          return printErrors(result.parsingContext, true);
+            return printErrors(result.parsingContext, true);
+          }
+          throw new Error('No result');
         },
         '.txt',
         true

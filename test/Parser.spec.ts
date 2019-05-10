@@ -1,4 +1,4 @@
-declare var describe;
+declare var describe: any;
 
 import { folderBasedTest, testParseToken } from './TestHelpers';
 import { expect } from 'chai';
@@ -32,6 +32,7 @@ describe('Parser', () => {
         if (!result && e) {
           throw e;
         }
+        if (!result) throw new Error('No result');
         return printErrors(result.parsingContext, true);
       },
       '.txt',
@@ -46,7 +47,7 @@ describe('Parser', () => {
   }
 
   describe('Basic sanity tests', function() {
-    function test(literals, ...placeholders) {
+    function test(literals: any, ...placeholders: any[]) {
       let result = '';
 
       // interleave the literals with the placeholders
@@ -57,11 +58,11 @@ describe('Parser', () => {
 
       // add the last literal
       result += literals[literals.length - 1];
-      testParseToken(result, getFileName(), 'Document', null, phases);
+      testParseToken(result, getFileName(), 'Document', async () => void 0, phases);
     }
 
     function testEquivalence(a: string, b: string) {
-      let aDocument: ReturnType<typeof phases> = null;
+      let aDocument: ReturnType<typeof phases> | null = null;
 
       testParseToken(
         a,
@@ -69,6 +70,7 @@ describe('Parser', () => {
         'Document',
         async (doc, err) => {
           if (err) throw err;
+          if (!doc) throw new Error('No result');
           aDocument = doc;
         },
         phases
@@ -79,7 +81,8 @@ describe('Parser', () => {
         'Document',
         async (doc, err) => {
           if (err) throw err;
-          expect(printAST(aDocument.document)).to.eq(printAST(doc.document));
+          if (!doc) throw new Error('No result');
+          expect(printAST(aDocument!.document)).to.eq(printAST(doc.document));
         },
         phases
       );

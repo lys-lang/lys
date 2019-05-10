@@ -1,6 +1,6 @@
 declare var WebAssembly: any;
 
-export async function generateTestInstance(buffer: ArrayBuffer, modules: Array<(getInstance: Function) => any> = []) {
+export async function generateTestInstance(buffer: ArrayBuffer, modules: Array<(getInstance: () => any) => any> = []) {
   let instance: any = null;
 
   const getInstance = () => instance;

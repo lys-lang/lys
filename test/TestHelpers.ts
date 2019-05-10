@@ -1,5 +1,5 @@
 import { readFileSync, existsSync, writeFileSync } from 'fs';
-declare var require, it, console;
+declare var require: any, it: any, console: any;
 import * as expect from 'expect';
 import glob = require('glob');
 import { failWithErrors } from '../dist/compiler/findAllErrors';
@@ -15,16 +15,16 @@ export type PhasesResult = { document: Nodes.DocumentNode; parsingContext: Parsi
 export function testParseToken<V extends PhasesResult = PhasesResult>(
   txt: string,
   fileName: string,
-  target?: string,
-  customTest?: (document: V, error?: Error) => Promise<void>,
-  phases?: (txt: string, fileName: string) => V,
+  target: string,
+  customTest: (document: V | void, error?: Error) => Promise<void>,
+  phases: (txt: string, fileName: string) => V,
   debug?: boolean
 ) {
   testParseTokenFailsafe(
     txt,
     fileName,
     target,
-    async (result: V, e) => {
+    async (result: V | void, e) => {
       if (result && result.parsingContext.messageCollector.hasErrors()) {
         failWithErrors('testParseToken', result.parsingContext);
       }
@@ -43,23 +43,25 @@ export function testParseToken<V extends PhasesResult = PhasesResult>(
 export function testParseTokenFailsafe<V extends PhasesResult = PhasesResult>(
   txt: string,
   fileName: string,
-  target?: string,
-  customTest?: (document: V, error?: Error) => Promise<any>,
-  phases?: (txt: string, fileName: string) => V,
+  target: string,
+  customTest: (document: V | void, error?: Error) => Promise<any>,
+  phases: (txt: string, fileName: string) => V,
   debug?: boolean
 ) {
-  it(fileName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async function() {
+  it(fileName || inspect(txt, false, 1, true) + ' must resolve into ' + (target || '(FIRST RULE)'), async function(
+    this: any
+  ) {
     this.timeout(10000);
 
     debug && console.log('      ---------------------------------------------------');
 
-    let result: V;
+    let result: V | void = void 0;
 
     try {
       result = phases(txt, fileName);
     } catch (e) {
       if (customTest) {
-        await customTest(result, e);
+        await customTest(void 0, e);
       } else {
         throw e;
       }
@@ -74,8 +76,8 @@ export function testParseTokenFailsafe<V extends PhasesResult = PhasesResult>(
 export function folderBasedTest<V extends PhasesResult = PhasesResult>(
   grep: string,
   phases: (txt: string, fileName: string) => V,
-  fn: (x: V, err?: Error) => Promise<string>,
-  extension = '.wast',
+  fn: (x: V | void, err?: Error) => Promise<string | null>,
+  extension: string | null = '.wast',
   shouldFail = false
 ) {
   function testFile(fileName: string) {
@@ -84,7 +86,7 @@ export function folderBasedTest<V extends PhasesResult = PhasesResult>(
       content,
       fileName,
       'Document',
-      async (resultNode: V, err) => {
+      async (resultNode: V | void, err) => {
         if (!resultNode && !err) throw new Error('WTF');
 
         if (shouldFail) {
@@ -102,7 +104,7 @@ export function folderBasedTest<V extends PhasesResult = PhasesResult>(
 
         let result = await fn(resultNode, err);
 
-        if (extension !== null) {
+        if (result !== null && extension !== null) {
           const compareToFileName = fileName + extension;
           const compareFileExists = existsSync(compareToFileName);
           const compareTo = compareFileExists ? readFileSync(compareToFileName).toString() : '';

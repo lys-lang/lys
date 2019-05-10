@@ -585,7 +585,7 @@ const visitor = {
 
         const varRef = new Nodes.ReferenceNode(ret.args[0].astNode, qname);
 
-        if (qname.names[0].name!.startsWith('$')) {
+        if (qname.names[0].name.startsWith('$')) {
           // TODO: fix horrible hack $
           qname.names[0].name = qname.names[0].name.replace(/^\$/, '');
         }

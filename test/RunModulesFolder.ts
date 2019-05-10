@@ -24,7 +24,7 @@ async function test(globPath: string) {
 }
 
 test(resolve(__dirname, '..') + '/**/*.spec.md')
-  .then($ => process.exit(0))
+  .then(_ => process.exit(0))
   .catch(e => {
     console.error(e);
     process.exit(1);

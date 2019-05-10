@@ -1,4 +1,4 @@
-declare var describe;
+declare var describe: any;
 
 import { folderBasedTest, PhasesResult } from './TestHelpers';
 
@@ -41,12 +41,21 @@ describe('Compiler', function() {
   });
 
   describe('AST', () => {
-    folderBasedTest('**/compiler/*.lys', phases, async result => printAST(result.document), '.ast');
+    folderBasedTest(
+      '**/compiler/*.lys',
+      phases,
+      async result => {
+        if (!result) throw new Error('No result');
+        return printAST(result.document);
+      },
+      '.ast'
+    );
   });
 
   describe('Compilation', () => {
     folderBasedTest('**/compiler/*.lys', phases, async (result, e) => {
       if (e) throw e;
+      if (!result) throw new Error('No result');
       return result.emitText();
     });
   });
@@ -56,6 +65,7 @@ describe('Compiler', function() {
       phases,
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         await result.validate(true);
         return result.emitText();
       },
@@ -66,6 +76,7 @@ describe('Compiler', function() {
   describe('Compilation-execution-tests', () => {
     folderBasedTest('**/execution/*.lys', phases, async (result, e) => {
       if (e) throw e;
+      if (!result) throw new Error('No result');
       return result.emitText();
     });
   });
@@ -76,6 +87,7 @@ describe('Compiler', function() {
       phases,
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         await result.validate(true);
         return result.emitText();
       },
@@ -89,7 +101,7 @@ describe('Compiler', function() {
       phases,
       async (result, e) => {
         if (e) throw e;
-
+        if (!result) throw new Error('No result');
         return printAST(result.document);
       },
       '.ast'

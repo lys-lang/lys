@@ -74,7 +74,7 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
       return t.signature(
         fn.parameters.map(($, $$) => ({
           id: $.parameterName.name,
-          valtype: fnType.parameterTypes![$$].binaryenType
+          valtype: fnType.parameterTypes[$$].binaryenType
         })),
         retType
       );
@@ -235,7 +235,7 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode): any {
   }
 
   if (node instanceof Nodes.HexLiteral) {
-    return t.numberLiteralFromRaw(node.astNode!.text);
+    return t.numberLiteralFromRaw(node.astNode.text);
   }
 
   if (node instanceof Nodes.IntegerLiteral) {
@@ -296,7 +296,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return t.instruction('br', [t.identifier('Break' + loopLabel.label)]);
     } else if (node instanceof Nodes.IntegerLiteral) {
       const type = TypeHelpers.getNodeType(node)!.binaryenType;
-      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.astNode!.text)]);
+      return t.objectInstruction('const', type, [t.numberLiteralFromRaw(node.astNode.text)]);
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {

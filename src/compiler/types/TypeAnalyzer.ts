@@ -345,7 +345,7 @@ export class TypeAnalyzer extends TypeResolver {
             if (fun instanceof FunctionType && isValidType(fun.returnType)) {
               node.resolvedFunctionType = fun;
 
-              this.setType(node, fun.returnType!);
+              this.setType(node, fun.returnType);
             } else {
               this.messageCollector.errorIfBranchDoesntHaveAny(
                 new LysTypeError(`Cannot convert type "${lhsType}" into "${rhsType}"`, node.lhs)
@@ -420,7 +420,7 @@ export class TypeAnalyzer extends TypeResolver {
 
       if (condition) {
         if (booleanType) {
-          ensureCanBeAssignedWithImplicitConversion(condition, booleanType, node.condition!, this.messageCollector);
+          ensureCanBeAssignedWithImplicitConversion(condition, booleanType, node.condition, this.messageCollector);
         } else {
           this.messageCollector.error('Cannot resolve "boolean"', node.condition.astNode);
         }
@@ -480,11 +480,11 @@ export class TypeAnalyzer extends TypeResolver {
         );
 
         if (isValidType(fun) && fun instanceof FunctionType) {
-          annotateImplicitCall(node, fun, [node.lhs.lhs!, node.rhs!], this.messageCollector);
+          annotateImplicitCall(node, fun, [node.lhs.lhs, node.rhs], this.messageCollector);
 
           this.setType(node, fun.returnType!);
         } else {
-          this.messageCollector.error('Overload not found', node.rhs!.astNode);
+          this.messageCollector.error('Overload not found', node.rhs.astNode);
           this.setType(node, UNRESOLVED_TYPE);
           return;
         }
@@ -522,15 +522,15 @@ export class TypeAnalyzer extends TypeResolver {
 
           this.setType(node, fun.returnType!);
         } else {
-          this.messageCollector.error('Overload not found', node.rhs!.astNode);
+          this.messageCollector.error('Overload not found', node.rhs.astNode);
         }
       } else {
-        const result = ensureCanBeAssignedWithImplicitConversion(rhsType, lhsType, node.rhs!, this.messageCollector);
+        const result = ensureCanBeAssignedWithImplicitConversion(rhsType, lhsType, node.rhs, this.messageCollector);
 
         if (!NeverType.isNeverType(rhsType) && rhsType.nativeType === NativeTypes.void) {
           this.messageCollector.error(
             'The expression returns a void value, which cannot be assigned to any value',
-            node.rhs!.astNode
+            node.rhs.astNode
           );
         }
 
@@ -659,18 +659,18 @@ export class TypeAnalyzer extends TypeResolver {
         if (lhsType instanceof TypeType) {
           const allowedTypeSchemas = lhsType.schema();
 
-          if (node.memberName!.name! in allowedTypeSchemas) {
-            this.setType(node, allowedTypeSchemas[node.memberName!.name!]);
+          if (node.memberName.name in allowedTypeSchemas) {
+            this.setType(node, allowedTypeSchemas[node.memberName.name]);
             return;
           } else {
             const keys = Object.keys(allowedTypeSchemas);
 
             if (keys.length) {
               this.messageCollector.error(
-                new LysTypeError(`Invalid schema property. Available options: ${keys.join(', ')}`, node.memberName!)
+                new LysTypeError(`Invalid schema property. Available options: ${keys.join(', ')}`, node.memberName)
               );
             } else {
-              this.messageCollector.error(new LysTypeError(`The type "${lhsType}" has no schema`, node.lhs!));
+              this.messageCollector.error(new LysTypeError(`The type "${lhsType}" has no schema`, node.lhs));
             }
           }
         } else {
@@ -736,7 +736,7 @@ export class TypeAnalyzer extends TypeResolver {
         } else {
           this.messageCollector.errorIfBranchDoesntHaveAny(
             `Don't know how to find a member in "${lhsType}"`,
-            node.memberName!
+            node.memberName
           );
         }
       }
@@ -762,7 +762,7 @@ export class TypeAnalyzer extends TypeResolver {
       this.setType(node, new UnionType(of));
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       const incomingTypes = node.functions.map(fun => {
-        if (!fun.functionNode!.hasAnnotation(annotations.IsOverloaded)) {
+        if (!fun.functionNode.hasAnnotation(annotations.IsOverloaded)) {
           this.annotateNode(fun.functionNode, new annotations.IsOverloaded());
         }
         return this.getType(fun.functionNode.functionName);
@@ -879,7 +879,7 @@ export class TypeAnalyzer extends TypeResolver {
         if (isValidType(fun) && fun instanceof FunctionType) {
           node.resolvedFunctionType = fun;
 
-          if (!fun.returnType!.canBeAssignedTo(booleanType!)) {
+          if (!fun.returnType!.canBeAssignedTo(booleanType)) {
             this.messageCollector.error(new TypeMismatch(fun.returnType!, booleanType, node));
           }
         } else {
@@ -925,7 +925,7 @@ export class TypeAnalyzer extends TypeResolver {
           if (isValidType(fun) && fun instanceof FunctionType) {
             node.resolvedFunctionType = fun;
 
-            if (!fun.returnType!.canBeAssignedTo(booleanType!)) {
+            if (!fun.returnType!.canBeAssignedTo(booleanType)) {
               this.messageCollector.error(new TypeMismatch(fun.returnType!, booleanType, node));
             }
 

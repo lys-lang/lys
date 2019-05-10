@@ -1,4 +1,4 @@
-declare var describe, it, require, console;
+declare var describe: any, console: any;
 
 import * as expect from 'expect';
 import { findNodesByType, Nodes, PhaseFlags } from '../dist/compiler/nodes';
@@ -34,6 +34,7 @@ describe('Semantic', function() {
       scopePhases,
       async (result, err) => {
         if (err) throw err;
+        if (!result) throw new Error('No result');
         return printAST(result.document);
       },
       '.ast'
@@ -44,6 +45,7 @@ describe('Semantic', function() {
       semanticPhases,
       async (result, err) => {
         if (err) throw err;
+        if (!result) throw new Error('No result');
         return printNode(result.document);
       },
       '.desugar'
@@ -55,6 +57,7 @@ describe('Semantic', function() {
         semanticPhases,
         async (result, err) => {
           if (err) throw err;
+          if (!result) throw new Error('No result');
           return printNode(result.document);
         },
         '.desugar'
@@ -68,7 +71,7 @@ describe('Semantic', function() {
     return `tests/semantic_tests_${semanticTestCount++}.lys`;
   }
 
-  function test(literals, ...placeholders) {
+  function test(literals: any, ...placeholders: any[]) {
     let result = '';
 
     // interleave the literals with the placeholders
@@ -83,7 +86,7 @@ describe('Semantic', function() {
       result,
       getFileName(),
       'Document',
-      async (result, e) => {
+      async (_, e) => {
         if (e) throw e;
         expect(parsingContext.messageCollector.hasErrors()).toEqual(false);
       },
@@ -91,7 +94,7 @@ describe('Semantic', function() {
     );
   }
 
-  function testToFail(literals, ...placeholders) {
+  function testToFail(literals: any, ...placeholders: any) {
     let result = '';
 
     // interleave the literals with the placeholders
@@ -108,10 +111,10 @@ describe('Semantic', function() {
       'Document',
       async (result, err) => {
         const didFail = !!err || !result || parsingContext.messageCollector.hasErrors();
-        if (!didFail) {
+        if (!didFail && result) {
           console.log(result);
           console.log(printAST(result.document));
-          console.log(result.document.closure.inspect());
+          console.log(result.document.closure!.inspect());
         }
         expect(didFail).toEqual(true);
       },
@@ -191,6 +194,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
@@ -210,6 +214,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
@@ -299,6 +304,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(1);
@@ -317,6 +323,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(3);
@@ -335,6 +342,7 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
+        if (!result) throw new Error('No result');
         const refs = findNodesByType(result.document, Nodes.BlockNode);
         const statements = refs[0].statements;
         expect(statements.length).toBe(2);
@@ -352,7 +360,8 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core::native')).toEqual(true);
+        if (!result) throw new Error('No result');
+        expect(result.document.closure!.importedModules.has('system::core::native')).toEqual(true);
       },
       scopePhases
     );
@@ -368,8 +377,9 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core')).toEqual(true);
-        expect(result.document.closure.importedModules.has('system::random')).toEqual(true);
+        if (!result) throw new Error('No result');
+        expect(result.document.closure!.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.closure!.importedModules.has('system::random')).toEqual(true);
       },
       scopePhases
     );
@@ -382,7 +392,8 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core::i32')).toEqual(true);
+        if (!result) throw new Error('No result');
+        expect(result.document.closure!.importedModules.has('system::core::i32')).toEqual(true);
       },
       scopePhases
     );
@@ -395,7 +406,8 @@ describe('Semantic', function() {
       'Document',
       async (result, e) => {
         if (e) throw e;
-        expect(result.document.closure.importedModules.has('system::core::i32')).toEqual(true);
+        if (!result) throw new Error('No result');
+        expect(result.document.closure!.importedModules.has('system::core::i32')).toEqual(true);
       },
       scopePhases
     );

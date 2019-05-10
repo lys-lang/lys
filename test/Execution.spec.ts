@@ -1,4 +1,4 @@
-declare var describe;
+declare var describe: any;
 
 import { test, testFolder } from './ExecutionHelper';
 import { expect } from 'chai';

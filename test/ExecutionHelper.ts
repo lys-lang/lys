@@ -1,11 +1,7 @@
-import { print as printWAST } from '@webassemblyjs/wast-printer';
-
 import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGenerationPhase';
 import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { printNode } from '../dist/utils/nodePrinter';
 import { printErrors } from '../dist/utils/errorPrinter';
-import { printAST } from '../dist/utils/astPrinter';
-import { hexDump, readString } from '../dist/utils/execution';
+import { readString } from '../dist/utils/execution';
 import { generateTestInstance } from '../dist/utils/testEnvironment';
 import { loadFromMD } from '../dist/utils/loadFromMD';
 import { compile } from '../dist';
@@ -19,7 +15,7 @@ import { NodeSystem } from '../dist/support/NodeSystem';
 import { PhaseFlags } from '../dist/compiler/nodes';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
 
-declare var it;
+declare var it: any;
 
 const newSystem = new NodeSystem();
 newSystem.cwd = path.resolve(__dirname, 'fixtures', 'execution');
@@ -67,7 +63,7 @@ async function testSrc(content: string, customTest: (document: any, error?: Erro
 
     await compilationPhaseResult.validate(false, true);
 
-    const instance = await generateTestInstance(compilationPhaseResult.buffer, libs);
+    const instance = await generateTestInstance(compilationPhaseResult.buffer!, libs);
 
     if (!instance) throw new Error('Invalid compilation');
 
@@ -115,7 +111,7 @@ async function testSrc(content: string, customTest: (document: any, error?: Erro
 
     if (customTest) {
       try {
-        const newInstance = await generateTestInstance(compilationPhaseResult.buffer, [envLib, testLib]);
+        const newInstance = await generateTestInstance(compilationPhaseResult.buffer!, [envLib, testLib]);
 
         await customTest(newInstance);
 
@@ -147,7 +143,7 @@ export function testFolder(pattern: string) {
   function testFile(fileName: string) {
     const content = readFileSync(fileName).toString();
 
-    it(fileName.replace(parsingContext.system.getCurrentDirectory(), ''), async function() {
+    it(fileName.replace(parsingContext.system.getCurrentDirectory(), ''), async function(this: any) {
       this.timeout(10000);
 
       await testSrc(
@@ -165,8 +161,8 @@ export function testFolder(pattern: string) {
 
 let executionNumber = 0;
 
-export function test(name: string, src: string, customTest?: (document: any, error?: Error) => Promise<any>) {
-  it(name, async function() {
+export function test(name: string, src: string, customTest: (document: any, error?: Error) => Promise<any>) {
+  it(name, async function(this: any) {
     this.timeout(10000);
 
     await testSrc(src, customTest, 'inline_execution_test' + (++executionNumber).toString());
