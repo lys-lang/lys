@@ -17,7 +17,7 @@ Read more about it [in this blog post](https://menduz.com/posts/lys-language-pro
 
 For the time being I'll use npm to distribute the language.
 
-1. `npm i -g lys-compiler`
+1. `npm i -g lys`
 2. Create a folder and a file `main.lys`
 
    ```dwl
@@ -34,7 +34,7 @@ For the time being I'll use npm to distribute the language.
    }
    ```
 
-3. Run `lys-compiler main.lys --test --wast`. It will create `main.wasm` `main.wast` and will run the exported function named `test`.
+3. Run `lys main.lys --test --wast`. It will create `main.wasm` `main.wast` and will run the exported function named `test`.
 
 ## How does it look?
 
@@ -336,4 +336,5 @@ impl Node {
 }
 ```
 
+![Build Status](https://dev.azure.com/lys-lang/Lys/_apis/build/status/lys-lang.lys?branchName=master)
 [![Build Status](https://travis-ci.org/lys-lang/lys.svg?branch=master)](https://travis-ci.org/lys-lang/lys)
