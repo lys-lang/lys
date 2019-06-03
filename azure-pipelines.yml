@@ -8,33 +8,37 @@ trigger:
 pr:
   - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+jobs:
+  - job: Build
+    displayName: Build
 
-steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '12.x'
-    displayName: 'Install Node.js'
+    pool:
+      vmImage: 'ubuntu-latest'
 
-  - script: |
-      npm install
-      make azure-test
-    displayName: 'npm install and build'
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '12.x'
+        displayName: 'Install Node.js'
 
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testRunner: JUnit
-      testResultsFiles: 'test/TEST-RESULTS.xml'
+      - script: |
+          npm install
+          make azure-test
+        displayName: 'npm install and build'
 
-  - script: |
-      make coverage
-    displayName: 'Coverage report'
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testRunner: JUnit
+          testResultsFiles: 'test/TEST-RESULTS.xml'
 
-  - task: PublishCodeCoverageResults@1
-    condition: succeededOrFailed()
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
-      reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
+      - script: |
+          make coverage
+        displayName: 'Coverage report'
+
+      - task: PublishCodeCoverageResults@1
+        condition: succeededOrFailed()
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
