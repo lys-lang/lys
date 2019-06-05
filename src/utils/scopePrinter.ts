@@ -5,9 +5,9 @@ export function printScopes(parsingContext: ParsingContext) {
   const ret: string[] = [];
 
   parsingContext.modulesInContext.forEach($ => {
-    if ($.closure) {
+    if ($.scope) {
       ret.push($.moduleName + ' Next Phase: ' + PhaseFlags[$.analysis.nextPhase]);
-      ret.push($.closure.inspect());
+      ret.push($.scope.inspect());
     }
   });
 

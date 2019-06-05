@@ -131,10 +131,10 @@ describe('Types', function() {
 
           if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {
             parsingContext.modulesInContext.forEach(document => {
-              if (document.closure) {
-                console.log(document.closure.inspect());
+              if (document.scope) {
+                console.log(document.scope.inspect());
               } else {
-                console.log(document.moduleName + ' has no closure!');
+                console.log(document.moduleName + ' has no scope!');
               }
             });
           }

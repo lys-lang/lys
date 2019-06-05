@@ -24,15 +24,15 @@ export const fixParents = walkPreOrder<Nodes.Node>((node, _, parent) => {
 });
 
 /**
- * This function collects the imports of the closures of a document.
+ * This function collects the imports of the scopes of a document.
  * Returns true if it added some new import to the Set
  */
 export function collectImports(moduleList: Set<string>, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   let added = false;
 
   walk(document, parsingContext, node => {
-    if (node.closure && node.closure.importedModules.size) {
-      node.closure.importedModules.forEach((_, $) => {
+    if (node.scope && node.scope.importedModules.size) {
+      node.scope.importedModules.forEach((_, $) => {
         if (!moduleList.has($)) {
           added = true;
           moduleList.add($);

@@ -1,12 +1,12 @@
 import { Nodes } from './nodes';
-import { Closure, ReferenceType } from './Closure';
+import { Scope, ReferenceType } from './Scope';
 
 export class Reference {
   usages = 0;
 
   constructor(
     public readonly referencedNode: Nodes.NameIdentifierNode,
-    public readonly scope: Closure,
+    public readonly scope: Scope,
     public readonly type: ReferenceType,
     public readonly moduleName: string | null = null
   ) {}

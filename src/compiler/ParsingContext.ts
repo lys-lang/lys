@@ -170,8 +170,8 @@ export class ParsingContext {
     const ret: string[] = [];
 
     this.modulesInContext.forEach((v, k) => {
-      if (!k.includes('#') && v.closure) {
-        ret.push(v.closure.inspect(false));
+      if (!k.includes('#') && v.scope) {
+        ret.push(v.scope.inspect(false));
       }
     });
 

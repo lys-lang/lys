@@ -1,5 +1,5 @@
 import { TokenError } from 'ebnf';
-import { Closure } from './Closure';
+import { Scope } from './Scope';
 import { Type, NativeTypes, FunctionType } from './types';
 import { Annotation, IAnnotationConstructor, annotations } from './annotations';
 import { Reference } from './Reference';
@@ -51,7 +51,7 @@ export namespace Nodes {
     hasParentheses: boolean = false;
     isTypeResolved = false;
 
-    closure?: Closure;
+    scope?: Scope;
     parent?: Node;
 
     // ofType?: Type;

@@ -688,7 +688,7 @@ export class TypeAnalyzer extends TypeResolver {
               if (memberType.referencedNode) {
                 node.resolvedReference = new Reference(
                   memberType.referencedNode,
-                  node.closure!,
+                  node.scope!,
                   'VALUE',
                   memberType.referencedNode.astNode.moduleName
                 );

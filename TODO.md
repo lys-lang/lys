@@ -1,7 +1,5 @@
 - automatically coerce based on implicit `as`
   - remove hardcoded ref type
-- val variables should not be reassignable
-- function parameters should be immutable
 - private names are no private, it needs more tests
 - reuse string literals in memory
 - let constructs (scope)
@@ -12,7 +10,6 @@
 - AND binary op should stop evaluation after the first zero result is yielded
 - test file with self reference
 
-rename closures to scopes
 arrays
 strings
 closure functions
@@ -83,5 +80,3 @@ index selectors and function name
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
-
-immutable parameters, immutable `val`
