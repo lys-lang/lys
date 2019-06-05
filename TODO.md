@@ -1,6 +1,5 @@
 - automatically coerce based on implicit `as`
   - remove hardcoded ref type
-- private names are no private, it needs more tests
 - reuse string literals in memory
 - let constructs (scope)
 - methods

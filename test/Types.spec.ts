@@ -1042,6 +1042,68 @@ describe('Types', function() {
       fun() -> i32
     `;
 
+    checkMainType`// #![no-std]
+      /// private function in implementation must not be accessible from outside
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        private fun test(): i32 = 1
+      }
+
+      fun x(): i32 = {
+        i32.test()
+      }
+      ---
+      fun() -> i32
+      ---
+      "test" is private in i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// private function in implementation must be accessible from the inside of the implementation
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        private fun test(): i32 = 1
+        fun testPub(): i32 = test()
+      }
+
+      fun x(): i32 = {
+        i32.testPub()
+      }
+      ---
+      fun() -> i32
+    `;
+
+    checkMainType`
+      /// private function in other modules must not be accessible from outside
+
+      // currentMemory is a private function
+      fun x(): u32 = system::core::memory::currentMemory()
+      ---
+      fun() -> u32
+      ---
+      Cannot find name 'system::core::memory::currentMemory'
+    `;
+
+    checkMainType`// #![no-std]
+      /// public function in implementation must be accessible from outside
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        fun test(): i32 = 1
+      }
+
+      fun x(): i32 = {
+        i32.test()
+      }
+      ---
+      fun() -> i32
+    `;
+
     /// if nodes must return the union of two types
     /// match nodes must return the union of all the matchers
     /// match result must be coerced automatically to the declaration's type

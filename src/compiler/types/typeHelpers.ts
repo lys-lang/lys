@@ -86,6 +86,17 @@ export function resolveTypeMember(
     if (resolvedName) {
       const memberType = TypeHelpers.getNodeType(resolvedName);
 
+      const parent = resolvedName.parent;
+
+      if (parent && parent instanceof Nodes.DirectiveNode) {
+        if (!parent.isPublic) {
+          if (errorNode) {
+            messageCollector.error(new LysTypeError(`Name "${memberName}" is private in ${type.name.name}`, errorNode));
+          }
+          return false;
+        }
+      }
+
       if (isValidType(memberType)) {
         return { type: memberType, referencedNode: resolvedName };
       }
