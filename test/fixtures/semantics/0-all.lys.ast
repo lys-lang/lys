@@ -65,15 +65,15 @@
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
       |-NameIdentifierNode="string"
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="AL_BITS"
       |-ReferenceNode resolvedReference=system::core::i32::i32
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-IntegerLiteral=3 annotations=IsValueNode
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="AL_SIZE"
       |-ReferenceNode resolvedReference=system::core::i32::i32
         |-QNameNode=i32
@@ -84,8 +84,8 @@
         |-ReferenceNode resolvedReference=AL_BITS annotations=IsValueNode
           |-QNameNode=AL_BITS
             |-NameIdentifierNode="AL_BITS"
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="AL_MASK"
       |-ReferenceNode resolvedReference=system::core::i32::i32
         |-QNameNode=i32
@@ -96,8 +96,8 @@
             |-NameIdentifierNode="AL_SIZE"
         |-NameIdentifierNode="-"
         |-IntegerLiteral=1 annotations=IsValueNode
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="MAX_SIZE_32"
       |-ReferenceNode resolvedReference=system::core::i32::i32
         |-QNameNode=i32
@@ -106,8 +106,8 @@
         |-IntegerLiteral=1 annotations=IsValueNode
         |-NameIdentifierNode="<<"
         |-IntegerLiteral=30 annotations=IsValueNode
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="HEAP_BASE"
       |-IntegerLiteral=0 annotations=IsValueNode
   |-TypeDirectiveNode annotations=Injected
@@ -128,7 +128,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -503,7 +503,7 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode annotations=IsValueNode
-          |-ValDeclarationNode
+          |-VarDeclarationNode
             |-NameIdentifierNode="size"
             |-BinaryExpressionNode annotations=IsValueNode
               |-ReferenceNode resolvedReference=itemCount annotations=IsValueNode
@@ -513,7 +513,7 @@
               |-ReferenceNode resolvedReference=itemSize annotations=IsValueNode
                 |-QNameNode=itemSize
                   |-NameIdentifierNode="itemSize"
-          |-ValDeclarationNode
+          |-VarDeclarationNode
             |-NameIdentifierNode="$ret"
             |-FunctionCallNode annotations=IsValueNode
               |-ReferenceNode resolvedReference=malloc
@@ -572,12 +572,12 @@
                     |-ReferenceNode resolvedReference=system::core::native::panic
                       |-QNameNode=panic
                         |-NameIdentifierNode="panic"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="ptr"
                 |-ReferenceNode resolvedReference=offset annotations=IsValueNode
                   |-QNameNode=offset
                     |-NameIdentifierNode="offset"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="newPtr"
                 |-BinaryExpressionNode annotations=IsValueNode
                   |-BinaryExpressionNode annotations=IsValueNode
@@ -598,7 +598,7 @@
                     |-ReferenceNode resolvedReference=AL_MASK
                       |-QNameNode=AL_MASK
                         |-NameIdentifierNode="AL_MASK"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="pagesBefore"
                 |-FunctionCallNode annotations=IsValueNode
                   |-ReferenceNode resolvedReference=currentMemory
@@ -617,7 +617,7 @@
                     |-NameIdentifierNode="<<"
                     |-IntegerLiteral=16 annotations=IsValueNode
                 |-BlockNode
-                  |-ValDeclarationNode
+                  |-VarDeclarationNode
                     |-NameIdentifierNode="pagesNeeded"
                     |-BinaryExpressionNode annotations=IsValueNode
                       |-BinaryExpressionNode annotations=IsValueNode
@@ -637,7 +637,7 @@
                           |-HexLiteral=65535
                       |-NameIdentifierNode=">>>"
                       |-IntegerLiteral=16 annotations=IsValueNode
-                  |-ValDeclarationNode
+                  |-VarDeclarationNode
                     |-NameIdentifierNode="pagesWanted"
                     |-FunctionCallNode annotations=IsValueNode
                       |-ReferenceNode resolvedReference=max
@@ -905,7 +905,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -1339,28 +1339,28 @@
             |-QNameNode=String
               |-NameIdentifierNode="String"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="lhsData"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode resolvedReference=lhs
                   |-QNameNode=lhs
                     |-NameIdentifierNode="lhs"
                 |-NameIdentifierNode="data"
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="rhsData"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode resolvedReference=rhs
                   |-QNameNode=rhs
                     |-NameIdentifierNode="rhs"
                 |-NameIdentifierNode="data"
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="lhsLen"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode resolvedReference=lhsData
                   |-QNameNode=lhsData
                     |-NameIdentifierNode="lhsData"
                 |-NameIdentifierNode="length"
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="rhsLen"
               |-MemberNode annotations=IsValueNode
                 |-ReferenceNode resolvedReference=rhsData
@@ -1722,7 +1722,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -1936,7 +1936,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -2582,7 +2582,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -2834,7 +2834,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -3538,7 +3538,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -3790,7 +3790,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -4507,7 +4507,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -5167,7 +5167,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -5403,7 +5403,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -5894,7 +5894,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -6710,7 +6710,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -6962,7 +6962,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant"
               |-ReferenceNode resolvedReference=system::core::u32::u32
                 |-QNameNode=u32
@@ -7349,7 +7349,7 @@
           |-VarDeclarationNode
             |-NameIdentifierNode="ret" annotations=MutableDeclaration
             |-IntegerLiteral=0 annotations=IsValueNode
-          |-ValDeclarationNode
+          |-VarDeclarationNode
             |-NameIdentifierNode="$iter$"
             |-FunctionCallNode annotations=IsValueNode
               |-MemberNode
@@ -7378,7 +7378,7 @@
                 |-MatchCaseIsNode
                   |-NameIdentifierNode="$"
                   |-BlockNode
-                    |-ValDeclarationNode
+                    |-VarDeclarationNode
                       |-NameIdentifierNode="value"
                       |-MemberNode annotations=IsValueNode
                         |-ReferenceNode resolvedReference=$

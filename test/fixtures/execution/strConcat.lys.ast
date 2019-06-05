@@ -86,13 +86,13 @@
                 |-NameIdentifierNode="START"
             |-StringLiteral="Test byte concatenation" type=(alias string (native string)) annotations=IsValueNode
           |-BlockNode type=(native void)
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::a:string#0)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::a:string#0)
               |-NameIdentifierNode="a" type=(alias string (native string))
               |-StringLiteral="abc" type=(alias string (native string)) annotations=IsValueNode
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::b:string#1)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::b:string#1)
               |-NameIdentifierNode="b" type=(alias string (native string))
               |-StringLiteral="1234" type=(alias string (native string)) annotations=IsValueNode
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::c:string#2)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::c:string#2)
               |-NameIdentifierNode="c" type=(alias string (native string))
               |-FunctionCallNode=(fun "concat" ((alias string) (alias string)) (alias string)) type=(alias string (native string)) annotations=IsValueNode
                 |-MemberNode type=(intersection (fun "concat" ((alias string) (alias string)) (alias string)))
@@ -160,7 +160,7 @@
                   |-NameIdentifierNode="c"
               |-StringLiteral="abc1234" type=(alias string (native string)) annotations=IsValueNode
               |-StringLiteral="c == 'abc1234' (1)" type=(alias string (native string)) annotations=IsValueNode
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::D:string#3)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::D:string#3)
               |-NameIdentifierNode="D" type=(alias string (native string))
               |-FunctionCallNode=(fun "concat" ((alias string) (alias string)) (alias string)) type=(alias string (native string)) annotations=IsValueNode
                 |-MemberNode type=(intersection (fun "concat" ((alias string) (alias string)) (alias string)))
@@ -219,7 +219,7 @@
                 |-NameIdentifierNode="START"
             |-StringLiteral="Test string operations" type=(alias string (native string)) annotations=IsValueNode
           |-BlockNode type=(native void)
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::str:string#4)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::str:string#4)
               |-NameIdentifierNode="str" type=(alias string (native string))
               |-StringLiteral="asd❮𝐑" type=(alias string (native string)) annotations=IsValueNode
             |-FunctionCallNode=(fun "mustEqual" ((alias u32) (alias u32) (alias string)) (alias void)) type=(alias void (native void))
@@ -379,7 +379,7 @@
                 |-NameIdentifierNode="START"
             |-StringLiteral="String concatenation" type=(alias string (native string)) annotations=IsValueNode
           |-BlockNode type=(native void)
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::x:string#5)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::x:string#5)
               |-NameIdentifierNode="x" type=(alias string (native string))
               |-BinaryExpressionNode=(fun "++" ((alias string) (alias string)) (alias string)) type=(alias string (native string)) annotations=IsValueNode
                 |-StringLiteral="ds" type=(alias string (native string)) annotations=IsValueNode
@@ -410,7 +410,7 @@
                 |-NameIdentifierNode="START"
             |-StringLiteral="String concatenation UTF16" type=(alias string (native string)) annotations=IsValueNode
           |-BlockNode type=(native void)
-            |-ValDeclarationNode annotations=Local(test::fixtures::execution::strConcat::x_1:string#6)
+            |-VarDeclarationNode annotations=Local(test::fixtures::execution::strConcat::x_1:string#6)
               |-NameIdentifierNode="x" type=(alias string (native string))
               |-BinaryExpressionNode=(fun "++" ((alias string) (alias string)) (alias string)) type=(alias string (native string)) annotations=IsValueNode
                 |-StringLiteral="ab" type=(alias string (native string)) annotations=IsValueNode
