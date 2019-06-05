@@ -28,8 +28,6 @@ jobs:
           workingFile: .npmrc
           customEndpoint: 'NPM LysPublisher'
 
-      - script: |
-          npm i -g oddish
-          oddish
+      - script: npm run release
         condition: succeeded()
         displayName: 'Publish'

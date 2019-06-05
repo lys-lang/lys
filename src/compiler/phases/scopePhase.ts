@@ -136,7 +136,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
           new LysScopeError('Cannot declare a variable with the name of an system type', node.variableName)
         );
       }
-      node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_VarDeclaration');
+      node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_Declaration');
       node.closure!.set(
         node.variableName,
         'VALUE',
@@ -371,6 +371,19 @@ const validateLoops = walkPreOrder(
   }
 );
 
+const validateMutability = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext) => {
+  if (node instanceof Nodes.AssignmentNode) {
+    if (node.lhs instanceof Nodes.ReferenceNode && node.lhs.resolvedReference) {
+      if (!node.lhs.resolvedReference.referencedNode.hasAnnotation(annotations.MutableDeclaration)) {
+        parsingContext.messageCollector.error(
+          `${node.lhs.resolvedReference.referencedNode.name} is immutable, reassignment is not allowed.`,
+          node.lhs.astNode
+        );
+      }
+    }
+  }
+});
+
 export function executeNameInitializationPhase(moduleName: string, parsingContext: ParsingContext) {
   const document = parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization - 1);
   assert(document.analysis.nextPhase === PhaseFlags.NameInitialization);
@@ -399,6 +412,7 @@ export function executeScopePhase(moduleName: string, parsingContext: ParsingCon
   findValueNodes(document, parsingContext, null);
   injectImplicitCalls(document, parsingContext, null);
   validateLoops(document, parsingContext);
+  validateMutability(document, parsingContext);
   summarizeImports(document, parsingContext);
 
   document.analysis.nextPhase++;

@@ -62,7 +62,6 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: Parsing
         if (
           decl instanceof Nodes.ParameterNode ||
           decl instanceof Nodes.VarDeclarationNode ||
-          decl instanceof Nodes.ValDeclarationNode ||
           decl instanceof Nodes.MatcherNode
         ) {
           const declLocal = decl.getAnnotation(annotations.LocalIdentifier);

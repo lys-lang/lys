@@ -564,9 +564,7 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: N
     if (!node.functionReturnType) {
       parsingContext.messageCollector.error('Missing return type in function declaration', node.astNode);
     }
-  }
-
-  if (node instanceof Nodes.PatternMatcherNode) {
+  } else if (node instanceof Nodes.PatternMatcherNode) {
     if (node.matchingSet.length === 0) {
       throw new LysSemanticError(`Invalid match expression, there are no matchers`, node);
     }
@@ -624,7 +622,7 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _, _parent: Nodes.Nod
           );
           const rhs = new Nodes.NameIdentifierNode($.astNode, $.name);
           const member = new Nodes.MemberNode($.astNode, ref, '.', rhs);
-          const decl = new Nodes.ValDeclarationNode($.astNode, $, member);
+          const decl = new Nodes.VarDeclarationNode($.astNode, $, member);
 
           newBlock.statements.unshift(decl);
         }

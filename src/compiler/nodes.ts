@@ -544,7 +544,6 @@ export namespace Nodes {
   }
 
   export class VarDeclarationNode extends Node {
-    mutable = true;
     variableType?: TypeNode;
 
     constructor(astNode: ASTNode, public readonly variableName: NameIdentifierNode, public value: ExpressionNode) {
@@ -556,10 +555,6 @@ export namespace Nodes {
     }
   }
 
-  export class ValDeclarationNode extends VarDeclarationNode {
-    mutable = false;
-  }
-
   export class VarDirectiveNode extends DirectiveNode {
     constructor(astNode: ASTNode, public readonly decl: VarDeclarationNode) {
       super(astNode);
@@ -567,12 +562,6 @@ export namespace Nodes {
 
     get childrenOrEmpty() {
       return [...(this.decorators || []), this.decl];
-    }
-  }
-
-  export class ValDirectiveNode extends VarDirectiveNode {
-    constructor(astNode: ASTNode, public readonly decl: ValDeclarationNode) {
-      super(astNode, decl);
     }
   }
 

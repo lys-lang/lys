@@ -67,15 +67,15 @@
       |-NameIdentifierNode="string"
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::globalMutability::x:<no-type>)
-      |-NameIdentifierNode="x" type=(alias i32 (native i32))
+      |-NameIdentifierNode="x" type=(alias i32 (native i32)) annotations=MutableDeclaration
       |-IntegerLiteral=2 type=(alias i32 (native i32)) annotations=IsValueNode
-  |-ValDirectiveNode
-    |-ValDeclarationNode annotations=Global(test::fixtures::compiler::globalMutability::bc:<no-type>)
+  |-VarDirectiveNode
+    |-VarDeclarationNode annotations=Global(test::fixtures::compiler::globalMutability::bc:<no-type>)
       |-NameIdentifierNode="bc" type=(alias i32 (native i32))
       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::globalMutability::a:<no-type>)
-      |-NameIdentifierNode="a" type=(alias i32 (native i32))
+      |-NameIdentifierNode="a" type=(alias i32 (native i32)) annotations=MutableDeclaration
       |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
         |-QNameNode=i32
           |-NameIdentifierNode="i32"

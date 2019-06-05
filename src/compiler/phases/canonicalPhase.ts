@@ -4,6 +4,7 @@ import { walkPreOrder } from '../walker';
 import { TokenError, IToken } from 'ebnf';
 import { parser } from '../../grammar';
 import { ParsingContext } from '../ParsingContext';
+import { annotations } from '../annotations';
 
 /// --- PARSING PHASE ---
 
@@ -96,7 +97,7 @@ const visitor = {
   },
   ValDirective(astNode: Nodes.ASTNode) {
     const decl = visit(findChildrenTypeOrFail(astNode, 'ValDeclaration'));
-    const ret = new Nodes.ValDirectiveNode(astNode, decl);
+    const ret = new Nodes.VarDirectiveNode(astNode, decl);
 
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
 
@@ -159,6 +160,7 @@ const visitor = {
     const variableName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
     const value = visitLastChild(astNode);
     const ret = new Nodes.VarDeclarationNode(astNode, variableName, value);
+    ret.variableName.annotate(new annotations.MutableDeclaration());
 
     const type = findChildrenType(astNode, 'Type');
     if (type) {
@@ -172,7 +174,7 @@ const visitor = {
   ValDeclaration(astNode: Nodes.ASTNode) {
     const variableName = visit(findChildrenTypeOrFail(astNode, 'NameIdentifier'));
     const value = visitLastChild(astNode);
-    const ret = new Nodes.ValDeclarationNode(astNode, variableName, value);
+    const ret = new Nodes.VarDeclarationNode(astNode, variableName, value);
 
     const type = findChildrenType(astNode, 'Type');
     if (type) {

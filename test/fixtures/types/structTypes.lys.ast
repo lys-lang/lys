@@ -83,7 +83,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -319,7 +319,7 @@
             |-QNameNode=i64
               |-NameIdentifierNode="i64"
           |-BlockNode type=(alias i64 (native i64)) annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -560,7 +560,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -595,7 +595,7 @@
               |-NameIdentifierNode="Real"
           |-BlockNode type=(alias Real (struct number: (type (alias f32 (native f32))))) annotations=IsValueNode
             |-VarDeclarationNode
-              |-NameIdentifierNode="$ref" type=(alias Real (struct number: (type (alias f32 (native f32)))))
+              |-NameIdentifierNode="$ref" type=(alias Real (struct number: (type (alias f32 (native f32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Real)) type=(alias Real (struct number: (type (alias f32 (native f32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Real)))
                   |-QNameNode=fromPointer
@@ -990,7 +990,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -1025,7 +1025,7 @@
               |-NameIdentifierNode="Natural"
           |-BlockNode type=(alias Natural (struct number: (type (alias i32 (native i32))))) annotations=IsValueNode
             |-VarDeclarationNode
-              |-NameIdentifierNode="$ref" type=(alias Natural (struct number: (type (alias i32 (native i32)))))
+              |-NameIdentifierNode="$ref" type=(alias Natural (struct number: (type (alias i32 (native i32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Natural)) type=(alias Natural (struct number: (type (alias i32 (native i32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Natural)))
                   |-QNameNode=fromPointer
@@ -1425,7 +1425,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -1465,7 +1465,7 @@
               |-NameIdentifierNode="Complex"
           |-BlockNode type=(alias Complex (struct real: (type (alias f32 (native f32))) imaginary: (type (alias f32 (native f32))))) annotations=IsValueNode
             |-VarDeclarationNode
-              |-NameIdentifierNode="$ref" type=(alias Complex (struct real: (type (alias f32 (native f32))) imaginary: (type (alias f32 (native f32)))))
+              |-NameIdentifierNode="$ref" type=(alias Complex (struct real: (type (alias f32 (native f32))) imaginary: (type (alias f32 (native f32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Complex)) type=(alias Complex (struct real: (type (alias f32 (native f32))) imaginary: (type (alias f32 (native f32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Complex)))
                   |-QNameNode=fromPointer

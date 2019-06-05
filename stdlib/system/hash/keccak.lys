@@ -369,6 +369,8 @@ impl Keccak {
     val residueBuffer = contextOffset + 208 as u32
 
     var residueIndex = u32.load(residueOffsetRef)
+    var mutInputLength = inputLength
+    var mutInputOffset = inputOffset
 
     // process residue from last block
     if (residueIndex != 0 as u32) {
@@ -376,45 +378,45 @@ impl Keccak {
       var tmp = 136 as u32 - residueIndex
 
       // limit to what we have as an input
-      if (inputLength < tmp) {
-        tmp = inputLength
+      if (mutInputLength < tmp) {
+        tmp = mutInputLength
       }
 
       // fill up the residue buffer
-      system::core::memory::memcpy(residueBuffer + residueIndex, inputOffset, tmp)
+      system::core::memory::memcpy(residueBuffer + residueIndex, mutInputOffset, tmp)
 
       residueIndex = residueIndex + tmp
 
       // block complete
       if (residueIndex == 136 as u32) {
-        keccakBlock(inputOffset, contextOffset)
+        keccakBlock(mutInputOffset, contextOffset)
 
         residueIndex = 0 as u32
       }
 
       u32.store(residueOffsetRef, residueIndex)
 
-      inputLength = inputLength - tmp
+      mutInputLength = mutInputLength - tmp
     }
 
-    // while (inputLength > block_size)
+    // while (mutInputLength > block_size)
     loop {
-      if (inputLength < 136 as u32) {
+      if (mutInputLength < 136 as u32) {
         break
       }
-      keccakBlock(inputOffset, contextOffset)
+      keccakBlock(mutInputOffset, contextOffset)
 
-      inputOffset = inputOffset + 136 as u32
-      inputLength = inputLength - 136 as u32
+      mutInputOffset = mutInputOffset + 136 as u32
+      mutInputLength = mutInputLength - 136 as u32
 
       continue
     }
 
     // copy to the residue buffer
-    if (inputLength > 0 as u32) {
-      system::core::memory::memcpy(residueBuffer + residueIndex, inputOffset, inputLength)
+    if (mutInputLength > 0 as u32) {
+      system::core::memory::memcpy(residueBuffer + residueIndex, mutInputOffset, mutInputLength)
 
-      u32.store(residueOffsetRef, residueIndex + inputLength)
+      u32.store(residueOffsetRef, residueIndex + mutInputLength)
     }
   }
 

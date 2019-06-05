@@ -287,7 +287,7 @@
                   |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
                     |-QNameNode=panic
                       |-NameIdentifierNode="panic"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="ptr" type=(alias u32 (native u32))
                 |-BinaryExpressionNode=(fun "-" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                   |-BinaryExpressionNode=(fun "*" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
@@ -312,7 +312,7 @@
                       |-ReferenceNode resolvedReference=currentMemory type=(intersection (fun "currentMemory" () (alias u32)))
                         |-QNameNode=currentMemory
                           |-NameIdentifierNode="currentMemory"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="newPtr1" type=(alias u32 (native u32))
                 |-BinaryExpressionNode=(fun "&" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                   |-BinaryExpressionNode=(fun "+" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
@@ -344,7 +344,7 @@
                         |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                           |-QNameNode=u32
                             |-NameIdentifierNode="u32"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="newPtr" type=(alias u32 (native u32))
                 |-BinaryExpressionNode=(fun "&" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                   |-BinaryExpressionNode=(fun "+" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
@@ -367,7 +367,7 @@
                       |-ReferenceNode resolvedReference=AL_MASK type=(intersection (fun "AL_MASK" () (alias u32)))
                         |-QNameNode=AL_MASK
                           |-NameIdentifierNode="AL_MASK"
-              |-ValDeclarationNode
+              |-VarDeclarationNode
                 |-NameIdentifierNode="pagesBefore" type=(alias u32 (native u32))
                 |-FunctionCallNode=(fun "currentMemory" () (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                   |-ReferenceNode resolvedReference=currentMemory type=(intersection (fun "currentMemory" () (alias u32)))
@@ -386,7 +386,7 @@
                     |-NameIdentifierNode="<<"
                     |-IntegerLiteral=16 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-BlockNode type=(native void)
-                  |-ValDeclarationNode
+                  |-VarDeclarationNode
                     |-NameIdentifierNode="ptrx" type=(alias u32 (native u32))
                     |-BinaryExpressionNode=(fun "&" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                       |-BinaryExpressionNode=(fun "+" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
@@ -415,7 +415,7 @@
                                       |-NameIdentifierNode="ptr"
                         |-NameIdentifierNode=">>>"
                         |-IntegerLiteral=16 type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-ValDeclarationNode
+                  |-VarDeclarationNode
                     |-NameIdentifierNode="pagesNeeded" type=(alias u32 (native u32))
                     |-BinaryExpressionNode=(fun ">>>" ((alias u32) (alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                       |-BinaryExpressionNode=(fun "&" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
@@ -447,7 +447,7 @@
                                       |-NameIdentifierNode="ptrx"
                       |-NameIdentifierNode=">>>"
                       |-IntegerLiteral=16 type=(alias i32 (native i32)) annotations=IsValueNode
-                  |-ValDeclarationNode
+                  |-VarDeclarationNode
                     |-NameIdentifierNode="pagesWanted" type=(alias u32 (native u32))
                     |-FunctionCallNode=(fun "max" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
                       |-ReferenceNode resolvedReference=max type=(intersection (fun "max" ((alias u32) (alias u32)) (alias u32)))

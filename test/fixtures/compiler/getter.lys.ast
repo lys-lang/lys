@@ -98,7 +98,7 @@
             |-QNameNode=u64
               |-NameIdentifierNode="u64"
           |-BlockNode type=(alias u64 (native u64)) annotations=IsValueNode
-            |-ValDeclarationNode annotations=Local(test::fixtures::compiler::getter::discriminant:u32#0)
+            |-VarDeclarationNode annotations=Local(test::fixtures::compiler::getter::discriminant:u32#0)
               |-NameIdentifierNode="discriminant" type=(alias u32 (native u32))
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
@@ -143,7 +143,7 @@
               |-NameIdentifierNode="Color"
           |-BlockNode type=(alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::compiler::getter::$ref:Color#3)
-              |-NameIdentifierNode="$ref" type=(alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32)))))
+              |-NameIdentifierNode="$ref" type=(alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Color)) type=(alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Color)))
                   |-QNameNode=fromPointer

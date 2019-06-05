@@ -1,14 +1,14 @@
 
 |-DocumentNode
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="AL_BITS"
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-IntegerLiteral=3
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="AL_SIZE"
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
@@ -19,8 +19,8 @@
         |-ReferenceNode resolvedReference=<null>
           |-QNameNode=AL_BITS
             |-NameIdentifierNode="AL_BITS"
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="AL_MASK"
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
@@ -31,8 +31,8 @@
             |-NameIdentifierNode="AL_SIZE"
         |-NameIdentifierNode="-"
         |-IntegerLiteral=1
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="MAX_SIZE_32"
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
@@ -41,13 +41,13 @@
         |-IntegerLiteral=1
         |-NameIdentifierNode="<<"
         |-IntegerLiteral=30
-  |-ValDirectiveNode
-    |-ValDeclarationNode
+  |-VarDirectiveNode
+    |-VarDeclarationNode
       |-NameIdentifierNode="HEAP_BASE"
       |-IntegerLiteral=0
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="startOffset"
+      |-NameIdentifierNode="startOffset" annotations=MutableDeclaration
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
@@ -67,7 +67,7 @@
               |-NameIdentifierNode="AL_MASK"
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="offset"
+      |-NameIdentifierNode="offset" annotations=MutableDeclaration
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
@@ -76,7 +76,7 @@
           |-NameIdentifierNode="startOffset"
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="lastPtr"
+      |-NameIdentifierNode="lastPtr" annotations=MutableDeclaration
       |-ReferenceNode resolvedReference=<null>
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
@@ -198,7 +198,7 @@
         |-QNameNode=i32
           |-NameIdentifierNode="i32"
       |-BlockNode
-        |-ValDeclarationNode
+        |-VarDeclarationNode
           |-NameIdentifierNode="size"
           |-BinaryExpressionNode
             |-ReferenceNode resolvedReference=<null>
@@ -208,7 +208,7 @@
             |-ReferenceNode resolvedReference=<null>
               |-QNameNode=itemSize
                 |-NameIdentifierNode="itemSize"
-        |-ValDeclarationNode
+        |-VarDeclarationNode
           |-NameIdentifierNode="$ret"
           |-FunctionCallNode
             |-ReferenceNode resolvedReference=<null>
@@ -265,12 +265,12 @@
                   |-ReferenceNode resolvedReference=<null>
                     |-QNameNode=panic
                       |-NameIdentifierNode="panic"
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="ptr"
               |-ReferenceNode resolvedReference=<null>
                 |-QNameNode=offset
                   |-NameIdentifierNode="offset"
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="newPtr"
               |-BinaryExpressionNode
                 |-BinaryExpressionNode
@@ -291,7 +291,7 @@
                   |-ReferenceNode resolvedReference=<null>
                     |-QNameNode=AL_MASK
                       |-NameIdentifierNode="AL_MASK"
-            |-ValDeclarationNode
+            |-VarDeclarationNode
               |-NameIdentifierNode="pagesBefore"
               |-FunctionCallNode
                 |-ReferenceNode resolvedReference=<null>
@@ -310,7 +310,7 @@
                   |-NameIdentifierNode="<<"
                   |-IntegerLiteral=16
               |-BlockNode
-                |-ValDeclarationNode
+                |-VarDeclarationNode
                   |-NameIdentifierNode="pagesNeeded"
                   |-BinaryExpressionNode
                     |-BinaryExpressionNode
@@ -330,7 +330,7 @@
                         |-HexLiteral=65535
                     |-NameIdentifierNode=">>>"
                     |-IntegerLiteral=16
-                |-ValDeclarationNode
+                |-VarDeclarationNode
                   |-NameIdentifierNode="pagesWanted"
                   |-FunctionCallNode
                     |-ReferenceNode resolvedReference=<null>

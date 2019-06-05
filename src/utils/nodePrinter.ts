@@ -1,5 +1,6 @@
 import { Nodes } from '../compiler/nodes';
 import { indent } from './astPrinter';
+import { annotations } from '../compiler/annotations';
 
 function printDecorators(node: Nodes.DirectiveNode) {
   if (node.decorators && node.decorators.length) {
@@ -176,7 +177,7 @@ function privatePrint(node: Nodes.Node): string {
     return `enum ${printNode(node.variableName)} {\n${types}\n}`;
   } else if (node instanceof Nodes.VarDeclarationNode) {
     return (
-      (node.mutable ? 'var ' : 'val ') +
+      (node.variableName.hasAnnotation(annotations.MutableDeclaration) ? 'var ' : 'val ') +
       printNode(node.variableName) +
       (node.variableType ? ': ' + printNode(node.variableType) : '') +
       ' = ' +

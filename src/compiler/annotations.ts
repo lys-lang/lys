@@ -30,6 +30,8 @@ export namespace annotations {
     }
   }
 
+  export class MutableDeclaration extends Annotation {}
+
   export class LabelId extends Annotation {
     constructor(public label: string) {
       super();

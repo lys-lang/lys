@@ -993,6 +993,55 @@ describe('Types', function() {
       y := (alias MaybeNumber (struct))
     `;
 
+    checkMainType`// #![no-std]
+      /// val declarations must fail in reassign
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      val variable = 1
+
+      fun x(): i32 = {
+        variable = 0
+      }
+
+      ---
+      variable := (alias i32 (native i32))
+      fun() -> i32
+      ---
+      variable is immutable
+    `;
+
+    checkMainType`// #![no-std]
+      /// parameters cannot be reassigned
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      fun x(variable: i32): i32 = {
+        variable = 0
+      }
+
+      ---
+      fun(variable: i32) -> i32
+      ---
+      variable is immutable
+    `;
+
+    checkMainType`// #![no-std]
+      /// var declarations must not fail in reassign
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      var variable = 1
+
+      fun x(): i32 = {
+        variable = 0
+      }
+
+      ---
+      variable := (alias i32 (native i32))
+      fun() -> i32
+    `;
+
     /// if nodes must return the union of two types
     /// match nodes must return the union of all the matchers
     /// match result must be coerced automatically to the declaration's type
@@ -3622,6 +3671,48 @@ describe('Types', function() {
           }
           ---
           fun(color: Color) -> boolean
+        `;
+
+        checkMainType`
+          /// deconstruct variables cannot be reassigned
+          enum Color {
+            Red
+            Custom(r: i32, g: i32, b: i32)
+          }
+
+          fun isRed(color: Color): boolean = {
+            match color {
+              case is Red -> true
+              case is Custom(r,g,b) -> {
+                r = 255
+                r == 255 && g == 0 && b == 0
+              }
+            }
+          }
+          ---
+          fun(color: Color) -> boolean
+          ---
+          r is immutable
+        `;
+
+        checkMainType`
+          /// case alias is immutable
+          enum Color {
+            Red
+          }
+
+          fun isRed(color: Color): boolean = {
+            match color {
+              case alias is Red -> {
+                alias = Red
+                false
+              }
+            }
+          }
+          ---
+          fun(color: Color) -> boolean
+          ---
+          alias is immutable
         `;
 
         checkMainType`
