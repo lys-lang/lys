@@ -133,7 +133,7 @@
               |-NameIdentifierNode="Iterator"
           |-BlockNode type=(alias Iterator (struct current: (type (alias i32 (native i32))) target: (type (alias i32 (native i32))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::compiler::iterator-loco::$ref:Iterator#2)
-              |-NameIdentifierNode="$ref" type=(alias Iterator (struct current: (type (alias i32 (native i32))) target: (type (alias i32 (native i32)))))
+              |-NameIdentifierNode="$ref" type=(alias Iterator (struct current: (type (alias i32 (native i32))) target: (type (alias i32 (native i32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Iterator)) type=(alias Iterator (struct current: (type (alias i32 (native i32))) target: (type (alias i32 (native i32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Iterator)))
                   |-QNameNode=fromPointer
@@ -639,7 +639,7 @@
                   |-NameIdentifierNode="target"
               |-BlockNode type=(alias Some (struct value: (type (alias i32 (native i32))))) annotations=IsValueNode
                 |-VarDeclarationNode annotations=Local(test::fixtures::compiler::iterator-loco::r:Some#1)
-                  |-NameIdentifierNode="r" type=(alias Some (struct value: (type (alias i32 (native i32)))))
+                  |-NameIdentifierNode="r" type=(alias Some (struct value: (type (alias i32 (native i32))))) annotations=MutableDeclaration
                   |-FunctionCallNode=(fun "apply" ((alias i32)) (alias Some)) type=(alias Some (struct value: (type (alias i32 (native i32))))) annotations=IsValueNode
                     |-MemberNode type=(intersection (fun "apply" ((alias i32)) (alias Some)))
                       |-ReferenceNode resolvedReference=Some type=(type (alias Some (struct value: (type (alias i32 (native i32))))))
@@ -1196,7 +1196,7 @@
               |-NameIdentifierNode="Some"
           |-BlockNode type=(alias Some (struct value: (type (alias i32 (native i32))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::compiler::iterator-loco::$ref_1:Some#1)
-              |-NameIdentifierNode="$ref" type=(alias Some (struct value: (type (alias i32 (native i32)))))
+              |-NameIdentifierNode="$ref" type=(alias Some (struct value: (type (alias i32 (native i32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Some)) type=(alias Some (struct value: (type (alias i32 (native i32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Some)))
                   |-QNameNode=fromPointer
@@ -1548,7 +1548,7 @@
             |-NameIdentifierNode="i32"
         |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
           |-VarDeclarationNode annotations=Local(test::fixtures::compiler::iterator-loco::ret:i32#2)
-            |-NameIdentifierNode="ret" type=(alias i32 (native i32))
+            |-NameIdentifierNode="ret" type=(alias i32 (native i32)) annotations=MutableDeclaration
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
           |-ValDeclarationNode annotations=Local(test::fixtures::compiler::iterator-loco::$iter$:Iterator#3)
             |-NameIdentifierNode="$iter$" type=(alias Iterator (struct current: (type (alias i32 (native i32))) target: (type (alias i32 (native i32)))))

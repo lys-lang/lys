@@ -51,7 +51,7 @@ impl string {
   }
 
   /**
-   * Unless numbers, strings are concatenated, not added.
+   * Unlike numbers, strings are concatenated, not added.
    * We use a different operator to do it.
    */
   fun ++(lhs: string, rhs: string): string =
@@ -142,7 +142,7 @@ impl string {
       if (lhs.ptr == rhs.ptr) {
         true
       } else {
-        val len = lhs.length
+        var len = lhs.length
         var equals = true
         loop {
           len = len - 1 as u32

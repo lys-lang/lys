@@ -67,7 +67,7 @@
       |-NameIdentifierNode="string"
   |-VarDirectiveNode
     |-VarDeclarationNode
-      |-NameIdentifierNode="x" type=(alias i32 (native i32))
+      |-NameIdentifierNode="x" type=(alias i32 (native i32)) annotations=MutableDeclaration
       |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="addOne" type=(intersection (fun "addOne" () (alias i32)))
@@ -79,7 +79,7 @@
             |-NameIdentifierNode="i32"
         |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
           |-VarDeclarationNode
-            |-NameIdentifierNode="y" type=(alias i32 (native i32))
+            |-NameIdentifierNode="y" type=(alias i32 (native i32)) annotations=MutableDeclaration
             |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=x
                 |-NameIdentifierNode="x"

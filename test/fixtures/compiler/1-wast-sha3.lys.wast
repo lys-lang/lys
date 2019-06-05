@@ -486,36 +486,40 @@
     (local $system::hash::keccak::residueOffsetRef i64)
     (local $system::hash::keccak::residueBuffer i32)
     (local $system::hash::keccak::residueIndex i32)
+    (local $system::hash::keccak::mutInputLength i32)
+    (local $system::hash::keccak::mutInputOffset i32)
     (local $system::hash::keccak::tmp i32)
     (block $B1
       (local.set $system::hash::keccak::residueOffsetRef (call $system::core::u32::u32.as_8 (call $system::core::u32::u32.+_1 (local.get $contextOffset) (call $system::core::i32::i32.as_4 (i32.const 200)))))
       (local.set $system::hash::keccak::residueBuffer (call $system::core::u32::u32.+_1 (local.get $contextOffset) (call $system::core::i32::i32.as_4 (i32.const 208))))
       (local.set $system::hash::keccak::residueIndex (call $system::core::u32::u32.load_1 (local.get $system::hash::keccak::residueOffsetRef)))
+      (local.set $system::hash::keccak::mutInputLength (local.get $inputLength))
+      (local.set $system::hash::keccak::mutInputOffset (local.get $inputOffset))
       (if $IF2 (call $system::core::u32::u32.!=_1 (local.get $system::hash::keccak::residueIndex) (call $system::core::i32::i32.as_4 (i32.const 0)))
           (then
             (block $B3
                 (local.set $system::hash::keccak::tmp (call $system::core::u32::u32.-_1 (call $system::core::i32::i32.as_4 (i32.const 136)) (local.get $system::hash::keccak::residueIndex)))
-                (if $IF4 (call $system::core::u32::u32.<_1 (local.get $inputLength) (local.get $system::hash::keccak::tmp))
+                (if $IF4 (call $system::core::u32::u32.<_1 (local.get $system::hash::keccak::mutInputLength) (local.get $system::hash::keccak::tmp))
                     (then
                       (block $B5
-                          (local.set $system::hash::keccak::tmp (local.get $inputLength))
+                          (local.set $system::hash::keccak::tmp (local.get $system::hash::keccak::mutInputLength))
                         )
                     )
                     (else)
                   )
-                (drop (call $system::core::memory::memcpy_1 (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueBuffer) (local.get $system::hash::keccak::residueIndex)) (local.get $inputOffset) (local.get $system::hash::keccak::tmp)))
+                (drop (call $system::core::memory::memcpy_1 (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueBuffer) (local.get $system::hash::keccak::residueIndex)) (local.get $system::hash::keccak::mutInputOffset) (local.get $system::hash::keccak::tmp)))
                 (local.set $system::hash::keccak::residueIndex (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueIndex) (local.get $system::hash::keccak::tmp)))
                 (if $IF6 (call $system::core::u32::u32.==_1 (local.get $system::hash::keccak::residueIndex) (call $system::core::i32::i32.as_4 (i32.const 136)))
                     (then
                       (block $B7
-                          (call $system::hash::keccak::Keccak.keccakBlock_1 (local.get $inputOffset) (local.get $contextOffset))
+                          (call $system::hash::keccak::Keccak.keccakBlock_1 (local.get $system::hash::keccak::mutInputOffset) (local.get $contextOffset))
                           (local.set $system::hash::keccak::residueIndex (call $system::core::i32::i32.as_4 (i32.const 0)))
                         )
                     )
                     (else)
                   )
                 (call $system::core::u32::u32.store_1 (local.get $system::hash::keccak::residueOffsetRef) (local.get $system::hash::keccak::residueIndex))
-                (local.set $inputLength (call $system::core::u32::u32.-_1 (local.get $inputLength) (local.get $system::hash::keccak::tmp)))
+                (local.set $system::hash::keccak::mutInputLength (call $system::core::u32::u32.-_1 (local.get $system::hash::keccak::mutInputLength) (local.get $system::hash::keccak::tmp)))
               )
           )
           (else)
@@ -523,7 +527,7 @@
       (block $Break8
           (loop $Loop8
               (block $B9
-                  (if $IF10 (call $system::core::u32::u32.<_1 (local.get $inputLength) (call $system::core::i32::i32.as_4 (i32.const 136)))
+                  (if $IF10 (call $system::core::u32::u32.<_1 (local.get $system::hash::keccak::mutInputLength) (call $system::core::i32::i32.as_4 (i32.const 136)))
                       (then
                         (block $B11
                             (br $Break8)
@@ -531,18 +535,18 @@
                       )
                       (else)
                     )
-                  (call $system::hash::keccak::Keccak.keccakBlock_1 (local.get $inputOffset) (local.get $contextOffset))
-                  (local.set $inputOffset (call $system::core::u32::u32.+_1 (local.get $inputOffset) (call $system::core::i32::i32.as_4 (i32.const 136))))
-                  (local.set $inputLength (call $system::core::u32::u32.-_1 (local.get $inputLength) (call $system::core::i32::i32.as_4 (i32.const 136))))
+                  (call $system::hash::keccak::Keccak.keccakBlock_1 (local.get $system::hash::keccak::mutInputOffset) (local.get $contextOffset))
+                  (local.set $system::hash::keccak::mutInputOffset (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::mutInputOffset) (call $system::core::i32::i32.as_4 (i32.const 136))))
+                  (local.set $system::hash::keccak::mutInputLength (call $system::core::u32::u32.-_1 (local.get $system::hash::keccak::mutInputLength) (call $system::core::i32::i32.as_4 (i32.const 136))))
                   (br $Loop8)
                 )
             )
         )
-      (if $IF12 (call $system::core::u32::u32.>_1 (local.get $inputLength) (call $system::core::i32::i32.as_4 (i32.const 0)))
+      (if $IF12 (call $system::core::u32::u32.>_1 (local.get $system::hash::keccak::mutInputLength) (call $system::core::i32::i32.as_4 (i32.const 0)))
           (then
             (block $B13
-                (drop (call $system::core::memory::memcpy_1 (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueBuffer) (local.get $system::hash::keccak::residueIndex)) (local.get $inputOffset) (local.get $inputLength)))
-                (call $system::core::u32::u32.store_1 (local.get $system::hash::keccak::residueOffsetRef) (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueIndex) (local.get $inputLength)))
+                (drop (call $system::core::memory::memcpy_1 (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueBuffer) (local.get $system::hash::keccak::residueIndex)) (local.get $system::hash::keccak::mutInputOffset) (local.get $system::hash::keccak::mutInputLength)))
+                (call $system::core::u32::u32.store_1 (local.get $system::hash::keccak::residueOffsetRef) (call $system::core::u32::u32.+_1 (local.get $system::hash::keccak::residueIndex) (local.get $system::hash::keccak::mutInputLength)))
               )
           )
           (else)

@@ -1987,7 +1987,7 @@
               |-NameIdentifierNode="Custom"
           |-BlockNode type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::compiler::patternMatchinIs::$ref:Custom#1)
-              |-NameIdentifierNode="$ref" type=(alias Custom (struct a: (type (alias i32 (native i32)))))
+              |-NameIdentifierNode="$ref" type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=MutableDeclaration
               |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Custom)) type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Custom)))
                   |-QNameNode=fromPointer
@@ -2325,7 +2325,7 @@
             |-NameIdentifierNode="i32"
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::patternMatchinIs::value1:<no-type>)
-      |-NameIdentifierNode="value1" type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct))))
+      |-NameIdentifierNode="value1" type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=MutableDeclaration
       |-ReferenceNode resolvedReference=Enum type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
         |-QNameNode=Enum
           |-NameIdentifierNode="Enum"
@@ -2334,7 +2334,7 @@
           |-NameIdentifierNode="A"
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::patternMatchinIs::value2:<no-type>)
-      |-NameIdentifierNode="value2" type=(union (alias A (struct)) (alias B (struct)))
+      |-NameIdentifierNode="value2" type=(union (alias A (struct)) (alias B (struct))) annotations=MutableDeclaration
       |-UnionTypeNode type=(union (alias A (struct)) (alias B (struct)))
         |-ReferenceNode resolvedReference=A type=(type (alias A (struct)))
           |-QNameNode=A
@@ -2347,7 +2347,7 @@
           |-NameIdentifierNode="A"
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::patternMatchinIs::value3:<no-type>)
-      |-NameIdentifierNode="value3" type=(alias A (struct))
+      |-NameIdentifierNode="value3" type=(alias A (struct)) annotations=MutableDeclaration
       |-ReferenceNode resolvedReference=A type=(type (alias A (struct)))
         |-QNameNode=A
           |-NameIdentifierNode="A"

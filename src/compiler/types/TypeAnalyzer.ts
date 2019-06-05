@@ -608,7 +608,7 @@ export class TypeAnalyzer extends TypeResolver {
       } else {
         this.messageCollector.errorIfBranchDoesntHaveAny('Cannot infer type 6' + typeType, node);
       }
-    } else if (node instanceof Nodes.VarDeclarationNode) {
+    } else if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
       const valueType = TypeHelpers.getNodeType(node.value);
       const typeType = node.variableType ? getTypeFromTypeNode(node.variableType, this.messageCollector) : null;
 
@@ -805,7 +805,7 @@ export class TypeAnalyzer extends TypeResolver {
         this.setType(node, InjectableTypes.void);
       }
       // TODO: warn if empty matcher
-    } else if (node instanceof Nodes.VarDeclarationNode) {
+    } else if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
       if (node.hasAnnotation(annotations.IsValueNode)) {
         this.messageCollector.error('This should be an expression. A declaration was found.', node.astNode);
       }

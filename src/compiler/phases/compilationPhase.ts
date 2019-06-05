@@ -87,7 +87,7 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: Parsing
 });
 
 const resolveDeclarations = walkPreOrder((node: Nodes.Node, parsingContext) => {
-  if (node instanceof Nodes.VarDeclarationNode) {
+  if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
     if (node.parent instanceof Nodes.DirectiveNode) {
       node.annotate(new annotations.LocalIdentifier(new Global(node.variableName)));
     } else {

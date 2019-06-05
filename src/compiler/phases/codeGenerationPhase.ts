@@ -11,7 +11,7 @@ import * as binaryen from 'binaryen';
 import _wabt = require('wabt');
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
-import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
+import { Nodes, findNodesByType, PhaseFlags, findNodesByTypes } from '../nodes';
 import { findParentType } from '../nodeHelpers';
 import { FunctionType, TypeHelpers, IntersectionType } from '../types';
 import { LysCompilerError } from '../NodeError';
@@ -310,7 +310,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
       return emitMatchingNode(node, document);
     } else if (node instanceof Nodes.LoopNode) {
       return emitLoop(node, document);
-    } else if (node instanceof Nodes.VarDeclarationNode) {
+    } else if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
       const local = node.getAnnotation(annotations.LocalIdentifier).local;
       return t.instruction('local.set', [t.identifier(local.name), emit(node.value, document)]);
     } else if (node instanceof Nodes.AssignmentNode) {
@@ -523,7 +523,7 @@ export class CodeGenerationPhaseResult {
   }
 
   generatePhase(document: Nodes.DocumentNode, startMemory: number): CompilationModuleResult {
-    const globals = findNodesByType(document, Nodes.VarDirectiveNode);
+    const globals = findNodesByTypes(document, [Nodes.VarDirectiveNode, Nodes.ValDirectiveNode]);
     const functions = findNodesByType(document, Nodes.OverloadedFunctionNode);
     const bytesLiterals = findNodesByType(document, Nodes.StringLiteral);
 

@@ -25,7 +25,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     node.argumentsNode.forEach($ => $.annotate(valueNodeAnnotation));
   }
 
-  if (node instanceof Nodes.VarDeclarationNode) {
+  if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
     node.value.annotate(valueNodeAnnotation);
   }
 
@@ -130,17 +130,18 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       node.closure!.set(node.functionName, 'FUNCTION', node.isPublic);
-    } else if (node instanceof Nodes.VarDeclarationNode) {
+    } else if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
           new LysScopeError('Cannot declare a variable with the name of an system type', node.variableName)
         );
       }
-      node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_VarDeclaration');
+      node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_Declaration');
       node.closure!.set(
         node.variableName,
         'VALUE',
-        node.parent instanceof Nodes.VarDirectiveNode && node.parent.isPublic
+        (node.parent instanceof Nodes.VarDirectiveNode || node.parent instanceof Nodes.ValDirectiveNode) &&
+          node.parent.isPublic
       );
     } else if (node instanceof Nodes.ImplDirective) {
       node.closure = node.closure!.newChildClosure(node.reference.variable.text + '.');
@@ -207,6 +208,8 @@ function collectNamespaces(
     if (node instanceof Nodes.OverloadedFunctionNode) {
       registerNameIdentifier(node.functionName);
     } else if (node instanceof Nodes.VarDirectiveNode) {
+      registerNameIdentifier(node.decl.variableName);
+    } else if (node instanceof Nodes.ValDirectiveNode) {
       registerNameIdentifier(node.decl.variableName);
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       registerNameIdentifier(node.variableName);
@@ -371,6 +374,19 @@ const validateLoops = walkPreOrder(
   }
 );
 
+const validateMutability = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext) => {
+  if (node instanceof Nodes.AssignmentNode) {
+    if (node.lhs instanceof Nodes.ReferenceNode && node.lhs.resolvedReference) {
+      if (!node.lhs.resolvedReference.referencedNode.hasAnnotation(annotations.MutableDeclaration)) {
+        parsingContext.messageCollector.error(
+          `${node.lhs.resolvedReference.referencedNode.name} is immutable, reassignment is not allowed.`,
+          node.lhs.astNode
+        );
+      }
+    }
+  }
+});
+
 export function executeNameInitializationPhase(moduleName: string, parsingContext: ParsingContext) {
   const document = parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization - 1);
   assert(document.analysis.nextPhase === PhaseFlags.NameInitialization);
@@ -399,6 +415,7 @@ export function executeScopePhase(moduleName: string, parsingContext: ParsingCon
   findValueNodes(document, parsingContext, null);
   injectImplicitCalls(document, parsingContext, null);
   validateLoops(document, parsingContext);
+  validateMutability(document, parsingContext);
   summarizeImports(document, parsingContext);
 
   document.analysis.nextPhase++;

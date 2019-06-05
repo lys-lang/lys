@@ -550,6 +550,8 @@ const processUnions = function(
   return containerNode;
 };
 
+const mutableAnnotation = new annotations.MutableDeclaration();
+
 const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: Nodes.Node | null) => {
   if (node instanceof Nodes.FunctionNode) {
     let used: string[] = [];
@@ -564,15 +566,15 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: N
     if (!node.functionReturnType) {
       parsingContext.messageCollector.error('Missing return type in function declaration', node.astNode);
     }
-  }
-
-  if (node instanceof Nodes.PatternMatcherNode) {
+  } else if (node instanceof Nodes.PatternMatcherNode) {
     if (node.matchingSet.length === 0) {
       throw new LysSemanticError(`Invalid match expression, there are no matchers`, node);
     }
     if (node.matchingSet.length === 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
       throw new LysSemanticError(`This match is useless`, node);
     }
+  } else if (node instanceof Nodes.VarDeclarationNode) {
+    node.variableName.annotate(mutableAnnotation);
   }
 });
 

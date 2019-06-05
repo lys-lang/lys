@@ -544,7 +544,6 @@ export namespace Nodes {
   }
 
   export class VarDeclarationNode extends Node {
-    mutable = true;
     variableType?: TypeNode;
 
     constructor(astNode: ASTNode, public readonly variableName: NameIdentifierNode, public value: ExpressionNode) {
@@ -556,8 +555,16 @@ export namespace Nodes {
     }
   }
 
-  export class ValDeclarationNode extends VarDeclarationNode {
-    mutable = false;
+  export class ValDeclarationNode extends Node {
+    variableType?: TypeNode;
+
+    constructor(astNode: ASTNode, public readonly variableName: NameIdentifierNode, public value: ExpressionNode) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [this.variableName, this.variableType, this.value];
+    }
   }
 
   export class VarDirectiveNode extends DirectiveNode {
@@ -570,9 +577,13 @@ export namespace Nodes {
     }
   }
 
-  export class ValDirectiveNode extends VarDirectiveNode {
+  export class ValDirectiveNode extends DirectiveNode {
     constructor(astNode: ASTNode, public readonly decl: ValDeclarationNode) {
-      super(astNode, decl);
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.decl];
     }
   }
 
@@ -1022,6 +1033,17 @@ export function findNodesByType<T>(
     list.push(astRoot);
   }
   astRoot.children.forEach($ => findNodesByType($, type, list));
+  return list;
+}
+export function findNodesByTypes<T>(
+  astRoot: { children: any[] },
+  type: { new (...args: any[]): T }[],
+  list: T[] = []
+): T[] {
+  if (type.some($ => astRoot instanceof $)) {
+    list.push(astRoot as any);
+  }
+  astRoot.children.forEach($ => findNodesByTypes($, type, list));
   return list;
 }
 
