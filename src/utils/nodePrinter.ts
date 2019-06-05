@@ -1,5 +1,6 @@
 import { Nodes } from '../compiler/nodes';
 import { indent } from './astPrinter';
+import { annotations } from '../compiler/annotations';
 
 function printDecorators(node: Nodes.DirectiveNode) {
   if (node.decorators && node.decorators.length) {
@@ -154,8 +155,6 @@ function privatePrint(node: Nodes.Node): string {
     return `case ${printNode(node.literal)} -> ${printNode(node.rhs)}`;
   } else if (node instanceof Nodes.VarDirectiveNode) {
     return (node.isPublic ? '' : 'private ') + printNode(node.decl);
-  } else if (node instanceof Nodes.ValDirectiveNode) {
-    return (node.isPublic ? '' : 'private ') + printNode(node.decl);
   } else if (node instanceof Nodes.MatchCaseIsNode) {
     const declaredName = node.declaredName && node.declaredName.name !== '$' ? `${printNode(node.declaredName)} ` : ``;
 
@@ -176,17 +175,9 @@ function privatePrint(node: Nodes.Node): string {
     const types = indent(node.declarations.map($ => printNode($)).join('\n'));
 
     return `enum ${printNode(node.variableName)} {\n${types}\n}`;
-  } else if (node instanceof Nodes.ValDeclarationNode) {
-    return (
-      'val ' +
-      printNode(node.variableName) +
-      (node.variableType ? ': ' + printNode(node.variableType) : '') +
-      ' = ' +
-      printNode(node.value)
-    );
   } else if (node instanceof Nodes.VarDeclarationNode) {
     return (
-      'var ' +
+      (node.variableName.hasAnnotation(annotations.MutableDeclaration) ? 'var ' : 'val ') +
       printNode(node.variableName) +
       (node.variableType ? ': ' + printNode(node.variableType) : '') +
       ' = ' +

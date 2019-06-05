@@ -550,8 +550,6 @@ const processUnions = function(
   return containerNode;
 };
 
-const mutableAnnotation = new annotations.MutableDeclaration();
-
 const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: Nodes.Node | null) => {
   if (node instanceof Nodes.FunctionNode) {
     let used: string[] = [];
@@ -573,8 +571,6 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: N
     if (node.matchingSet.length === 1 && node.matchingSet[0] instanceof Nodes.MatchDefaultNode) {
       throw new LysSemanticError(`This match is useless`, node);
     }
-  } else if (node instanceof Nodes.VarDeclarationNode) {
-    node.variableName.annotate(mutableAnnotation);
   }
 });
 
@@ -626,7 +622,7 @@ const processDeconstruct = walkPreOrder((node: Nodes.Node, _, _parent: Nodes.Nod
           );
           const rhs = new Nodes.NameIdentifierNode($.astNode, $.name);
           const member = new Nodes.MemberNode($.astNode, ref, '.', rhs);
-          const decl = new Nodes.ValDeclarationNode($.astNode, $, member);
+          const decl = new Nodes.VarDeclarationNode($.astNode, $, member);
 
           newBlock.statements.unshift(decl);
         }

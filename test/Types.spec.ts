@@ -85,7 +85,7 @@ describe('Types', function() {
                   !$.functions.some($ => $.hasAnnotation(annotations.Injected))
                 ) {
                   return TypeHelpers.getNodeType($.functionName) + '';
-                } else if ($ instanceof Nodes.VarDirectiveNode || $ instanceof Nodes.ValDirectiveNode) {
+                } else if ($ instanceof Nodes.VarDirectiveNode) {
                   return `${$.decl.variableName.name} := ${
                     TypeHelpers.getNodeType($.decl.variableName)
                       ? TypeHelpers.getNodeType($.decl.variableName)!.inspect(1)

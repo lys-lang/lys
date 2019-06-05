@@ -25,7 +25,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     node.argumentsNode.forEach($ => $.annotate(valueNodeAnnotation));
   }
 
-  if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
+  if (node instanceof Nodes.VarDeclarationNode) {
     node.value.annotate(valueNodeAnnotation);
   }
 
@@ -130,7 +130,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       node.closure!.set(node.functionName, 'FUNCTION', node.isPublic);
-    } else if (node instanceof Nodes.VarDeclarationNode || node instanceof Nodes.ValDeclarationNode) {
+    } else if (node instanceof Nodes.VarDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
           new LysScopeError('Cannot declare a variable with the name of an system type', node.variableName)
@@ -140,8 +140,7 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
       node.closure!.set(
         node.variableName,
         'VALUE',
-        (node.parent instanceof Nodes.VarDirectiveNode || node.parent instanceof Nodes.ValDirectiveNode) &&
-          node.parent.isPublic
+        node.parent instanceof Nodes.VarDirectiveNode && node.parent.isPublic
       );
     } else if (node instanceof Nodes.ImplDirective) {
       node.closure = node.closure!.newChildClosure(node.reference.variable.text + '.');
@@ -208,8 +207,6 @@ function collectNamespaces(
     if (node instanceof Nodes.OverloadedFunctionNode) {
       registerNameIdentifier(node.functionName);
     } else if (node instanceof Nodes.VarDirectiveNode) {
-      registerNameIdentifier(node.decl.variableName);
-    } else if (node instanceof Nodes.ValDirectiveNode) {
       registerNameIdentifier(node.decl.variableName);
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       registerNameIdentifier(node.variableName);
