@@ -7,7 +7,7 @@ import { TypeHelpers } from './types';
 
 export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
 
-export class Closure {
+export class Scope {
   localScopeDeclares: Set<string> = new Set();
   exportedNames: Set<string> = new Set();
   nameMappings: Record<string, Reference> = {};
@@ -15,14 +15,14 @@ export class Closure {
 
   importedModules = new Map<string, Set<string>>();
 
-  childrenScopes: Closure[] = [];
+  childrenScopes: Scope[] = [];
 
   readonly name: string;
 
   constructor(
     public parsingContext: ParsingContext,
     public readonly moduleName: string,
-    public parent: Closure | null = null,
+    public parent: Scope | null = null,
     public nameHint: string = ''
   ) {
     this.name = this.parsingContext.getInternalName(moduleName, nameHint + '[child_scope]');
@@ -127,7 +127,7 @@ export class Closure {
       const moduleName = parts.slice(0, -1).join('::');
       const name = parts[parts.length - 1];
       const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
-      const ref = moduleDocument.closure!.getFromOutside(name);
+      const ref = moduleDocument.scope!.getFromOutside(name);
       if (ref) {
         this.registerForeginModule(moduleName);
         return ref.withModule(moduleName);
@@ -142,12 +142,12 @@ export class Closure {
       const moduleDocument = this.parsingContext.getPhase(moduleName, PhaseFlags.NameInitialization);
 
       if (importsSet.has(localName)) {
-        const ref = moduleDocument.closure!.getFromOutside(localName);
+        const ref = moduleDocument.scope!.getFromOutside(localName);
         if (ref) {
           return ref.withModule(moduleName);
         }
-      } else if (importsSet.has('*') && moduleDocument.closure!.canGetFromOutside(localName)) {
-        const ref = moduleDocument.closure!.getFromOutside(localName);
+      } else if (importsSet.has('*') && moduleDocument.scope!.canGetFromOutside(localName)) {
+        const ref = moduleDocument.scope!.getFromOutside(localName);
         if (ref) {
           return ref.withModule(moduleName);
         }
@@ -190,8 +190,8 @@ export class Closure {
     return `${this.name}: {\n${indent(ret.join('\n'))}\n}`;
   }
 
-  newChildClosure(nameHint: string): Closure {
-    const newScope = new Closure(this.parsingContext, this.moduleName, this, nameHint);
+  newChildScope(nameHint: string): Scope {
+    const newScope = new Scope(this.parsingContext, this.moduleName, this, nameHint);
     this.childrenScopes.push(newScope);
     return newScope;
   }

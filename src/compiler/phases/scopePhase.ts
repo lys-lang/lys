@@ -6,7 +6,7 @@ import { ParsingContext } from '../ParsingContext';
 import { InjectableTypes } from '../types';
 import { findParentDelegate } from '../nodeHelpers';
 import { getDocument, fixParents, collectImports } from './helpers';
-import { Closure } from '../Closure';
+import { Scope } from '../Scope';
 import assert = require('assert');
 import { LysError } from '../../utils/errorPrinter';
 
@@ -99,17 +99,17 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
   }
 });
 
-const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext, parent: Nodes.Node | null) => {
+const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingContext, parent: Nodes.Node | null) => {
   if (parent) {
-    if (!node.closure) {
-      node.closure = parent.closure;
+    if (!node.scope) {
+      node.scope = parent.scope;
     }
 
     if (node instanceof Nodes.MatcherNode) {
-      node.rhs.closure = node.closure!.newChildClosure('MatcherRHS');
+      node.rhs.scope = node.scope!.newChildScope('MatcherRHS');
 
       if (node.declaredName) {
-        node.rhs.closure.set(node.declaredName, 'VALUE', false);
+        node.rhs.scope.set(node.declaredName, 'VALUE', false);
       }
 
       if (node instanceof Nodes.MatchCaseIsNode) {
@@ -122,36 +122,36 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
                 parsingContext.messageCollector.error(new LysScopeError('Duplicated name', $));
               } else {
                 takenNames.set($.name, $);
-                node.rhs.closure!.set($, 'VALUE', false);
+                node.rhs.scope!.set($, 'VALUE', false);
               }
             }
           });
         }
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
-      node.closure!.set(node.functionName, 'FUNCTION', node.isPublic);
+      node.scope!.set(node.functionName, 'FUNCTION', node.isPublic);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
           new LysScopeError('Cannot declare a variable with the name of an system type', node.variableName)
         );
       }
-      node.value.closure = node.closure!.newChildClosure(node.variableName.name + '_Declaration');
-      node.closure!.set(
+      node.value.scope = node.scope!.newChildScope(node.variableName.name + '_Declaration');
+      node.scope!.set(
         node.variableName,
         'VALUE',
         node.parent instanceof Nodes.VarDirectiveNode && node.parent.isPublic
       );
     } else if (node instanceof Nodes.ImplDirective) {
-      node.closure = node.closure!.newChildClosure(node.reference.variable.text + '.');
+      node.scope = node.scope!.newChildScope(node.reference.variable.text + '.');
     } else if (node instanceof Nodes.TypeDirectiveNode) {
-      node.closure!.set(node.variableName, 'TYPE', node.isPublic);
+      node.scope!.set(node.variableName, 'TYPE', node.isPublic);
     } else if (node instanceof Nodes.FunctionNode) {
       if (node.functionName) {
         if (!(parent instanceof Nodes.DirectiveNode)) {
-          node.closure!.set(node.functionName, 'VALUE', false);
+          node.scope!.set(node.functionName, 'VALUE', false);
         } else if (!node.functionName.internalIdentifier) {
-          node.functionName.internalIdentifier = node.closure!.getInternalIdentifier(node.functionName);
+          node.functionName.internalIdentifier = node.scope!.getInternalIdentifier(node.functionName);
         }
       }
 
@@ -159,19 +159,19 @@ const createClosures = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCo
         parsingContext.messageCollector.error(new LysScopeError('Function has no body', node));
       } else {
         if (node.functionName) {
-          node.body.closure = node.closure!.newChildClosure(node.functionName.name + '_Body');
+          node.body.scope = node.scope!.newChildScope(node.functionName.name + '_Body');
         } else {
-          node.body.closure = node.closure!.newChildClosure('Body');
+          node.body.scope = node.scope!.newChildScope('Body');
         }
 
         node.parameters.forEach($ => {
-          node.body!.closure!.set($.parameterName, 'VALUE', false);
+          node.body!.scope!.set($.parameterName, 'VALUE', false);
         });
       }
 
       node.processParameters();
     } else if (node instanceof Nodes.BlockNode) {
-      node.closure = node.closure!.newChildClosure('Block');
+      node.scope = node.scope!.newChildScope('Block');
     }
   }
 });
@@ -219,29 +219,29 @@ function collectNamespaces(
 const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingContext: ParsingContext) => {
   if (node instanceof Nodes.IsExpressionNode || node instanceof Nodes.IfNode || node instanceof Nodes.MatcherNode) {
     const typeName = 'boolean';
-    if (!node.closure!.canResolveName(typeName)) {
-      throw new LysScopeError(`Cannot find name '${typeName}' ` + node.closure!.inspect(), node);
+    if (!node.scope!.canResolveName(typeName)) {
+      throw new LysScopeError(`Cannot find name '${typeName}' ` + node.scope!.inspect(), node);
     }
-    const resolved = node.closure!.get(typeName);
+    const resolved = node.scope!.get(typeName);
     node.booleanReference = resolved;
-    node.closure!.incrementUsage(typeName);
+    node.scope!.incrementUsage(typeName);
   } else if (node instanceof Nodes.LiteralNode) {
-    if (!node.closure!.canResolveName(node.typeName)) {
-      throw new LysScopeError(`Cannot find name '${node.typeName}' ` + node.closure!.inspect(), node);
+    if (!node.scope!.canResolveName(node.typeName)) {
+      throw new LysScopeError(`Cannot find name '${node.typeName}' ` + node.scope!.inspect(), node);
     }
-    const resolved = node.closure!.get(node.typeName);
+    const resolved = node.scope!.get(node.typeName);
     node.resolvedReference = resolved;
-    node.closure!.incrementUsage(node.typeName);
+    node.scope!.incrementUsage(node.typeName);
   } else if (node instanceof Nodes.ReferenceNode) {
-    if (!node.closure!.canResolveQName(node.variable)) {
-      throw new LysScopeError(`Cannot find name '${node.variable.text}' ` + node.closure!.inspect(), node.variable);
+    if (!node.scope!.canResolveQName(node.variable)) {
+      throw new LysScopeError(`Cannot find name '${node.variable.text}' ` + node.scope!.inspect(), node.variable);
     }
-    const resolved = node.closure!.getQName(node.variable);
+    const resolved = node.scope!.getQName(node.variable);
     const document = getDocument(node);
-    const isGlobal = !resolved.isLocalReference || resolved.scope === document.closure;
+    const isGlobal = !resolved.isLocalReference || resolved.scope === document.scope;
     node.isLocal = !isGlobal;
     node.resolvedReference = resolved;
-    node.closure!.incrementUsageQName(node.variable);
+    node.scope!.incrementUsageQName(node.variable);
   } else if (node instanceof Nodes.ImplDirective) {
     if (node.reference.resolvedReference) {
       collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, parsingContext);
@@ -265,7 +265,7 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node, parsingContext: Pars
       parsingContext.messageCollector.error('Self import is not allowed', node.astNode);
     }
     const importAll = node.allItems ? new Set(['*']) : new Set();
-    node.closure!.registerImport(node.module.text, importAll);
+    node.scope!.registerImport(node.module.text, importAll);
   } else if (node instanceof Nodes.ReferenceNode) {
     if (node.variable.names.length > 1) {
       const { moduleName, variable } = node.variable.deconstruct();
@@ -274,7 +274,7 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node, parsingContext: Pars
         // TODO: test this
         parsingContext.messageCollector.error('Self import is not allowed', node.astNode);
       }
-      node.closure!.registerImport(moduleName, new Set([variable]));
+      node.scope!.registerImport(moduleName, new Set([variable]));
     }
   }
 });
@@ -389,11 +389,11 @@ export function executeNameInitializationPhase(moduleName: string, parsingContex
   assert(document.analysis.nextPhase === PhaseFlags.NameInitialization);
   assert(document.moduleName === moduleName);
 
-  document.closure = new Closure(parsingContext, document.moduleName, null, '[DocumentScope]');
+  document.scope = new Scope(parsingContext, document.moduleName, null, '[DocumentScope]');
 
   injectCoreImport(document, parsingContext);
 
-  createClosures(document, parsingContext, null);
+  createScopes(document, parsingContext, null);
 
   fixParents(document, parsingContext);
 

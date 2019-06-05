@@ -114,7 +114,7 @@ describe('Semantic', function() {
         if (!didFail && result) {
           console.log(result);
           console.log(printAST(result.document));
-          console.log(result.document.closure!.inspect());
+          console.log(result.document.scope!.inspect());
         }
         expect(didFail).toEqual(true);
       },
@@ -361,7 +361,7 @@ describe('Semantic', function() {
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
-        expect(result.document.closure!.importedModules.has('system::core::native')).toEqual(true);
+        expect(result.document.scope!.importedModules.has('system::core::native')).toEqual(true);
       },
       scopePhases
     );
@@ -378,8 +378,8 @@ describe('Semantic', function() {
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
-        expect(result.document.closure!.importedModules.has('system::core')).toEqual(true);
-        expect(result.document.closure!.importedModules.has('system::random')).toEqual(true);
+        expect(result.document.scope!.importedModules.has('system::core')).toEqual(true);
+        expect(result.document.scope!.importedModules.has('system::random')).toEqual(true);
       },
       scopePhases
     );
@@ -393,7 +393,7 @@ describe('Semantic', function() {
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
-        expect(result.document.closure!.importedModules.has('system::core::i32')).toEqual(true);
+        expect(result.document.scope!.importedModules.has('system::core::i32')).toEqual(true);
       },
       scopePhases
     );
@@ -407,7 +407,7 @@ describe('Semantic', function() {
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
-        expect(result.document.closure!.importedModules.has('system::core::i32')).toEqual(true);
+        expect(result.document.scope!.importedModules.has('system::core::i32')).toEqual(true);
       },
       scopePhases
     );
