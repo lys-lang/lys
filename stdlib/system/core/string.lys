@@ -19,14 +19,16 @@ impl string {
    * Returns the string length in UCS chars.
    */
   #[inline]
-  fun property_length(self: string): u32 =
+  #[getter]
+  fun length(self: string): u32 =
     u32.load(self as ref) / 2 as u32
 
   /**
    * Returns the pointer of the string's content.
    */
   #[inline]
-  fun property_ptr(self: string): u32 = %wasm {
+  #[getter]
+  fun ptr(self: string): u32 = %wasm {
     (i32.add
       (i32.const 4)
       (call $addressFromRef (get_local $self))

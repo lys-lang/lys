@@ -54,10 +54,12 @@ impl bytes {
   #[explicit]
   fun as(lhs: bytes): ref = %wasm { (get_local $lhs) }
 
-  fun property_length(str: bytes): u32 = u32.load(str as ref)
+  #[getter]
+  fun length(self: bytes): u32 = u32.load(self as ref)
 
-  fun property_ptr(str: bytes): u32 = {
-    toAddr(str) + 4 as u32
+  #[getter]
+  fun ptr(self: bytes): u32 = {
+    toAddr(self) + 4 as u32
   }
 
   /**

@@ -83,7 +83,7 @@
         |-ReferenceNode resolvedReference=system::core::f32::f32 type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-        |-BinaryExpressionNode=(fun "+" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode,IsReturnExpression
+        |-BinaryExpressionNode type=(alias f32 (native f32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias f32) (alias f32)) (alias f32)),IsReturnExpression
           |-ReferenceNode resolvedReference=a type=(alias f32 (native f32)) annotations=IsValueNode,Local(a:<no-type>#0)
             |-QNameNode=a
               |-NameIdentifierNode="a"
@@ -107,7 +107,7 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias i32) (alias i32)) (alias i32)),IsReturnExpression
           |-ReferenceNode resolvedReference=a type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:<no-type>#0)
             |-QNameNode=a
               |-NameIdentifierNode="a"
@@ -135,7 +135,7 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode=(fun "sum" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "sum" ((alias i32) (alias i32)) (alias i32)),IsReturnExpression
           |-ReferenceNode resolvedReference=sum type=(intersection (fun "sum" ((alias f32) (alias f32)) (alias f32)) (fun "sum" ((alias i32) (alias i32)) (alias i32)))
             |-QNameNode=sum
               |-NameIdentifierNode="sum"
@@ -165,7 +165,7 @@
         |-ReferenceNode resolvedReference=system::core::f32::f32 type=(type (alias f32 (native f32)))
           |-QNameNode=f32
             |-NameIdentifierNode="f32"
-        |-FunctionCallNode=(fun "sum" ((alias f32) (alias f32)) (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode,IsReturnExpression
+        |-FunctionCallNode type=(alias f32 (native f32)) annotations=IsValueNode,ImplicitCall(fun "sum" ((alias f32) (alias f32)) (alias f32)),IsReturnExpression
           |-ReferenceNode resolvedReference=sum type=(intersection (fun "sum" ((alias f32) (alias f32)) (alias f32)) (fun "sum" ((alias i32) (alias i32)) (alias i32)))
             |-QNameNode=sum
               |-NameIdentifierNode="sum"

@@ -2,7 +2,8 @@
 struct String(data: bytes)
 
 impl String {
-  fun property_length(str: String): i32 = str.data.length / 2
+  #[getter]
+  fun length(str: String): i32 = str.data.length / 2
 
   fun +(lhs: String, rhs: String): String = {
     val lhsData = lhs.data

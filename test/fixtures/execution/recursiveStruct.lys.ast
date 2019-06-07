@@ -100,7 +100,7 @@
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean)),IsReturnExpression
               |-IsExpressionNode=(fun "is" ((union (alias Empty) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=a type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias ref (ref ?))) annotations=IsValueNode,Local(a:<no-type>#0)
                   |-QNameNode=a
@@ -153,7 +153,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -179,7 +179,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "!=" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -316,8 +316,8 @@
                   |-QNameNode=Empty
                     |-NameIdentifierNode="Empty"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::recursiveStruct::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -568,8 +568,8 @@
                   |-QNameNode=Node
                     |-NameIdentifierNode="Node"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias u64) (alias i32)) (alias u64)),IsReturnExpression
+              |-AsExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias u64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::recursiveStruct::discriminant_1:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -598,18 +598,18 @@
           |-BlockNode type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::execution::recursiveStruct::$ref:Node#1)
               |-NameIdentifierNode="$ref" type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=MutableDeclaration
-              |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Node)) type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "fromPointer" ((alias u32)) (alias Node))
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Node)))
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
-                |-FunctionCallNode=(fun "calloc" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "calloc" ((alias u32) (alias u32)) (alias u32))
                   |-ReferenceNode resolvedReference=system::core::memory::calloc type=(intersection (fun "calloc" ((alias u32) (alias u32)) (alias u32)))
                     |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias i32)) (alias u32))
                     |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                       |-QNameNode=u32
@@ -619,7 +619,7 @@
                       |-QNameNode=Node
                         |-NameIdentifierNode="Node"
                     |-NameIdentifierNode="allocationSize"
-            |-FunctionCallNode=(fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)) type=(alias void (native void))
+            |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void))
               |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Node)) (union (alias Tree) (alias Forest))) (fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
@@ -708,10 +708,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_a" type=(intersection (fun "property_a" ((alias Node)) (union (alias Tree) (alias Forest))) (fun "property_a" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)))
+      |-NameIdentifierNode="a" type=(intersection (fun "a" ((alias Node)) (union (alias Tree) (alias Forest))) (fun "a" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)))
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_a" type=(fun "property_a" ((alias Node)) (union (alias Tree) (alias Forest)))
+          |-NameIdentifierNode="a" type=(fun "a" ((alias Node)) (union (alias Tree) (alias Forest))) annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
             |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
@@ -724,7 +726,7 @@
             |-ReferenceNode resolvedReference=Forest type=(type (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))))
               |-QNameNode=Forest
                 |-NameIdentifierNode="Forest"
-          |-FunctionCallNode=(fun "property$0" ((alias Node)) (union (alias Tree) (alias Forest))) type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,ImplicitCall(fun "property$0" ((alias Node)) (union (alias Tree) (alias Forest))),IsReturnExpression
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Node)) (union (alias Tree) (alias Forest))) (fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -732,8 +734,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_a" type=(fun "property_a" ((alias Node) (union (alias Tree) (alias Forest))) (alias void))
+          |-NameIdentifierNode="a" type=(fun "a" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)) annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
             |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
@@ -751,7 +755,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void))
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Node)) (union (alias Tree) (alias Forest))) (fun "property$0" ((alias Node) (union (alias Tree) (alias Forest))) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -780,7 +784,7 @@
             |-ReferenceNode resolvedReference=Forest type=(type (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))))
               |-QNameNode=Forest
                 |-NameIdentifierNode="Forest"
-          |-FunctionCallNode=(fun "loadPropertyWithOffset$0" ((alias Node) (alias u32)) (union (alias Tree) (alias Forest))) type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,ImplicitCall(fun "loadPropertyWithOffset$0" ((alias Node) (alias u32)) (union (alias Tree) (alias Forest))),IsReturnExpression
             |-ReferenceNode resolvedReference=loadPropertyWithOffset$0 type=(intersection (fun "loadPropertyWithOffset$0" ((alias Node) (alias u32)) (union (alias Tree) (alias Forest))))
               |-QNameNode=loadPropertyWithOffset$0
                 |-NameIdentifierNode="loadPropertyWithOffset$0"
@@ -814,7 +818,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "storePropertyWithOffset$0" ((alias Node) (union (alias Tree) (alias Forest)) (alias u32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "storePropertyWithOffset$0" ((alias Node) (union (alias Tree) (alias Forest)) (alias u32)) (alias void))
             |-ReferenceNode resolvedReference=storePropertyWithOffset$0 type=(intersection (fun "storePropertyWithOffset$0" ((alias Node) (union (alias Tree) (alias Forest)) (alias u32)) (alias void)))
               |-QNameNode=storePropertyWithOffset$0
                 |-NameIdentifierNode="storePropertyWithOffset$0"
@@ -1056,7 +1060,7 @@
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean)),IsReturnExpression
               |-IsExpressionNode=(fun "is" ((union (alias Nil) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=a type=(union (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias ref (ref ?))) annotations=IsValueNode,Local(a:<no-type>#0)
                   |-QNameNode=a
@@ -1109,7 +1113,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -1135,7 +1139,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "!=" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -1272,8 +1276,8 @@
                   |-QNameNode=Nil
                     |-NameIdentifierNode="Nil"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::recursiveStruct::discriminant_2:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1524,8 +1528,8 @@
                   |-QNameNode=Cons
                     |-NameIdentifierNode="Cons"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias u64) (alias i32)) (alias u64)),IsReturnExpression
+              |-AsExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias u64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::recursiveStruct::discriminant_3:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1554,18 +1558,18 @@
           |-BlockNode type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::execution::recursiveStruct::$ref_1:Cons#1)
               |-NameIdentifierNode="$ref" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=MutableDeclaration
-              |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Cons)) type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "fromPointer" ((alias u32)) (alias Cons))
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Cons)))
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
-                |-FunctionCallNode=(fun "calloc" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "calloc" ((alias u32) (alias u32)) (alias u32))
                   |-ReferenceNode resolvedReference=system::core::memory::calloc type=(intersection (fun "calloc" ((alias u32) (alias u32)) (alias u32)))
                     |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias i32)) (alias u32))
                     |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                       |-QNameNode=u32
@@ -1575,7 +1579,7 @@
                       |-QNameNode=Cons
                         |-NameIdentifierNode="Cons"
                     |-NameIdentifierNode="allocationSize"
-            |-FunctionCallNode=(fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)) type=(alias void (native void))
+            |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void))
               |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Cons)) (union (alias Tree) (alias Forest))) (fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
@@ -1664,10 +1668,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_tree" type=(intersection (fun "property_tree" ((alias Cons)) (union (alias Tree) (alias Forest))) (fun "property_tree" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)))
+      |-NameIdentifierNode="tree" type=(intersection (fun "tree" ((alias Cons)) (union (alias Tree) (alias Forest))) (fun "tree" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)))
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_tree" type=(fun "property_tree" ((alias Cons)) (union (alias Tree) (alias Forest)))
+          |-NameIdentifierNode="tree" type=(fun "tree" ((alias Cons)) (union (alias Tree) (alias Forest))) annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
             |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
@@ -1680,7 +1686,7 @@
             |-ReferenceNode resolvedReference=Forest type=(type (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))))
               |-QNameNode=Forest
                 |-NameIdentifierNode="Forest"
-          |-FunctionCallNode=(fun "property$0" ((alias Cons)) (union (alias Tree) (alias Forest))) type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,ImplicitCall(fun "property$0" ((alias Cons)) (union (alias Tree) (alias Forest))),IsReturnExpression
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Cons)) (union (alias Tree) (alias Forest))) (fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -1688,8 +1694,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_tree" type=(fun "property_tree" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void))
+          |-NameIdentifierNode="tree" type=(fun "tree" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)) annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
             |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
@@ -1707,7 +1715,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void))
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Cons)) (union (alias Tree) (alias Forest))) (fun "property$0" ((alias Cons) (union (alias Tree) (alias Forest))) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -1736,7 +1744,7 @@
             |-ReferenceNode resolvedReference=Forest type=(type (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))))
               |-QNameNode=Forest
                 |-NameIdentifierNode="Forest"
-          |-FunctionCallNode=(fun "loadPropertyWithOffset$0" ((alias Cons) (alias u32)) (union (alias Tree) (alias Forest))) type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct))))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct)))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct)))))))))) annotations=IsValueNode,ImplicitCall(fun "loadPropertyWithOffset$0" ((alias Cons) (alias u32)) (union (alias Tree) (alias Forest))),IsReturnExpression
             |-ReferenceNode resolvedReference=loadPropertyWithOffset$0 type=(intersection (fun "loadPropertyWithOffset$0" ((alias Cons) (alias u32)) (union (alias Tree) (alias Forest))))
               |-QNameNode=loadPropertyWithOffset$0
                 |-NameIdentifierNode="loadPropertyWithOffset$0"
@@ -1770,7 +1778,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "storePropertyWithOffset$0" ((alias Cons) (union (alias Tree) (alias Forest)) (alias u32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "storePropertyWithOffset$0" ((alias Cons) (union (alias Tree) (alias Forest)) (alias u32)) (alias void))
             |-ReferenceNode resolvedReference=storePropertyWithOffset$0 type=(intersection (fun "storePropertyWithOffset$0" ((alias Cons) (union (alias Tree) (alias Forest)) (alias u32)) (alias void)))
               |-QNameNode=storePropertyWithOffset$0
                 |-NameIdentifierNode="storePropertyWithOffset$0"
@@ -1992,7 +2000,7 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-FunctionCallNode=(fun "START" ((alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "START" ((alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::START type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias string)) (alias void)))
               |-QNameNode=START
                 |-NameIdentifierNode="START"
@@ -2004,7 +2012,7 @@
                 |-NameIdentifierNode="Nil"
           |-VarDeclarationNode annotations=Local(test::fixtures::execution::recursiveStruct::b_8:Cons#1)
             |-NameIdentifierNode="b" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=MutableDeclaration
-            |-FunctionCallNode=(fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons)) type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+            |-FunctionCallNode type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons))
               |-MemberNode type=(intersection (fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons)))
                 |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
                   |-QNameNode=Cons
@@ -2015,7 +2023,7 @@
                   |-NameIdentifierNode="Empty"
           |-VarDeclarationNode annotations=Local(test::fixtures::execution::recursiveStruct::c:Cons#2)
             |-NameIdentifierNode="c" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=MutableDeclaration
-            |-FunctionCallNode=(fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons)) type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+            |-FunctionCallNode type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons))
               |-MemberNode type=(intersection (fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons)))
                 |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
                   |-QNameNode=Cons
@@ -2026,13 +2034,13 @@
                   |-NameIdentifierNode="Nil"
           |-VarDeclarationNode annotations=Local(test::fixtures::execution::recursiveStruct::d:Cons#3)
             |-NameIdentifierNode="d" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=MutableDeclaration
-            |-FunctionCallNode=(fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons)) type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+            |-FunctionCallNode type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons))
               |-MemberNode type=(intersection (fun "apply" ((union (alias Tree) (alias Forest))) (alias Cons)))
                 |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
                   |-QNameNode=Cons
                     |-NameIdentifierNode="Cons"
                 |-NameIdentifierNode="apply"
-              |-FunctionCallNode=(fun "apply" ((union (alias Tree) (alias Forest))) (alias Node)) type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "apply" ((union (alias Tree) (alias Forest))) (alias Node))
                 |-MemberNode type=(intersection (fun "apply" ((union (alias Tree) (alias Forest))) (alias Node)))
                   |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
                     |-QNameNode=Node
@@ -2043,7 +2051,7 @@
                     |-NameIdentifierNode="Empty"
           |-VarDeclarationNode annotations=Local(test::fixtures::execution::recursiveStruct::e:Node#4)
             |-NameIdentifierNode="e" type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=MutableDeclaration
-            |-FunctionCallNode=(fun "apply" ((union (alias Tree) (alias Forest))) (alias Node)) type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode
+            |-FunctionCallNode type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) annotations=IsValueNode,ImplicitCall(fun "apply" ((union (alias Tree) (alias Forest))) (alias Node))
               |-MemberNode type=(intersection (fun "apply" ((union (alias Tree) (alias Forest))) (alias Node)))
                 |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
                   |-QNameNode=Node
@@ -2052,7 +2060,7 @@
               |-ReferenceNode resolvedReference=Nil type=(alias Nil (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias Nil))
                 |-QNameNode=Nil
                   |-NameIdentifierNode="Nil"
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "verify" ((alias boolean) (alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::verify type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
@@ -2064,7 +2072,7 @@
                 |-QNameNode=Nil
                   |-NameIdentifierNode="Nil"
             |-StringLiteral="a is Nil" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "verify" ((alias boolean) (alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::verify type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
@@ -2076,7 +2084,7 @@
                 |-QNameNode=Forest
                   |-NameIdentifierNode="Forest"
             |-StringLiteral="a is Fores" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "verify" ((alias boolean) (alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::verify type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
@@ -2088,7 +2096,7 @@
                 |-QNameNode=Forest
                   |-NameIdentifierNode="Forest"
             |-StringLiteral="b is Fores" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "verify" ((alias boolean) (alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::verify type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
@@ -2100,7 +2108,7 @@
                 |-QNameNode=Cons
                   |-NameIdentifierNode="Cons"
             |-StringLiteral="c is Cons" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "verify" ((alias boolean) (alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::verify type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
@@ -2112,7 +2120,7 @@
                 |-QNameNode=Node
                   |-NameIdentifierNode="Node"
             |-StringLiteral="e is Node" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "verify" ((alias boolean) (alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "verify" ((alias boolean) (alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::verify type=(intersection (fun "verify" ((alias boolean) (alias u32)) (alias void)) (fun "verify" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=verify
                 |-NameIdentifierNode="verify"
@@ -2124,7 +2132,7 @@
                 |-QNameNode=Tree
                   |-NameIdentifierNode="Tree"
             |-StringLiteral="e is Tree" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "END" () (alias void))
             |-ReferenceNode resolvedReference=support::test::END type=(intersection (fun "END" () (alias void)))
               |-QNameNode=END
                 |-NameIdentifierNode="END"

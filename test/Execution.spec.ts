@@ -56,6 +56,98 @@ describe('Execution tests', () => {
       }
     );
   });
+
+  describe('methods getters setters', () => {
+    test(
+      'methods',
+      `
+        import support::test
+
+        struct T()
+
+        impl T {
+          #[method] fun a(self: T): i32 = 1
+          #[method] fun a(self: T, a: i32): i32 = 2
+          #[method] fun a(self: T, a: boolean): i32 = 3
+          #[method] fun a(self: T, a: boolean, b: i32): i32 = 4
+        }
+
+        #[export] fun a(): i32 = T().a()
+        #[export] fun b(): i32 = T().a(1)
+        #[export] fun c(): i32 = T().a(false)
+        #[export] fun d(): i32 = T().a(false, 1)
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.a()).to.eq(1);
+        expect(x.exports.b()).to.eq(2);
+        expect(x.exports.c()).to.eq(3);
+        expect(x.exports.d()).to.eq(4);
+      }
+    );
+
+    test(
+      'methods, mutating',
+      `
+        import support::test
+
+        struct T(value: i32)
+
+        impl T {
+          #[method] fun reset(self: T): void = {
+            self.value = 0
+          }
+
+          #[method] fun next(self: T): i32 = {
+            self.value = self.value + 1
+            self.value
+          }
+        }
+
+        var t = T(0)
+
+        #[export] fun next(): i32 = t.next()
+        #[export] fun reset(): void = t.reset()
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.next()).to.eq(1);
+        expect(x.exports.next()).to.eq(2);
+        expect(x.exports.next()).to.eq(3);
+        expect(x.exports.next()).to.eq(4);
+        x.exports.reset();
+        expect(x.exports.next()).to.eq(1);
+        expect(x.exports.next()).to.eq(2);
+        expect(x.exports.next()).to.eq(3);
+        expect(x.exports.next()).to.eq(4);
+      }
+    );
+
+    test(
+      'index selector getter',
+      `
+        import support::test
+
+        struct T(value: i32)
+
+        impl T {
+          #[getter] fun [](self: T, index: i32): i32 = self.value * index
+          #[getter] fun [](self: T, index: boolean): i32 = self.value
+        }
+
+        var t = T(123)
+
+        #[export] fun mul(i: i32): i32 = t[i]
+        #[export] fun bool(i: boolean): i32 = t[i]
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        expect(x.exports.mul(123)).to.eq(123 * 123);
+        expect(x.exports.bool(false)).to.eq(123);
+      }
+    );
+  });
+
   describe('schemas', () => {
     test(
       'discriminant',
@@ -338,14 +430,14 @@ describe('Execution tests', () => {
           var a = Vector3(1, 2, 3)
 
           support::test::verify( a is Vector3, "a is Vector3" )
-          support::test::mustEqual( Vector3.property_x(a), 1, "x")
-          support::test::mustEqual( Vector3.property_y(a), 2, "y" )
-          support::test::mustEqual( Vector3.property_z(a), 3, "z" )
+          support::test::mustEqual( Vector3.x(a), 1, "x")
+          support::test::mustEqual( Vector3.y(a), 2, "y" )
+          support::test::mustEqual( Vector3.z(a), 3, "z" )
         }
 
         #[export] fun testFailing(): void = {
           var a = Vector3(1, 2, 3)
-          support::test::assert( Vector3.property_x(a) == 999, "this one must fail" )
+          support::test::assert( Vector3.x(a) == 999, "this one must fail" )
         }
       `,
       async (x, err) => {
@@ -373,40 +465,40 @@ describe('Execution tests', () => {
           var a = CatBag(1, true, 3.0, 0x8 as i64, 0.4 as f64, Red, Red)
 
           support::test::assert( a is CatBag )
-          support::test::assert( CatBag.property_a(a)    == 1 )
-          support::test::assert( CatBag.property_b(a)    == true )
-          support::test::assert( CatBag.property_c(a)    == 3.0 )
-          support::test::assert( CatBag.property_d(a)    == 0x8 )
-          support::test::assert( CatBag.property_e(a)    == 0.4 as f64 )
-          support::test::assert( CatBag.property_f(a)    is Red )
-          support::test::assert( CatBag.property_g(a)    is Red )
-          support::test::assert( CatBag.property_f(a)    is Color )
-          support::test::assert( CatBag.property_g(a)    is Color )
+          support::test::assert( CatBag.a(a)    == 1 )
+          support::test::assert( CatBag.b(a)    == true )
+          support::test::assert( CatBag.c(a)    == 3.0 )
+          support::test::assert( CatBag.d(a)    == 0x8 )
+          support::test::assert( CatBag.e(a)    == 0.4 as f64 )
+          support::test::assert( CatBag.f(a)    is Red )
+          support::test::assert( CatBag.g(a)    is Red )
+          support::test::assert( CatBag.f(a)    is Color )
+          support::test::assert( CatBag.g(a)    is Color )
 
-          CatBag.property_a(a, 5)
-          CatBag.property_b(a, false)
-          CatBag.property_c(a, -999.0)
-          CatBag.property_d(a, 0xdeadbeef as i64)
-          CatBag.property_e(a, 6.08e23 as f64)
-          CatBag.property_f(a, Custom(333))
-          CatBag.property_g(a, None)
+          CatBag.a(a, 5)
+          CatBag.b(a, false)
+          CatBag.c(a, -999.0)
+          CatBag.d(a, 0xdeadbeef as i64)
+          CatBag.e(a, 6.08e23 as f64)
+          CatBag.f(a, Custom(333))
+          CatBag.g(a, None)
 
-          support::test::assert( CatBag.property_a(a)    == 5 )
-          support::test::assert( CatBag.property_b(a)    == false )
-          support::test::assert( CatBag.property_c(a)    == -999.0 )
-          support::test::assert( CatBag.property_d(a)    == 0xdeadbeef as i64 )
-          support::test::assert( CatBag.property_e(a)    == 6.08e23 as f64 )
-          support::test::assert( CatBag.property_f(a)    is Custom )
-          support::test::assert( CatBag.property_g(a)    is None )
-          support::test::assert( CatBag.property_f(a)    is Color )
-          support::test::assert( CatBag.property_g(a)    is Color )
+          support::test::assert( CatBag.a(a)    == 5 )
+          support::test::assert( CatBag.b(a)    == false )
+          support::test::assert( CatBag.c(a)    == -999.0 )
+          support::test::assert( CatBag.d(a)    == 0xdeadbeef as i64 )
+          support::test::assert( CatBag.e(a)    == 6.08e23 as f64 )
+          support::test::assert( CatBag.f(a)    is Custom )
+          support::test::assert( CatBag.g(a)    is None )
+          support::test::assert( CatBag.f(a)    is Color )
+          support::test::assert( CatBag.g(a)    is Color )
 
-          var custom = CatBag.property_f(a)
+          var custom = CatBag.f(a)
 
           support::test::assert( custom is Custom )
 
           match custom {
-            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            case x is Custom -> support::test::assert( Custom.hex(x) == 333 )
             else -> panic()
           }
         }
@@ -537,16 +629,83 @@ describe('Execution tests', () => {
           var custom: Enum = None
 
           match custom {
-            case x is Custom -> support::test::assert( Custom.property_hex(x) == 333 )
+            case x is Custom -> support::test::assert( Custom.hex(x) == 333 )
             else -> panic()
           }
         }
       `,
       async (x, err) => {
         if (err) throw err;
+        x.exports.testPassing();
         expect(() => x.exports.testFailing()).to.throw();
       }
     );
+
+    test(
+      'automatic coercion in binary operations',
+      `
+        import support::test
+
+        var a64 = 123 as i64
+        var a32 = 123 as i32
+        var a16 = 123 as i16
+        var a8 = 123 as u8
+
+        var b64 = 99 as i64
+        var b32 = 99 as i32
+        var b16 = 99 as i16
+        var b8 = 99 as u8
+
+        #[export] fun testPassing(): void = {
+          assert( a64 == a32, "a64 == a32" )
+          assert( a64 == a16, "a64 == a16" )
+          assert( a64 == a8,  "a64 == a8"  )
+          assert( a64 == a64, "a64 == a64" )
+
+          assert( a64 != b32, "a64 != b32" )
+          assert( a64 != b16, "a64 != b16" )
+          assert( a64 != b8,  "a64 != b8"  )
+          assert( a64 != b64, "a64 != b64" )
+        }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.testPassing();
+      }
+    );
+
+    // test(
+    //   'automatic coercion in binary operations, automatic cast by declaration',
+    //   `
+    //     import support::test
+
+    //     var a64: i64 = 123
+    //     var a32: i32 = 123
+    //     var a16: i16 = 123
+    //     var a8: u8 = 123
+
+    //     var b64: i64 = 99
+    //     var b32: i32 = 99
+    //     var b16: i16 = 99
+    //     var b8: u8 = 99
+
+    //     #[export] fun testPassing(): void = {
+    //       assert( a64 == a32, "a64 == a32" )
+    //       assert( a64 == a16, "a64 == a16" )
+    //       assert( a64 == a8,  "a64 == a8"  )
+    //       assert( a64 == a64, "a64 == a64" )
+
+    //       assert( a64 != b32, "a64 != b32" )
+    //       assert( a64 != b16, "a64 != b16" )
+    //       assert( a64 != b8,  "a64 != b8"  )
+    //       assert( a64 != b64, "a64 != b64" )
+    //     }
+    //   `,
+    //   async (x, err) => {
+    //     if (err) throw err;
+    //     x.exports.testPassing();
+    //   }
+    // );
 
     test(
       'store values',

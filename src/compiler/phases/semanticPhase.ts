@@ -84,13 +84,43 @@ function inlineDecorator(
   target.functionNode.functionName.annotate(new annotations.Inline());
 }
 
+function getterSetterMethodDecorator(
+  decorator: Nodes.DecoratorNode,
+  parsingContext: ParsingContext,
+  target: Nodes.FunDirectiveNode
+) {
+  if (decorator.args.length !== 0) {
+    parsingContext.messageCollector.error(
+      `"${decorator.decoratorName.name}" takes no arguments`,
+      decorator.decoratorName.astNode
+    );
+  }
+
+  switch (decorator.decoratorName.name) {
+    case 'getter':
+      target.functionNode.functionName.annotate(new annotations.Getter());
+      return;
+    case 'setter':
+      target.functionNode.functionName.annotate(new annotations.Setter());
+      return;
+    case 'method':
+      target.functionNode.functionName.annotate(new annotations.Method());
+      return;
+  }
+
+  target.functionNode.functionName.annotate(new annotations.Inline());
+}
+
 function explicitDecorator(
   decorator: Nodes.DecoratorNode,
   parsingContext: ParsingContext,
   target: Nodes.FunDirectiveNode
 ) {
   if (decorator.args.length !== 0) {
-    parsingContext.messageCollector.error('"explicit" takes no arguments', decorator.decoratorName.astNode);
+    parsingContext.messageCollector.error(
+      `"${decorator.decoratorName.name}" takes no arguments`,
+      decorator.decoratorName.astNode
+    );
   }
 
   target.functionNode.functionName.annotate(new annotations.Explicit());
@@ -104,6 +134,10 @@ function processFunctionDecorations(node: Nodes.FunDirectiveNode, parsingContext
           return externDecorator($, parsingContext, node);
         case 'inline':
           return inlineDecorator($, parsingContext, node);
+        case 'getter':
+        case 'setter':
+        case 'method':
+          return getterSetterMethodDecorator($, parsingContext, node);
         case 'explicit':
           return explicitDecorator($, parsingContext, node);
         case 'export':
@@ -203,12 +237,12 @@ function processStruct(
 
         if (param.parameterType instanceof Nodes.UnionTypeNode) {
           return `
-            // #[getter]
-            fun property_${parameterName}(self: ${typeName}): ${parameterType} =
+            #[getter]
+            fun ${parameterName}(self: ${typeName}): ${parameterType} =
               property$${i}(self)
 
-            // #[setter]
-            fun property_${parameterName}(self: ${typeName}, value: ${parameterType}): void =
+            #[setter]
+            fun ${parameterName}(self: ${typeName}, value: ${parameterType}): void =
               property$${i}(self, value)
 
             #[inline]
@@ -249,12 +283,12 @@ function processStruct(
           `;
         } else {
           return `
-            // #[getter]
-            fun property_${parameterName}(self: ${typeName}): ${parameterType} =
+            #[getter]
+            fun ${parameterName}(self: ${typeName}): ${parameterType} =
               property$${i}(self)
 
-            // #[setter]
-            fun property_${parameterName}(self: ${typeName}, value: ${parameterType}): void =
+            #[setter]
+            fun ${parameterName}(self: ${typeName}, value: ${parameterType}): void =
               property$${i}(self, value)
 
             /* ${param.parameterType!.nodeName} */

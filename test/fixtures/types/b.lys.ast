@@ -89,7 +89,7 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode=(fun "innerFunctionArgs" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "innerFunctionArgs" ((alias i32)) (alias i32))
           |-ReferenceNode resolvedReference=innerFunctionArgs type=(intersection (fun "innerFunctionArgs" ((alias i32)) (alias i32)))
             |-QNameNode=innerFunctionArgs
               |-NameIdentifierNode="innerFunctionArgs"
@@ -125,13 +125,13 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "innerFunction" () (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+        |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias i32) (alias i32)) (alias i32))
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "innerFunction" () (alias i32))
             |-ReferenceNode resolvedReference=innerFunction type=(intersection (fun "innerFunction" () (alias i32)))
               |-QNameNode=innerFunction
                 |-NameIdentifierNode="innerFunction"
           |-NameIdentifierNode="+"
-          |-FunctionCallNode=(fun "over" () (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "over" () (alias i32))
             |-ReferenceNode resolvedReference=over type=(intersection (fun "over" () (alias i32)) (fun "over" ((alias i32)) (alias i32)))
               |-QNameNode=over
                 |-NameIdentifierNode="over"

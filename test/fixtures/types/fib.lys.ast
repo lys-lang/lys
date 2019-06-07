@@ -89,17 +89,17 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun ">" ((alias i32) (alias i32)) (alias boolean))
             |-ReferenceNode resolvedReference=n type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
             |-NameIdentifierNode=">"
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
             |-ReferenceNode resolvedReference=fibo type=(intersection (fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)))
               |-QNameNode=fibo
                 |-NameIdentifierNode="fibo"
-            |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "-" ((alias i32) (alias i32)) (alias i32))
               |-ReferenceNode resolvedReference=n type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=n
                   |-NameIdentifierNode="n"
@@ -108,7 +108,7 @@
             |-ReferenceNode resolvedReference=x2 type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=x2
                 |-NameIdentifierNode="x2"
-            |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias i32) (alias i32)) (alias i32))
               |-ReferenceNode resolvedReference=x1 type=(alias i32 (native i32)) annotations=IsValueNode
                 |-QNameNode=x1
                   |-NameIdentifierNode="x1"
@@ -132,7 +132,7 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode=(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32))
           |-ReferenceNode resolvedReference=fibo type=(intersection (fun "fibo" ((alias i32) (alias i32) (alias i32)) (alias i32)))
             |-QNameNode=fibo
               |-NameIdentifierNode="fibo"
@@ -149,7 +149,7 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode=(fun "fib" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "fib" ((alias i32)) (alias i32))
           |-ReferenceNode resolvedReference=fib type=(intersection (fun "fib" ((alias i32)) (alias i32)))
             |-QNameNode=fib
               |-NameIdentifierNode="fib"

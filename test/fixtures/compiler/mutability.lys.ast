@@ -113,7 +113,7 @@
                 |-NameIdentifierNode="i32"
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
           |-IfNode type=(native void)
-            |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias i32) (alias i32)) (alias boolean))
               |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:<no-type>#0)
                 |-QNameNode=x
                   |-NameIdentifierNode="x"

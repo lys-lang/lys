@@ -87,7 +87,7 @@
             |-NameIdentifierNode="i32"
         |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
           |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-            |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun ">" ((alias i32) (alias i32)) (alias boolean))
               |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:<no-type>#0)
                 |-QNameNode=x
                   |-NameIdentifierNode="x"
@@ -96,11 +96,11 @@
                 |-QNameNode=y
                   |-NameIdentifierNode="y"
             |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-              |-FunctionCallNode=(fun "gcd" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+              |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "gcd" ((alias i32) (alias i32)) (alias i32)),IsReturnExpression
                 |-ReferenceNode resolvedReference=gcd type=(intersection (fun "gcd" ((alias i32) (alias i32)) (alias i32)))
                   |-QNameNode=gcd
                     |-NameIdentifierNode="gcd"
-                |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+                |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "-" ((alias i32) (alias i32)) (alias i32))
                   |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:<no-type>#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
@@ -112,7 +112,7 @@
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
             |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-              |-BinaryExpressionNode=(fun "<" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+              |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "<" ((alias i32) (alias i32)) (alias boolean))
                 |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:<no-type>#0)
                   |-QNameNode=x
                     |-NameIdentifierNode="x"
@@ -121,14 +121,14 @@
                   |-QNameNode=y
                     |-NameIdentifierNode="y"
               |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-                |-FunctionCallNode=(fun "gcd" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+                |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "gcd" ((alias i32) (alias i32)) (alias i32)),IsReturnExpression
                   |-ReferenceNode resolvedReference=gcd type=(intersection (fun "gcd" ((alias i32) (alias i32)) (alias i32)))
                     |-QNameNode=gcd
                       |-NameIdentifierNode="gcd"
                   |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode,Local(x:<no-type>#0)
                     |-QNameNode=x
                       |-NameIdentifierNode="x"
-                  |-BinaryExpressionNode=(fun "-" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+                  |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "-" ((alias i32) (alias i32)) (alias i32))
                     |-ReferenceNode resolvedReference=y type=(alias i32 (native i32)) annotations=IsValueNode,Local(y:<no-type>#1)
                       |-QNameNode=y
                         |-NameIdentifierNode="y"
@@ -151,7 +151,7 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-BlockNode type=(alias i32 (native i32)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "gcd" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "gcd" ((alias i32) (alias i32)) (alias i32)),IsReturnExpression
             |-ReferenceNode resolvedReference=gcd type=(intersection (fun "gcd" ((alias i32) (alias i32)) (alias i32)))
               |-QNameNode=gcd
                 |-NameIdentifierNode="gcd"

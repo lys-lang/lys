@@ -332,8 +332,10 @@ impl Custom {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_a(self: Custom): i32 = property$0(self)
-  fun property_a(self: Custom, value: i32): void = property$0(self, value)
+  #[getter]
+  fun a(self: Custom): i32 = property$0(self)
+  #[setter]
+  fun a(self: Custom, value: i32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Custom): i32 = i32.load(self, Custom.^property$0_offset)

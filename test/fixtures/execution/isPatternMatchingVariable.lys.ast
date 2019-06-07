@@ -103,8 +103,8 @@
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-              |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean)),IsReturnExpression
+              |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean))
                 |-IsExpressionNode=(fun "is" ((union (alias A) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                   |-ReferenceNode resolvedReference=a type=(union (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) (alias ref (ref ?))) annotations=IsValueNode,Local(a:<no-type>#0)
                     |-QNameNode=a
@@ -165,7 +165,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -191,7 +191,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "!=" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -328,8 +328,8 @@
                   |-QNameNode=A
                     |-NameIdentifierNode="A"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -561,8 +561,8 @@
                   |-QNameNode=B
                     |-NameIdentifierNode="B"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_1:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -794,8 +794,8 @@
                   |-QNameNode=C
                     |-NameIdentifierNode="C"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_2:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1014,9 +1014,9 @@
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
-              |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-                |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean)),IsReturnExpression
+              |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean))
+                |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean))
                   |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                     |-ReferenceNode resolvedReference=a type=(union (alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) (alias ref (ref ?))) annotations=IsValueNode,Local(a:<no-type>#0)
                       |-QNameNode=a
@@ -1085,7 +1085,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -1111,7 +1111,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode,IsReturnExpression
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "!=" ((alias ref) (alias ref)) (alias boolean)),IsReturnExpression
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode,Local(lhs:<no-type>#0)
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -1248,8 +1248,8 @@
                   |-QNameNode=Red
                     |-NameIdentifierNode="Red"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_3:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1481,8 +1481,8 @@
                   |-QNameNode=Green
                     |-NameIdentifierNode="Green"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_4:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1714,8 +1714,8 @@
                   |-QNameNode=Blue
                     |-NameIdentifierNode="Blue"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_5:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1966,8 +1966,8 @@
                   |-QNameNode=Custom
                     |-NameIdentifierNode="Custom"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias u64) (alias i32)) (alias u64)),IsReturnExpression
+              |-AsExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias u64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_6:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -1992,18 +1992,18 @@
           |-BlockNode type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode
             |-VarDeclarationNode annotations=Local(test::fixtures::execution::isPatternMatchingVariable::$ref:Custom#1)
               |-NameIdentifierNode="$ref" type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=MutableDeclaration
-              |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias Custom)) type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Custom (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode,ImplicitCall(fun "fromPointer" ((alias u32)) (alias Custom))
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias Custom)))
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
-                |-FunctionCallNode=(fun "calloc" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "calloc" ((alias u32) (alias u32)) (alias u32))
                   |-ReferenceNode resolvedReference=system::core::memory::calloc type=(intersection (fun "calloc" ((alias u32) (alias u32)) (alias u32)))
                     |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias i32)) (alias u32))
                     |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                       |-QNameNode=u32
@@ -2013,7 +2013,7 @@
                       |-QNameNode=Custom
                         |-NameIdentifierNode="Custom"
                     |-NameIdentifierNode="allocationSize"
-            |-FunctionCallNode=(fun "property$0" ((alias Custom) (alias i32)) (alias void)) type=(alias void (native void))
+            |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias Custom) (alias i32)) (alias void))
               |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
@@ -2102,10 +2102,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_a" type=(intersection (fun "property_a" ((alias Custom)) (alias i32)) (fun "property_a" ((alias Custom) (alias i32)) (alias void)))
+      |-NameIdentifierNode="a" type=(intersection (fun "a" ((alias Custom)) (alias i32)) (fun "a" ((alias Custom) (alias i32)) (alias void)))
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_a" type=(fun "property_a" ((alias Custom)) (alias i32))
+          |-NameIdentifierNode="a" type=(fun "a" ((alias Custom)) (alias i32)) annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias Custom (struct a: (type (alias i32 (native i32)))))
             |-ReferenceNode resolvedReference=Custom type=(type (alias Custom (struct a: (type (alias i32 (native i32))))))
@@ -2114,7 +2116,7 @@
           |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode=(fun "property$0" ((alias Custom)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property$0" ((alias Custom)) (alias i32)),IsReturnExpression
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -2122,8 +2124,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_a" type=(fun "property_a" ((alias Custom) (alias i32)) (alias void))
+          |-NameIdentifierNode="a" type=(fun "a" ((alias Custom) (alias i32)) (alias void)) annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias Custom (struct a: (type (alias i32 (native i32)))))
             |-ReferenceNode resolvedReference=Custom type=(type (alias Custom (struct a: (type (alias i32 (native i32))))))
@@ -2137,7 +2141,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "property$0" ((alias Custom) (alias i32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias Custom) (alias i32)) (alias void))
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias Custom)) (alias i32)) (fun "property$0" ((alias Custom) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -2162,7 +2166,7 @@
           |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode=(fun "load" ((alias ref) (alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "load" ((alias ref) (alias u32)) (alias i32)),IsReturnExpression
             |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias u32)) (alias i32)))
               |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -2194,7 +2198,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void))
             |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)))
               |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -2355,8 +2359,8 @@
                   |-QNameNode=J
                     |-NameIdentifierNode="J"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode,IsReturnExpression
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64)),IsReturnExpression
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode,Local(test::fixtures::execution::isPatternMatchingVariable::discriminant_7:u32#0)
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -2640,17 +2644,17 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-FunctionCallNode=(fun "START" ((alias string)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "START" ((alias string)) (alias void))
             |-ReferenceNode resolvedReference=support::test::START type=(intersection (fun "START" ((alias u32)) (alias void)) (fun "START" ((alias string)) (alias void)))
               |-QNameNode=START
                 |-NameIdentifierNode="START"
             |-StringLiteral="pattern matching with 'case X is <type>' setting X" type=(alias string (native string)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "assert" ((alias boolean)) (alias void))
             |-ReferenceNode resolvedReference=support::test::assert type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=assert
                 |-NameIdentifierNode="assert"
             |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-FunctionCallNode=(fun "transform" ((alias ref)) (alias Color)) type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode,ImplicitCall(fun "transform" ((alias ref)) (alias Color))
                 |-ReferenceNode resolvedReference=transform type=(intersection (fun "transform" ((alias ref)) (alias Color)))
                   |-QNameNode=transform
                     |-NameIdentifierNode="transform"
@@ -2660,12 +2664,12 @@
               |-ReferenceNode resolvedReference=Red type=(type (alias Red (struct)))
                 |-QNameNode=Red
                   |-NameIdentifierNode="Red"
-          |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "assert" ((alias boolean)) (alias void))
             |-ReferenceNode resolvedReference=support::test::assert type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=assert
                 |-NameIdentifierNode="assert"
             |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-FunctionCallNode=(fun "transform" ((alias ref)) (alias Color)) type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode,ImplicitCall(fun "transform" ((alias ref)) (alias Color))
                 |-ReferenceNode resolvedReference=transform type=(intersection (fun "transform" ((alias ref)) (alias Color)))
                   |-QNameNode=transform
                     |-NameIdentifierNode="transform"
@@ -2675,12 +2679,12 @@
               |-ReferenceNode resolvedReference=Red type=(type (alias Red (struct)))
                 |-QNameNode=Red
                   |-NameIdentifierNode="Red"
-          |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "assert" ((alias boolean)) (alias void))
             |-ReferenceNode resolvedReference=support::test::assert type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=assert
                 |-NameIdentifierNode="assert"
             |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-FunctionCallNode=(fun "transform" ((alias ref)) (alias Color)) type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode,ImplicitCall(fun "transform" ((alias ref)) (alias Color))
                 |-ReferenceNode resolvedReference=transform type=(intersection (fun "transform" ((alias ref)) (alias Color)))
                   |-QNameNode=transform
                     |-NameIdentifierNode="transform"
@@ -2690,12 +2694,12 @@
               |-ReferenceNode resolvedReference=Red type=(type (alias Red (struct)))
                 |-QNameNode=Red
                   |-NameIdentifierNode="Red"
-          |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "assert" ((alias boolean)) (alias void))
             |-ReferenceNode resolvedReference=support::test::assert type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=assert
                 |-NameIdentifierNode="assert"
             |-IsExpressionNode=(fun "is" ((union (alias Green) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-FunctionCallNode=(fun "transform" ((alias ref)) (alias Color)) type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode,ImplicitCall(fun "transform" ((alias ref)) (alias Color))
                 |-ReferenceNode resolvedReference=transform type=(intersection (fun "transform" ((alias ref)) (alias Color)))
                   |-QNameNode=transform
                     |-NameIdentifierNode="transform"
@@ -2705,16 +2709,16 @@
               |-ReferenceNode resolvedReference=Green type=(type (alias Green (struct)))
                 |-QNameNode=Green
                   |-NameIdentifierNode="Green"
-          |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "assert" ((alias boolean)) (alias void))
             |-ReferenceNode resolvedReference=support::test::assert type=(intersection (fun "assert" ((alias boolean)) (alias void)) (fun "assert" ((alias boolean) (alias string)) (alias void)))
               |-QNameNode=assert
                 |-NameIdentifierNode="assert"
             |-IsExpressionNode=(fun "is" ((union (alias Red) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-              |-FunctionCallNode=(fun "transform" ((alias ref)) (alias Color)) type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias Color (union (alias Red (struct)) (alias Green (struct)) (alias Blue (struct)) (alias Custom (struct a: (type (alias i32 (native i32))))))) annotations=IsValueNode,ImplicitCall(fun "transform" ((alias ref)) (alias Color))
                 |-ReferenceNode resolvedReference=transform type=(intersection (fun "transform" ((alias ref)) (alias Color)))
                   |-QNameNode=transform
                     |-NameIdentifierNode="transform"
-                |-FunctionCallNode=(fun "apply" () (alias J)) type=(alias J (struct)) annotations=IsValueNode
+                |-FunctionCallNode type=(alias J (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias J))
                   |-MemberNode type=(intersection (fun "apply" () (alias J)))
                     |-ReferenceNode resolvedReference=J type=(type (alias J (struct)))
                       |-QNameNode=J
@@ -2723,7 +2727,7 @@
               |-ReferenceNode resolvedReference=Red type=(type (alias Red (struct)))
                 |-QNameNode=Red
                   |-NameIdentifierNode="Red"
-          |-FunctionCallNode=(fun "END" () (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "END" () (alias void))
             |-ReferenceNode resolvedReference=support::test::END type=(intersection (fun "END" () (alias void)))
               |-QNameNode=END
                 |-NameIdentifierNode="END"

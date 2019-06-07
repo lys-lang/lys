@@ -351,7 +351,8 @@ describe('Types', function() {
       type i32 = %stack { lowLevelType="i32" byteSize=4 }
 
       impl char {
-        fun property_byteLength(self: char): i32 = ???
+        #[getter]
+        fun byteLength(self: char): i32 = ???
       }
 
       val a: char = ???
@@ -362,14 +363,32 @@ describe('Types', function() {
     `;
 
     checkMainType`// #![no-std]
+      /// unannotated getter
+      type char = %struct{}
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        fun byteLength(self: char): i32 = ???
+      }
+
+      val a: char = ???
+      val x = a.byteLength
+      ---
+      a := (alias char (struct))
+      x := (never)
+      ---
+      is not a getter or method
+    `;
+
+    checkMainType`// #![no-std]
       /// property setter
       type char = %struct{}
       type void = %injected
       type i32 = %stack { lowLevelType="i32" byteSize=4 }
 
       impl char {
-        fun property_byteLength(self: char): i32 = ???
-        fun property_byteLength(self: char, a: i32): void = ???
+        #[getter] fun byteLength(self: char): i32 = ???
+        #[setter] fun byteLength(self: char, a: i32): void = ???
       }
 
       val a: char = ???
@@ -382,6 +401,87 @@ describe('Types', function() {
       a := (alias char (struct))
       x := (alias i32 (native i32))
       fun() -> void
+    `;
+
+    checkMainType`// #![no-std]
+      /// method, no arguments
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        #[method] fun getByteLength(self: char): i32 = ???
+      }
+
+      fun y(a: char): i32 = {
+        a.getByteLength()
+      }
+      ---
+      fun(a: char) -> i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// method, multiple arguments
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        #[method] fun getByteLength(self: char, a: i32, b: i32): i32 = ???
+      }
+
+      fun y(a: char): i32 = {
+        a.getByteLength(1, 2)
+      }
+      ---
+      fun(a: char) -> i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// method, overloads
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        #[method] fun getByteLength(self: char, a: i32): i32 = ???
+        #[method] fun getByteLength(self: char): char = ???
+      }
+
+      fun x(a: char): i32 = {
+        a.getByteLength(1)
+      }
+      fun y(a: char): char = {
+        a.getByteLength()
+      }
+      ---
+      fun(a: char) -> i32
+      fun(a: char) -> char
+    `;
+
+    checkMainType`// #![no-std]
+      /// property setter, unannotated setter
+      type char = %struct{}
+      type void = %injected
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl char {
+        #[getter] fun byteLength(self: char): i32 = ???
+        fun byteLength(self: char, a: i32): void = ???
+      }
+
+      val a: char = ???
+      val x = a.byteLength
+
+      fun y(): void = {
+        a.byteLength = 10
+      }
+      ---
+      a := (alias char (struct))
+      x := (alias i32 (native i32))
+      fun() -> void
+      ---
+      Cannot assign to "byteLength" because it is a read-only property.
     `;
 
     checkMainType`// #![no-std]
@@ -592,7 +692,8 @@ describe('Types', function() {
       type boolean = %stack { lowLevelType="i32" byteSize=4 }
 
       impl char {
-        fun property_byteLength(self: char, a: i32): void = ???
+        #[setter]
+        fun byteLength(self: char, a: i32): void = ???
       }
 
       fun y(): void = {
@@ -717,7 +818,8 @@ describe('Types', function() {
       type i32 = %stack { lowLevelType="i32" byteSize=4 }
 
       impl i32 {
-        fun property_a(self: i32): i32 = ???
+        #[getter]
+        fun a(self: i32): i32 = ???
       }
       val a = (123).a
       val x = (123).unexistent
@@ -725,7 +827,41 @@ describe('Types', function() {
       a := (alias i32 (native i32))
       x := (never)
       ---
-      not a valid property getter
+      Property "unexistent" doesn't exist on type "i32".
+    `;
+
+    checkMainType`// #![no-std]
+      /// invoking unexistent setter
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type void = %injected
+      impl i32 {
+        #[getter]
+        fun a(self: i32): i32 = ???
+      }
+      fun a(): void = {
+        (123).a = 1
+      }
+      ---
+      fun() -> void
+      ---
+      Cannot assign to "a" because it is a read-only property.
+    `;
+
+    checkMainType`// #![no-std]
+      /// invoking unexistent name
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type void = %injected
+      impl i32 {
+        #[getter]
+        fun x(self: i32): i32 = ???
+      }
+      fun a(): void = {
+        (123).asd = 1
+      }
+      ---
+      fun() -> void
+      ---
+      Property "asd" doesn't exist on type "i32".
     `;
 
     checkMainType`// #![no-std]
@@ -843,8 +979,7 @@ describe('Types', function() {
       a := (alias A (struct))
       x := (never)
       ---
-      Type "A" has no members.
-      A.property_test is not a valid property getter
+      Property "test" doesn't exist on type "A".
     `;
 
     checkMainType`// #![no-std]
@@ -861,8 +996,8 @@ describe('Types', function() {
       value := (never)
       x := (alias boolean (native boolean))
       ---
-      Type "A" has no members.
-      A.property_test is not a valid property getter
+      Property "test" doesn't exist on type "A".
+      Property "is" doesn't exist on type "A".
     `;
 
     // describe('type alias', () => {
@@ -921,8 +1056,7 @@ describe('Types', function() {
       value := (never)
       x := (never)
       ---
-      Type "A" has no members.
-      A.property_test is not a valid property getter
+      Property "test" doesn't exist on type "A".
     `;
 
     checkMainType`
@@ -1174,7 +1308,7 @@ describe('Types', function() {
       a := (alias boolean (native boolean))
       x := (alias boolean (native boolean))
       ---
-      Property "-" doesn't exist in type "boolean".
+      Property "-" doesn't exist on type "boolean".
     `;
 
     checkMainType`
@@ -1502,7 +1636,7 @@ describe('Types', function() {
           ---
           fun(a: i32) -> boolean
           ---
-          Type "BB" has no members
+          Property "gta" doesn't exist on type "BB"
         `;
       });
 
@@ -2314,7 +2448,7 @@ describe('Types', function() {
         ---
         fun(i: i32) -> void & fun(t: Nila) -> void & fun() -> void
         ---
-        Property "apply" doesn't exist in type "x"
+        Property "apply" doesn't exist on type "x"
       `;
 
       checkMainType`
@@ -2544,7 +2678,7 @@ describe('Types', function() {
         fun(a: f32) -> f32
         fun() -> f32
         ---
-        Property "apply" doesn't exist in type "f32".
+        Property "apply" doesn't exist on type "f32".
       `;
 
       checkMainType`
@@ -2552,7 +2686,7 @@ describe('Types', function() {
         ---
         fun() -> f32
         ---
-        Property "apply" doesn't exist in type "f32".
+        Property "apply" doesn't exist on type "f32".
       `;
     });
 
@@ -3853,7 +3987,7 @@ describe('Types', function() {
           ---
           fun(color: Color) -> i32
           ---
-          Property "property_unexistentProperty"
+          Property "unexistentProperty"
         `;
 
         checkMainType`

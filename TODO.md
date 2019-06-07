@@ -1,5 +1,5 @@
 - automatically coerce based on implicit `as`
-  - remove hardcoded ref type
+  - remove hardcoded ref type -> traits
 - reuse string literals in memory
 - let constructs (scope)
 - methods
@@ -8,6 +8,9 @@
 - OR binary op should stop evaluation after the first non-zero result is yielded
 - AND binary op should stop evaluation after the first zero result is yielded
 - test file with self reference
+- figure out private fields structs
+- for loops sugar syntax
+- for in sugar syntax
 
 arrays
 strings

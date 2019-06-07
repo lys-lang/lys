@@ -87,7 +87,7 @@
         |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
-        |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
+        |-FunctionCallNode type=(alias never (never)) annotations=ImplicitCall(fun "panic" () (alias never))
           |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
             |-QNameNode=panic
               |-NameIdentifierNode="panic"
@@ -108,7 +108,7 @@
         |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
           |-QNameNode=void
             |-NameIdentifierNode="void"
-        |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
+        |-FunctionCallNode type=(alias never (never)) annotations=ImplicitCall(fun "panic" () (alias never))
           |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
             |-QNameNode=panic
               |-NameIdentifierNode="panic"
@@ -123,20 +123,20 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-BlockNode type=(native void)
-          |-FunctionCallNode=(fun "putchar" ((alias u32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "putchar" ((alias u32)) (alias void))
             |-ReferenceNode resolvedReference=putchar type=(intersection (fun "putchar" ((alias u32)) (alias void)))
               |-QNameNode=putchar
                 |-NameIdentifierNode="putchar"
-            |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+            |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias i32)) (alias u32))
               |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
-          |-FunctionCallNode=(fun "printf" ((alias u32) (alias i32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "printf" ((alias u32) (alias i32)) (alias void))
             |-ReferenceNode resolvedReference=printf type=(intersection (fun "printf" ((alias u32) (alias i32)) (alias void)))
               |-QNameNode=printf
                 |-NameIdentifierNode="printf"
-            |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+            |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias i32)) (alias u32))
               |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
               |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                 |-QNameNode=u32

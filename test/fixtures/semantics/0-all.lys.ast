@@ -1089,10 +1089,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_data"
+      |-NameIdentifierNode="data"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_data"
+          |-NameIdentifierNode="data" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=String
@@ -1109,8 +1111,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_data"
+          |-NameIdentifierNode="data" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=String
@@ -1298,15 +1302,45 @@
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_length"
+      |-NameIdentifierNode="length"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_length"
+          |-NameIdentifierNode="length" annotations=Getter
           |-ParameterNode annotations=Local(str:<no-type>#0)
             |-NameIdentifierNode="str"
             |-ReferenceNode resolvedReference=String
               |-QNameNode=String
                 |-NameIdentifierNode="String"
+          |-ReferenceNode resolvedReference=system::core::i32::i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-BinaryExpressionNode annotations=IsValueNode
+            |-MemberNode annotations=IsValueNode
+              |-MemberNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=str
+                  |-QNameNode=str
+                    |-NameIdentifierNode="str"
+                |-NameIdentifierNode="data"
+              |-NameIdentifierNode="length"
+            |-NameIdentifierNode="/"
+            |-IntegerLiteral=2 annotations=IsValueNode
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
+        |-FunctionNode
+          |-NameIdentifierNode="length" annotations=Setter
+          |-ParameterNode annotations=Local(str:<no-type>#0)
+            |-NameIdentifierNode="str"
+            |-ReferenceNode resolvedReference=String
+              |-QNameNode=String
+                |-NameIdentifierNode="String"
+          |-ParameterNode annotations=Local(a:<no-type>#1)
+            |-NameIdentifierNode="a"
+            |-ReferenceNode resolvedReference=system::core::i32::i32
+              |-QNameNode=i32
+                |-NameIdentifierNode="i32"
           |-ReferenceNode resolvedReference=system::core::i32::i32
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
@@ -2984,10 +3018,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_a"
+      |-NameIdentifierNode="a"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_a"
+          |-NameIdentifierNode="a" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Node
@@ -3008,8 +3044,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_a"
+          |-NameIdentifierNode="a" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Node
@@ -3940,10 +3978,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_tree"
+      |-NameIdentifierNode="tree"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_tree"
+          |-NameIdentifierNode="tree" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Cons
@@ -3964,8 +4004,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_tree"
+          |-NameIdentifierNode="tree" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Cons
@@ -4721,10 +4763,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_r"
+      |-NameIdentifierNode="r"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_r"
+          |-NameIdentifierNode="r" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Color
@@ -4741,8 +4785,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_r"
+          |-NameIdentifierNode="r" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Color
@@ -4831,10 +4877,12 @@
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$0_offset"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_g"
+      |-NameIdentifierNode="g"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_g"
+          |-NameIdentifierNode="g" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Color
@@ -4851,8 +4899,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_g"
+          |-NameIdentifierNode="g" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Color
@@ -4941,10 +4991,12 @@
                   |-NameIdentifierNode="Color"
               |-NameIdentifierNode="property$1_offset"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_b"
+      |-NameIdentifierNode="b"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_b"
+          |-NameIdentifierNode="b" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Color
@@ -4961,8 +5013,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_b"
+          |-NameIdentifierNode="b" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Color
@@ -6093,10 +6147,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_current"
+      |-NameIdentifierNode="current"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_current"
+          |-NameIdentifierNode="current" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Iterator
@@ -6113,8 +6169,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_current"
+          |-NameIdentifierNode="current" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Iterator
@@ -6203,10 +6261,12 @@
                   |-NameIdentifierNode="Iterator"
               |-NameIdentifierNode="property$0_offset"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_target"
+      |-NameIdentifierNode="target"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_target"
+          |-NameIdentifierNode="target" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Iterator
@@ -6223,8 +6283,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_target"
+          |-NameIdentifierNode="target" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Iterator
@@ -7108,10 +7170,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_value"
+      |-NameIdentifierNode="value"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode
-          |-NameIdentifierNode="property_value"
+          |-NameIdentifierNode="value" annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Some
@@ -7128,8 +7192,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode
-          |-NameIdentifierNode="property_value"
+          |-NameIdentifierNode="value" annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=Some

@@ -221,8 +221,10 @@ impl Custom {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_hex(self: Custom): i32 = property$0(self)
-  fun property_hex(self: Custom, value: i32): void = property$0(self, value)
+  #[getter]
+  fun hex(self: Custom): i32 = property$0(self)
+  #[setter]
+  fun hex(self: Custom, value: i32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Custom): i32 = i32.load(self, Custom.^property$0_offset)
@@ -293,56 +295,70 @@ impl CatBag {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_a(self: CatBag): i32 = property$0(self)
-  fun property_a(self: CatBag, value: i32): void = property$0(self, value)
+  #[getter]
+  fun a(self: CatBag): i32 = property$0(self)
+  #[setter]
+  fun a(self: CatBag, value: i32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: CatBag): i32 = i32.load(self, CatBag.^property$0_offset)
   #[inline]
   private fun property$0(self: CatBag, value: i32): void = i32.store(self, value, CatBag.^property$0_offset)
 
-  fun property_b(self: CatBag): boolean = property$1(self)
-  fun property_b(self: CatBag, value: boolean): void = property$1(self, value)
+  #[getter]
+  fun b(self: CatBag): boolean = property$1(self)
+  #[setter]
+  fun b(self: CatBag, value: boolean): void = property$1(self, value)
 
   #[inline]
   private fun property$1(self: CatBag): boolean = boolean.load(self, CatBag.^property$1_offset)
   #[inline]
   private fun property$1(self: CatBag, value: boolean): void = boolean.store(self, value, CatBag.^property$1_offset)
 
-  fun property_c(self: CatBag): f32 = property$2(self)
-  fun property_c(self: CatBag, value: f32): void = property$2(self, value)
+  #[getter]
+  fun c(self: CatBag): f32 = property$2(self)
+  #[setter]
+  fun c(self: CatBag, value: f32): void = property$2(self, value)
 
   #[inline]
   private fun property$2(self: CatBag): f32 = f32.load(self, CatBag.^property$2_offset)
   #[inline]
   private fun property$2(self: CatBag, value: f32): void = f32.store(self, value, CatBag.^property$2_offset)
 
-  fun property_d(self: CatBag): i64 = property$3(self)
-  fun property_d(self: CatBag, value: i64): void = property$3(self, value)
+  #[getter]
+  fun d(self: CatBag): i64 = property$3(self)
+  #[setter]
+  fun d(self: CatBag, value: i64): void = property$3(self, value)
 
   #[inline]
   private fun property$3(self: CatBag): i64 = i64.load(self, CatBag.^property$3_offset)
   #[inline]
   private fun property$3(self: CatBag, value: i64): void = i64.store(self, value, CatBag.^property$3_offset)
 
-  fun property_e(self: CatBag): f64 = property$4(self)
-  fun property_e(self: CatBag, value: f64): void = property$4(self, value)
+  #[getter]
+  fun e(self: CatBag): f64 = property$4(self)
+  #[setter]
+  fun e(self: CatBag, value: f64): void = property$4(self, value)
 
   #[inline]
   private fun property$4(self: CatBag): f64 = f64.load(self, CatBag.^property$4_offset)
   #[inline]
   private fun property$4(self: CatBag, value: f64): void = f64.store(self, value, CatBag.^property$4_offset)
 
-  fun property_f(self: CatBag): Color = property$5(self)
-  fun property_f(self: CatBag, value: Color): void = property$5(self, value)
+  #[getter]
+  fun f(self: CatBag): Color = property$5(self)
+  #[setter]
+  fun f(self: CatBag, value: Color): void = property$5(self, value)
 
   #[inline]
   private fun property$5(self: CatBag): Color = Color.load(self, CatBag.^property$5_offset)
   #[inline]
   private fun property$5(self: CatBag, value: Color): void = Color.store(self, value, CatBag.^property$5_offset)
 
-  fun property_g(self: CatBag): ((Red | None)) = property$6(self)
-  fun property_g(self: CatBag, value: ((Red | None))): void = property$6(self, value)
+  #[getter]
+  fun g(self: CatBag): ((Red | None)) = property$6(self)
+  #[setter]
+  fun g(self: CatBag, value: ((Red | None))): void = property$6(self, value)
 
   #[inline]
   private fun property$6(self: CatBag): ((Red | None)) = loadPropertyWithOffset$6(self, CatBag.^property$6_offset)
