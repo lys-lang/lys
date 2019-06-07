@@ -219,23 +219,32 @@ function collectNamespaces(
 const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingContext: ParsingContext) => {
   if (node instanceof Nodes.IsExpressionNode || node instanceof Nodes.IfNode || node instanceof Nodes.MatcherNode) {
     const typeName = 'boolean';
-    if (!node.scope!.canResolveName(typeName)) {
-      throw new LysScopeError(`Cannot find name '${typeName}' ` + node.scope!.inspect(), node);
+    try {
+      node.scope!.get(typeName);
+    } catch (e) {
+      throw new LysScopeError(e.toString(), node);
     }
+
     const resolved = node.scope!.get(typeName);
     node.booleanReference = resolved;
     node.scope!.incrementUsage(typeName);
   } else if (node instanceof Nodes.LiteralNode) {
-    if (!node.scope!.canResolveName(node.typeName)) {
-      throw new LysScopeError(`Cannot find name '${node.typeName}' ` + node.scope!.inspect(), node);
+    try {
+      node.scope!.get(node.typeName);
+    } catch (e) {
+      throw new LysScopeError(e.toString(), node);
     }
+
     const resolved = node.scope!.get(node.typeName);
     node.resolvedReference = resolved;
     node.scope!.incrementUsage(node.typeName);
   } else if (node instanceof Nodes.ReferenceNode) {
-    if (!node.scope!.canResolveQName(node.variable)) {
-      throw new LysScopeError(`Cannot find name '${node.variable.text}' ` + node.scope!.inspect(), node.variable);
+    try {
+      node.scope!.getQName(node.variable);
+    } catch (e) {
+      throw new LysScopeError(e.toString(), node.variable);
     }
+
     const resolved = node.scope!.getQName(node.variable);
     const document = getDocument(node);
     const isGlobal = !resolved.isLocalReference || resolved.scope === document.scope;
@@ -288,6 +297,7 @@ const injectImplicitCalls = walkPreOrder((node: Nodes.Node, _: ParsingContext) =
         '.',
         new Nodes.NameIdentifierNode(node.functionNode.astNode, 'apply')
       );
+      member.scope = node.functionNode.scope;
       node.functionNode = member;
     }
   }

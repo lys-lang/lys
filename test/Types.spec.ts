@@ -127,6 +127,7 @@ describe('Types', function() {
           if (document) {
             console.log(printNode(document));
             console.log(printAST(document));
+            console.log(document.scope!.inspect(false, true));
           }
 
           if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {
@@ -1040,6 +1041,112 @@ describe('Types', function() {
       ---
       variable := (alias i32 (native i32))
       fun() -> i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// private function in implementation must not be accessible from outside
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        private fun test(): i32 = 1
+      }
+
+      fun x(): i32 = {
+        i32.test()
+      }
+      ---
+      fun() -> i32
+      ---
+      "test" is private in i32
+    `;
+
+    checkMainType`// #![no-std]
+      /// private function in implementation must be accessible from the inside of the implementation
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        private fun test(): i32 = 1
+        fun testPub(): i32 = test()
+      }
+
+      fun x(): i32 = {
+        i32.testPub()
+      }
+      ---
+      fun() -> i32
+    `;
+
+    checkMainType`
+      /// private function in other modules must not be accessible from outside
+
+      // currentMemory is a private function
+      fun x(): u32 = system::core::memory::currentMemory()
+      ---
+      fun() -> u32
+      ---
+      "currentMemory" is private in module "system::core::memory"
+    `;
+
+    checkMainType`
+      /// importing private function in other modules must not be accessible from outside
+      import system::core::memory
+
+      // system::core::memory::currentMemory is a private function
+      fun x(): u32 = currentMemory()
+      ---
+      fun() -> u32
+      ---
+      Cannot find name 'currentMemory'
+    `;
+
+    checkMainType`// #![no-std]
+      /// public function in implementation must be accessible from outside
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      impl i32 {
+        fun test(): i32 = 1
+      }
+
+      fun x(): i32 = {
+        i32.test()
+      }
+      ---
+      fun() -> i32
+    `;
+
+    checkMainType`
+      /// private constructor
+      type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
+
+      /** Signal condition. */
+      impl ProcessSignal {
+        private fun apply(value: i32): ProcessSignal = %wasm { (get_local $value) }
+
+        /** Hangup. */
+        val HUP = ProcessSignal(1)
+
+        val INT = ProcessSignal(2)
+      }
+      ---
+    `;
+
+    checkMainType`
+      /// private constructor must fail from outside
+      type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
+
+      /** Signal condition. */
+      impl ProcessSignal {
+        private fun apply(value: i32): ProcessSignal = %wasm { (get_local $value) }
+      }
+
+      val INT = ProcessSignal(2)
+      ---
+      INT := (never)
+      ---
+      Name "apply" is private in ProcessSignal
     `;
 
     /// if nodes must return the union of two types

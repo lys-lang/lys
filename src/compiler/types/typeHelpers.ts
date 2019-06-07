@@ -18,6 +18,7 @@ import { Nodes } from '../nodes';
 import { flatten } from '../helpers';
 import { TypeMismatch, InvalidOverload, NotAFunction, InvalidCall, NotAValidType, LysTypeError } from '../NodeError';
 import { MessageCollector } from '../MessageCollector';
+import { Scope } from '../Scope';
 
 declare var console: any;
 
@@ -78,13 +79,46 @@ export function resolveTypeMember(
   errorNode: Nodes.Node | null,
   type: Type,
   memberName: string,
-  messageCollector: MessageCollector
+  messageCollector: MessageCollector,
+  scope: Scope | undefined
 ): { type: Type; referencedNode?: Nodes.NameIdentifierNode } | false {
   if (type && type instanceof TypeAlias) {
     const resolvedName = type.name.namespaceNames && type.name.namespaceNames.get(memberName);
 
     if (resolvedName) {
       const memberType = TypeHelpers.getNodeType(resolvedName);
+
+      const parent = resolvedName.parent;
+
+      if (parent && parent instanceof Nodes.DirectiveNode) {
+        if (!parent.isPublic) {
+          const declScope = resolvedName.scope;
+
+          if (!declScope) {
+            if (errorNode) {
+              messageCollector.error(new LysTypeError(`Name's parent has no scope`, type.name));
+            }
+            return false;
+          }
+
+          if (!scope) {
+            if (errorNode) {
+              messageCollector.error(new LysTypeError(`Scope is null`, errorNode));
+              console.trace();
+            }
+            return false;
+          }
+
+          if (!scope.isDescendantOf(declScope)) {
+            if (errorNode) {
+              messageCollector.error(
+                new LysTypeError(`Name "${memberName}" is private in ${type.name.name}`, errorNode)
+              );
+            }
+            return false;
+          }
+        }
+      }
 
       if (isValidType(memberType)) {
         return { type: memberType, referencedNode: resolvedName };
@@ -137,7 +171,7 @@ export function processFunctionCall(
     const isGetter = !node.hasAnnotation(annotations.IsAssignationLHS);
 
     if (isGetter) {
-      const fun = findFunctionOverload(functionType, argTypes, node, null, false, messageCollector, true);
+      const fun = findFunctionOverload(functionType, argTypes, node, null, false, messageCollector, true, node.scope);
 
       if (fun instanceof FunctionType) {
         node.resolvedFunctionType = fun;
@@ -171,7 +205,8 @@ export function findFunctionOverload(
   returnType: Type | null,
   strict: boolean,
   messageCollector: MessageCollector,
-  automaticCoercion: boolean
+  automaticCoercion: boolean,
+  scope: Scope | undefined
 ): Type | null {
   if (incommingType instanceof TypeType) {
     return findFunctionOverload(
@@ -181,7 +216,8 @@ export function findFunctionOverload(
       returnType,
       strict,
       messageCollector,
-      automaticCoercion
+      automaticCoercion,
+      scope
     );
   }
   if (incommingType instanceof IntersectionType) {
@@ -190,13 +226,13 @@ export function findFunctionOverload(
     for (let fun of incommingType.of) {
       if (fun instanceof FunctionType) {
         if (strict) {
-          if (acceptsTypes(fun, argTypes, strict, automaticCoercion)) {
+          if (acceptsTypes(fun, argTypes, strict, automaticCoercion, scope)) {
             if (!returnType || fun.returnType!.equals(returnType)) {
               return fun;
             }
           }
         } else {
-          const result = acceptsTypes(fun, argTypes, strict, automaticCoercion);
+          const result = acceptsTypes(fun, argTypes, strict, automaticCoercion, scope);
           if (result) {
             if (!returnType || canBeAssigned(fun.returnType!, returnType)) {
               matchList.push({ fun, score: result.score, casts: result.casts });
@@ -259,7 +295,7 @@ export function findFunctionOverload(
 
     return new UnionType((incommingType.of as FunctionType[]).map(($: FunctionType) => $.returnType!));
   } else if (incommingType instanceof FunctionType) {
-    const queryResult = acceptsTypes(incommingType, argTypes, strict, automaticCoercion);
+    const queryResult = acceptsTypes(incommingType, argTypes, strict, automaticCoercion, scope);
 
     if (!queryResult) {
       if (errorNode) {
@@ -282,17 +318,18 @@ function findImplicitTypeCasting(
   errorNode: Nodes.Node | null,
   from: Type,
   to: Type,
-  messageCollector: MessageCollector
+  messageCollector: MessageCollector,
+  scope: Scope | undefined
 ): FunctionType | null {
   if (canBeAssigned(from, to)) {
     return null;
   }
   if (from instanceof TypeAlias) {
     try {
-      const fnType = resolveTypeMember(errorNode, from, 'as', messageCollector);
+      const fnType = resolveTypeMember(errorNode, from, 'as', messageCollector, scope);
 
       if (fnType) {
-        const fun = findFunctionOverload(fnType.type, [from], null, to, true, messageCollector, true);
+        const fun = findFunctionOverload(fnType.type, [from], null, to, true, messageCollector, true, scope);
 
         if (fun instanceof FunctionType) {
           if (!fun.name.hasAnnotation(annotations.Explicit)) {
@@ -332,7 +369,8 @@ function acceptsTypes(
   type: FunctionType,
   types: Type[],
   strict: boolean,
-  automaticCoercion: boolean
+  automaticCoercion: boolean,
+  scope: Scope | undefined
 ): { score: number; casts: (FunctionType | null)[] } | null {
   if (type.parameterTypes.length !== types.length) {
     return null;
@@ -361,7 +399,13 @@ function acceptsTypes(
         score += getTypeSimilarity(argumentType, parameterType);
       } else if (automaticCoercion) {
         try {
-          const implicitCast = findImplicitTypeCasting(null, argumentType, parameterType, new MessageCollector());
+          const implicitCast = findImplicitTypeCasting(
+            null,
+            argumentType,
+            parameterType,
+            new MessageCollector(),
+            scope
+          );
 
           if (implicitCast) {
             casts.push(implicitCast);
@@ -442,7 +486,7 @@ export function ensureCanBeAssignedWithImplicitConversion(
   if (canBeAssigned(sourceType, targetType)) {
     return { node, type: targetType };
   } else {
-    const implicitCast = findImplicitTypeCasting(node, sourceType, targetType, new MessageCollector());
+    const implicitCast = findImplicitTypeCasting(node, sourceType, targetType, new MessageCollector(), node.scope);
 
     if (implicitCast) {
       return { node: createImplicitCall(node, implicitCast, [node], messageCollector), type: targetType };

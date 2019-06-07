@@ -28,6 +28,16 @@ export class Scope {
     this.name = this.parsingContext.getInternalName(moduleName, nameHint + '[child_scope]');
   }
 
+  isDescendantOf(parentScope: Scope): boolean {
+    if (this.parent) {
+      if (parentScope === this.parent) {
+        return true;
+      }
+      return this.parent.isDescendantOf(parentScope);
+    }
+    return false;
+  }
+
   registerForeginModule(moduleName: string) {
     if (moduleName && !this.importedModules.has(moduleName)) {
       this.importedModules.set(moduleName, new Set<string>());
@@ -110,7 +120,7 @@ export class Scope {
   getFromOutside(localName: string): Reference | null {
     if (localName in this.nameMappings) {
       if (!this.canGetFromOutside(localName)) {
-        throw new Error(`Name ${localName} is private in module ${this.name}`);
+        throw new Error(`Name "${localName}" is private in module "${this.moduleName}"`);
       }
       return this.nameMappings[localName];
     }
