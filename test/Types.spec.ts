@@ -1089,6 +1089,18 @@ describe('Types', function() {
       "currentMemory" is private in module "system::core::memory"
     `;
 
+    checkMainType`
+      /// importing private function in other modules must not be accessible from outside
+      import system::core::memory
+
+      // system::core::memory::currentMemory is a private function
+      fun x(): u32 = currentMemory()
+      ---
+      fun() -> u32
+      ---
+      Cannot find name 'currentMemory'
+    `;
+
     checkMainType`// #![no-std]
       /// public function in implementation must be accessible from outside
 
