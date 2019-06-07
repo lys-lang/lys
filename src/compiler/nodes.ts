@@ -50,16 +50,22 @@ export namespace Nodes {
     // TODO: remove this VVVVVVVVVV
     hasParentheses: boolean = false;
     isTypeResolved = false;
-
-    scope?: Scope;
     parent?: Node;
 
-    // ofType?: Type;
-    // typeNode?: any; // TypeNode
-
+    private ownScope: Scope | undefined;
     private annotations?: Set<Annotation>;
 
     constructor(public astNode: ASTNode) {}
+
+    get scope(): Scope | undefined {
+      if (this.ownScope) return this.ownScope;
+      if (this.parent) return this.parent.scope;
+      return undefined;
+    }
+
+    set scope(scope: Scope | undefined) {
+      this.ownScope = scope;
+    }
 
     /** Name of the node constructor */
     get nodeName(): string {

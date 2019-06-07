@@ -216,10 +216,19 @@ export class TypeAnalyzer extends TypeResolver {
         if (isValidType(type)) {
           if (type instanceof TypeType && node.hasAnnotation(annotations.IsValueNode)) {
             if (type.of instanceof TypeAlias) {
-              const fnType = resolveTypeMember(node, type.of, 'apply', this.messageCollector);
+              const fnType = resolveTypeMember(node, type.of, 'apply', this.messageCollector, node.scope);
               // TODO: a better error would be X is not callable
               if (fnType) {
-                const fun = findFunctionOverload(fnType.type, [], node, null, false, this.messageCollector, true);
+                const fun = findFunctionOverload(
+                  fnType.type,
+                  [],
+                  node,
+                  null,
+                  false,
+                  this.messageCollector,
+                  true,
+                  node.scope
+                );
 
                 if (isValidType(fun) && fun instanceof FunctionType) {
                   annotateImplicitCall(node, fun, [], this.messageCollector);
@@ -253,7 +262,7 @@ export class TypeAnalyzer extends TypeResolver {
           this.setType(node, UNRESOLVED_TYPE);
         }
       } else {
-        this.messageCollector.errorIfBranchDoesntHaveAny('Unable to resolve name 2', node);
+        this.messageCollector.errorIfBranchDoesntHaveAny('Unable to resolve name', node);
       }
     } else if (node instanceof Nodes.IsExpressionNode) {
       const booleanType = node.booleanReference
@@ -283,7 +292,7 @@ export class TypeAnalyzer extends TypeResolver {
             return;
           }
 
-          const valueType = resolveTypeMember(node.rhs, rhsType, 'is', this.messageCollector);
+          const valueType = resolveTypeMember(node.rhs, rhsType, 'is', this.messageCollector, node.scope);
 
           if (valueType) {
             const fun = findFunctionOverload(
@@ -293,7 +302,8 @@ export class TypeAnalyzer extends TypeResolver {
               null,
               false,
               this.messageCollector,
-              false
+              false,
+              node.scope
             );
 
             if (fun instanceof FunctionType) {
@@ -329,7 +339,7 @@ export class TypeAnalyzer extends TypeResolver {
             return;
           }
 
-          const memberType = resolveTypeMember(node.lhs, lhsType, 'as', this.messageCollector);
+          const memberType = resolveTypeMember(node.lhs, lhsType, 'as', this.messageCollector, node.scope);
 
           if (memberType) {
             const fun = findFunctionOverload(
@@ -339,7 +349,8 @@ export class TypeAnalyzer extends TypeResolver {
               rhsType,
               false,
               new MessageCollector(),
-              false
+              false,
+              node.scope
             );
 
             if (fun instanceof FunctionType && isValidType(fun.returnType)) {
@@ -365,7 +376,7 @@ export class TypeAnalyzer extends TypeResolver {
 
       if (isValidType(lhsType)) {
         const memberName = node.operator.name;
-        const memberType = resolveTypeMember(node, lhsType, memberName, this.messageCollector);
+        const memberType = resolveTypeMember(node, lhsType, memberName, this.messageCollector, node.scope);
 
         if (memberType) {
           if (isValidType(rhsType)) {
@@ -392,7 +403,7 @@ export class TypeAnalyzer extends TypeResolver {
 
       if (isValidType(rhsType)) {
         const memberName = node.operator.name;
-        const memberType = resolveTypeMember(node, rhsType, memberName, this.messageCollector);
+        const memberType = resolveTypeMember(node, rhsType, memberName, this.messageCollector, node.scope);
 
         if (memberType) {
           const argTypes = [rhsType];
@@ -476,7 +487,8 @@ export class TypeAnalyzer extends TypeResolver {
           null,
           false,
           this.messageCollector,
-          true
+          true,
+          node.scope
         );
 
         if (isValidType(fun) && fun instanceof FunctionType) {
@@ -514,7 +526,8 @@ export class TypeAnalyzer extends TypeResolver {
           null,
           false,
           this.messageCollector,
-          true
+          true,
+          node.scope
         );
 
         if (isValidType(fun) && fun instanceof FunctionType) {
@@ -681,7 +694,13 @@ export class TypeAnalyzer extends TypeResolver {
       } else {
         if (lhsType instanceof TypeType) {
           const memberName = node.memberName.name;
-          const memberType = resolveTypeMember(node.memberName, lhsType.of, memberName, this.messageCollector);
+          const memberType = resolveTypeMember(
+            node.memberName,
+            lhsType.of,
+            memberName,
+            this.messageCollector,
+            node.scope
+          );
 
           if (memberType) {
             if (node.hasAnnotation(annotations.IsValueNode)) {
@@ -702,7 +721,7 @@ export class TypeAnalyzer extends TypeResolver {
           }
         } else if (lhsType instanceof TypeAlias) {
           const memberName = 'property_' + node.memberName.name;
-          const memberType = resolveTypeMember(node.memberName, lhsType, memberName, this.messageCollector);
+          const memberType = resolveTypeMember(node.memberName, lhsType, memberName, this.messageCollector, node.scope);
 
           if (memberType) {
             const isGetter = !node.hasAnnotation(annotations.IsAssignationLHS);
@@ -714,7 +733,8 @@ export class TypeAnalyzer extends TypeResolver {
                 null,
                 false,
                 this.messageCollector,
-                false
+                false,
+                node.scope
               );
 
               if (isValidType(fun) && fun instanceof FunctionType) {
@@ -861,7 +881,7 @@ export class TypeAnalyzer extends TypeResolver {
         return;
       }
 
-      const eqFunction = resolveTypeMember(node.literal, carryType, '==', this.messageCollector);
+      const eqFunction = resolveTypeMember(node.literal, carryType, '==', this.messageCollector, node.scope);
 
       if (eqFunction) {
         const argTypes = [carryType, argumentType];
@@ -873,7 +893,8 @@ export class TypeAnalyzer extends TypeResolver {
           null,
           false,
           new MessageCollector(),
-          true
+          true,
+          node.scope
         );
 
         if (isValidType(fun) && fun instanceof FunctionType) {
@@ -909,7 +930,7 @@ export class TypeAnalyzer extends TypeResolver {
         this.messageCollector.error(new UnreachableCode(node.rhs));
         this.annotateNode(node.rhs, new annotations.IsUnreachable());
       } else {
-        const eqFunction = resolveTypeMember(node.typeReference, argumentType, 'is', this.messageCollector);
+        const eqFunction = resolveTypeMember(node.typeReference, argumentType, 'is', this.messageCollector, node.scope);
 
         if (eqFunction) {
           const fun = findFunctionOverload(
@@ -919,7 +940,8 @@ export class TypeAnalyzer extends TypeResolver {
             null,
             false,
             new MessageCollector(),
-            false
+            false,
+            node.scope
           );
 
           if (isValidType(fun) && fun instanceof FunctionType) {

@@ -127,6 +127,7 @@ describe('Types', function() {
           if (document) {
             console.log(printNode(document));
             console.log(printAST(document));
+            console.log(document.scope!.inspect(false, true));
           }
 
           if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {
@@ -1085,7 +1086,7 @@ describe('Types', function() {
       ---
       fun() -> u32
       ---
-      Cannot find name 'system::core::memory::currentMemory'
+      "currentMemory" is private in module "system::core::memory"
     `;
 
     checkMainType`// #![no-std]
@@ -1102,6 +1103,38 @@ describe('Types', function() {
       }
       ---
       fun() -> i32
+    `;
+
+    checkMainType`
+      /// private constructor
+      type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
+
+      /** Signal condition. */
+      impl ProcessSignal {
+        private fun apply(value: i32): ProcessSignal = %wasm { (get_local $value) }
+
+        /** Hangup. */
+        val HUP = ProcessSignal(1)
+
+        val INT = ProcessSignal(2)
+      }
+      ---
+    `;
+
+    checkMainType`
+      /// private constructor must fail from outside
+      type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
+
+      /** Signal condition. */
+      impl ProcessSignal {
+        private fun apply(value: i32): ProcessSignal = %wasm { (get_local $value) }
+      }
+
+      val INT = ProcessSignal(2)
+      ---
+      INT := (never)
+      ---
+      Name "apply" is private in ProcessSignal
     `;
 
     /// if nodes must return the union of two types
