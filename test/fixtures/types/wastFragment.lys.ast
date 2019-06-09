@@ -90,7 +90,7 @@
         |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
-        |-FunctionCallNode=(fun "malloc" ((alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+        |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "malloc" ((alias i32)) (alias i32))
           |-ReferenceNode resolvedReference=malloc type=(intersection (fun "malloc" ((alias i32)) (alias i32)))
             |-QNameNode=malloc
               |-NameIdentifierNode="malloc"

@@ -4906,10 +4906,12 @@
             |-QNameNode=$lhs
               |-NameIdentifierNode="$lhs"
     |-FunDirectiveNode
+      |-DecoratorNode
+        |-NameIdentifierNode="getter"
       |-FunctionNode
-        |-NameIdentifierNode="property_length"
+        |-NameIdentifierNode="length"
         |-ParameterNode
-          |-NameIdentifierNode="str"
+          |-NameIdentifierNode="self"
           |-ReferenceNode resolvedReference=<null>
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
@@ -4924,16 +4926,18 @@
             |-NameIdentifierNode="load"
           |-AsExpressionNode
             |-ReferenceNode resolvedReference=<null>
-              |-QNameNode=str
-                |-NameIdentifierNode="str"
+              |-QNameNode=self
+                |-NameIdentifierNode="self"
             |-ReferenceNode resolvedReference=<null>
               |-QNameNode=ref
                 |-NameIdentifierNode="ref"
     |-FunDirectiveNode
+      |-DecoratorNode
+        |-NameIdentifierNode="getter"
       |-FunctionNode
-        |-NameIdentifierNode="property_ptr"
+        |-NameIdentifierNode="ptr"
         |-ParameterNode
-          |-NameIdentifierNode="str"
+          |-NameIdentifierNode="self"
           |-ReferenceNode resolvedReference=<null>
             |-QNameNode=bytes
               |-NameIdentifierNode="bytes"
@@ -4948,8 +4952,8 @@
                   |-QNameNode=toAddr
                     |-NameIdentifierNode="toAddr"
                 |-ReferenceNode resolvedReference=<null>
-                  |-QNameNode=str
-                    |-NameIdentifierNode="str"
+                  |-QNameNode=self
+                    |-NameIdentifierNode="self"
               |-ReferenceNode resolvedReference=<null>
                 |-QNameNode=i32
                   |-NameIdentifierNode="i32"

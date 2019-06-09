@@ -145,8 +145,10 @@ impl Real {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_number(self: Real): f32 = property$0(self)
-  fun property_number(self: Real, value: f32): void = property$0(self, value)
+  #[getter]
+  fun number(self: Real): f32 = property$0(self)
+  #[setter]
+  fun number(self: Real, value: f32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Real): f32 = f32.load(self, Real.^property$0_offset)
@@ -202,8 +204,10 @@ impl Natural {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_number(self: Natural): i32 = property$0(self)
-  fun property_number(self: Natural, value: i32): void = property$0(self, value)
+  #[getter]
+  fun number(self: Natural): i32 = property$0(self)
+  #[setter]
+  fun number(self: Natural, value: i32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Natural): i32 = i32.load(self, Natural.^property$0_offset)
@@ -260,16 +264,20 @@ impl Complex {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_real(self: Complex): f32 = property$0(self)
-  fun property_real(self: Complex, value: f32): void = property$0(self, value)
+  #[getter]
+  fun real(self: Complex): f32 = property$0(self)
+  #[setter]
+  fun real(self: Complex, value: f32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Complex): f32 = f32.load(self, Complex.^property$0_offset)
   #[inline]
   private fun property$0(self: Complex, value: f32): void = f32.store(self, value, Complex.^property$0_offset)
 
-  fun property_imaginary(self: Complex): f32 = property$1(self)
-  fun property_imaginary(self: Complex, value: f32): void = property$1(self, value)
+  #[getter]
+  fun imaginary(self: Complex): f32 = property$1(self)
+  #[setter]
+  fun imaginary(self: Complex, value: f32): void = property$1(self, value)
 
   #[inline]
   private fun property$1(self: Complex): f32 = f32.load(self, Complex.^property$1_offset)

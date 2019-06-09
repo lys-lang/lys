@@ -93,8 +93,8 @@
                   |-QNameNode=Simple
                     |-NameIdentifierNode="Simple"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64))
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -319,8 +319,8 @@
                   |-QNameNode=WithInt
                     |-NameIdentifierNode="WithInt"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias u64) (alias i32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias u64)) type=(alias u64 (native u64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias u64) (alias i32)) (alias u64))
+              |-AsExpressionNode type=(alias u64 (native u64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias u64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -345,18 +345,18 @@
           |-BlockNode type=(alias WithInt (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode
             |-VarDeclarationNode
               |-NameIdentifierNode="$ref" type=(alias WithInt (struct a: (type (alias i32 (native i32))))) annotations=MutableDeclaration
-              |-FunctionCallNode=(fun "fromPointer" ((alias u32)) (alias WithInt)) type=(alias WithInt (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode
+              |-FunctionCallNode type=(alias WithInt (struct a: (type (alias i32 (native i32))))) annotations=IsValueNode,ImplicitCall(fun "fromPointer" ((alias u32)) (alias WithInt))
                 |-ReferenceNode resolvedReference=fromPointer type=(intersection (fun "fromPointer" ((alias u32)) (alias WithInt)))
                   |-QNameNode=fromPointer
                     |-NameIdentifierNode="fromPointer"
-                |-FunctionCallNode=(fun "calloc" ((alias u32) (alias u32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "calloc" ((alias u32) (alias u32)) (alias u32))
                   |-ReferenceNode resolvedReference=system::core::memory::calloc type=(intersection (fun "calloc" ((alias u32) (alias u32)) (alias u32)))
                     |-QNameNode=system::core::memory::calloc
                       |-NameIdentifierNode="system"
                       |-NameIdentifierNode="core"
                       |-NameIdentifierNode="memory"
                       |-NameIdentifierNode="calloc"
-                  |-AsExpressionNode=(fun "as" ((alias i32)) (alias u32)) type=(alias u32 (native u32)) annotations=IsValueNode
+                  |-AsExpressionNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias i32)) (alias u32))
                     |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
                     |-ReferenceNode resolvedReference=system::core::u32::u32 type=(type (alias u32 (native u32)))
                       |-QNameNode=u32
@@ -366,7 +366,7 @@
                       |-QNameNode=WithInt
                         |-NameIdentifierNode="WithInt"
                     |-NameIdentifierNode="allocationSize"
-            |-FunctionCallNode=(fun "property$0" ((alias WithInt) (alias i32)) (alias void)) type=(alias void (native void))
+            |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias WithInt) (alias i32)) (alias void))
               |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias WithInt)) (alias i32)) (fun "property$0" ((alias WithInt) (alias i32)) (alias void)))
                 |-QNameNode=property$0
                   |-NameIdentifierNode="property$0"
@@ -493,10 +493,12 @@
                 |-QNameNode=$b
                   |-NameIdentifierNode="$b"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="property_a" type=(intersection (fun "property_a" ((alias WithInt)) (alias i32)) (fun "property_a" ((alias WithInt) (alias i32)) (alias void)))
+      |-NameIdentifierNode="a" type=(intersection (fun "a" ((alias WithInt)) (alias i32)) (fun "a" ((alias WithInt) (alias i32)) (alias void)))
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="getter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_a" type=(fun "property_a" ((alias WithInt)) (alias i32))
+          |-NameIdentifierNode="a" type=(fun "a" ((alias WithInt)) (alias i32)) annotations=Getter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias WithInt (struct a: (type (alias i32 (native i32)))))
             |-ReferenceNode resolvedReference=WithInt type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
@@ -505,7 +507,7 @@
           |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode=(fun "property$0" ((alias WithInt)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "property$0" ((alias WithInt)) (alias i32))
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias WithInt)) (alias i32)) (fun "property$0" ((alias WithInt) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -513,8 +515,10 @@
               |-QNameNode=self
                 |-NameIdentifierNode="self"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="setter"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="property_a" type=(fun "property_a" ((alias WithInt) (alias i32)) (alias void))
+          |-NameIdentifierNode="a" type=(fun "a" ((alias WithInt) (alias i32)) (alias void)) annotations=Setter
           |-ParameterNode annotations=Local(self:<no-type>#0)
             |-NameIdentifierNode="self" type=(alias WithInt (struct a: (type (alias i32 (native i32)))))
             |-ReferenceNode resolvedReference=WithInt type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
@@ -528,7 +532,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "property$0" ((alias WithInt) (alias i32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "property$0" ((alias WithInt) (alias i32)) (alias void))
             |-ReferenceNode resolvedReference=property$0 type=(intersection (fun "property$0" ((alias WithInt)) (alias i32)) (fun "property$0" ((alias WithInt) (alias i32)) (alias void)))
               |-QNameNode=property$0
                 |-NameIdentifierNode="property$0"
@@ -553,7 +557,7 @@
           |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
             |-QNameNode=i32
               |-NameIdentifierNode="i32"
-          |-FunctionCallNode=(fun "load" ((alias ref) (alias u32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "load" ((alias ref) (alias u32)) (alias i32))
             |-MemberNode type=(intersection (fun "load" ((alias ref)) (alias i32)) (fun "load" ((alias ref) (alias u32)) (alias i32)))
               |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
                 |-QNameNode=i32
@@ -585,7 +589,7 @@
           |-ReferenceNode resolvedReference=system::core::native::void type=(type (alias void (native void)))
             |-QNameNode=void
               |-NameIdentifierNode="void"
-          |-FunctionCallNode=(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "store" ((alias ref) (alias i32) (alias u32)) (alias void))
             |-MemberNode type=(intersection (fun "store" ((alias ref) (alias i32)) (alias void)) (fun "store" ((alias ref) (alias i32) (alias u32)) (alias void)))
               |-ReferenceNode resolvedReference=system::core::i32::i32 type=(type (alias i32 (native i32)))
                 |-QNameNode=i32

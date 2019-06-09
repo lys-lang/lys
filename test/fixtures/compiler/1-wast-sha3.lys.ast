@@ -73,7 +73,7 @@
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::1-wast-sha3::k:<no-type>)
       |-NameIdentifierNode="k" type=(alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes)))))
-      |-FunctionCallNode=(fun "apply" () (alias Keccak)) type=(alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))) annotations=IsValueNode
+      |-FunctionCallNode type=(alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias Keccak))
         |-MemberNode type=(intersection (fun "apply" ((alias bytes) (alias bytes)) (alias Keccak)) (fun "apply" () (alias Keccak)))
           |-ReferenceNode resolvedReference=system::hash::keccak::Keccak type=(type (alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))))
             |-QNameNode=Keccak
@@ -96,7 +96,7 @@
           |-QNameNode=bytes
             |-NameIdentifierNode="bytes"
         |-BlockNode type=(alias bytes (native bytes)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "reset" ((alias Keccak)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "reset" ((alias Keccak)) (alias void))
             |-MemberNode type=(intersection (fun "reset" ((alias Keccak)) (alias void)))
               |-ReferenceNode resolvedReference=system::hash::keccak::Keccak type=(type (alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))))
                 |-QNameNode=Keccak
@@ -105,7 +105,7 @@
             |-ReferenceNode resolvedReference=k type=(alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))) annotations=IsValueNode,Global(test::fixtures::compiler::1-wast-sha3::k:<no-type>)
               |-QNameNode=k
                 |-NameIdentifierNode="k"
-          |-FunctionCallNode=(fun "update" ((alias Keccak) (alias bytes)) (alias void)) type=(alias void (native void))
+          |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "update" ((alias Keccak) (alias bytes)) (alias void))
             |-MemberNode type=(intersection (fun "update" ((alias Keccak) (alias bytes)) (alias void)) (fun "update" ((alias Keccak) (alias u32) (alias u32)) (alias void)))
               |-ReferenceNode resolvedReference=system::hash::keccak::Keccak type=(type (alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))))
                 |-QNameNode=Keccak
@@ -117,7 +117,7 @@
             |-ReferenceNode resolvedReference=input type=(alias bytes (native bytes)) annotations=IsValueNode,Local(input:<no-type>#0)
               |-QNameNode=input
                 |-NameIdentifierNode="input"
-          |-FunctionCallNode=(fun "digest" ((alias Keccak)) (alias bytes)) type=(alias bytes (native bytes)) annotations=IsValueNode,IsReturnExpression
+          |-FunctionCallNode type=(alias bytes (native bytes)) annotations=IsValueNode,ImplicitCall(fun "digest" ((alias Keccak)) (alias bytes)),IsReturnExpression
             |-MemberNode type=(intersection (fun "digest" ((alias Keccak)) (alias bytes)))
               |-ReferenceNode resolvedReference=system::hash::keccak::Keccak type=(type (alias Keccak (struct data: (type (alias bytes (native bytes))) result: (type (alias bytes (native bytes))))))
                 |-QNameNode=Keccak

@@ -613,10 +613,12 @@ impl bytes {
   // #[explicit]
   fun as(lhs: bytes): ref = %wasm { (get_local $lhs) }
 
-  fun property_length(str: bytes): i32 = i32.load(str as ref)
+  #[getter]
+  fun length(self: bytes): i32 = i32.load(self as ref)
 
-  fun property_ptr(str: bytes): i32 = {
-    toAddr(str) as i32 + 4
+  #[getter]
+  fun ptr(self: bytes): i32 = {
+    toAddr(self) as i32 + 4
   }
 
   fun store(lhs: ref, rhs: bytes): void = %wasm {

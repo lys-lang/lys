@@ -99,8 +99,10 @@ impl Node {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_a(self: Node): ((Tree | Forest)) = property$0(self)
-  fun property_a(self: Node, value: ((Tree | Forest))): void = property$0(self, value)
+  #[getter]
+  fun a(self: Node): ((Tree | Forest)) = property$0(self)
+  #[setter]
+  fun a(self: Node, value: ((Tree | Forest))): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Node): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Node.^property$0_offset)
@@ -235,8 +237,10 @@ impl Cons {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_tree(self: Cons): ((Tree | Forest)) = property$0(self)
-  fun property_tree(self: Cons, value: ((Tree | Forest))): void = property$0(self, value)
+  #[getter]
+  fun tree(self: Cons): ((Tree | Forest)) = property$0(self)
+  #[setter]
+  fun tree(self: Cons, value: ((Tree | Forest))): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Cons): ((Tree | Forest)) = loadPropertyWithOffset$0(self, Cons.^property$0_offset)

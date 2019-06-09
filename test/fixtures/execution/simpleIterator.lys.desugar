@@ -36,16 +36,20 @@ impl Iterator {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_current(self: Iterator): i32 = property$0(self)
-  fun property_current(self: Iterator, value: i32): void = property$0(self, value)
+  #[getter]
+  fun current(self: Iterator): i32 = property$0(self)
+  #[setter]
+  fun current(self: Iterator, value: i32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Iterator): i32 = i32.load(self, Iterator.^property$0_offset)
   #[inline]
   private fun property$0(self: Iterator, value: i32): void = i32.store(self, value, Iterator.^property$0_offset)
 
-  fun property_target(self: Iterator): i32 = property$1(self)
-  fun property_target(self: Iterator, value: i32): void = property$1(self, value)
+  #[getter]
+  fun target(self: Iterator): i32 = property$1(self)
+  #[setter]
+  fun target(self: Iterator, value: i32): void = property$1(self, value)
 
   #[inline]
   private fun property$1(self: Iterator): i32 = i32.load(self, Iterator.^property$1_offset)
@@ -176,8 +180,10 @@ impl Some {
     (i64.ne (local.get $a) (local.get $b))
   }
 
-  fun property_value(self: Some): i32 = property$0(self)
-  fun property_value(self: Some, value: i32): void = property$0(self, value)
+  #[getter]
+  fun value(self: Some): i32 = property$0(self)
+  #[setter]
+  fun value(self: Some, value: i32): void = property$0(self, value)
 
   #[inline]
   private fun property$0(self: Some): i32 = i32.load(self, Some.^property$0_offset)

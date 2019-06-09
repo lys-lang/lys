@@ -77,7 +77,7 @@
           |-VarDeclarationNode
             |-NameIdentifierNode="test" type=(alias i32 (native i32))
             |-IntegerLiteral=1 type=(alias i32 (native i32)) annotations=IsValueNode
-          |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias i32) (alias i32)) (alias i32))
             |-ReferenceNode resolvedReference=test type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=test
                 |-NameIdentifierNode="test"

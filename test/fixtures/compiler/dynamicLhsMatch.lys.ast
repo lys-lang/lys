@@ -81,7 +81,7 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-PatternMatcherNode type=(alias i32 (native i32)) annotations=IsValueNode,Local(var$1:i32#1)
-          |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias i32) (alias i32)) (alias i32))
             |-ReferenceNode resolvedReference=a type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:<no-type>#0)
               |-QNameNode=a
                 |-NameIdentifierNode="a"
@@ -108,8 +108,8 @@
           |-QNameNode=i32
             |-NameIdentifierNode="i32"
         |-IfNode type=(alias i32 (native i32)) annotations=IsValueNode,IsReturnExpression
-          |-BinaryExpressionNode=(fun "==" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-BinaryExpressionNode=(fun "+" ((alias i32) (alias i32)) (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias i32) (alias i32)) (alias boolean))
+            |-BinaryExpressionNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "+" ((alias i32) (alias i32)) (alias i32))
               |-ReferenceNode resolvedReference=a type=(alias i32 (native i32)) annotations=IsValueNode,Local(a:<no-type>#0)
                 |-QNameNode=a
                   |-NameIdentifierNode="a"

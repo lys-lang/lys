@@ -15,6 +15,12 @@ export namespace annotations {
   export class Injected extends Annotation {}
   export class IsOverloaded extends Annotation {}
   export class Inline extends Annotation {}
+
+  export class Getter extends Annotation {}
+  export class Setter extends Annotation {}
+  export class Method extends Annotation {}
+  export class MethodCall extends Annotation {}
+
   export class Explicit extends Annotation {}
   export class ByPassFunction extends Annotation {}
 

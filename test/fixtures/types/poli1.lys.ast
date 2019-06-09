@@ -93,8 +93,8 @@
                   |-QNameNode=True
                     |-NameIdentifierNode="True"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64))
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -329,8 +329,8 @@
                   |-QNameNode=False
                     |-NameIdentifierNode="False"
                 |-NameIdentifierNode="discriminant"
-            |-BinaryExpressionNode=(fun "<<" ((alias i64) (alias i32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
-              |-AsExpressionNode=(fun "as" ((alias u32)) (alias i64)) type=(alias i64 (native i64)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "<<" ((alias i64) (alias i32)) (alias i64))
+              |-AsExpressionNode type=(alias i64 (native i64)) annotations=IsValueNode,ImplicitCall(fun "as" ((alias u32)) (alias i64))
                 |-ReferenceNode resolvedReference=discriminant type=(alias u32 (native u32)) annotations=IsValueNode
                   |-QNameNode=discriminant
                     |-NameIdentifierNode="discriminant"
@@ -568,7 +568,7 @@
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
           |-BlockNode type=(alias boolean (native boolean)) annotations=IsValueNode
-            |-BinaryExpressionNode=(fun "||" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+            |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "||" ((alias boolean) (alias boolean)) (alias boolean))
               |-IsExpressionNode=(fun "is" ((union (alias True) (alias ref))) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
                 |-ReferenceNode resolvedReference=a type=(union (alias Boolean (union (alias True (struct)) (alias False (struct)))) (alias ref (ref ?))) annotations=IsValueNode
                   |-QNameNode=a
@@ -621,7 +621,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "==" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias ref) (alias ref)) (alias boolean))
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -647,7 +647,7 @@
           |-ReferenceNode resolvedReference=system::core::boolean::boolean type=(type (alias boolean (native boolean)))
             |-QNameNode=boolean
               |-NameIdentifierNode="boolean"
-          |-BinaryExpressionNode=(fun "!=" ((alias ref) (alias ref)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "!=" ((alias ref) (alias ref)) (alias boolean))
             |-ReferenceNode resolvedReference=lhs type=(alias ref (ref ?)) annotations=IsValueNode
               |-QNameNode=lhs
                 |-NameIdentifierNode="lhs"
@@ -739,19 +739,19 @@
           |-QNameNode=Boolean
             |-NameIdentifierNode="Boolean"
         |-IfNode type=(union (alias True (struct)) (alias False (struct))) annotations=IsValueNode
-          |-BinaryExpressionNode=(fun ">" ((alias i32) (alias i32)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun ">" ((alias i32) (alias i32)) (alias boolean))
             |-ReferenceNode resolvedReference=x type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-NameIdentifierNode=">"
             |-IntegerLiteral=0 type=(alias i32 (native i32)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "apply" () (alias True)) type=(alias True (struct)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias True (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias True))
             |-MemberNode type=(intersection (fun "apply" () (alias True)))
               |-ReferenceNode resolvedReference=True type=(type (alias True (struct)))
                 |-QNameNode=True
                   |-NameIdentifierNode="True"
               |-NameIdentifierNode="apply"
-          |-FunctionCallNode=(fun "apply" () (alias False)) type=(alias False (struct)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias False (struct)) annotations=IsValueNode,ImplicitCall(fun "apply" () (alias False))
             |-MemberNode type=(intersection (fun "apply" () (alias False)))
               |-ReferenceNode resolvedReference=False type=(type (alias False (struct)))
                 |-QNameNode=False

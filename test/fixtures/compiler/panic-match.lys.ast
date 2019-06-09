@@ -79,13 +79,13 @@
           |-QNameNode=void
             |-NameIdentifierNode="void"
         |-IfNode type=(native void)
-          |-BinaryExpressionNode=(fun "==" ((alias boolean) (alias boolean)) (alias boolean)) type=(alias boolean (native boolean)) annotations=IsValueNode
+          |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias boolean) (alias boolean)) (alias boolean))
             |-ReferenceNode resolvedReference=x type=(alias boolean (native boolean)) annotations=IsValueNode,Local(x:<no-type>#0)
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-NameIdentifierNode="=="
             |-BooleanLiteral=false type=(alias boolean (native boolean)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
+          |-FunctionCallNode type=(alias never (never)) annotations=ImplicitCall(fun "panic" () (alias never))
             |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
               |-QNameNode=panic
                 |-NameIdentifierNode="panic"
@@ -110,14 +110,14 @@
               |-QNameNode=x
                 |-NameIdentifierNode="x"
             |-MatchLiteralNode type=(native void) annotations=Local(var$1:i32#1)
-              |-FunctionCallNode=(fun "assert" ((alias boolean)) (alias void)) type=(alias void (native void))
+              |-FunctionCallNode type=(alias void (native void)) annotations=ImplicitCall(fun "assert" ((alias boolean)) (alias void))
                 |-ReferenceNode resolvedReference=assert type=(intersection (fun "assert" ((alias boolean)) (alias void)))
                   |-QNameNode=assert
                     |-NameIdentifierNode="assert"
                 |-BooleanLiteral=true type=(alias boolean (native boolean)) annotations=IsValueNode
               |-IntegerLiteral=1 type=(alias i32 (native i32))
             |-MatchDefaultNode type=(native void) annotations=Local(var$1:i32#1)
-              |-FunctionCallNode=(fun "panic" () (alias never)) type=(alias never (never))
+              |-FunctionCallNode type=(alias never (never)) annotations=ImplicitCall(fun "panic" () (alias never))
                 |-ReferenceNode resolvedReference=system::core::native::panic type=(intersection (fun "panic" () (alias never)))
                   |-QNameNode=panic
                     |-NameIdentifierNode="panic"

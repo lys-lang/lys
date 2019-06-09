@@ -80,7 +80,7 @@
               |-QNameNode=f32
                 |-NameIdentifierNode="f32"
             |-FloatLiteral=1 type=(alias f32 (native f32)) annotations=IsValueNode
-          |-FunctionCallNode=(fun "Y" () (alias f32)) type=(alias f32 (native f32)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias f32 (native f32)) annotations=IsValueNode,ImplicitCall(fun "Y" () (alias f32))
             |-ReferenceNode resolvedReference=Y type=(fun "Y" () (alias f32))
               |-QNameNode=Y
                 |-NameIdentifierNode="Y"
@@ -104,7 +104,7 @@
             |-ReferenceNode resolvedReference=n type=(alias i32 (native i32)) annotations=IsValueNode
               |-QNameNode=n
                 |-NameIdentifierNode="n"
-          |-FunctionCallNode=(fun "Y" () (alias i32)) type=(alias i32 (native i32)) annotations=IsValueNode
+          |-FunctionCallNode type=(alias i32 (native i32)) annotations=IsValueNode,ImplicitCall(fun "Y" () (alias i32))
             |-ReferenceNode resolvedReference=Y type=(fun "Y" () (alias i32))
               |-QNameNode=Y
                 |-NameIdentifierNode="Y"

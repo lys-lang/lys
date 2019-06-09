@@ -98,14 +98,14 @@ export namespace Nodes {
       return ret;
     }
 
-    getAnnotation<T extends Annotation>(klass: IAnnotationConstructor<T>): T {
+    getAnnotation<T extends Annotation>(klass: IAnnotationConstructor<T>): T | null {
       const ret: T[] = [];
       if (this.annotations) {
         this.annotations.forEach($ => {
           if ($ instanceof klass) ret.push($);
         });
       }
-      return ret[ret.length - 1];
+      return ret[ret.length - 1] || null;
     }
 
     removeAnnotation<T extends Annotation = Annotation>(name: Annotation | IAnnotationConstructor<T>) {
@@ -745,33 +745,14 @@ export namespace Nodes {
     }
   }
 
-  export class BinaryExpressionNode extends AbstractFunctionCallNode {
-    get lhs() {
-      return this.argumentsNode[0];
-    }
-    set lhs(value: ExpressionNode) {
-      this.argumentsNode[0] = value;
-    }
-
-    get rhs() {
-      return this.argumentsNode[1];
-    }
-
-    set rhs(value: ExpressionNode) {
-      this.argumentsNode[1] = value;
-    }
-
-    argumentsNode: ExpressionNode[] = [];
-
+  export class BinaryExpressionNode extends ExpressionNode {
     constructor(
       astNode: ASTNode,
       public readonly operator: NameIdentifierNode,
-      lhs: ExpressionNode,
-      rhs: ExpressionNode
+      public lhs: ExpressionNode,
+      public rhs: ExpressionNode
     ) {
       super(astNode);
-      this.lhs = lhs;
-      this.rhs = rhs;
     }
 
     get childrenOrEmpty() {

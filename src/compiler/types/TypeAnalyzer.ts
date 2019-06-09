@@ -17,17 +17,17 @@ import {
   UNRESOLVED_TYPE
 } from '../types';
 import {
-  processFunctionCall,
   findFunctionOverload,
-  annotateImplicitCall,
   ensureCanBeAssignedWithImplicitConversion,
   canBeAssigned,
   isValidType,
   getTypeTypeType,
   resolveTypeMember,
-  getTypeFromTypeNode
+  getTypeFromTypeNode,
+  createImplicitCall,
+  describeProperty
 } from './typeHelpers';
-import { annotations, Annotation } from '../annotations';
+import { annotations, Annotation, IAnnotationConstructor } from '../annotations';
 import {
   UnexpectedType,
   NotAValidType,
@@ -179,7 +179,28 @@ export abstract class TypeResolver {
     }
   }
 
-  protected annotateNode(node: Nodes.Node, annotation: Annotation) {
+  protected removeStashedNodeAnnotation(node: Nodes.Node, annotation: Annotation): boolean {
+    const annotations = this.nodeAnnotations.get(node);
+    if (!annotations) return false;
+
+    return annotations.delete(annotation);
+  }
+
+  protected getStashedNodeAnnotation<T extends Annotation>(
+    node: Nodes.Node,
+    klass: IAnnotationConstructor<T>
+  ): T | null {
+    const annotations = this.nodeAnnotations.get(node);
+    if (!annotations) return null;
+
+    for (let annotation of annotations) {
+      if (annotation instanceof klass) return annotation;
+    }
+
+    return null;
+  }
+
+  protected stashNodeAnnotation(node: Nodes.Node, annotation: Annotation) {
     const annotations = this.nodeAnnotations.get(node) || new Set();
 
     if (!this.nodeAnnotations.has(node)) {
@@ -231,7 +252,7 @@ export class TypeAnalyzer extends TypeResolver {
                 );
 
                 if (isValidType(fun) && fun instanceof FunctionType) {
-                  annotateImplicitCall(node, fun, [], this.messageCollector);
+                  this.annotateImplicitCall(node, fun, [], this.messageCollector);
 
                   if (fun.returnType) {
                     this.setType(node, fun.returnType);
@@ -333,7 +354,7 @@ export class TypeAnalyzer extends TypeResolver {
           if (lhsType.equals(rhsType) && rhsType.equals(lhsType)) {
             this.messageCollector.warning(`This cast is useless "${lhsType}" as "${rhsType}"`, node);
             if (!node.hasAnnotation(annotations.ByPassFunction)) {
-              this.annotateNode(node, new annotations.ByPassFunction());
+              this.stashNodeAnnotation(node, new annotations.ByPassFunction());
             }
             this.setType(node, rhsType);
             return;
@@ -354,7 +375,7 @@ export class TypeAnalyzer extends TypeResolver {
             );
 
             if (fun instanceof FunctionType && isValidType(fun.returnType)) {
-              node.resolvedFunctionType = fun;
+              this.annotateImplicitCall(node, fun, [node.lhs], this.messageCollector);
 
               this.setType(node, fun.returnType);
             } else {
@@ -380,20 +401,32 @@ export class TypeAnalyzer extends TypeResolver {
 
         if (memberType) {
           if (isValidType(rhsType)) {
-            const argTypes = [lhsType, rhsType];
-            const result = processFunctionCall(node, memberType.type, argTypes, this.messageCollector);
+            const argumentTypes = [lhsType, rhsType];
 
-            if (isValidType(result)) {
-              this.setType(node, result);
-              return;
+            const fun = findFunctionOverload(
+              memberType.type,
+              argumentTypes,
+              node,
+              null,
+              false,
+              this.messageCollector,
+              true,
+              node.scope
+            );
+
+            if (isValidType(fun) && fun instanceof FunctionType) {
+              this.annotateImplicitCall(node, fun, [node.lhs, node.rhs], this.messageCollector);
+
+              this.setType(node, fun.returnType!);
             } else {
-              this.messageCollector.errorIfBranchDoesntHaveAny('Cannot resolve result type', node);
+              this.setType(node, UNRESOLVED_TYPE);
             }
           } else {
             this.messageCollector.errorIfBranchDoesntHaveAny('Cannot resolve type 3', node.rhs);
           }
+        } else {
+          this.setType(node, UNRESOLVED_TYPE);
         }
-        this.setType(node, UNRESOLVED_TYPE);
       } else {
         this.messageCollector.errorIfBranchDoesntHaveAny('Cannot resolve type 4 ' + printAST(node.lhs), node.lhs);
         this.setType(node, UNRESOLVED_TYPE);
@@ -406,11 +439,23 @@ export class TypeAnalyzer extends TypeResolver {
         const memberType = resolveTypeMember(node, rhsType, memberName, this.messageCollector, node.scope);
 
         if (memberType) {
-          const argTypes = [rhsType];
-          const result = processFunctionCall(node, memberType.type, argTypes, new MessageCollector());
+          const argumentTypes = [rhsType];
 
-          if (isValidType(result)) {
-            this.setType(node, result);
+          const fun = findFunctionOverload(
+            memberType.type,
+            argumentTypes,
+            node,
+            null,
+            false,
+            new MessageCollector(),
+            true,
+            node.scope
+          );
+
+          if (isValidType(fun) && fun instanceof FunctionType) {
+            this.annotateImplicitCall(node, fun, node.argumentsNode, this.messageCollector);
+
+            this.setType(node, fun.returnType!);
           } else {
             this.messageCollector.errorIfBranchDoesntHaveAny(
               `Cannot apply operator "${memberName}" in type "${rhsType}"`,
@@ -473,37 +518,70 @@ export class TypeAnalyzer extends TypeResolver {
 
       // TODO: unhack my heart
       if (node.lhs instanceof Nodes.MemberNode) {
-        if (node.lhs.hasAnnotation(annotations.ImplicitCall)) {
-          this.messageCollector.error('!!! This node already has a ImplicitCall', node.lhs.astNode);
+        const call = this.getStashedNodeAnnotation(node.lhs, annotations.ImplicitCall);
+
+        if (call) {
+          this.messageCollector.error('!!!1 This node already has an ' + call.toString(), node.lhs.astNode);
           return;
         }
 
-        const memberLhsType = this.getType(node.lhs.lhs)!;
+        const prop = describeProperty(lhsType);
 
-        const fun = findFunctionOverload(
-          lhsType,
-          [memberLhsType, rhsType],
-          node.lhs,
-          null,
-          false,
-          this.messageCollector,
-          true,
-          node.scope
-        );
+        if (prop) {
+          if (prop.setter) {
+            const memberLhsType = this.getType(node.lhs.lhs)!;
 
-        if (isValidType(fun) && fun instanceof FunctionType) {
-          annotateImplicitCall(node, fun, [node.lhs.lhs, node.rhs], this.messageCollector);
+            const fun = findFunctionOverload(
+              lhsType,
+              [memberLhsType, rhsType],
+              node.lhs,
+              null,
+              false,
+              this.messageCollector,
+              true,
+              node.scope
+            );
 
-          this.setType(node, fun.returnType!);
+            if (isValidType(fun) && fun instanceof FunctionType) {
+              if (!fun.name.hasAnnotation(annotations.Setter)) {
+                this.messageCollector.error(
+                  new LysTypeError(
+                    `Cannot assign to "${node.lhs.memberName.name}" because it is a read-only property.`,
+                    node.lhs.memberName
+                  )
+                );
+                this.setType(node, UNRESOLVED_TYPE);
+              } else {
+                this.annotateImplicitCall(node, fun, [node.lhs.lhs, node.rhs], this.messageCollector);
+
+                this.setType(node, fun.returnType!);
+              }
+            } else {
+              this.messageCollector.error('Overload not found', node.rhs.astNode);
+              this.setType(node, UNRESOLVED_TYPE);
+              return;
+            }
+          } else {
+            this.messageCollector.error(
+              new LysTypeError(
+                `Cannot assign to "${node.lhs.memberName.name}" because it is a read-only property.`,
+                node.lhs.memberName
+              )
+            );
+            this.setType(node, UNRESOLVED_TYPE);
+          }
         } else {
-          this.messageCollector.error('Overload not found', node.rhs.astNode);
+          if (!this.messageCollector.hasErrorForBranch(node.lhs.astNode)) {
+            this.messageCollector.error('Invalid property !', node.lhs.astNode);
+          }
           this.setType(node, UNRESOLVED_TYPE);
           return;
         }
       } else if (node.lhs instanceof Nodes.BinaryExpressionNode) {
-        if (node.lhs.hasAnnotation(annotations.ImplicitCall)) {
-          this.messageCollector.error('!!! This node already has a ImplicitCall', node.lhs.astNode);
-          return;
+        const call = this.getStashedNodeAnnotation(node.lhs, annotations.ImplicitCall);
+
+        if (call) {
+          this.removeStashedNodeAnnotation(node.lhs, call);
         }
 
         const memberLhsType = this.getType(node.lhs.lhs);
@@ -519,23 +597,30 @@ export class TypeAnalyzer extends TypeResolver {
           return;
         }
 
-        const fun = findFunctionOverload(
-          lhsType,
-          [memberLhsType, memberRhsType, rhsType],
-          node.lhs,
-          null,
-          false,
-          this.messageCollector,
-          true,
-          node.scope
-        );
+        const memberName = node.lhs.operator.name;
+        const memberType = resolveTypeMember(node, memberLhsType, memberName, this.messageCollector, node.scope);
 
-        if (isValidType(fun) && fun instanceof FunctionType) {
-          annotateImplicitCall(node, fun, [node.lhs.lhs, node.lhs.rhs, node.rhs], this.messageCollector);
+        if (memberType) {
+          const fun = findFunctionOverload(
+            memberType.type,
+            [memberLhsType, memberRhsType, rhsType],
+            node.lhs,
+            null,
+            false,
+            this.messageCollector,
+            true,
+            node.lhs.scope
+          );
 
-          this.setType(node, fun.returnType!);
+          if (isValidType(fun) && fun instanceof FunctionType) {
+            this.annotateImplicitCall(node, fun, [node.lhs.lhs, node.lhs.rhs, node.rhs], this.messageCollector);
+
+            this.setType(node, fun.returnType!);
+          } else {
+            this.messageCollector.error('Overload not found', node.rhs.astNode);
+          }
         } else {
-          this.messageCollector.error('Overload not found', node.rhs.astNode);
+          this.setType(node, UNRESOLVED_TYPE);
         }
       } else {
         const result = ensureCanBeAssignedWithImplicitConversion(rhsType, lhsType, node.rhs, this.messageCollector);
@@ -557,17 +642,60 @@ export class TypeAnalyzer extends TypeResolver {
       const functionType = this.getType(node.functionNode);
 
       if (isValidType(functionType)) {
-        const argumentTypes = node.argumentsNode.map($ => this.getType($));
+        const argumentTypes = node.argumentsNode.map($ => this.getType($)!);
 
         const validArguments = argumentTypes.every($ => isValidType($));
 
         if (validArguments && isValidType(functionType)) {
-          const result = processFunctionCall(node, functionType, argumentTypes as Type[], this.messageCollector);
+          if (
+            node.functionNode instanceof Nodes.MemberNode &&
+            this.getStashedNodeAnnotation(node.functionNode, annotations.MethodCall)
+          ) {
+            // Detect if we are calling a <instance>.method(...)
+            // to inject the "self" argument
 
-          if (isValidType(result)) {
-            this.setType(node, result);
+            const fun = findFunctionOverload(
+              functionType,
+              [this.getType(node.functionNode.lhs)!, ...argumentTypes],
+              node,
+              null,
+              false,
+              this.messageCollector,
+              true,
+              node.scope
+            );
+
+            if (isValidType(fun) && fun instanceof FunctionType) {
+              this.annotateImplicitCall(
+                node,
+                fun,
+                [node.functionNode.lhs, ...node.argumentsNode],
+                this.messageCollector
+              );
+
+              this.setType(node, fun.returnType!);
+            } else {
+              this.setType(node, UNRESOLVED_TYPE);
+            }
           } else {
-            this.setType(node, UNRESOLVED_TYPE);
+            const fun = findFunctionOverload(
+              functionType,
+              argumentTypes,
+              node,
+              null,
+              false,
+              this.messageCollector,
+              true,
+              node.scope
+            );
+
+            if (isValidType(fun) && fun instanceof FunctionType) {
+              this.annotateImplicitCall(node, fun, node.argumentsNode, this.messageCollector);
+
+              this.setType(node, fun.returnType!);
+            } else {
+              this.setType(node, UNRESOLVED_TYPE);
+            }
           }
         }
       } else {
@@ -720,30 +848,58 @@ export class TypeAnalyzer extends TypeResolver {
             this.setType(node, UNRESOLVED_TYPE);
           }
         } else if (lhsType instanceof TypeAlias) {
-          const memberName = 'property_' + node.memberName.name;
+          // we are inside if (node is MemberNode)
+          // lhsType is typeOf(node.lhs)
+          // lhsType is TypeAlias means we are receiving a value as LHS
+          // i.e: "asd".length
+
+          const memberName = node.memberName.name;
           const memberType = resolveTypeMember(node.memberName, lhsType, memberName, this.messageCollector, node.scope);
 
           if (memberType) {
-            const isGetter = !node.hasAnnotation(annotations.IsAssignationLHS);
-            if (isGetter) {
-              const fun = findFunctionOverload(
-                memberType.type,
-                [lhsType],
-                node,
-                null,
-                false,
-                this.messageCollector,
-                false,
-                node.scope
-              );
+            const isValueNode = !node.hasAnnotation(annotations.IsAssignationLHS);
 
-              if (isValidType(fun) && fun instanceof FunctionType) {
-                annotateImplicitCall(node, fun, [node.lhs], this.messageCollector);
+            if (isValueNode) {
+              const prop = describeProperty(memberType.type);
 
-                this.setType(node, fun.returnType!);
+              if (prop) {
+                if (prop.getter) {
+                  const fun = findFunctionOverload(
+                    memberType.type,
+                    [lhsType],
+                    node,
+                    null,
+                    false,
+                    this.messageCollector,
+                    false,
+                    node.scope
+                  );
+
+                  if (isValidType(fun) && fun instanceof FunctionType) {
+                    this.annotateImplicitCall(node, fun, [node.lhs], this.messageCollector);
+
+                    this.setType(node, fun.returnType!);
+                  } else {
+                    this.messageCollector.error(
+                      new LysTypeError(
+                        `${lhsType}.${memberName} is not a valid property getter ${fun}`,
+                        node.memberName
+                      )
+                    );
+                    this.setType(node, UNRESOLVED_TYPE);
+                  }
+                } else if (prop.method) {
+                  this.stashNodeAnnotation(node, new annotations.MethodCall());
+                  this.setType(node, memberType.type);
+                } else {
+                  this.messageCollector.error(
+                    new LysTypeError(`${lhsType}.${memberName} is not a getter or method`, node.memberName)
+                  );
+                  this.setType(node, UNRESOLVED_TYPE);
+                }
               } else {
                 this.messageCollector.error(
-                  new LysTypeError(`${lhsType}.${memberName} is not a valid property getter`, node.memberName)
+                  new LysTypeError(`${lhsType}.${memberName} is not a getter or method`, node.memberName)
                 );
                 this.setType(node, UNRESOLVED_TYPE);
               }
@@ -783,7 +939,7 @@ export class TypeAnalyzer extends TypeResolver {
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       const incomingTypes = node.functions.map(fun => {
         if (!fun.functionNode.hasAnnotation(annotations.IsOverloaded)) {
-          this.annotateNode(fun.functionNode, new annotations.IsOverloaded());
+          this.stashNodeAnnotation(fun.functionNode, new annotations.IsOverloaded());
         }
         return this.getType(fun.functionNode.functionName);
       });
@@ -867,7 +1023,7 @@ export class TypeAnalyzer extends TypeResolver {
     if (NeverType.isNeverType(carryType)) {
       this.messageCollector.error(new UnreachableCode(node.rhs));
       this.messageCollector.error(carryType.inspect(10), node.rhs.astNode);
-      this.annotateNode(node.rhs, new annotations.IsUnreachable());
+      this.stashNodeAnnotation(node.rhs, new annotations.IsUnreachable());
       this.setType(node, UNRESOLVED_TYPE);
       return;
     }
@@ -906,7 +1062,7 @@ export class TypeAnalyzer extends TypeResolver {
         } else {
           this.messageCollector.error(new TypeMismatch(carryType, argumentType, node.literal));
           this.messageCollector.error(new UnreachableCode(node.rhs));
-          this.annotateNode(node.rhs, new annotations.IsUnreachable());
+          this.stashNodeAnnotation(node.rhs, new annotations.IsUnreachable());
         }
       }
     } else if (node instanceof Nodes.MatchCaseIsNode) {
@@ -928,7 +1084,7 @@ export class TypeAnalyzer extends TypeResolver {
       } else if (!canBeAssigned(carryType, argumentType) && !canBeAssigned(argumentType, carryType)) {
         this.messageCollector.error(new TypeMismatch(carryType, argumentType, node.typeReference));
         this.messageCollector.error(new UnreachableCode(node.rhs));
-        this.annotateNode(node.rhs, new annotations.IsUnreachable());
+        this.stashNodeAnnotation(node.rhs, new annotations.IsUnreachable());
       } else {
         const eqFunction = resolveTypeMember(node.typeReference, argumentType, 'is', this.messageCollector, node.scope);
 
@@ -955,7 +1111,7 @@ export class TypeAnalyzer extends TypeResolver {
           } else {
             this.messageCollector.error(new TypeMismatch(carryType, argumentType, node.typeReference));
             this.messageCollector.error(new UnreachableCode(node.rhs));
-            this.annotateNode(node.rhs, new annotations.IsUnreachable());
+            this.stashNodeAnnotation(node.rhs, new annotations.IsUnreachable());
           }
         }
       }
@@ -967,6 +1123,27 @@ export class TypeAnalyzer extends TypeResolver {
       this.setType(node, result);
     } else {
       this.setType(node, InjectableTypes.void);
+    }
+  }
+
+  private annotateImplicitCall(
+    nodeToAnnotate: Nodes.Node,
+    fun: FunctionType,
+    argumentNodes: Nodes.ExpressionNode[],
+    messageCollector: MessageCollector
+  ) {
+    const oldAnnotation = this.getStashedNodeAnnotation(nodeToAnnotate, annotations.ImplicitCall);
+    const newAnnotation = new annotations.ImplicitCall(
+      createImplicitCall(nodeToAnnotate, fun, argumentNodes, messageCollector)
+    );
+    if (oldAnnotation) {
+      if (!fun.equals(oldAnnotation.implicitCall.resolvedFunctionType!)) {
+        messageCollector.error(
+          new LysTypeError(`This node already has an ${oldAnnotation} trying to add ${newAnnotation}`, nodeToAnnotate)
+        );
+      }
+    } else {
+      this.stashNodeAnnotation(nodeToAnnotate, newAnnotation);
     }
   }
 

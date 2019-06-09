@@ -135,14 +135,16 @@ export function resolveTypeMember(
         if (errorNode) {
           messageCollector.error(
             new LysTypeError(
-              `Property "${memberName}" doesn't exist in type "${type}". Possible are: ${keys.join(', ')}`,
+              `Property "${memberName}" doesn't exist on type "${type}". Possible are: ${keys.join(', ')}`,
               errorNode
             )
           );
         }
       } else {
         if (errorNode) {
-          messageCollector.error(new LysTypeError(`Type "${type}" has no members.`, errorNode));
+          messageCollector.error(
+            new LysTypeError(`Property "${memberName}" doesn't exist on type "${type}".`, errorNode)
+          );
         }
       }
       // Since the members are calculated in the scope phase we return
@@ -159,43 +161,6 @@ export function resolveTypeMember(
     }
   }
   return false;
-}
-
-export function processFunctionCall(
-  node: Nodes.AbstractFunctionCallNode,
-  functionType: Type,
-  argTypes: Type[],
-  messageCollector: MessageCollector
-): Type | null {
-  try {
-    const isGetter = !node.hasAnnotation(annotations.IsAssignationLHS);
-
-    if (isGetter) {
-      const fun = findFunctionOverload(functionType, argTypes, node, null, false, messageCollector, true, node.scope);
-
-      if (fun instanceof FunctionType) {
-        node.resolvedFunctionType = fun;
-
-        ensureArgumentCoercion(node, fun, argTypes, messageCollector);
-
-        return fun.returnType!;
-      }
-    } else {
-      return functionType;
-    }
-  } catch (e) {
-    const errorNode = e.node || node;
-
-    messageCollector.errorIfBranchDoesntHaveAny(e, errorNode);
-
-    return null;
-  }
-
-  if (!NeverType.isNeverType(functionType)) {
-    messageCollector.errorIfBranchDoesntHaveAny(new LysTypeError('Invalid function: ' + functionType, node));
-  }
-
-  return null;
 }
 
 export function findFunctionOverload(
@@ -497,28 +462,7 @@ export function ensureCanBeAssignedWithImplicitConversion(
   }
 }
 
-export function annotateImplicitCall(
-  nodeToAnnotate: Nodes.Node,
-  fun: FunctionType,
-  argumentNodes: Nodes.ExpressionNode[],
-  messageCollector: MessageCollector
-) {
-  const oldAnnotation = nodeToAnnotate.getAnnotation(annotations.ImplicitCall);
-  const newAnnotation = new annotations.ImplicitCall(
-    createImplicitCall(nodeToAnnotate, fun, argumentNodes, messageCollector)
-  );
-  if (oldAnnotation) {
-    if (!fun.equals(oldAnnotation.implicitCall.resolvedFunctionType!)) {
-      messageCollector.error(
-        new LysTypeError(`This node already has an ${oldAnnotation} trying to add ${newAnnotation}`, nodeToAnnotate)
-      );
-    }
-  } else {
-    nodeToAnnotate.annotate(newAnnotation);
-  }
-}
-
-function createImplicitCall(
+export function createImplicitCall(
   node: Nodes.Node,
   fun: FunctionType,
   args: Nodes.ExpressionNode[],
@@ -550,4 +494,40 @@ function ensureArgumentCoercion(
       messageCollector.error(new LysTypeError('type is undefined', node.argumentsNode[i]));
     }
   });
+}
+
+export type LysPropertyDescription = {
+  type: Type;
+  setter: boolean;
+  getter: boolean;
+  method: boolean;
+};
+
+export function describeProperty(type: Type): LysPropertyDescription | void {
+  if (type instanceof FunctionType) {
+    return {
+      type,
+      method: type.name.hasAnnotation(annotations.Method),
+      getter: type.name.hasAnnotation(annotations.Getter),
+      setter: type.name.hasAnnotation(annotations.Setter)
+    };
+  }
+  if (type instanceof IntersectionType) {
+    const ret: LysPropertyDescription = {
+      type,
+      getter: false,
+      setter: false,
+      method: false
+    };
+
+    type.of.map(describeProperty).forEach($ => {
+      if ($) {
+        ret.getter = ret.getter || $.getter;
+        ret.setter = ret.setter || $.setter;
+        ret.method = ret.method || $.method;
+      }
+    });
+    if (ret.getter || ret.setter || ret.method) return ret;
+  }
+  return void 0;
 }
