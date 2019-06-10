@@ -4,7 +4,7 @@ This test ensures a a basic case of circular references is working. You can thin
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 
 #[export]
@@ -20,7 +20,7 @@ fun main(): void = {
 
 #### lib/A.lys
 
-```dwl
+```lys
 import lib::B
 
 fun test(): i32 = Y()
@@ -30,7 +30,7 @@ fun X(): i32 = 1
 
 #### lib/B.lys
 
-```dwl
+```lys
 import lib::A
 
 fun test(): i32 = X()

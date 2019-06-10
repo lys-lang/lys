@@ -4,7 +4,7 @@ Recursive Fibonacci series. Using if and pattern matching.
 
 #### lib/fibonacci_if.lys
 
-```dwl
+```lys
 
 private fun fibonacci(n: i64, x1: i64, x2: i64): i64 = {
   if (n > 0) {
@@ -21,7 +21,7 @@ fun fibonacciIf(n: i64): i64 =
 
 #### lib/fibonacci_match.lys
 
-```dwl
+```lys
 
 private fun fibonacci(n: i64, a: i64, b: i64): i64 =
   match n {
@@ -37,7 +37,7 @@ fun fibonacciMatch(n: i64): i64 =
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import lib::fibonacci_if
 import lib::fibonacci_match

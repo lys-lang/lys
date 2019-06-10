@@ -70,15 +70,15 @@ https://en.wikipedia.org/wiki/Nullary_constructor
 grammar changes:
 
 ```
-privatefun is tokenized as two tokens
+# privatefun is tokenized as two tokens
 
-comments are not allowed between function parameters
-comments are not allowed between struct parameters
-comments are not allowed between enum parameters
+# comments are not allowed between function parameters
+# comments are not allowed between struct parameters
+# comments are not allowed between enum parameters
 
-??? is invalid
+# ??? is invalid
 
-index selectors and function name
+# index selectors and function name
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?

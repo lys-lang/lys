@@ -8,7 +8,7 @@ This may lead to future sugar syntax and code generators.
 
 #### lib/processsignal.lys
 
-```dwl
+```lys
 type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
 
 /** Signal condition. */
@@ -114,7 +114,7 @@ impl ProcessSignal {
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import lib::processsignal
 

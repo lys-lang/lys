@@ -4,7 +4,7 @@ This test shows how a simple use case of pattern matching and deconstruction of 
 
 #### lib/Color.lys
 
-```dwl
+```lys
 enum Color {
   Red
   Green
@@ -17,7 +17,7 @@ We declare here an enum type, with 3 nullary constructors and a Custom struct.
 
 #### lib/isRed.lys
 
-```dwl
+```lys
 import lib::Color
 
 fun isRed(color: Color): boolean = {
@@ -34,7 +34,7 @@ This function returns `true` if the color is either `Red` or `Custom(255, 0, 0)`
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import lib::Color
 import lib::isRed

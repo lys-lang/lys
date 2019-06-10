@@ -4,7 +4,7 @@ Recursive Fibonacci series. Using if and pattern matching.
 
 #### lib/tree.lys
 
-```dwl
+```lys
 import lib::forest
 
 enum Tree {
@@ -15,7 +15,7 @@ enum Tree {
 
 #### lib/forest.lys
 
-```dwl
+```lys
 import lib::tree
 
 enum Forest {
@@ -26,7 +26,7 @@ enum Forest {
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import lib::tree
 import lib::forest

@@ -6,7 +6,7 @@ This test contains a straight forward dependency tree without cycles or crossed 
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 
 #[export]
@@ -21,19 +21,19 @@ fun main(): void = {
 
 #### lib.lys
 
-```dwl
+```lys
 fun test(a: lib::types::Some): i32 =
   lib::helpers::getValueOf(a)
 ```
 
 #### lib/helpers.lys
 
-```dwl
+```lys
 fun getValueOf(a: lib::types::Some): i32 = a.value
 ```
 
 #### lib/types.lys
 
-```dwl
+```lys
 struct Some(value: i32)
 ```

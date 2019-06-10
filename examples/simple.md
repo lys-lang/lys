@@ -1,6 +1,6 @@
 # main.lys
 
-```dwl
+```lys
 #[export]
 fun main(): i32 = {
   1 + 2
