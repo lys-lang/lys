@@ -32,11 +32,11 @@ fun segfault(): void = panic()
 fun getMaxMemory(): u32 = offset
 
 private fun growMemory(pages: u32): u32 = %wasm {
-  (grow_memory (get_local $pages))
+  (memory.grow (get_local $pages))
 }
 
 private fun currentMemory(): u32 = %wasm {
-  (current_memory)
+  (memory.size)
 }
 
 private fun max(a: u32, b: u32): u32 = if (a > b) a else b

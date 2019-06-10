@@ -4,7 +4,7 @@ Tests UCS convertion to UTF-8
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import system::charset::utf8
 

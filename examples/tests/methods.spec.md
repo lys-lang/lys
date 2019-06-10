@@ -4,7 +4,7 @@ This test ensures annotated methods, getters and setters are called correctly.
 
 #### lib/iterator.lys
 
-```dwl
+```lys
 import lib::maybe
 
 struct Iterator(current: i32, target: i32)
@@ -25,7 +25,7 @@ impl Iterator {
 
 #### lib/maybe.lys
 
-```dwl
+```lys
 enum Maybe {
   None
   Some(value: i32)
@@ -34,7 +34,7 @@ enum Maybe {
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import lib::iterator
 import lib::maybe

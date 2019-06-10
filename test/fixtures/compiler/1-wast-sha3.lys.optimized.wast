@@ -12,10 +12,10 @@
  (type $10 (func (param i32 i32)))
  (type $11 (func (param i32 i32 i32)))
  (memory $0 1)
- (data (i32.const 16) "\08\00\00\00t\00r\00u\00e\00\00")
- (data (i32.const 29) "\n\00\00\00f\00a\00l\00s\00e\00\00")
- (data (i32.const 44) "\02\00\00\000\00\00")
- (data (i32.const 51) "\02\00\00\000\00\00")
+ (data (i32.const 16) "\08\00\00\00t\00r\00u\00e")
+ (data (i32.const 29) "\n\00\00\00f\00a\00l\00s\00e")
+ (data (i32.const 44) "\02\00\00\000")
+ (data (i32.const 51) "\02\00\00\000")
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
@@ -77,14 +77,14 @@
     )
     (i32.shl
      (local.tee $2
-      (current_memory)
+      (memory.size)
      )
      (i32.const 16)
     )
    )
    (if
     (i32.lt_u
-     (grow_memory
+     (memory.grow
       (select
        (local.get $2)
        (local.tee $4
@@ -114,7 +114,7 @@
     )
     (if
      (i32.lt_u
-      (grow_memory
+      (memory.grow
        (local.get $3)
       )
       (i32.const 0)

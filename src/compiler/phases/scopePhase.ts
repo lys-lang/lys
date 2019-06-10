@@ -273,7 +273,7 @@ const findImplicitImports = walkPreOrder((node: Nodes.Node, parsingContext: Pars
       // TODO: test this
       parsingContext.messageCollector.error('Self import is not allowed', node.astNode);
     }
-    const importAll = node.allItems ? new Set(['*']) : new Set();
+    const importAll = node.allItems ? new Set(['*']) : new Set<string>();
     node.scope!.registerImport(node.module.text, importAll);
   } else if (node instanceof Nodes.ReferenceNode) {
     if (node.variable.names.length > 1) {

@@ -6,7 +6,7 @@ This is a smoke test
 
 #### main.lys
 
-```dwl
+```lys
 // #![no-std]
 
 import lib::core
@@ -20,7 +20,7 @@ fun main(): void = {
 
 #### lib/core.lys
 
-```dwl
+```lys
 // #![no-std]
 
 type i32 = %stack { lowLevelType="i32" byteSize=4 }
@@ -32,7 +32,7 @@ fun X(): i32 = lib::B::Y()
 
 #### lib/B.lys
 
-```dwl
+```lys
 // #![no-std]
 
 import lib::core

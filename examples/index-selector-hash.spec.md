@@ -6,7 +6,7 @@ This algorithm `(k=33)` was first reported by dan bernstein many years ago in `c
 
 #### hash/DJB2.lys
 
-```dwl
+```lys
 fun DJB2(input: bytes): u64 = {
   var hash = 5381 as u64
   var i = 0 as u32
@@ -42,7 +42,7 @@ fun DJB2(input: string): u64 = {
 
 #### main.lys
 
-```dwl
+```lys
 import support::test
 import hash::DJB2
 import system::core::memory

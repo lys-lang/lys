@@ -4,14 +4,14 @@ Ensure that types from other modules can be accessed via fully qualified names, 
 
 #### main.lys
 
-```dwl
+```lys
 #[export]
 fun main(): i32 = lib::test(lib::Some(12))
 ```
 
 #### lib.lys
 
-```dwl
+```lys
 struct Some(value: i32)
 fun test(a: Some): i32 = getValueOf(a)
 fun getValueOf(a: Some): i32 = a.value
