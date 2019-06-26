@@ -1,15 +1,19 @@
 type AA = BB
 
-impl AA {
-  fun is(a: (AA | ref)): boolean = {
-    a is BB
+impl Reference for AA {
+  #[inline]
+  fun is(self: (AA | ref)): boolean = {
+    self is BB
   }
 
   #[explicit]
-  fun as(a: AA): ref = %wasm {
-    (local.get $a)
+  #[inline]
+  fun as(self: AA): ref = %wasm {
+    (local.get $self)
   }
+}
 
+impl AA {
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
 
   fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
@@ -31,6 +35,20 @@ impl BB {
 
 type BB = %struct {  }
 
+impl Reference for BB {
+  #[inline]
+  fun is(a: (BB | ref)): boolean = {
+    val discriminant: u32 = BB.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: BB): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
 impl BB {
   #[inline]
   private fun BB$discriminant(): i64 = {
@@ -38,12 +56,9 @@ impl BB {
     discriminant as i64 << 32
   }
 
+  #[inline]
   fun apply(): BB = %wasm {
     (call BB$discriminant)
-  }
-
-  fun is(a: (BB | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call BB$discriminant))
   }
 
   fun ==(a: BB, b: ref): boolean = %wasm {
@@ -61,14 +76,23 @@ impl BB {
   fun load(lhs: ref, offset: u32): BB = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
-
-  #[explicit]
-  fun as(lhs: BB): ref = %wasm {
-    (local.get $lhs)
-  }
 }
 
 type TT = %struct {  }
+
+impl Reference for TT {
+  #[inline]
+  fun is(a: (TT | ref)): boolean = {
+    val discriminant: u32 = TT.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: TT): ref = %wasm {
+    (local.get $lhs)
+  }
+}
 
 impl TT {
   #[inline]
@@ -77,12 +101,9 @@ impl TT {
     discriminant as i64 << 32
   }
 
+  #[inline]
   fun apply(): TT = %wasm {
     (call TT$discriminant)
-  }
-
-  fun is(a: (TT | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call TT$discriminant))
   }
 
   fun ==(a: TT, b: ref): boolean = %wasm {
@@ -99,11 +120,6 @@ impl TT {
 
   fun load(lhs: ref, offset: u32): TT = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
-  }
-
-  #[explicit]
-  fun as(lhs: TT): ref = %wasm {
-    (local.get $lhs)
   }
 }
 

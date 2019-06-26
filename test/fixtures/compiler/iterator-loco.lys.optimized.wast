@@ -280,16 +280,18 @@
   )
   (loop $label$1
    (if
-    (i64.eq
-     (i64.and
-      (local.tee $4
-       (call $5
-        (local.get $3)
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.tee $4
+        (call $5
+         (local.get $3)
+        )
        )
+       (i64.const 32)
       )
-      (i64.const -4294967296)
      )
-     (i64.const 12884901888)
+     (i32.const 3)
     )
     (block
      (local.set $2

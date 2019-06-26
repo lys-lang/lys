@@ -216,14 +216,16 @@
    (drop
     (br_if $label$1
      (i32.const 0)
-     (i64.ne
-      (i64.and
-       (local.tee $0
-        (global.get $global$7)
+     (i32.ne
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$7)
+        )
+        (i64.const 32)
        )
-       (i64.const -4294967296)
       )
-      (i64.const 12884901888)
+      (i32.const 3)
      )
     )
    )
@@ -296,96 +298,104 @@
    )
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (block (result i64)
-      (local.set $3
-       (call $7
-        (i64.const 12884901888)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (block (result i64)
+       (local.set $3
+        (call $7
+         (i64.const 12884901888)
+        )
        )
-      )
-      (drop
-       (call $7
+       (drop
+        (call $7
+         (call $6
+          (i64.const 4294967296)
+         )
+        )
+       )
+       (local.set $0
         (call $6
-         (i64.const 4294967296)
+         (i64.const 12884901888)
         )
        )
-      )
-      (local.set $0
-       (call $6
-        (i64.const 12884901888)
+       (call $5
+        (i32.const 1)
+        (i64.const 12884901947)
        )
-      )
-      (call $5
-       (i32.const 1)
-       (i64.const 12884901947)
-      )
-      (call $5
-       (i32.const 1)
-       (i64.const 12884901968)
-      )
-      (call $5
-       (i32.or
-        (i32.ne
-         (i64.eq
-          (i64.and
-           (local.get $1)
-           (i64.const -4294967296)
+       (call $5
+        (i32.const 1)
+        (i64.const 12884901968)
+       )
+       (call $5
+        (if (result i32)
+         (i32.eq
+          (i32.wrap_i64
+           (i64.shr_u
+            (local.get $1)
+            (i64.const 32)
+           )
           )
-          (i64.const 12884901888)
+          (i32.const 3)
          )
-         (i32.const 0)
-        )
-        (i32.ne
-         (i64.eq
-          (i64.and
-           (local.get $1)
-           (i64.const -4294967296)
+         (i32.const 1)
+         (i32.ne
+          (i32.eq
+           (i32.wrap_i64
+            (i64.shr_u
+             (local.get $1)
+             (i64.const 32)
+            )
+           )
+           (i32.const 4)
           )
-          (i64.const 17179869184)
+          (i32.const 0)
          )
-         (i32.const 0)
         )
+        (i64.const 12884901993)
        )
-       (i64.const 12884901993)
+       (local.get $3)
       )
-      (local.get $3)
+      (i64.const 32)
      )
-     (i64.const -4294967296)
     )
-    (i64.const 17179869184)
+    (i32.const 4)
    )
    (i64.const 12884902018)
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (local.get $0)
-     (i64.const -4294967296)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (local.get $0)
+      (i64.const 32)
+     )
     )
-    (i64.const 8589934592)
+    (i32.const 2)
    )
    (i64.const 12884902041)
   )
   (call $5
-   (i32.or
-    (i32.ne
-     (i64.eq
-      (i64.and
+   (if (result i32)
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
        (local.get $0)
-       (i64.const -4294967296)
+       (i64.const 32)
       )
-      (i64.const 4294967296)
      )
-     (i32.const 0)
+     (i32.const 1)
     )
+    (i32.const 1)
     (i32.ne
-     (i64.eq
-      (i64.and
-       (local.get $0)
-       (i64.const -4294967296)
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.get $0)
+        (i64.const 32)
+       )
       )
-      (i64.const 8589934592)
+      (i32.const 2)
      )
      (i32.const 0)
     )

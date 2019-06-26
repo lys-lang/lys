@@ -24,23 +24,27 @@
  (func $1 (; 1 ;) (type $2) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (if
-    (i64.ne
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
+    (i32.ne
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
      )
-     (i64.const 4294967296)
+     (i32.const 1)
     )
     (block
      (drop
       (br_if $label$1
        (i32.const 0)
-       (i64.ne
-        (i64.and
-         (local.get $0)
-         (i64.const -4294967296)
+       (i32.ne
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $0)
+          (i64.const 32)
+         )
         )
-        (i64.const 17179869184)
+        (i32.const 4)
        )
       )
      )

@@ -75,12 +75,13 @@ function privatePrint(node: Nodes.Node): string {
 
     return `loop${body}`;
   } else if (node instanceof Nodes.ImplDirective) {
-    let target = '';
-
     if (node.baseImpl) {
-      target = ' for ' + printNode(node.baseImpl);
+      return `impl ${printNode(node.baseImpl)} for ${printNode(node.targetImpl)} {\n${indent(
+        node.directives.map(printNode).join('\n\n')
+      )}\n}`;
+    } else {
+      return `impl ${printNode(node.targetImpl)} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
     }
-    return `impl ${printNode(node.targetImpl)}${target} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     return `import ${printNode(node.module)}`;
   } else if (node instanceof Nodes.FunDirectiveNode) {

@@ -1,5 +1,7 @@
 import system::core::boolean
 import system::core::u32
+import system::core::i32
+import system::core::u64
 
 type void = %stack { lowLevelType="void" byteSize=0 }
 type ref = %injected
@@ -18,16 +20,38 @@ impl never {
   }
 }
 
-impl ref {
+trait Reference {
+  fun is(lhs: ref): boolean
+  fun as(lhs: ref): ref
+}
+
+impl Reference for ref {
   fun is(lhs: ref): boolean = true
+  fun as(lhs: ref): ref = lhs
+}
+
+impl ref {
   fun ==(lhs: ref, rhs: ref): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: ref, rhs: ref): boolean = !(lhs == rhs)
+  fun !=(lhs: ref, rhs: ref): boolean = %wasm { (i64.ne (get_local $lhs) (get_local $rhs)) }
 
   /**
    * CPointer implicit coercion.
    */
   fun as(self: ref): UnsafeCPointer = %wasm {
     (call $addressFromRef (get_local $self))
+  }
+
+  /**
+   * Gets the discriminant of a reference pointer.
+   */
+  #[inline]
+  fun getDiscriminant(reference: ref): u32 = %wasm {
+    (i32.wrap_i64
+      (i64.shr_u
+        (local.get $reference)
+        (i64.const 32)
+      )
+    )
   }
 
   fun store(lhs: ref, rhs: ref): void = %wasm {

@@ -322,7 +322,17 @@ function processStruct(
       document.fileName + '#' + typeName,
       document.moduleName + '#' + typeName,
       `
-            // impl ref for ${typeName} {}
+            impl Reference for ${typeName} {
+              #[inline]
+              fun is(a: ${typeName} | ref): boolean = {
+                val discriminant: u32 = ${typeName}.^discriminant
+                ref.getDiscriminant(a) == discriminant
+              }
+
+              #[explicit]
+              #[inline]
+              fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
+            }
 
             impl ${typeName} {
               #[inline]
@@ -331,6 +341,7 @@ function processStruct(
                 discriminant as u64 << 32
               }
 
+              #[inline]
               fun apply(${args}): ${typeName} = {
                 var $ref = fromPointer(
                   system::core::memory::calloc(1 as u32, ${typeName}.^allocationSize)
@@ -340,7 +351,6 @@ function processStruct(
 
                 $ref
               }
-
 
               /**
                * CPointer implicit coercion.
@@ -370,18 +380,7 @@ function processStruct(
                 )
               }
 
-
               ${accessors}
-
-              fun is(a: ${typeName} | ref): boolean = %wasm {
-                (i64.eq
-                  (i64.and
-                    (i64.const 0xffffffff00000000)
-                    (local.get $a)
-                  )
-                  (call $${typeName}$discriminant)
-                )
-              }
 
               fun store(lhs: ref, rhs: ${typeName}, offset: u32): void = %wasm {
                 (i64.store
@@ -401,9 +400,6 @@ function processStruct(
                   )
                 )
               }
-
-              #[explicit]
-              fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
             }
           `,
       parsingContext
@@ -415,7 +411,18 @@ function processStruct(
       document.fileName + '#' + typeName,
       document.moduleName + '#' + typeName,
       `
-          // impl ref for ${typeName} {}
+          impl Reference for ${typeName} {
+            #[inline]
+            fun is(a: ${typeName} | ref): boolean = {
+              val discriminant: u32 = ${typeName}.^discriminant
+              ref.getDiscriminant(a) == discriminant
+            }
+
+            #[explicit]
+            #[inline]
+            fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
+          }
+
           impl ${typeName} {
             #[inline]
             private fun ${typeName}$discriminant(): i64 = {
@@ -423,18 +430,9 @@ function processStruct(
               discriminant as i64 << 32
             }
 
+            #[inline]
             fun apply(): ${typeName} = %wasm {
               (call $${typeName}$discriminant)
-            }
-
-            fun is(a: ${typeName} | ref): boolean = %wasm {
-              (i64.eq
-                (i64.and
-                  (i64.const 0xffffffff00000000)
-                  (local.get $a)
-                )
-                (call $${typeName}$discriminant)
-              )
             }
 
             fun ==(a: ${typeName}, b: ref): boolean = %wasm {
@@ -469,9 +467,6 @@ function processStruct(
                 )
               )
             }
-
-            #[explicit]
-            fun as(lhs: ${typeName}): ref = %wasm { (local.get $lhs) }
           }
         `,
       parsingContext
@@ -554,15 +549,19 @@ const processUnions = function(
           document.fileName + '#' + variableName.name,
           document.moduleName + '#' + variableName.name,
           `
-              // Union type ${variableName.name}
-              impl ${variableName.name} {
-                fun is(a: ${variableName.name} | ref): boolean = {
-                  ${referenceTypes.map($ => 'a is ' + printNode($.variable)).join(' || ') || 'false'}
+              impl Reference for ${variableName.name} {
+                #[inline]
+                fun is(self: ${variableName.name} | ref): boolean = {
+                  ${referenceTypes.map($ => 'self is ' + printNode($.variable)).join(' || ') || 'false'}
                 }
 
                 #[explicit]
-                fun as(a: ${variableName.name}): ref = %wasm { (local.get $a) }
+                #[inline]
+                fun as(self: ${variableName.name}): ref  = %wasm { (local.get $self) }
+              }
 
+              // Union type ${variableName.name}
+              impl ${variableName.name} {
                 fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
                 fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
 

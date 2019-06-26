@@ -89,14 +89,16 @@
    (drop
     (br_if $label$1
      (i32.const 0)
-     (i64.ne
-      (i64.and
-       (local.tee $0
-        (global.get $global$0)
+     (i32.ne
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$0)
+        )
+        (i64.const 32)
        )
-       (i64.const -4294967296)
       )
-      (i64.const 12884901888)
+      (i32.const 3)
      )
     )
    )
@@ -298,22 +300,26 @@
   (local $2 i64)
   (block $label$1 (result i32)
    (if
-    (i64.ne
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
+    (i32.ne
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
      )
-     (i64.const 8589934592)
+     (i32.const 2)
     )
     (block
      (block $label$3
       (br_if $label$3
-       (i64.eq
-        (i64.and
-         (local.get $0)
-         (i64.const -4294967296)
+       (i32.eq
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $0)
+          (i64.const 32)
+         )
         )
-        (i64.const 4294967296)
+        (i32.const 1)
        )
       )
      )

@@ -103,8 +103,22 @@ export class FunctionType extends Type {
   canBeAssignedTo(type: Type): boolean {
     if (type instanceof FunctionType) {
       if (this.parameterTypes.length !== type.parameterTypes.length) return false;
-      if (!areEqualTypes(this.returnType, type.returnType)) return false;
-      if (this.parameterTypes.some(($, $$) => !areEqualTypes($, type.parameterTypes[$$]))) return false;
+      if (
+        // can the return type be assigned?
+        !this.returnType ||
+        !type.returnType ||
+        !this.returnType.canBeAssignedTo(type.returnType)
+      ) {
+        return false;
+      }
+      if (
+        // can every parameter be assigned?
+        this.parameterTypes.some(
+          ($, $$) => !$ || !type.parameterTypes[$$] || !$.canBeAssignedTo(type.parameterTypes[$$])
+        )
+      ) {
+        return false;
+      }
       return true;
     }
 

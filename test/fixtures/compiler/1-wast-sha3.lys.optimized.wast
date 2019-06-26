@@ -4,8 +4,8 @@
  (type $2 (func (param i32) (result i32)))
  (type $3 (func (param i32)))
  (type $4 (func (param i32 i32 i32)))
- (type $5 (func (param i64 i64) (result i64)))
- (type $6 (func (param i64) (result i64)))
+ (type $5 (func (param i64) (result i64)))
+ (type $6 (func (param i64 i64) (result i64)))
  (type $7 (func (param i32) (result i64)))
  (type $8 (func (param i64 i64)))
  (type $9 (func (param i64)))
@@ -215,7 +215,7 @@
    )
   )
  )
- (func $4 (; 4 ;) (type $5) (param $0 i64) (param $1 i64) (result i64)
+ (func $4 (; 4 ;) (type $6) (param $0 i64) (param $1 i64) (result i64)
   (local $2 i32)
   (local $3 i64)
   (call $3
@@ -3063,7 +3063,7 @@
    (i64.const 38654705664)
   )
  )
- (func $15 (; 15 ;) (type $6) (param $0 i64) (result i64)
+ (func $15 (; 15 ;) (type $5) (param $0 i64) (result i64)
   (call $11
    (i32.add
     (i32.wrap_i64

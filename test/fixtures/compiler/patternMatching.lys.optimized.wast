@@ -306,22 +306,26 @@
  (func $6 (; 6 ;) (type $4) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (if
-    (i64.ne
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
+    (i32.ne
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
      )
-     (i64.const 8589934592)
+     (i32.const 2)
     )
     (block
      (block $label$3
       (br_if $label$3
-       (i64.eq
-        (i64.and
-         (local.get $0)
-         (i64.const -4294967296)
+       (i32.eq
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $0)
+          (i64.const 32)
+         )
         )
-        (i64.const 4294967296)
+        (i32.const 1)
        )
       )
      )
@@ -336,22 +340,26 @@
  (func $7 (; 7 ;) (type $5) (param $0 i64) (result i64)
   (block $label$1 (result i64)
    (if
-    (i64.ne
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
+    (i32.ne
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
      )
-     (i64.const 8589934592)
+     (i32.const 2)
     )
     (block
      (block $label$3
       (br_if $label$3
-       (i64.eq
-        (i64.and
-         (local.get $0)
-         (i64.const -4294967296)
+       (i32.eq
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $0)
+          (i64.const 32)
+         )
         )
-        (i64.const 4294967296)
+        (i32.const 1)
        )
       )
      )

@@ -128,8 +128,8 @@ function test(program: string, expectedType: string, expectedError: string, skip
 
       if (document) {
         console.log(printNode(document));
-        console.log(printAST(document));
-        console.log(document.scope!.inspect(false, true));
+        // console.log(printAST(document));
+        // console.log(document.scope!.inspect(false, true));
       }
 
       if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {

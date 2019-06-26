@@ -577,6 +577,7 @@ export class CodeGenerationPhaseResult {
     });
 
     functions.forEach($ => {
+      if ($.parent instanceof Nodes.TraitDirectiveNode) return;
       $.functions.forEach(fun => {
         const functionName = fun.functionNode.functionName;
 
