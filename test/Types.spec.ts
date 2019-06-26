@@ -41,110 +41,131 @@ const phases = function(txt: string, fileName: string): PhasesResult {
   return { document: parsingContext.getPhase(moduleName, PhaseFlags.TypeCheck), parsingContext };
 };
 
-describe('Types', function() {
-  let n = 0;
+let n = 0;
 
-  function normalizeResult(input: string) {
-    return input
-      .split('\n')
-      .map($ => $.trim())
-      .filter($ => $.length)
-      .join('\n');
-  }
-  function checkMainType(literals: any, ...placeholders: any) {
-    function test(program: string, expectedType: string, expectedError: string) {
-      const number = n++;
-      let label = '';
+function normalizeResult(input: string) {
+  return input
+    .split('\n')
+    .map($ => $.trim())
+    .filter($ => $.length)
+    .join('\n');
+}
 
-      program.replace(/\/\/\/(.+)$/gm, (_, group: any) => {
-        label = label + group;
-        return '';
-      });
+function test(program: string, expectedType: string, expectedError: string, skip: boolean) {
+  const number = n++;
+  let label = '';
 
-      label = label.trim();
+  program.replace(/\/\/\/(.+)$/gm, (_, group: any) => {
+    label = label + group;
+    return '';
+  });
 
-      if (!label) label = `type inference test #${number}`;
+  label = label.trim();
 
-      it(label, async function(this: any) {
-        this.timeout(10000);
+  if (!label) label = `type inference test #${number}`;
 
-        let document: Nodes.DocumentNode | void = void 0;
+  (skip ? it.skip : it)(label, async function(this: any) {
+    this.timeout(10000);
 
-        try {
-          const phaseResult = phases(program, `types_${number}.lys`);
+    let document: Nodes.DocumentNode | void = void 0;
 
-          document = phaseResult.document;
+    try {
+      const phaseResult = phases(program, `types_${number}.lys`);
 
-          const expectedResult = normalizeResult(expectedType);
+      document = phaseResult.document;
 
-          const givenResult = normalizeResult(
-            document.directives
-              .map($ => {
-                if (
-                  $ instanceof Nodes.OverloadedFunctionNode &&
-                  !$.functions.some($ => $.hasAnnotation(annotations.Injected))
-                ) {
-                  return TypeHelpers.getNodeType($.functionName) + '';
-                } else if ($ instanceof Nodes.VarDirectiveNode) {
-                  return `${$.decl.variableName.name} := ${
-                    TypeHelpers.getNodeType($.decl.variableName)
-                      ? TypeHelpers.getNodeType($.decl.variableName)!.inspect(1)
-                      : '<ofType is NULL>'
-                  }`;
-                }
-              })
-              .filter($ => !!$)
-              .join('\n')
-          );
+      const expectedResult = normalizeResult(expectedType);
 
-          expect(givenResult).to.eq(expectedResult);
-
-          if (expectedError) {
-            try {
-              failWithErrors('type phase', phaseResult.parsingContext);
-              throw new Error('x');
-            } catch (e) {
-              if ((e.message + '').includes('Hit max analysis pass count')) {
-                throw e;
-              }
-              if (e.message === 'x') {
-                throw new Error("Didn't fail (expecting " + expectedError + ')');
-              } else {
-                const expected = expectedError
-                  .trim()
-                  .split(/\n/g)
-                  .map($ => $.trim())
-                  .filter($ => !!$);
-                expected.forEach($ => expect(e.message).to.contain($));
-              }
+      const givenResult = normalizeResult(
+        document.directives
+          .map($ => {
+            if ($ instanceof Nodes.TraitDirectiveNode) {
+              const type = TypeHelpers.getNodeType($.traitName);
+              return $.traitName.name + ' := ' + (type ? type.inspect(100) : '<ofType is NULL>');
+            } else if (
+              $ instanceof Nodes.OverloadedFunctionNode &&
+              !$.functions.some($ => $.hasAnnotation(annotations.Injected))
+            ) {
+              return TypeHelpers.getNodeType($.functionName) + '';
+            } else if ($ instanceof Nodes.VarDirectiveNode) {
+              return `${$.decl.variableName.name} := ${
+                TypeHelpers.getNodeType($.decl.variableName)
+                  ? TypeHelpers.getNodeType($.decl.variableName)!.inspect(1)
+                  : '<ofType is NULL>'
+              }`;
             }
-          } else {
-            failWithErrors('type phase', phaseResult.parsingContext);
-          }
+          })
+          .filter($ => !!$)
+          .join('\n')
+      );
+
+      expect(givenResult).to.eq(expectedResult);
+
+      if (expectedError) {
+        try {
+          failWithErrors('type phase', phaseResult.parsingContext);
+          throw new Error('x');
         } catch (e) {
-          console.log(printErrors(parsingContext));
-
-          if (document) {
-            console.log(printNode(document));
-            console.log(printAST(document));
-            console.log(document.scope!.inspect(false, true));
+          if ((e.message + '').includes('Hit max analysis pass count')) {
+            throw e;
           }
-
-          if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {
-            parsingContext.modulesInContext.forEach(document => {
-              if (document.scope) {
-                console.log(document.scope.inspect());
-              } else {
-                console.log(document.moduleName + ' has no scope!');
-              }
-            });
+          if (e.message === 'x') {
+            throw new Error("Didn't fail (expecting " + expectedError + ')');
+          } else {
+            const expected = expectedError
+              .trim()
+              .split(/\n/g)
+              .map($ => $.trim())
+              .filter($ => !!$);
+            expected.forEach($ => expect(e.message).to.contain($));
           }
-
-          // console.log(printTypeGraph(document.typeGraph));
-          throw e;
         }
-      });
+      } else {
+        failWithErrors('type phase', phaseResult.parsingContext);
+      }
+    } catch (e) {
+      console.log(printErrors(parsingContext));
+
+      if (document) {
+        console.log(printNode(document));
+        console.log(printAST(document));
+        console.log(document.scope!.inspect(false, true));
+      }
+
+      if (parsingContext.messageCollector.errors.some($ => $ instanceof LysScopeError)) {
+        parsingContext.modulesInContext.forEach(document => {
+          if (document.scope) {
+            console.log(document.scope.inspect());
+          } else {
+            console.log(document.moduleName + ' has no scope!');
+          }
+        });
+      }
+
+      // console.log(printTypeGraph(document.typeGraph));
+      throw e;
     }
+  });
+}
+
+function checkMainType(literals: any, ...placeholders: any) {
+  let result = '';
+  // interleave the literals with the placeholders
+  for (let i = 0; i < placeholders.length; i++) {
+    result += literals[i];
+    result += placeholders[i];
+  }
+
+  // add the last literal
+  result += literals[literals.length - 1];
+
+  const parts = result.split('---');
+
+  test(parts[0], parts[1], parts[2], false);
+}
+
+namespace checkMainType {
+  export function skip(literals: any, ...placeholders: any) {
     let result = '';
     // interleave the literals with the placeholders
     for (let i = 0; i < placeholders.length; i++) {
@@ -157,9 +178,11 @@ describe('Types', function() {
 
     const parts = result.split('---');
 
-    test(parts[0], parts[1], parts[2]);
+    test(parts[0], parts[1], parts[2], true);
   }
+}
 
+describe('Types', function() {
   describe('unit no-std', () => {
     checkMainType`// #![no-std]
       /// empty blocks must resolve to void
@@ -171,15 +194,15 @@ describe('Types', function() {
       fun() -> void
     `;
 
-    // checkMainType`// #![no-std]
-    //   /// self declaration must fail
+    checkMainType.skip`// #![no-std]
+      /// self declaration must fail
 
-    //   var x = x
-    //   ---
-    //   x := (never)
-    //   ---
-    //   Error
-    // `;
+      var x = x
+      ---
+      x := (never)
+      ---
+      Error
+    `;
 
     checkMainType`// #![no-std]
       /// use apply after declaration/definition
@@ -211,6 +234,18 @@ describe('Types', function() {
     `;
 
     checkMainType`// #![no-std]
+      /// functions without body must resolve but throwing an error
+
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      fun a(): i32
+      ---
+      fun() -> i32
+      ---
+      Missing function body
+    `;
+
+    checkMainType`// #![no-std]
       /// use a variable as type must fail.
       /// the final type must be infered from the value of the declaration
 
@@ -222,7 +257,7 @@ describe('Types', function() {
       b := (alias i32 (native i32))
       a := (alias i32 (native i32))
       ---
-      This is not a type
+      (alias i32 (native i32)) is not a type
     `;
 
     checkMainType`// #![no-std]
@@ -729,7 +764,7 @@ describe('Types', function() {
       x := (alias u32 (native u32))
       y := (never)
       ---
-      This is not a type
+      (alias u32 (native u32)) is not a type
     `;
 
     checkMainType`// #![no-std]
@@ -953,21 +988,6 @@ describe('Types', function() {
     `;
 
     checkMainType`// #![no-std]
-      /// resolve variable declarations in namespaces
-
-      type boolean = %stack { lowLevelType="i32" byteSize=1 }
-      type A = %struct { }
-
-      impl A {
-        val x: boolean = ???
-      }
-
-      var y = A.x
-      ---
-      y := (alias boolean (native boolean))
-    `;
-
-    checkMainType`// #![no-std]
       /// (never) name resolution must converge
 
       type boolean = %stack { lowLevelType="i32" byteSize=1 }
@@ -1000,24 +1020,24 @@ describe('Types', function() {
       Property "is" doesn't exist on type "A".
     `;
 
-    // describe('type alias', () => {
-    //   checkMainType`
-    //     type int = i32
-    //     type Integer = int
-    //     type Long = i64
-    //     fun add(a: i32, b: int): int = a + b
-    //     fun add2(a: i32, b: int): Integer = a + b
-    //     fun add3(a: Integer, b: int): Integer = a + b
-    //     fun add4(a: Integer, b: i32): i32 = a + b
-    //     fun add5(a: Long, b: i32): i64 = (a + b as i64)
-    //     ---
-    //     fun(a: i32, b: int) -> int
-    //     fun(a: i32, b: int) -> Integer
-    //     fun(a: Integer, b: int) -> Integer
-    //     fun(a: Integer, b: i32) -> i32
-    //     fun(a: Long, b: i32) -> i64
-    //   `;
-    // });
+    describe('type alias', () => {
+      checkMainType.skip`
+        type int = i32
+        type Integer = int
+        type Long = i64
+        fun add(a: i32, b: int): int = a + b
+        fun add2(a: i32, b: int): Integer = a + b
+        fun add3(a: Integer, b: int): Integer = a + b
+        fun add4(a: Integer, b: i32): i32 = a + b
+        fun add5(a: Long, b: i32): i64 = (a + b as i64)
+        ---
+        fun(a: i32, b: int) -> int
+        fun(a: i32, b: int) -> Integer
+        fun(a: Integer, b: int) -> Integer
+        fun(a: Integer, b: i32) -> i32
+        fun(a: Long, b: i32) -> i64
+      `;
+    });
 
     checkMainType`// #![no-std]
       /// type alias resolves to usable type (reference)
@@ -1057,6 +1077,63 @@ describe('Types', function() {
       x := (never)
       ---
       Property "test" doesn't exist on type "A".
+    `;
+
+    checkMainType`// #![no-std]
+      /// bubble type aliases to find properties
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      type A = %struct { }
+      type NewA = A
+
+      impl A {
+        #[getter]
+        fun prop(self: A): boolean = ???
+      }
+
+      var a: A = ???
+      var newA: NewA = ???
+
+      var x = a.prop
+      var y = newA.prop
+      ---
+      a := (alias A (struct))
+      newA := (alias NewA (alias A))
+      x := (alias boolean (native boolean))
+      y := (alias boolean (native boolean))
+    `;
+
+    checkMainType`// #![no-std]
+      /// bubble type aliases to find properties must stop at overloads
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+
+      type A = %struct { }
+      type NewA = A
+
+      impl A {
+        #[getter]
+        fun prop(self: A): boolean = ???
+      }
+
+      impl NewA {
+        #[getter]
+        fun prop(self: A): i32 = ???
+      }
+
+      var a: A = ???
+      var newA: NewA = ???
+
+      var x = a.prop
+      var y = newA.prop
+      ---
+      a := (alias A (struct))
+      newA := (alias NewA (alias A))
+      x := (alias boolean (native boolean))
+      y := (alias i32 (native i32))
     `;
 
     checkMainType`
@@ -1255,16 +1332,50 @@ describe('Types', function() {
       /// private constructor
       type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
 
-      /** Signal condition. */
       impl ProcessSignal {
-        private fun apply(value: i32): ProcessSignal = %wasm { (get_local $value) }
+        private fun apply(value: i32): ProcessSignal = ???
 
-        /** Hangup. */
         val HUP = ProcessSignal(1)
+        fun x(): ProcessSignal = ProcessSignal(2)
+      }
 
-        val INT = ProcessSignal(2)
+      var x = ProcessSignal.x()
+      ---
+      x := (alias ProcessSignal (native ProcessSignal))
+    `;
+
+    checkMainType`
+      /// private constructor in other scope is not accessible
+      type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
+
+      impl ProcessSignal {
+        private fun apply(value: i32): ProcessSignal = ???
+      }
+
+      impl ProcessSignal {
+        val HUP = ProcessSignal(1)
       }
       ---
+      ---
+      Name "apply" is private in ProcessSignal
+    `;
+
+    checkMainType`
+      /// functions in other scopes are addressable by fully qualified name
+      type ProcessSignal = %struct {}
+
+      impl ProcessSignal {
+        fun a(): ProcessSignal = ???
+        fun c(): ProcessSignal = ProcessSignal.test()
+      }
+
+      impl ProcessSignal {
+        fun test(): ProcessSignal = ProcessSignal.a()
+      }
+
+      var x = ProcessSignal.c()
+      ---
+      x := (alias ProcessSignal (struct))
     `;
 
     checkMainType`
@@ -1283,9 +1394,223 @@ describe('Types', function() {
       Name "apply" is private in ProcessSignal
     `;
 
-    /// if nodes must return the union of two types
+    checkMainType`// #![no-std]
+      /// must resolve functions in multiple impl
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type i32 = %stack { lowLevelType="i32" byteSize=4 }
+      type i64 = %stack { lowLevelType="i64" byteSize=8 }
+
+      type A = %struct { }
+
+      impl A {
+        fun test(int: i32): boolean = ???
+      }
+
+      impl A {
+        fun test(int: boolean): i64 = ???
+      }
+
+      var x = A.test(1)
+      var y = A.test(false)
+      ---
+      x := (alias boolean (native boolean))
+      y := (alias i64 (native i64))
+    `;
+
+    checkMainType.skip`// #![no-std]
+      /// resolve variable declarations in namespaces
+
+      type boolean = %stack { lowLevelType="i32" byteSize=1 }
+      type A = %struct { }
+
+      impl A {
+        val x: boolean = ???
+      }
+
+      var y = A.x
+      ---
+      y := (alias boolean (native boolean))
+    `;
+
+    /// IfNodes must return the union of two types
     /// match nodes must return the union of all the matchers
     /// match result must be coerced automatically to the declaration's type
+  });
+
+  describe('traits', () => {
+    checkMainType`
+      /// struct implementing empty trait
+      trait Sumable {}
+
+      struct A()
+
+      impl Sumable for A {}
+
+      var y = A
+      ---
+      Sumable := (trait Sumable)
+      y := (alias A (struct))
+    `;
+
+    checkMainType`
+      /// traits with implementations are not enabled yet
+      trait Sumable {
+        fun a(): boolean = true
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun a(): boolean = true
+      }
+      ---
+      Sumable := (trait Sumable [a: (intersection (fun "a" () (alias boolean)))])
+      ---
+      Unexpected function body. Traits only accept signatures.
+    `;
+
+    checkMainType`
+      /// decorators are not allowed in trait functions
+      trait Sumable {
+        #[inline]
+        fun a(): boolean
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun a(): boolean = true
+      }
+      ---
+      Sumable := (trait Sumable [a: (intersection (fun "a" () (alias boolean)))])
+      ---
+      Unexpected decorator. Traits only accept signatures.
+    `;
+
+    checkMainType`
+      /// struct implementing trait with one function
+      trait Sumable {
+        fun test(): boolean
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun test(): boolean = true
+      }
+
+      var x = A.test()
+      ---
+      Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)))])
+      x := (alias boolean (native boolean))
+    `;
+
+    checkMainType`
+      /// struct implementing trait with two functions with different names
+
+      trait Sumable {
+        fun test(): boolean
+        fun a(): i32
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun test(): boolean = true
+        fun a(): i32 = 1
+      }
+
+      var x = A.test()
+      var y = A.a()
+      ---
+      Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)))] [a: (intersection (fun "a" () (alias i32)))])
+      x := (alias boolean (native boolean))
+      y := (alias i32 (native i32))
+    `;
+
+    checkMainType`
+      /// struct implementing trait with overloaded functions
+
+      trait Sumable {
+        fun test(): boolean
+        fun test(a: boolean): i32
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun test(): boolean = true
+        fun test(a: boolean): i32 = 1
+      }
+
+      var x = A.test()
+      var y = A.test(false)
+      ---
+      Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)) (fun "test" ((alias boolean)) (alias i32)))])
+      x := (alias boolean (native boolean))
+      y := (alias i32 (native i32))
+    `;
+
+    checkMainType`
+      /// struct implementing trait with one function of two must fail
+
+      trait Sumable {
+        fun test(): boolean
+        fun a(): i32
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun test(): boolean = true
+      }
+
+      var x = A.test()
+      ---
+      Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)))] [a: (intersection (fun "a" () (alias i32)))])
+      x := (alias boolean (native boolean))
+      ---
+      Not all functions are implemented, missing: a
+    `;
+
+    checkMainType`
+      /// struct implementing trait with missing functions must throw an error
+      trait Sumable {
+        fun test(): boolean
+      }
+
+      struct A()
+
+      impl Sumable for A {}
+
+      var x = A.test()
+      ---
+      Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)))])
+      x := (never)
+      ---
+      Not all functions are implemented, missing: test
+    `;
+
+    checkMainType`
+      /// struct implementing trait with wrong signatures must throw an error
+      trait Sumable {
+        fun test(): boolean
+      }
+
+      struct A()
+
+      impl Sumable for A {
+        fun test(): i32 = 1
+      }
+
+      var x = A.test()
+      ---
+      Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)))])
+      x := (alias i32 (native i32))
+      ---
+      Type not implemented correctly
+    `;
   });
 
   describe('unit', () => {
@@ -1405,7 +1730,7 @@ describe('Types', function() {
       b := (alias i32 (native i32))
       a := (alias i32 (native i32))
       ---
-      This is not a type
+      (alias i32 (native i32)) is not a type
     `;
 
     describe('numbers', () => {
@@ -2690,8 +3015,8 @@ describe('Types', function() {
       `;
     });
 
-    describe.skip('duplicated signature', () => {
-      checkMainType`
+    describe('duplicated signature', () => {
+      checkMainType.skip`
         fun a(x: f32): void = ???
         fun a(x: f32): void = ???
         ---
@@ -2700,7 +3025,7 @@ describe('Types', function() {
         Error
       `;
 
-      checkMainType`
+      checkMainType.skip`
         type XX = f32
         fun a(x: f32): void = ???
         fun a(x: XX): void = ???
@@ -2710,7 +3035,7 @@ describe('Types', function() {
         Error
       `;
 
-      checkMainType`
+      checkMainType.skip`
         fun as(x: f32): boolean = ???
         fun as(x: f32): boolean = ???
         ---
@@ -2791,8 +3116,6 @@ describe('Types', function() {
         x3 := (alias boolean (native boolean))
         y3 := (alias boolean (native boolean))
         z3 := (alias boolean (native boolean))
-        ---
-        This statement is always false, type "A" can never be "B"
       `;
 
       checkMainType`
@@ -2854,7 +3177,7 @@ describe('Types', function() {
         x := (alias X (struct))
         a := (never)
         ---
-        This is not a type
+        (alias X (struct value: (type (alias i32 (native i32))))) is not a type
       `;
 
       checkMainType`

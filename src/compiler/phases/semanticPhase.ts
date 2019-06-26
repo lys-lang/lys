@@ -152,13 +152,24 @@ function processFunctionDecorations(node: Nodes.FunDirectiveNode, parsingContext
   }
 }
 
+function rejectDecorator(node: Nodes.DirectiveNode, parsingContext: ParsingContext) {
+  if (node.decorators && node.decorators.length) {
+    node.decorators.forEach($ => {
+      parsingContext.messageCollector.error(
+        `Unknown decorator "${$.decoratorName.name}" for ${node.nodeName}`,
+        $.decoratorName.astNode
+      );
+    });
+  }
+}
+
 const overloadFunctions = function(
   document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
   parsingContext: ParsingContext
 ) {
   const overloadedFunctions: Map<string, Nodes.OverloadedFunctionNode> = new Map();
 
-  document.directives.slice().forEach((node: Nodes.Node, ix: number) => {
+  document.directives.slice().forEach((node: Nodes.DirectiveNode, ix: number) => {
     if (node instanceof Nodes.FunDirectiveNode) {
       processFunctionDecorations(node, parsingContext);
       const functionName = node.functionNode.functionName.name;
@@ -178,35 +189,36 @@ const overloadFunctions = function(
         overloadedFunctions.set(functionName, overloaded);
         document.directives[ix] = overloaded;
       }
-    } else if (node instanceof Nodes.ImplDirective) {
-      overloadFunctions(node, parsingContext);
-    }
-  });
+    } else {
+      rejectDecorator(node, parsingContext);
 
-  document.directives = document.directives.filter($ => !($ instanceof Nodes.FunDirectiveNode));
-
-  return document;
-};
-
-const mergeImplementations = function(
-  document: Nodes.Node & { directives: Nodes.DirectiveNode[] },
-  _parsingContext: ParsingContext
-) {
-  const impls: Map<string, Nodes.ImplDirective> = new Map();
-
-  document.directives.forEach((node: Nodes.Node) => {
-    if (node instanceof Nodes.ImplDirective) {
-      const currentImpl = impls.get(node.reference.variable.text);
-      if (currentImpl) {
-        currentImpl.directives.push(...node.directives);
-        node.directives.length = 0;
-      } else {
-        impls.set(node.reference.variable.text, node);
+      if (node instanceof Nodes.ImplDirective) {
+        overloadFunctions(node, parsingContext);
+      } else if (node instanceof Nodes.TraitDirectiveNode) {
+        node.directives.forEach($ => {
+          if ($ instanceof Nodes.FunDirectiveNode) {
+            if ($.functionNode.body) {
+              parsingContext.messageCollector.error(
+                `Unexpected function body. Traits only accept signatures.`,
+                $.functionNode.body.astNode
+              );
+            }
+            if ($.decorators.length > 0) {
+              $.decorators.forEach($ => {
+                parsingContext.messageCollector.error(
+                  `Unexpected decorator. Traits only accept signatures.`,
+                  $.astNode
+                );
+              });
+            }
+          }
+        });
+        overloadFunctions(node, parsingContext);
       }
     }
   });
 
-  document.directives = document.directives.filter($ => !($ instanceof Nodes.ImplDirective) || $.directives.length > 0);
+  document.directives = document.directives.filter($ => !($ instanceof Nodes.FunDirectiveNode));
 
   return document;
 };
@@ -310,6 +322,8 @@ function processStruct(
       document.fileName + '#' + typeName,
       document.moduleName + '#' + typeName,
       `
+            // impl ref for ${typeName} {}
+
             impl ${typeName} {
               #[inline]
               private fun ${typeName}$discriminant(): u64 = {
@@ -401,6 +415,7 @@ function processStruct(
       document.fileName + '#' + typeName,
       document.moduleName + '#' + typeName,
       `
+          // impl ref for ${typeName} {}
           impl ${typeName} {
             #[inline]
             private fun ${typeName}$discriminant(): i64 = {
@@ -513,7 +528,7 @@ const processUnions = function(
       const { valueType, variableName } = node;
 
       if (!valueType) {
-        parsingContext.messageCollector.error(`Missing type value`, variableName.astNode);
+        parsingContext.messageCollector.error(`Missing type value`, (variableName || node).astNode);
         return;
       }
 
@@ -597,6 +612,10 @@ const validateSignatures = walkPreOrder((node: Nodes.Node, parsingContext, _1: N
 
     if (!node.functionReturnType) {
       parsingContext.messageCollector.error('Missing return type in function declaration', node.astNode);
+    }
+
+    if (!node.body && !node.hasAnnotation(annotations.SignatureDeclaration)) {
+      parsingContext.messageCollector.error('Missing function body', node.astNode);
     }
   } else if (node instanceof Nodes.PatternMatcherNode) {
     if (node.matchingSet.length === 0) {
@@ -682,7 +701,6 @@ export function executeSemanticPhase(moduleName: string, parsingContext: Parsing
 
   processDeconstruct(document, parsingContext);
 
-  mergeImplementations(document, parsingContext);
   overloadFunctions(document, parsingContext);
 
   validateSignatures(document, parsingContext);

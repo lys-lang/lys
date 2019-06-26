@@ -262,23 +262,13 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
-        |-FunctionNode
-          |-NameIdentifierNode="as" annotations=Explicit
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=BB
-              |-QNameNode=BB
-                |-NameIdentifierNode="BB"
-          |-ReferenceNode resolvedReference=system::core::native::ref
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="BB"
+    |-StructTypeNode
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=BB
+      |-QNameNode=BB
+        |-NameIdentifierNode="BB"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="BB$discriminant"
       |-FunDirectiveNode
@@ -475,17 +465,24 @@
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="a"
+      |-NameIdentifierNode="as"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
         |-FunctionNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode resolvedReference=system::core::i32::i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-IntegerLiteral=1 annotations=IsValueNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="BB"
-    |-StructTypeNode
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=BB
+              |-QNameNode=BB
+                |-NameIdentifierNode="BB"
+          |-ReferenceNode resolvedReference=system::core::native::ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="TT"
     |-StructTypeNode
@@ -707,6 +704,19 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=BB
+      |-QNameNode=BB
+        |-NameIdentifierNode="BB"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="a"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="a"
+          |-ReferenceNode resolvedReference=system::core::i32::i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-IntegerLiteral=1 annotations=IsValueNode
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="main"
     |-FunDirectiveNode

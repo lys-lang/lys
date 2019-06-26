@@ -1,17 +1,21 @@
 import { Nodes, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { ParsingContext } from '../ParsingContext';
-import { InjectableTypes, StackType, NativeTypes, StructType, TypeHelpers } from '../types';
+import { InjectableTypes, StackType, NativeTypes, StructType, TypeHelpers, TraitType } from '../types';
 import { AstNodeError } from '../NodeError';
 import { fixParents } from './helpers';
 import { TypeAnalyzer, DEBUG_TYPES, MaxAnalysisPassCount } from '../types/TypeAnalyzer';
 import assert = require('assert');
 
 const initializeTypes = walkPreOrder<Nodes.Node>(
-  (_node, _phase) => {
-    // stub
+  (node, _phase) => {
+    if (node instanceof Nodes.ImplDirective) {
+      if (node.targetImpl.resolvedReference) {
+        node.targetImpl.resolvedReference.referencedNode.impls.add(node);
+      }
+    }
   },
-  (node, parsingContext: ParsingContext) => {
+  (node, parsingContext: ParsingContext, parent: Nodes.Node | null) => {
     if (node instanceof Nodes.StructTypeNode) {
       TypeHelpers.setNodeType(node, new StructType(node.parameters));
     } else if (node instanceof Nodes.StackTypeNode) {
@@ -40,8 +44,8 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
 
       let typeName = '???';
 
-      if (node.parent instanceof Nodes.TypeDirectiveNode) {
-        typeName = node.parent.variableName.name;
+      if (parent instanceof Nodes.TypeDirectiveNode) {
+        typeName = parent.variableName.name;
       } else {
         parsingContext.messageCollector.error(`%stack can only be used in type directives`, node.astNode);
         TypeHelpers.setNodeType(node, InjectableTypes.never);
@@ -60,8 +64,8 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
     } else if (node instanceof Nodes.InjectedTypeNode) {
       let typeName = '???';
 
-      if (node.parent instanceof Nodes.TypeDirectiveNode) {
-        typeName = node.parent.variableName.name;
+      if (parent instanceof Nodes.TypeDirectiveNode) {
+        typeName = parent.variableName.name;
       } else {
         parsingContext.messageCollector.error(`%injected can only be used in type directives`, node.astNode);
         TypeHelpers.setNodeType(node, InjectableTypes.never);
@@ -74,6 +78,10 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
         parsingContext.messageCollector.error(`Unknown injectable type`, node.astNode);
         TypeHelpers.setNodeType(node, InjectableTypes.never);
       }
+    }
+
+    if (node instanceof Nodes.TraitDirectiveNode) {
+      TypeHelpers.setNodeType(node.traitName, new TraitType(node));
     }
 
     if (node instanceof Nodes.TypeDirectiveNode) {

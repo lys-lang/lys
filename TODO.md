@@ -11,12 +11,21 @@
 - figure out private fields structs
 - for loops sugar syntax
 - for in sugar syntax
+- robust type alias use cases and test suites
+
+every declaration with the same name of different impl must have the same visibility
+
+exhaustive test of implicit coercion
+
+ensure "is" always returns a boolean
+
+internal variables/state are only accessible via getters/setters
 
 arrays
 strings
 closure functions
 
-```
+```lys
 // test parsing
 enum test {}
 ```
@@ -31,14 +40,13 @@ fun malloc(size: i32): i32 = {
     }
   }
 }
-
 ```
 
 ---
 
 parser fails with
 
-```
+```lys
 match x {
   case None -> 123
   case is Some -> 123
@@ -79,6 +87,8 @@ grammar changes:
 # ??? is invalid
 
 # index selectors and function name
+
+16u32
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?

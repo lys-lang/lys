@@ -27,11 +27,11 @@ impl BB {
   fun as(lhs: BB): AA = %wasm {
     (local.get $lhs)
   }
-  #[explicit]
-  fun as(lhs: BB): ref = %wasm {
-    (local.get $lhs)
-  }
+}
 
+type BB = %struct {  }
+
+impl BB {
   #[inline]
   private fun BB$discriminant(): i64 = {
     val discriminant: u32 = BB.^discriminant
@@ -62,10 +62,11 @@ impl BB {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 
-  fun a(): i32 = 1
+  #[explicit]
+  fun as(lhs: BB): ref = %wasm {
+    (local.get $lhs)
+  }
 }
-
-type BB = %struct {  }
 
 type TT = %struct {  }
 
@@ -104,6 +105,10 @@ impl TT {
   fun as(lhs: TT): ref = %wasm {
     (local.get $lhs)
   }
+}
+
+impl BB {
+  fun a(): i32 = 1
 }
 
 fun main(): i32 = BB.a()

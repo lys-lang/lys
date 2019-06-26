@@ -270,7 +270,7 @@
       |-QNameNode=A
         |-NameIdentifierNode="A"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias A)) (alias Enum)) (fun "as" ((alias A)) (alias ref)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias A)) (alias Enum)))
       |-FunDirectiveNode
         |-FunctionNode annotations=IsOverloaded
           |-NameIdentifierNode="as" type=(fun "as" ((alias A)) (alias Enum))
@@ -286,23 +286,61 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
+      |-QNameNode=B
+        |-NameIdentifierNode="B"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias B)) (alias Enum)))
       |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias A)) (alias ref)) annotations=Explicit
+          |-NameIdentifierNode="as" type=(fun "as" ((alias B)) (alias Enum))
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias A (struct))
-            |-ReferenceNode resolvedReference=A type=(type (alias A (struct)))
-              |-QNameNode=A
-                |-NameIdentifierNode="A"
-          |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
+            |-NameIdentifierNode="lhs" type=(alias B (struct))
+            |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
+              |-QNameNode=B
+                |-NameIdentifierNode="B"
+          |-ReferenceNode resolvedReference=Enum type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
+            |-QNameNode=Enum
+              |-NameIdentifierNode="Enum"
           |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
+      |-QNameNode=C
+        |-NameIdentifierNode="C"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias C)) (alias Enum)))
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias C)) (alias Enum))
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs" type=(alias C (struct))
+            |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
+              |-QNameNode=C
+                |-NameIdentifierNode="C"
+          |-ReferenceNode resolvedReference=Enum type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
+            |-QNameNode=Enum
+              |-NameIdentifierNode="Enum"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="A" type=(type (alias A (struct)))
+    |-StructTypeNode type=(struct)
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="B" type=(type (alias B (struct)))
+    |-StructTypeNode type=(struct)
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="C" type=(type (alias C (struct)))
+    |-StructTypeNode type=(struct)
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=A type=(type (alias A (struct)))
+      |-QNameNode=A
+        |-NameIdentifierNode="A"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="A$discriminant" type=(intersection (fun "A$discriminant" () (alias i64)))
       |-FunDirectiveNode
@@ -498,37 +536,18 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-ImplDirective
-    |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
-      |-QNameNode=B
-        |-NameIdentifierNode="B"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias B)) (alias Enum)) (fun "as" ((alias B)) (alias ref)))
-      |-FunDirectiveNode
-        |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias B)) (alias Enum))
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias B (struct))
-            |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
-              |-QNameNode=B
-                |-NameIdentifierNode="B"
-          |-ReferenceNode resolvedReference=Enum type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
-            |-QNameNode=Enum
-              |-NameIdentifierNode="Enum"
-          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias A)) (alias ref)))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias B)) (alias ref)) annotations=Explicit
+          |-NameIdentifierNode="as" type=(fun "as" ((alias A)) (alias ref)) annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias B (struct))
-            |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
-              |-QNameNode=B
-                |-NameIdentifierNode="B"
+            |-NameIdentifierNode="lhs" type=(alias A (struct))
+            |-ReferenceNode resolvedReference=A type=(type (alias A (struct)))
+              |-QNameNode=A
+                |-NameIdentifierNode="A"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -536,6 +555,10 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
+      |-QNameNode=B
+        |-NameIdentifierNode="B"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="B$discriminant" type=(intersection (fun "B$discriminant" () (alias i64)))
       |-FunDirectiveNode
@@ -731,37 +754,18 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-ImplDirective
-    |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
-      |-QNameNode=C
-        |-NameIdentifierNode="C"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias C)) (alias Enum)) (fun "as" ((alias C)) (alias ref)))
-      |-FunDirectiveNode
-        |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias C)) (alias Enum))
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias C (struct))
-            |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
-              |-QNameNode=C
-                |-NameIdentifierNode="C"
-          |-ReferenceNode resolvedReference=Enum type=(type (alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))))
-            |-QNameNode=Enum
-              |-NameIdentifierNode="Enum"
-          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias B)) (alias ref)))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
         |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias C)) (alias ref)) annotations=Explicit
+          |-NameIdentifierNode="as" type=(fun "as" ((alias B)) (alias ref)) annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias C (struct))
-            |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
-              |-QNameNode=C
-                |-NameIdentifierNode="C"
+            |-NameIdentifierNode="lhs" type=(alias B (struct))
+            |-ReferenceNode resolvedReference=B type=(type (alias B (struct)))
+              |-QNameNode=B
+                |-NameIdentifierNode="B"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -769,6 +773,10 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
+      |-QNameNode=C
+        |-NameIdentifierNode="C"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="C$discriminant" type=(intersection (fun "C$discriminant" () (alias i64)))
       |-FunDirectiveNode
@@ -964,15 +972,25 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="A" type=(type (alias A (struct)))
-    |-StructTypeNode type=(struct)
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="B" type=(type (alias B (struct)))
-    |-StructTypeNode type=(struct)
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="C" type=(type (alias C (struct)))
-    |-StructTypeNode type=(struct)
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias C)) (alias ref)))
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias C)) (alias ref)) annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs" type=(alias C (struct))
+            |-ReferenceNode resolvedReference=C type=(type (alias C (struct)))
+              |-QNameNode=C
+                |-NameIdentifierNode="C"
+          |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode,IsReturnExpression
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
   |-VarDirectiveNode
     |-VarDeclarationNode annotations=Global(test::fixtures::compiler::is::value1:<no-type>)
       |-NameIdentifierNode="value1" type=(alias Enum (union (alias A (struct)) (alias B (struct)) (alias C (struct)))) annotations=MutableDeclaration

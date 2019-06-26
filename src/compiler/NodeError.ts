@@ -1,5 +1,5 @@
 import { Nodes } from './nodes';
-import { Type, IntersectionType } from './types';
+import { Type, IntersectionType, TraitType } from './types';
 
 export interface IPositionCapable {
   readonly start: number;
@@ -58,7 +58,12 @@ export class LysCompilerError extends AstNodeError {}
 
 export class TypeMismatch extends LysTypeError {
   constructor(public givenType: Type, public expectedType: Type, node: Nodes.Node) {
-    super(`Type mismatch: Type "${givenType}" is not assignable to "${expectedType}"`, node);
+    super(
+      expectedType instanceof TraitType
+        ? `Type mismatch: Type "${givenType}" does not implement "${expectedType}"`
+        : `Type mismatch: Type "${givenType}" is not assignable to "${expectedType}"`,
+      node
+    );
   }
 }
 
@@ -69,8 +74,8 @@ export class CannotInferReturnType extends LysTypeError {
 }
 
 export class NotAValidType extends LysTypeError {
-  constructor(node: Nodes.Node) {
-    super(`This is not a type`, node);
+  constructor(node: Nodes.Node, type: Type | null) {
+    super(type ? `${type.inspect(100)} is not a type` : `This is not a type`, node);
   }
 }
 
@@ -108,6 +113,6 @@ export class UnreachableCode extends LysSemanticError {
 
 export class NotAFunction extends LysTypeError {
   constructor(public givenType: Type, node: Nodes.Node) {
-    super(`Type mismatch: Type "${givenType}" is not a function`, node);
+    super(`Type mismatch: Type "${givenType.inspect(100)}" is not a function`, node);
   }
 }

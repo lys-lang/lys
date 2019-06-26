@@ -1,70 +1,70 @@
 
 |-DocumentNode
   |-ImportDirectiveNode
-    |-QNameNode=system::core::string
+    |-QNameNode=system::core::native
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-      |-NameIdentifierNode="string"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::bytes
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="bytes"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::f64
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="f64"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::f32
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="f32"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::i64
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="i64"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::i32
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="i32"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::i16
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="i16"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::u64
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="u64"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::u32
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="u32"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::u16
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="u16"
-  |-ImportDirectiveNode
-    |-QNameNode=system::core::u8
-      |-NameIdentifierNode="system"
-      |-NameIdentifierNode="core"
-      |-NameIdentifierNode="u8"
+      |-NameIdentifierNode="native"
   |-ImportDirectiveNode
     |-QNameNode=system::core::boolean
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
       |-NameIdentifierNode="boolean"
   |-ImportDirectiveNode
-    |-QNameNode=system::core::native
+    |-QNameNode=system::core::u8
       |-NameIdentifierNode="system"
       |-NameIdentifierNode="core"
-      |-NameIdentifierNode="native"
+      |-NameIdentifierNode="u8"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::u64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="u64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i16
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i16"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::i64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="i64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f32
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f32"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::f64
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="f64"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::bytes
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="bytes"
+  |-ImportDirectiveNode
+    |-QNameNode=system::core::string
+      |-NameIdentifierNode="system"
+      |-NameIdentifierNode="core"
+      |-NameIdentifierNode="string"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="True" type=(type (alias True (struct)))
     |-StructTypeNode type=(struct)
@@ -268,7 +268,7 @@
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias True)) (alias ref)) (fun "as" ((alias True)) (alias Boolean)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias True)) (alias ref)))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -282,21 +282,6 @@
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-          |-WasmExpressionNode type=(never) annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias True)) (alias Boolean))
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias True (struct))
-            |-ReferenceNode resolvedReference=True type=(type (alias True (struct)))
-              |-QNameNode=True
-                |-NameIdentifierNode="True"
-          |-ReferenceNode resolvedReference=Boolean type=(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))
-            |-QNameNode=Boolean
-              |-NameIdentifierNode="Boolean"
           |-WasmExpressionNode type=(never) annotations=IsValueNode
             |-WasmAtomNode
               |-QNameNode=$lhs
@@ -504,7 +489,7 @@
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias False)) (alias ref)) (fun "as" ((alias False)) (alias Boolean)))
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias False)) (alias ref)))
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -518,21 +503,6 @@
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
-          |-WasmExpressionNode type=(never) annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode annotations=IsOverloaded
-          |-NameIdentifierNode="as" type=(fun "as" ((alias False)) (alias Boolean))
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs" type=(alias False (struct))
-            |-ReferenceNode resolvedReference=False type=(type (alias False (struct)))
-              |-QNameNode=False
-                |-NameIdentifierNode="False"
-          |-ReferenceNode resolvedReference=Boolean type=(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))
-            |-QNameNode=Boolean
-              |-NameIdentifierNode="Boolean"
           |-WasmExpressionNode type=(never) annotations=IsValueNode
             |-WasmAtomNode
               |-QNameNode=$lhs
@@ -725,6 +695,48 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=True type=(type (alias True (struct)))
+      |-QNameNode=True
+        |-NameIdentifierNode="True"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias True)) (alias Boolean)))
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias True)) (alias Boolean))
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs" type=(alias True (struct))
+            |-ReferenceNode resolvedReference=True type=(type (alias True (struct)))
+              |-QNameNode=True
+                |-NameIdentifierNode="True"
+          |-ReferenceNode resolvedReference=Boolean type=(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=False type=(type (alias False (struct)))
+      |-QNameNode=False
+        |-NameIdentifierNode="False"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as" type=(intersection (fun "as" ((alias False)) (alias Boolean)))
+      |-FunDirectiveNode
+        |-FunctionNode annotations=IsOverloaded
+          |-NameIdentifierNode="as" type=(fun "as" ((alias False)) (alias Boolean))
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs" type=(alias False (struct))
+            |-ReferenceNode resolvedReference=False type=(type (alias False (struct)))
+              |-QNameNode=False
+                |-NameIdentifierNode="False"
+          |-ReferenceNode resolvedReference=Boolean type=(type (alias Boolean (union (alias True (struct)) (alias False (struct)))))
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
+          |-WasmExpressionNode type=(never) annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="gt0" type=(intersection (fun "gt0" ((alias i32)) (alias Boolean)))
     |-FunDirectiveNode

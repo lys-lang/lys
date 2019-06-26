@@ -1301,6 +1301,10 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=String
+      |-QNameNode=String
+        |-NameIdentifierNode="String"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="length"
       |-FunDirectiveNode
@@ -1728,23 +1732,13 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
-        |-FunctionNode
-          |-NameIdentifierNode="as" annotations=Explicit
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=BB
-              |-QNameNode=BB
-                |-NameIdentifierNode="BB"
-          |-ReferenceNode resolvedReference=system::core::native::ref
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="BB"
+    |-StructTypeNode
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=BB
+      |-QNameNode=BB
+        |-NameIdentifierNode="BB"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="BB$discriminant"
       |-FunDirectiveNode
@@ -1941,17 +1935,24 @@
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="a"
+      |-NameIdentifierNode="as"
       |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
         |-FunctionNode
-          |-NameIdentifierNode="a"
-          |-ReferenceNode resolvedReference=system::core::i32::i32
-            |-QNameNode=i32
-              |-NameIdentifierNode="i32"
-          |-IntegerLiteral=1 annotations=IsValueNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="BB"
-    |-StructTypeNode
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=BB
+              |-QNameNode=BB
+                |-NameIdentifierNode="BB"
+          |-ReferenceNode resolvedReference=system::core::native::ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="TT"
     |-StructTypeNode
@@ -2173,6 +2174,19 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=BB
+      |-QNameNode=BB
+        |-NameIdentifierNode="BB"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="a"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="a"
+          |-ReferenceNode resolvedReference=system::core::i32::i32
+            |-QNameNode=i32
+              |-NameIdentifierNode="i32"
+          |-IntegerLiteral=1 annotations=IsValueNode
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="main"
     |-FunDirectiveNode
@@ -2588,23 +2602,46 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Node
+      |-QNameNode=Node
+        |-NameIdentifierNode="Node"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
       |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
         |-FunctionNode
-          |-NameIdentifierNode="as" annotations=Explicit
+          |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Empty
-              |-QNameNode=Empty
-                |-NameIdentifierNode="Empty"
-          |-ReferenceNode resolvedReference=system::core::native::ref
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
+            |-ReferenceNode resolvedReference=Node
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-ReferenceNode resolvedReference=Tree
+            |-QNameNode=Tree
+              |-NameIdentifierNode="Tree"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Empty"
+    |-StructTypeNode
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Node"
+    |-StructTypeNode
+      |-ParameterNode
+        |-NameIdentifierNode="a"
+        |-UnionTypeNode
+          |-ReferenceNode resolvedReference=Tree
+            |-QNameNode=Tree
+              |-NameIdentifierNode="Tree"
+          |-ReferenceNode resolvedReference=Forest
+            |-QNameNode=Forest
+              |-NameIdentifierNode="Forest"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Empty
+      |-QNameNode=Empty
+        |-NameIdentifierNode="Empty"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="Empty$discriminant"
       |-FunDirectiveNode
@@ -2800,46 +2837,8 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-ImplDirective
-    |-ReferenceNode resolvedReference=Node
-      |-QNameNode=Node
-        |-NameIdentifierNode="Node"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="as"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Node
-              |-QNameNode=Node
-                |-NameIdentifierNode="Node"
-          |-ReferenceNode resolvedReference=Tree
-            |-QNameNode=Tree
-              |-NameIdentifierNode="Tree"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(self:<no-type>#0)
-            |-NameIdentifierNode="self"
-            |-ReferenceNode resolvedReference=Node
-              |-QNameNode=Node
-                |-NameIdentifierNode="Node"
-          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer
-            |-QNameNode=UnsafeCPointer
-              |-NameIdentifierNode="UnsafeCPointer"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-ReferenceNode resolvedReference=system::core::native::addressFromRef
-                |-QNameNode=addressFromRef
-                  |-NameIdentifierNode="addressFromRef"
-              |-WasmAtomNode
-                |-QNameNode=$self
-                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -2847,9 +2846,9 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Node
-              |-QNameNode=Node
-                |-NameIdentifierNode="Node"
+            |-ReferenceNode resolvedReference=Empty
+              |-QNameNode=Empty
+                |-NameIdentifierNode="Empty"
           |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -2857,6 +2856,10 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Node
+      |-QNameNode=Node
+        |-NameIdentifierNode="Node"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="Node$discriminant"
       |-FunDirectiveNode
@@ -2942,6 +2945,44 @@
             |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="as"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
+            |-ReferenceNode resolvedReference=Node
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=Node
+              |-QNameNode=Node
+                |-NameIdentifierNode="Node"
+          |-ReferenceNode resolvedReference=system::core::native::ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="fromPointer"
       |-FunDirectiveNode
@@ -3324,21 +3365,6 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Empty"
-    |-StructTypeNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Node"
-    |-StructTypeNode
-      |-ParameterNode
-        |-NameIdentifierNode="a"
-        |-UnionTypeNode
-          |-ReferenceNode resolvedReference=Tree
-            |-QNameNode=Tree
-              |-NameIdentifierNode="Tree"
-          |-ReferenceNode resolvedReference=Forest
-            |-QNameNode=Forest
-              |-NameIdentifierNode="Forest"
   |-TypeDirectiveNode
     |-NameIdentifierNode="Forest"
     |-UnionTypeNode
@@ -3548,23 +3574,46 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Cons
+      |-QNameNode=Cons
+        |-NameIdentifierNode="Cons"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
       |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
         |-FunctionNode
-          |-NameIdentifierNode="as" annotations=Explicit
+          |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Nil
-              |-QNameNode=Nil
-                |-NameIdentifierNode="Nil"
-          |-ReferenceNode resolvedReference=system::core::native::ref
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
+            |-ReferenceNode resolvedReference=Cons
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-ReferenceNode resolvedReference=Forest
+            |-QNameNode=Forest
+              |-NameIdentifierNode="Forest"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Nil"
+    |-StructTypeNode
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Cons"
+    |-StructTypeNode
+      |-ParameterNode
+        |-NameIdentifierNode="tree"
+        |-UnionTypeNode
+          |-ReferenceNode resolvedReference=Tree
+            |-QNameNode=Tree
+              |-NameIdentifierNode="Tree"
+          |-ReferenceNode resolvedReference=Forest
+            |-QNameNode=Forest
+              |-NameIdentifierNode="Forest"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Nil
+      |-QNameNode=Nil
+        |-NameIdentifierNode="Nil"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="Nil$discriminant"
       |-FunDirectiveNode
@@ -3760,46 +3809,8 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-ImplDirective
-    |-ReferenceNode resolvedReference=Cons
-      |-QNameNode=Cons
-        |-NameIdentifierNode="Cons"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="as"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Cons
-              |-QNameNode=Cons
-                |-NameIdentifierNode="Cons"
-          |-ReferenceNode resolvedReference=Forest
-            |-QNameNode=Forest
-              |-NameIdentifierNode="Forest"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(self:<no-type>#0)
-            |-NameIdentifierNode="self"
-            |-ReferenceNode resolvedReference=Cons
-              |-QNameNode=Cons
-                |-NameIdentifierNode="Cons"
-          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer
-            |-QNameNode=UnsafeCPointer
-              |-NameIdentifierNode="UnsafeCPointer"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-ReferenceNode resolvedReference=system::core::native::addressFromRef
-                |-QNameNode=addressFromRef
-                  |-NameIdentifierNode="addressFromRef"
-              |-WasmAtomNode
-                |-QNameNode=$self
-                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -3807,9 +3818,9 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Cons
-              |-QNameNode=Cons
-                |-NameIdentifierNode="Cons"
+            |-ReferenceNode resolvedReference=Nil
+              |-QNameNode=Nil
+                |-NameIdentifierNode="Nil"
           |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -3817,6 +3828,10 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Cons
+      |-QNameNode=Cons
+        |-NameIdentifierNode="Cons"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="Cons$discriminant"
       |-FunDirectiveNode
@@ -3902,6 +3917,44 @@
             |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="as"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
+            |-ReferenceNode resolvedReference=Cons
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=Cons
+              |-QNameNode=Cons
+                |-NameIdentifierNode="Cons"
+          |-ReferenceNode resolvedReference=system::core::native::ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="fromPointer"
       |-FunDirectiveNode
@@ -4284,21 +4337,6 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Nil"
-    |-StructTypeNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Cons"
-    |-StructTypeNode
-      |-ParameterNode
-        |-NameIdentifierNode="tree"
-        |-UnionTypeNode
-          |-ReferenceNode resolvedReference=Tree
-            |-QNameNode=Tree
-              |-NameIdentifierNode="Tree"
-          |-ReferenceNode resolvedReference=Forest
-            |-QNameNode=Forest
-              |-NameIdentifierNode="Forest"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="testPassing"
     |-FunDirectiveNode
@@ -5424,21 +5462,6 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=True
-              |-QNameNode=True
-                |-NameIdentifierNode="True"
-          |-ReferenceNode resolvedReference=Boolean
-            |-QNameNode=Boolean
-              |-NameIdentifierNode="Boolean"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
   |-TypeDirectiveNode annotations=Injected
     |-NameIdentifierNode="False"
     |-StructTypeNode
@@ -5660,21 +5683,6 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=False
-              |-QNameNode=False
-                |-NameIdentifierNode="False"
-          |-ReferenceNode resolvedReference=Boolean
-            |-QNameNode=Boolean
-              |-NameIdentifierNode="Boolean"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
   |-TypeDirectiveNode
     |-NameIdentifierNode="Boolean"
     |-UnionTypeNode
@@ -5863,6 +5871,48 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=True
+      |-QNameNode=True
+        |-NameIdentifierNode="True"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="as"
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=True
+              |-QNameNode=True
+                |-NameIdentifierNode="True"
+          |-ReferenceNode resolvedReference=Boolean
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=False
+      |-QNameNode=False
+        |-NameIdentifierNode="False"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="as"
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=False
+              |-QNameNode=False
+                |-NameIdentifierNode="False"
+          |-ReferenceNode resolvedReference=Boolean
+            |-QNameNode=Boolean
+              |-NameIdentifierNode="Boolean"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="gt0"
     |-FunDirectiveNode
@@ -6473,68 +6523,6 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-    |-OverloadedFunctionNode annotations=Injected
-      |-NameIdentifierNode="next"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="next"
-          |-ParameterNode annotations=Local(iter:<no-type>#0)
-            |-NameIdentifierNode="iter"
-            |-ReferenceNode resolvedReference=Iterator
-              |-QNameNode=Iterator
-                |-NameIdentifierNode="Iterator"
-          |-ReferenceNode resolvedReference=Maybe
-            |-QNameNode=Maybe
-              |-NameIdentifierNode="Maybe"
-          |-BlockNode annotations=IsValueNode
-            |-IfNode annotations=IsValueNode
-              |-BinaryExpressionNode annotations=IsValueNode
-                |-MemberNode annotations=IsValueNode
-                  |-ReferenceNode resolvedReference=iter
-                    |-QNameNode=iter
-                      |-NameIdentifierNode="iter"
-                  |-NameIdentifierNode="current"
-                |-NameIdentifierNode="<="
-                |-MemberNode annotations=IsValueNode
-                  |-ReferenceNode resolvedReference=iter
-                    |-QNameNode=iter
-                      |-NameIdentifierNode="iter"
-                  |-NameIdentifierNode="target"
-              |-BlockNode annotations=IsValueNode
-                |-VarDeclarationNode
-                  |-NameIdentifierNode="r" annotations=MutableDeclaration
-                  |-FunctionCallNode annotations=IsValueNode
-                    |-MemberNode
-                      |-ReferenceNode resolvedReference=Some
-                        |-QNameNode=Some
-                          |-NameIdentifierNode="Some"
-                      |-NameIdentifierNode="apply"
-                    |-MemberNode annotations=IsValueNode
-                      |-ReferenceNode resolvedReference=iter
-                        |-QNameNode=iter
-                          |-NameIdentifierNode="iter"
-                      |-NameIdentifierNode="current"
-                |-AssignmentNode
-                  |-MemberNode annotations=IsAssignationLHS
-                    |-ReferenceNode resolvedReference=iter
-                      |-QNameNode=iter
-                        |-NameIdentifierNode="iter"
-                    |-NameIdentifierNode="current"
-                  |-BinaryExpressionNode annotations=IsValueNode
-                    |-MemberNode annotations=IsValueNode
-                      |-ReferenceNode resolvedReference=iter
-                        |-QNameNode=iter
-                          |-NameIdentifierNode="iter"
-                      |-NameIdentifierNode="current"
-                    |-NameIdentifierNode="+"
-                    |-IntegerLiteral=1 annotations=IsValueNode
-                |-ReferenceNode resolvedReference=r annotations=IsValueNode
-                  |-QNameNode=r
-                    |-NameIdentifierNode="r"
-              |-BlockNode annotations=IsValueNode
-                |-ReferenceNode resolvedReference=None annotations=IsValueNode
-                  |-QNameNode=None
-                    |-NameIdentifierNode="None"
   |-TypeDirectiveNode
     |-NameIdentifierNode="Maybe"
     |-UnionTypeNode
@@ -6744,23 +6732,42 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Some
+      |-QNameNode=Some
+        |-NameIdentifierNode="Some"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
       |-FunDirectiveNode
-        |-DecoratorNode
-          |-NameIdentifierNode="explicit"
         |-FunctionNode
-          |-NameIdentifierNode="as" annotations=Explicit
+          |-NameIdentifierNode="as"
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=None
-              |-QNameNode=None
-                |-NameIdentifierNode="None"
-          |-ReferenceNode resolvedReference=system::core::native::ref
-            |-QNameNode=ref
-              |-NameIdentifierNode="ref"
+            |-ReferenceNode resolvedReference=Some
+              |-QNameNode=Some
+                |-NameIdentifierNode="Some"
+          |-ReferenceNode resolvedReference=Maybe
+            |-QNameNode=Maybe
+              |-NameIdentifierNode="Maybe"
           |-WasmExpressionNode annotations=IsValueNode
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="None"
+    |-StructTypeNode
+  |-TypeDirectiveNode annotations=Injected
+    |-NameIdentifierNode="Some"
+    |-StructTypeNode
+      |-ParameterNode
+        |-NameIdentifierNode="value"
+        |-ReferenceNode resolvedReference=system::core::i32::i32
+          |-QNameNode=i32
+            |-NameIdentifierNode="i32"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=None
+      |-QNameNode=None
+        |-NameIdentifierNode="None"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="None$discriminant"
       |-FunDirectiveNode
@@ -6956,46 +6963,8 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-ImplDirective
-    |-ReferenceNode resolvedReference=Some
-      |-QNameNode=Some
-        |-NameIdentifierNode="Some"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="as"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(lhs:<no-type>#0)
-            |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Some
-              |-QNameNode=Some
-                |-NameIdentifierNode="Some"
-          |-ReferenceNode resolvedReference=Maybe
-            |-QNameNode=Maybe
-              |-NameIdentifierNode="Maybe"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-QNameNode=$lhs
-                |-NameIdentifierNode="$lhs"
-      |-FunDirectiveNode
-        |-FunctionNode
-          |-NameIdentifierNode="as"
-          |-ParameterNode annotations=Local(self:<no-type>#0)
-            |-NameIdentifierNode="self"
-            |-ReferenceNode resolvedReference=Some
-              |-QNameNode=Some
-                |-NameIdentifierNode="Some"
-          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer
-            |-QNameNode=UnsafeCPointer
-              |-NameIdentifierNode="UnsafeCPointer"
-          |-WasmExpressionNode annotations=IsValueNode
-            |-WasmAtomNode
-              |-ReferenceNode resolvedReference=system::core::native::addressFromRef
-                |-QNameNode=addressFromRef
-                  |-NameIdentifierNode="addressFromRef"
-              |-WasmAtomNode
-                |-QNameNode=$self
-                  |-NameIdentifierNode="$self"
       |-FunDirectiveNode
         |-DecoratorNode
           |-NameIdentifierNode="explicit"
@@ -7003,9 +6972,9 @@
           |-NameIdentifierNode="as" annotations=Explicit
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs"
-            |-ReferenceNode resolvedReference=Some
-              |-QNameNode=Some
-                |-NameIdentifierNode="Some"
+            |-ReferenceNode resolvedReference=None
+              |-QNameNode=None
+                |-NameIdentifierNode="None"
           |-ReferenceNode resolvedReference=system::core::native::ref
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -7013,6 +6982,10 @@
             |-WasmAtomNode
               |-QNameNode=$lhs
                 |-NameIdentifierNode="$lhs"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Some
+      |-QNameNode=Some
+        |-NameIdentifierNode="Some"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="Some$discriminant"
       |-FunDirectiveNode
@@ -7094,6 +7067,44 @@
             |-ReferenceNode resolvedReference=$ref annotations=IsValueNode
               |-QNameNode=$ref
                 |-NameIdentifierNode="$ref"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="as"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="as"
+          |-ParameterNode annotations=Local(self:<no-type>#0)
+            |-NameIdentifierNode="self"
+            |-ReferenceNode resolvedReference=Some
+              |-QNameNode=Some
+                |-NameIdentifierNode="Some"
+          |-ReferenceNode resolvedReference=system::core::native::UnsafeCPointer
+            |-QNameNode=UnsafeCPointer
+              |-NameIdentifierNode="UnsafeCPointer"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-ReferenceNode resolvedReference=system::core::native::addressFromRef
+                |-QNameNode=addressFromRef
+                  |-NameIdentifierNode="addressFromRef"
+              |-WasmAtomNode
+                |-QNameNode=$self
+                  |-NameIdentifierNode="$self"
+      |-FunDirectiveNode
+        |-DecoratorNode
+          |-NameIdentifierNode="explicit"
+        |-FunctionNode
+          |-NameIdentifierNode="as" annotations=Explicit
+          |-ParameterNode annotations=Local(lhs:<no-type>#0)
+            |-NameIdentifierNode="lhs"
+            |-ReferenceNode resolvedReference=Some
+              |-QNameNode=Some
+                |-NameIdentifierNode="Some"
+          |-ReferenceNode resolvedReference=system::core::native::ref
+            |-QNameNode=ref
+              |-NameIdentifierNode="ref"
+          |-WasmExpressionNode annotations=IsValueNode
+            |-WasmAtomNode
+              |-QNameNode=$lhs
+                |-NameIdentifierNode="$lhs"
     |-OverloadedFunctionNode annotations=Injected
       |-NameIdentifierNode="fromPointer"
       |-FunDirectiveNode
@@ -7382,17 +7393,72 @@
                   |-WasmAtomNode
                     |-QNameNode=$lhs
                       |-NameIdentifierNode="$lhs"
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="None"
-    |-StructTypeNode
-  |-TypeDirectiveNode annotations=Injected
-    |-NameIdentifierNode="Some"
-    |-StructTypeNode
-      |-ParameterNode
-        |-NameIdentifierNode="value"
-        |-ReferenceNode resolvedReference=system::core::i32::i32
-          |-QNameNode=i32
-            |-NameIdentifierNode="i32"
+  |-ImplDirective
+    |-ReferenceNode resolvedReference=Iterator
+      |-QNameNode=Iterator
+        |-NameIdentifierNode="Iterator"
+    |-OverloadedFunctionNode annotations=Injected
+      |-NameIdentifierNode="next"
+      |-FunDirectiveNode
+        |-FunctionNode
+          |-NameIdentifierNode="next"
+          |-ParameterNode annotations=Local(iter:<no-type>#0)
+            |-NameIdentifierNode="iter"
+            |-ReferenceNode resolvedReference=Iterator
+              |-QNameNode=Iterator
+                |-NameIdentifierNode="Iterator"
+          |-ReferenceNode resolvedReference=Maybe
+            |-QNameNode=Maybe
+              |-NameIdentifierNode="Maybe"
+          |-BlockNode annotations=IsValueNode
+            |-IfNode annotations=IsValueNode
+              |-BinaryExpressionNode annotations=IsValueNode
+                |-MemberNode annotations=IsValueNode
+                  |-ReferenceNode resolvedReference=iter
+                    |-QNameNode=iter
+                      |-NameIdentifierNode="iter"
+                  |-NameIdentifierNode="current"
+                |-NameIdentifierNode="<="
+                |-MemberNode annotations=IsValueNode
+                  |-ReferenceNode resolvedReference=iter
+                    |-QNameNode=iter
+                      |-NameIdentifierNode="iter"
+                  |-NameIdentifierNode="target"
+              |-BlockNode annotations=IsValueNode
+                |-VarDeclarationNode
+                  |-NameIdentifierNode="r" annotations=MutableDeclaration
+                  |-FunctionCallNode annotations=IsValueNode
+                    |-MemberNode
+                      |-ReferenceNode resolvedReference=Some
+                        |-QNameNode=Some
+                          |-NameIdentifierNode="Some"
+                      |-NameIdentifierNode="apply"
+                    |-MemberNode annotations=IsValueNode
+                      |-ReferenceNode resolvedReference=iter
+                        |-QNameNode=iter
+                          |-NameIdentifierNode="iter"
+                      |-NameIdentifierNode="current"
+                |-AssignmentNode
+                  |-MemberNode annotations=IsAssignationLHS
+                    |-ReferenceNode resolvedReference=iter
+                      |-QNameNode=iter
+                        |-NameIdentifierNode="iter"
+                    |-NameIdentifierNode="current"
+                  |-BinaryExpressionNode annotations=IsValueNode
+                    |-MemberNode annotations=IsValueNode
+                      |-ReferenceNode resolvedReference=iter
+                        |-QNameNode=iter
+                          |-NameIdentifierNode="iter"
+                      |-NameIdentifierNode="current"
+                    |-NameIdentifierNode="+"
+                    |-IntegerLiteral=1 annotations=IsValueNode
+                |-ReferenceNode resolvedReference=r annotations=IsValueNode
+                  |-QNameNode=r
+                    |-NameIdentifierNode="r"
+              |-BlockNode annotations=IsValueNode
+                |-ReferenceNode resolvedReference=None annotations=IsValueNode
+                  |-QNameNode=None
+                    |-NameIdentifierNode="None"
   |-OverloadedFunctionNode annotations=Injected
     |-NameIdentifierNode="testFn3"
     |-FunDirectiveNode

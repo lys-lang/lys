@@ -63,6 +63,10 @@ export abstract class Type {
       }
     }
 
+    if (otherType instanceof IntersectionType) {
+      return otherType.of.some($ => this.canBeAssignedTo($));
+    }
+
     if (otherType instanceof AnyType) {
       return true;
     }
@@ -94,6 +98,21 @@ export class FunctionType extends Type {
 
   constructor(public name: Nodes.NameIdentifierNode) {
     super();
+  }
+
+  canBeAssignedTo(type: Type): boolean {
+    if (type instanceof FunctionType) {
+      if (this.parameterTypes.length !== type.parameterTypes.length) return false;
+      if (!areEqualTypes(this.returnType, type.returnType)) return false;
+      if (this.parameterTypes.some(($, $$) => !areEqualTypes($, type.parameterTypes[$$]))) return false;
+      return true;
+    }
+
+    if (type instanceof IntersectionType) {
+      return type.of.every($ => this.canBeAssignedTo($));
+    }
+
+    return super.canBeAssignedTo(type);
   }
 
   equals(type: Type) {
@@ -337,17 +356,40 @@ export class IntersectionType extends Type {
     return this.of.map($ => ($ || '?').toString()).join(' & ');
   }
 
+  canBeAssignedTo(other: Type) {
+    if (other instanceof IntersectionType) {
+      // intersections can be assigned only if every type of
+      // the other intersection can be assigned by some of the types of this intersection
+      return other.of.every(otherType => this.of.some(thisType => thisType.canBeAssignedTo(otherType)));
+    }
+
+    if (this.equals(other)) {
+      return true;
+    }
+
+    return this.of.some($ => $.canBeAssignedTo(other));
+  }
+
   inspect(levels: number = 0) {
     return '(intersection ' + this.of.map($ => ($ ? $.inspect(levels - 1) : '(?)')).join(' ') + ')';
   }
 
-  simplify() {
+  simplify(): Type {
     const newTypes: Type[] = [];
-    this.of.forEach($ => {
-      if (!newTypes.some($1 => $1.equals($))) {
-        newTypes.push($);
+
+    function collectIntersection($: Type) {
+      if ($ instanceof IntersectionType) {
+        $.of.forEach($ => {
+          collectIntersection($);
+        });
+      } else {
+        if (!newTypes.some($1 => areEqualTypes($, $1))) {
+          newTypes.push($);
+        }
       }
-    });
+    }
+
+    this.of.forEach(collectIntersection);
 
     if (newTypes.length === 1) {
       return newTypes[0];
@@ -644,6 +686,23 @@ export class UnionType extends Type {
   }
 }
 
+function mapAinB<X, Y>(a: Map<X, Y>, b: Map<X, Y>) {
+  for (let [key, value] of a) {
+    if (!b.has(key)) return false;
+    if (b.get(key) !== value) return false;
+  }
+  return true;
+}
+
+function areMapsEqual<X, Y>(a: Map<X, Y>, b: Map<X, Y>): boolean {
+  if (a.size !== b.size) return false;
+
+  if (!mapAinB(a, b)) return false;
+  if (!mapAinB(b, a)) return false;
+
+  return true;
+}
+
 export class TypeAlias extends Type {
   get binaryenType() {
     return this.of.binaryenType;
@@ -654,12 +713,20 @@ export class TypeAlias extends Type {
   }
 
   discriminant: number | null = null;
+  traits: Map<Nodes.ImplDirective, TraitType> = new Map();
 
   constructor(public name: Nodes.NameIdentifierNode, public readonly of: Type) {
     super();
   }
 
   canBeAssignedTo(other: Type) {
+    if (other instanceof TraitType) {
+      for (let [, trait] of this.traits) {
+        if (trait.equals(other)) {
+          return true;
+        }
+      }
+    }
     return this.of.canBeAssignedTo(other);
   }
 
@@ -667,6 +734,11 @@ export class TypeAlias extends Type {
     if (!(other instanceof TypeAlias)) return false;
     if (other.name !== this.name) return false;
     if (other.discriminant !== this.discriminant) return false;
+
+    if (!areMapsEqual(this.traits, other.traits)) {
+      return false;
+    }
+
     if (!areEqualTypes(this.of, other.of)) return false;
 
     return true;
@@ -754,16 +826,42 @@ export class TypeAlias extends Type {
     return this.of.getSchemaValue(name);
   }
 
+  getTypeMember(name: string, getType: (node: Nodes.Node) => Type | null): [Nodes.NameIdentifierNode, Type][] {
+    const ret: [Nodes.NameIdentifierNode, Type][] = [];
+
+    for (let impl of this.name.impls) {
+      const resolvedName = impl.namespaceNames.get(name);
+
+      if (resolvedName) {
+        const memberType = getType(resolvedName);
+
+        if (!isValidType(memberType)) {
+          return [];
+        }
+
+        ret.push([resolvedName, memberType]);
+      }
+    }
+
+    if (this.of instanceof TypeAlias) {
+      ret.push(...this.of.getTypeMember(name, getType));
+    }
+
+    return ret;
+  }
+
   private getOrderedProperties() {
     const properties: Array<{ index: number; name: Nodes.NameIdentifierNode }> = [];
 
-    this.name.namespaceNames &&
-      this.name.namespaceNames.forEach((nameIdentifierNode, name) => {
+    // TODO: review this.
+    for (let impl of this.name.impls) {
+      for (let [name, nameIdentifierNode] of impl.namespaceNames) {
         if (name.startsWith('property$')) {
           const index = parseInt(name.substr('property$'.length), 10);
           properties.push({ index, name: nameIdentifierNode });
         }
-      });
+      }
+    }
 
     properties.sort((a, b) => {
       if (a.index > b.index) {
@@ -774,6 +872,59 @@ export class TypeAlias extends Type {
     });
 
     return properties;
+  }
+}
+
+export class TraitType extends Type {
+  get binaryenType() {
+    return undefined;
+  }
+
+  get nativeType(): NativeTypes {
+    return NativeTypes.void;
+  }
+
+  constructor(public traitNode: Nodes.TraitDirectiveNode) {
+    super();
+  }
+
+  canBeAssignedTo(other: Type): boolean {
+    return this === other;
+  }
+
+  equals(other: Type): boolean {
+    return other === this;
+  }
+
+  toString(): string {
+    return this.traitNode.traitName.name;
+  }
+
+  inspect(_levels: number = 0) {
+    const subtypes: string[] = [];
+
+    this.traitNode.namespaceNames.forEach((value, key) => {
+      const t = TypeHelpers.getNodeType(value);
+      subtypes.push('[' + key + ': ' + (t ? t.inspect(1) : 'null') + ']');
+    });
+
+    return `(trait ${this.traitNode.traitName.name}${subtypes.map($ => ' ' + $).join('')})`;
+  }
+
+  getSignatureOf(name: string): Type | null {
+    const declName = this.traitNode.namespaceNames.get(name);
+    if (!declName) return null;
+    return TypeHelpers.getNodeType(declName);
+  }
+
+  schema() {
+    const result: Record<string, Type> = {};
+
+    return result;
+  }
+
+  getSchemaValue(name: string) {
+    throw new Error(`Cannot read schema property ${name} of ${this.inspect()}`);
   }
 }
 
@@ -919,6 +1070,7 @@ export namespace TypeHelpers {
   const ofTypeSymbol = Symbol('ofType');
 
   export function getNodeType(node: Nodes.Node): Type | null {
+    if (!node) return null;
     return (node as any)[ofTypeSymbol] || null;
   }
 

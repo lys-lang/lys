@@ -112,7 +112,10 @@ const visitor = {
     return ret;
   },
   ImplDirective(astNode: Nodes.ASTNode) {
-    const reference = visit(findChildrenTypeOrFail(astNode, 'Reference'));
+    const references = astNode.children.filter($ => $.type === 'Reference');
+
+    // the last Reference is the target
+    const target = visit(references.pop()!);
 
     const directivesNode = findChildrenType(astNode, 'NamespaceElementList');
 
@@ -121,7 +124,11 @@ const visitor = {
       : [];
     // TODO: warn
 
-    const ret = new Nodes.ImplDirective(astNode, reference, directives);
+    const ret = new Nodes.ImplDirective(astNode, target, directives);
+
+    if (references.length) {
+      ret.baseImpl = visit(references.pop()!);
+    }
 
     ret.isPublic = !findChildrenType(astNode, 'PrivateModifier');
 
@@ -199,6 +206,8 @@ const visitor = {
 
     const variableName = visit(child);
 
+    console.assert(!!variableName, 'missing variable name');
+
     const ret = new Nodes.TypeDirectiveNode(astNode, variableName);
 
     ret.isPublic = isPublic;
@@ -230,6 +239,34 @@ const visitor = {
 
     return ret;
   },
+  TraitDirective(astNode: Nodes.ASTNode) {
+    const children = astNode.children.slice();
+
+    let child = children.shift()!;
+    let isPublic = true;
+
+    if (child.type === 'PrivateModifier') {
+      isPublic = false;
+      child = children.shift()!;
+    }
+
+    const variableName = visit(child);
+
+    const typeDeclElements = findChildrenType(astNode, 'TraitDeclElements');
+
+    const declarations = typeDeclElements ? typeDeclElements.children.map($ => visit($)) : [];
+
+    declarations.forEach($ => {
+      if ($ instanceof Nodes.FunDirectiveNode && !$.functionNode.body) {
+        $.functionNode.annotate(new annotations.SignatureDeclaration());
+      }
+    });
+
+    const ret = new Nodes.TraitDirectiveNode(astNode, variableName, declarations);
+    ret.isPublic = isPublic;
+
+    return ret;
+  },
   FunDeclaration(astNode: Nodes.ASTNode) {
     const functionName = visit(
       findChildrenTypeOrFail(astNode, 'FunctionName', 'A function name is required').children[0]
@@ -251,7 +288,12 @@ const visitor = {
     }
 
     fun.parameters = params.children.map($ => visit($));
-    fun.body = visitLastChild(astNode);
+
+    const body = findChildrenType(astNode, 'FunAssignExpression');
+
+    if (body) {
+      fun.body = visitLastChild(body);
+    }
 
     return fun;
   },

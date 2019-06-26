@@ -85,9 +85,9 @@ const resolveVariables = walkPreOrder((node: Nodes.Node, parsingContext: Parsing
   }
 });
 
-const resolveDeclarations = walkPreOrder((node: Nodes.Node, parsingContext) => {
+const resolveDeclarations = walkPreOrder((node: Nodes.Node, parsingContext, parent: Nodes.Node | null) => {
   if (node instanceof Nodes.VarDeclarationNode) {
-    if (node.parent instanceof Nodes.DirectiveNode) {
+    if (parent instanceof Nodes.DirectiveNode) {
       node.annotate(new annotations.LocalIdentifier(new Global(node.variableName)));
     } else {
       const fn = findParentType(node, Nodes.FunctionNode);
@@ -104,8 +104,8 @@ const resolveDeclarations = walkPreOrder((node: Nodes.Node, parsingContext) => {
 });
 
 export const detectTailCall = walkPreOrder((node: Nodes.Node) => {
-  if (node instanceof Nodes.FunctionNode) {
-    const isTailRec = isRecursiveCallExpression(node, node.body!);
+  if (node instanceof Nodes.FunctionNode && node.body) {
+    const isTailRec = isRecursiveCallExpression(node, node.body);
 
     if (isTailRec) {
       node.annotate(new annotations.IsTailRec());

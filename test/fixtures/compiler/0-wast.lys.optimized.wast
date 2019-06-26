@@ -43,7 +43,7 @@
         (local.tee $0
          (global.get $global$6)
         )
-        (i32.const 8)
+        (i32.const 32)
        )
       )
       (i32.xor
@@ -110,7 +110,7 @@
  )
  (func $3 (; 3 ;) (type $0)
   (global.set $global$0
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$1
    (i32.shl

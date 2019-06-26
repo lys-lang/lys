@@ -11,7 +11,6 @@ import system::core::u32
 import system::core::u64
 import system::core::u8
 
-
 type string = %stack { lowLevelType="i64" byteSize=8 }
 
 impl string {
@@ -57,7 +56,7 @@ impl string {
    * We use a different operator to do it.
    */
   fun ++(lhs: string, rhs: string): string =
-    concat(lhs, rhs)
+    string.concat(lhs, rhs)
 
   /**
    * Index getter, it returns a char (u16)

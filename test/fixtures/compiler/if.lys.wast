@@ -59,7 +59,7 @@
           (else)
         )
       (local.set $system::core::memory::ptr (global.get $system::core::memory::offset))
-      (local.set $system::core::memory::newPtr (call $system::core::u32::u32.&_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (local.get $system::core::memory::ptr) (call $system::core::memory::max_1 (local.get $size) (call $system::core::i32::i32.as_4 (i32.const 8)))) (global.get $system::core::memory::AL_MASK)) (call $system::core::u32::u32.~_1 (global.get $system::core::memory::AL_MASK))))
+      (local.set $system::core::memory::newPtr (call $system::core::u32::u32.&_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (local.get $system::core::memory::ptr) (call $system::core::i32::i32.as_4 (i32.const 16))) (call $system::core::memory::max_1 (local.get $size) (call $system::core::i32::i32.as_4 (i32.const 16)))) (global.get $system::core::memory::AL_MASK)) (call $system::core::u32::u32.~_1 (global.get $system::core::memory::AL_MASK))))
       (local.set $system::core::memory::pagesBefore (call $system::core::memory::currentMemory_1))
       (if $IF4 (call $system::core::u32::u32.>_1 (local.get $system::core::memory::newPtr) (call $system::core::u32::u32.<<_1 (local.get $system::core::memory::pagesBefore) (i32.const 16)))
           (then
@@ -86,7 +86,7 @@
           (else)
         )
       (global.set $system::core::memory::offset (local.get $system::core::memory::newPtr))
-      (local.get $system::core::memory::ptr)
+      (call $system::core::u32::u32.+_1 (local.get $system::core::memory::ptr) (call $system::core::i32::i32.as_4 (i32.const 16)))
     )
   )
   (func $system::core::memory::free_1 (param $ptr i32)
@@ -1589,7 +1589,7 @@
     )
   )
   (func $%%START%%
-    (global.set $system::core::memory::AL_BITS (i32.const 3))
+    (global.set $system::core::memory::AL_BITS (i32.const 4))
     (global.set $system::core::memory::AL_SIZE (call $system::core::u32::u32.<<_1 (i32.const 0x1) (global.get $system::core::memory::AL_BITS)))
     (global.set $system::core::memory::AL_MASK (call $system::core::u32::u32.-_1 (global.get $system::core::memory::AL_SIZE) (i32.const 0x1)))
     (global.set $system::core::memory::MAX_SIZE_32 (call $system::core::u32::u32.<<_1 (i32.const 0x1) (i32.const 0x1E)))

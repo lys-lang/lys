@@ -12,6 +12,7 @@ Directive         ::= FunctionDirective
                     | StructDirective
                     | TypeDirective
                     | EnumDirective
+                    | TraitDirective
                     | ImportDirective
                     | EffectDirective
                     | ImplDirective {fragment=true}
@@ -26,9 +27,10 @@ ValDirective      ::= PrivateModifier? ValDeclaration {pin=2}
 VarDirective      ::= PrivateModifier? VarDeclaration {pin=2}
 TypeDirective     ::= PrivateModifier? TYPE_KEYWORD NameIdentifier WS* (&('=') ValueType)? {pin=2}
 EnumDirective     ::= PrivateModifier? ENUM_KEYWORD NameIdentifier WS* OPEN_BRACKET TypeDeclElements? WS* CLOSE_BRACKET {pin=2}
+TraitDirective    ::= PrivateModifier? TRAIT_KEYWORD NameIdentifier WS* OPEN_BRACKET TraitDeclElements? WS* CLOSE_BRACKET {pin=2}
 EffectDirective   ::= PrivateModifier? EFFECT_KEYWORD EffectDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 StructDirective   ::= PrivateModifier? STRUCT_KEYWORD StructDeclaration {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
-ImplDirective     ::= PrivateModifier? IMPL_KEYWORD Reference WS* NamespaceElementList {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
+ImplDirective     ::= PrivateModifier? IMPL_KEYWORD Reference WS* (FOR_KEYWORD WS* Reference WS*)? NamespaceElementList {pin=2,recoverUntil=DIRECTIVE_RECOVERY}
 
 Decorators        ::= Decorator+ {pin=1}
 Decorator         ::= OPEN_DECORATION WS* NameIdentifier (WS+ Literal)* WS* CLOSE_ARRAY WS* {pin=1}
@@ -39,7 +41,7 @@ ContinueStatement ::= CONTINUE_KEYWORD {pin=1}
 BreakStatement    ::= BREAK_KEYWORD {pin=1}
 ValDeclaration    ::= VAL_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
 VarDeclaration    ::= VAR_KEYWORD NameIdentifier OfType? WS* Assign {pin=1,recoverUntil=BLOCK_RECOVERY}
-FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList OfType? WS* FunAssignExpression {pin=1,recoverUntil=BLOCK_RECOVERY}
+FunDeclaration    ::= FUN_KEYWORD FunctionName WS* TypeParameters? FunctionParamsList WS* (&':' OfType WS*)? (&'=' FunAssignExpression)? {pin=1,recoverUntil=BLOCK_RECOVERY}
 MatchExpression   ::= MATCH_KEYWORD WS* AssignExpression WS* MatchBody {pin=1}
 CaseCondition     ::= CASE_KEYWORD NameIdentifier WS+ IF_KEYWORD WS* Expression WS* THIN_ARROW WS* Expression {pin=5}
 CaseLiteral       ::= CASE_KEYWORD Literal WS* THIN_ARROW WS* Expression {pin=3}
@@ -64,7 +66,7 @@ TypeVariable      ::= [A-Z]([A-Za-z0-9_])*
 TypeParameters    ::= '<' WS* TypeVariableList? '>' WS* {pin=1}
 
 Assign            ::= '=' WS* (Expression | UnknownExpression) {pin=1,fragment=true}
-FunAssignExpression ::= '=' WS* (Expression | WasmExpression | UnknownExpression) {pin=1,fragment=true}
+FunAssignExpression ::= '=' WS* (Expression | WasmExpression | UnknownExpression) {pin=1}
 OfType            ::= COLON WS* (FunctionEffect WS*)? Type WS* {pin=1,fragment=true,recoverUntil=NEXT_ARG_RECOVERY}
 
 StructParamsList  ::= OPEN_BRACKET WS* (!'}' ParameterList)? WS* CLOSE_BRACKET {pin=1,recoverUntil=BRACKET_RECOVERY}
@@ -75,6 +77,7 @@ Parameter         ::= NameIdentifier WS* (&':' OfType)? WS* {pin=1,recoverUntil=
 
 StructDeclaration ::= NameIdentifier WS* (&'(' FunctionParamsList)? {pin=1}
 EffectMemberDeclaration ::= NameIdentifier WS* FunctionParamsList OfType {pin=1}
+TraitDeclElements ::= (WS* FunctionDirective)*
 TypeDeclElements  ::= (WS* StructDeclaration)*
 EffectElements    ::= (WS* EffectMemberDeclaration)* {fragment=true}
 
@@ -210,8 +213,10 @@ KEYWORD           ::= TRUE_KEYWORD
                     | VAL_KEYWORD
                     | TYPE_KEYWORD
                     | ENUM_KEYWORD
+                    | TRAIT_KEYWORD
                     | EFFECT_KEYWORD
                     | IMPL_KEYWORD
+                    | FOR_KEYWORD
                     | IMPORT_KEYWORD
                     | FUN_KEYWORD
                     | STRUCT_KEYWORD
@@ -234,11 +239,13 @@ VAL_KEYWORD       ::= 'val'       WS+
 VAR_KEYWORD       ::= 'var'       WS+
 EFFECT_KEYWORD    ::= 'effect'    WS+
 IMPL_KEYWORD      ::= 'impl'      WS+
+FOR_KEYWORD       ::= 'for'       WS+
 IMPORT_KEYWORD    ::= 'import'    WS+
 STRUCT_KEYWORD    ::= 'struct'    WS+
 PRIVATE_KEYWORD   ::= 'private'   WS+
 TYPE_KEYWORD      ::= 'type'      WS+
 ENUM_KEYWORD      ::= 'enum'      WS+
+TRAIT_KEYWORD     ::= 'trait'     WS+
 CASE_KEYWORD      ::= 'case'      WS+
 
 LOOP_KEYWORD      ::= 'loop'      ![A-Za-z0-9_$]

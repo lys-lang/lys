@@ -138,14 +138,17 @@
        (i32.add
         (select
          (local.get $0)
-         (i32.const 8)
+         (i32.const 16)
          (i32.gt_u
           (local.get $0)
-          (i32.const 8)
+          (i32.const 16)
          )
         )
-        (local.tee $0
-         (global.get $global$6)
+        (i32.add
+         (local.tee $0
+          (global.get $global$6)
+         )
+         (i32.const 16)
         )
        )
       )
@@ -206,7 +209,10 @@
   (global.set $global$6
    (local.get $1)
   )
-  (local.get $0)
+  (i32.add
+   (local.get $0)
+   (i32.const 16)
+  )
  )
  (func $4 (; 9 ;) (type $9) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -854,7 +860,7 @@
  )
  (func $18 (; 23 ;) (type $2)
   (global.set $global$0
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$1
    (i32.shl
