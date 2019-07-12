@@ -1,16 +1,40 @@
 import { Nodes, PhaseFlags } from '../nodes';
 import { walkPreOrder } from '../walker';
 import { ParsingContext } from '../ParsingContext';
-import { InjectableTypes, StackType, NativeTypes, StructType, TypeHelpers, TraitType } from '../types';
-import { AstNodeError } from '../NodeError';
+import {
+  InjectableTypes,
+  StackType,
+  NativeTypes,
+  StructType,
+  TypeHelpers,
+  TraitType,
+  SelfType,
+  TypeType
+} from '../types';
+import { AstNodeError, DEBUG_TYPES } from '../NodeError';
 import { fixParents } from './helpers';
-import { TypeAnalyzer, DEBUG_TYPES, MaxAnalysisPassCount } from '../types/TypeAnalyzer';
+import { TypeAnalyzer, MaxAnalysisPassCount } from '../types/TypeAnalyzer';
 import assert = require('assert');
 
 const initializeTypes = walkPreOrder<Nodes.Node>(
-  (node, _phase) => {
+  (node, parsingContext) => {
     if (node instanceof Nodes.ImplDirective) {
       if (node.targetImpl.resolvedReference) {
+        if (node.baseImpl && node.baseImpl.resolvedReference) {
+          for (let impl of node.targetImpl.resolvedReference.referencedNode.impls) {
+            if (
+              impl.baseImpl &&
+              impl.baseImpl.resolvedReference &&
+              impl.baseImpl.resolvedReference.referencedNode === node.baseImpl.resolvedReference.referencedNode
+            ) {
+              parsingContext.messageCollector.error(
+                `This trait is already implemented for the target type`,
+                node.baseImpl.astNode
+              );
+            }
+          }
+        }
+
         node.targetImpl.resolvedReference.referencedNode.impls.add(node);
       }
     }
@@ -81,7 +105,9 @@ const initializeTypes = walkPreOrder<Nodes.Node>(
     }
 
     if (node instanceof Nodes.TraitDirectiveNode) {
-      TypeHelpers.setNodeType(node.traitName, new TraitType(node));
+      const traitType = new TraitType(node);
+      TypeHelpers.setNodeType(node.traitName, traitType);
+      TypeHelpers.setNodeType(node.selfTypeName!, TypeType.of(new SelfType(traitType)));
     }
 
     if (node instanceof Nodes.TypeDirectiveNode) {

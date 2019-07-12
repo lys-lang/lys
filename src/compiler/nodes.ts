@@ -489,6 +489,7 @@ export namespace Nodes {
 
   export class ImplDirective extends DirectiveNode {
     baseImpl?: ReferenceNode;
+    selfTypeName?: NameIdentifierNode;
     readonly namespaceNames: Map<string, NameIdentifierNode> = new Map();
 
     constructor(
@@ -602,6 +603,7 @@ export namespace Nodes {
 
   export class TraitDirectiveNode extends DirectiveNode {
     readonly namespaceNames: Map<string, NameIdentifierNode> = new Map();
+    selfTypeName?: NameIdentifierNode;
 
     constructor(astNode: ASTNode, public readonly traitName: NameIdentifierNode, public directives: DirectiveNode[]) {
       super(astNode);

@@ -90,28 +90,35 @@ describe('Execution tests', () => {
   });
 
   describe('traits', () => {
-    // test(
-    //   'Void implementation, test "is" operation',
-    //   `
-    //     /// private constructor must fail from outside
-    //     trait Sumable {}
-    //     enum Union {
-    //        A
-    //        B
-    //     }
-    //     impl Sumable for B {}
-    //     #[export]
-    //     fun test(): void = {
-    //       var a: Union = A
-    //       support::test::assert(a is Sumable == false, "A is not Sumable")
-    //       var b: Union = B
-    //       support::test::assert(b is Sumable == true , "B is Sumable")
-    //     }
-    //   `,
-    //   async x => {
-    //     x.exports.test();
-    //   }
-    // );
+    test(
+      'concrete type must be assignable to Self in trait',
+      `
+        trait Sumable {
+          fun +(lhs: Self, rhs: Self): Self
+        }
+
+        struct A(num: f32)
+        struct B(num: i32)
+
+        impl Sumable for A {
+          fun +(lhs: Self, rhs: A): A = A(lhs.num + rhs.num)
+        }
+
+        impl Sumable for B {
+          fun +(lhs: B, rhs: Self): Self = B(lhs.num + rhs.num)
+        }
+
+        #[export]
+        fun sumA(x: f32, y: f32): f32 = (A(x) + A(y)).num
+
+        #[export]
+        fun sumB(x: i32, y: i32): i32 = (B(x) + B(y)).num
+      `,
+      async x => {
+        expect(x.exports.sumA(1.5, 2)).to.eq(3.5);
+        expect(x.exports.sumB(1.1, 2.1)).to.eq(3);
+      }
+    );
   });
 
   describe('injected wasm', () => {

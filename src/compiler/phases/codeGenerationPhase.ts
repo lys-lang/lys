@@ -300,7 +300,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.BooleanLiteral) {
       return t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(node.value ? 1 : 0)]);
     } else if (node instanceof Nodes.StringLiteral) {
-      const discriminant = TypeHelpers.getNodeType(node)!.getSchemaValue('discriminant');
+      const discriminant = TypeHelpers.getNodeType(node)!.getSchemaValue('discriminant', node.scope!);
       const discriminantHex = ('00000000' + discriminant.toString(16)).substr(-8);
       const offset = ('00000000' + node.offset!.toString(16)).substr(-8);
       return t.objectInstruction('const', 'i64', [t.numberLiteralFromRaw('0x' + discriminantHex + offset, 'i64')]);
@@ -388,7 +388,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
         const type = schemaType.schema()[node.memberName.name];
         try {
-          const value = schemaType.getSchemaValue(node.memberName.name);
+          const value = schemaType.getSchemaValue(node.memberName.name, node.scope!);
           if (value === null || isNaN(value)) {
             throw new LysCompilerError(`Value was undefined`, node.memberName);
           }

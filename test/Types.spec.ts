@@ -21,6 +21,7 @@ import { printAST } from '../dist/utils/astPrinter';
 import { AstNodeError, LysScopeError } from '../dist/compiler/NodeError';
 import { nodeSystem } from '../dist/support/NodeSystem';
 import { failWithErrors } from '../dist/compiler/findAllErrors';
+import { Scope } from '../dist/compiler/Scope';
 
 const REF_TYPE = RefType.instance;
 
@@ -117,7 +118,7 @@ function test(program: string, expectedType: string, expectedError: string, skip
               .split(/\n/g)
               .map($ => $.trim())
               .filter($ => !!$);
-            expected.forEach($ => expect(e.message).to.contain($));
+            expected.forEach($ => expect(e.message.replace(/([\s\r\n]+)/gm, ' ')).to.contain($));
           }
         }
       } else {
@@ -257,7 +258,7 @@ describe('Types', function() {
       b := (alias i32 (native i32))
       a := (alias i32 (native i32))
       ---
-      (alias i32 (native i32)) is not a type
+      "i32" is not a type
     `;
 
     checkMainType`// #![no-std]
@@ -620,7 +621,7 @@ describe('Types', function() {
       fun(x: i64) -> i64
       fun() -> i64
       ---
-      Expecting arguments type (i64) but got (i32)
+      1) Invalid signature. Expecting arguments type: (i64) but got: (i32)
     `;
 
     checkMainType`// #![no-std]
@@ -764,7 +765,7 @@ describe('Types', function() {
       x := (alias u32 (native u32))
       y := (never)
       ---
-      (alias u32 (native u32)) is not a type
+      1) "u32" is not a type
     `;
 
     checkMainType`// #![no-std]
@@ -1609,7 +1610,104 @@ describe('Types', function() {
       Sumable := (trait Sumable [test: (intersection (fun "test" () (alias boolean)))])
       x := (alias i32 (native i32))
       ---
-      Type not implemented correctly
+      Type mismatch: Type "fun() -> i32" is not assignable to "fun() -> boolean"
+    `;
+
+    checkMainType`
+      /// concrete type must be assignable to Self in trait
+      trait Sumable {
+        fun +(lhs: Self, rhs: Self): Self
+      }
+
+      struct A(num: f32)
+
+      impl Sumable for A {
+        fun +(lhs: A, rhs: A): A = A(lhs.num + rhs.num)
+      }
+
+      var x = A(1) + A(2)
+      ---
+      Sumable := (trait Sumable [+: (intersection (fun "+" ((self (trait Sumable)) (self (trait Sumable))) (self (trait Sumable))))])
+      x := (alias A (struct))
+    `;
+
+    checkMainType`
+      /// self must not be compatible with other implementations
+
+      trait Sumable {
+        fun +(lhs: Self, rhs: Self): Self
+      }
+
+      struct A(num: f32)
+      struct B(num: f32)
+
+      impl Sumable for A {
+        fun +(lhs: Self, rhs: Self): Self = A(lhs.num + rhs.num)
+      }
+
+      impl Sumable for B {
+        fun +(lhs: Self, rhs: Self): Self = A(lhs.num + rhs.num)
+      }
+
+      var x = A(1) + A(2)
+      ---
+      Sumable := (trait Sumable [+: (intersection (fun "+" ((self (trait Sumable)) (self (trait Sumable))) (self (trait Sumable))))])
+      x := (alias A (struct))
+      ---
+      Type mismatch
+    `;
+
+    checkMainType`
+      /// double implementation must fail
+      trait Sumable {
+        fun +(lhs: Self, rhs: Self): Self
+      }
+
+      struct A(num: f32)
+
+      impl Sumable for A {
+        fun +(lhs: A, rhs: A): A = A(lhs.num + rhs.num)
+      }
+
+      impl Sumable for A {
+        fun +(lhs: A, rhs: A): A = A(lhs.num + rhs.num)
+      }
+
+      var x = A(1) + A(2)
+      ---
+      Sumable := (trait Sumable [+: (intersection (fun "+" ((self (trait Sumable)) (self (trait Sumable))) (self (trait Sumable))))])
+      x := (alias A (struct))
+      ---
+      This trait is already implemented for the target type
+    `;
+
+    checkMainType`
+      /// concrete type must be assignable to Self in impl
+      trait Sumable {
+        fun +(lhs: Self, rhs: Self): Self
+      }
+
+      struct A(num: f32)
+
+      impl Sumable for A {
+        fun +(lhs: Self, rhs: Self): Self = A(lhs.num + rhs.num)
+      }
+
+      var x = A(1) + A(2)
+      ---
+      Sumable := (trait Sumable [+: (intersection (fun "+" ((self (trait Sumable)) (self (trait Sumable))) (self (trait Sumable))))])
+      x := (alias A (struct))
+    `;
+
+    checkMainType`
+      /// must fail trying to implement a trait for a trait
+      trait Sumable {}
+
+      impl Sumable for Sumable {}
+      ---
+      Sumable := (trait Sumable)
+      ---
+      "Sumable" is not a type
     `;
   });
 
@@ -1730,7 +1828,7 @@ describe('Types', function() {
       b := (alias i32 (native i32))
       a := (alias i32 (native i32))
       ---
-      (alias i32 (native i32)) is not a type
+      "i32" is not a type
     `;
 
     describe('numbers', () => {
@@ -2490,7 +2588,7 @@ describe('Types', function() {
             fun(a: TRUE) -> void
             fun(a: FALSE) -> void
             ---
-            Expecting arguments type (FALSE) but got (TRUE)
+            1) Invalid signature. Expecting arguments type: (FALSE) but got: (TRUE)
           `;
 
           checkMainType`
@@ -2615,7 +2713,7 @@ describe('Types', function() {
             fun(a: BOOLEAN) -> void
             fun(a: FALSE) -> void
             ---
-            Expecting arguments type (FALSE) but got (BOOLEAN)
+            1) Invalid signature. Expecting arguments type: (FALSE) but got: (BOOLEAN)
           `;
 
           checkMainType`
@@ -2627,7 +2725,7 @@ describe('Types', function() {
             fun(a: ref) -> void
             fun(a: FALSE) -> void
             ---
-            Expecting arguments type (FALSE) but got (ref)
+            1) Invalid signature. Expecting arguments type: (FALSE) but got: (ref)
           `;
 
           checkMainType`
@@ -2643,7 +2741,7 @@ describe('Types', function() {
             fun(a: TRUE | FALSE) -> void
             fun(a: FALSE) -> void
             ---
-            Expecting arguments type (FALSE) but got (TRUE | FALSE)
+            1) Invalid signature. Expecting arguments type: (FALSE) but got: (TRUE | FALSE)
           `;
         });
         describe('unify complete types', () => {
@@ -3177,7 +3275,7 @@ describe('Types', function() {
         x := (alias X (struct))
         a := (never)
         ---
-        (alias X (struct value: (type (alias i32 (native i32))))) is not a type
+        "X" is not a type
       `;
 
       checkMainType`
@@ -3557,6 +3655,8 @@ describe('Types', function() {
     });
 
     describe('UnionType', () => {
+      parsingContext.getParsingPhaseForContent('unit-x', 'unit-x', `type void = %injected`);
+      const scope = new Scope(parsingContext, 'unit-x');
       const aliasOf = (name: string, type: Type) =>
         new TypeAlias(Nodes.NameIdentifierNode.fromString(name, null as any), type);
       const struct = (_name: string) => new StructType([]);
@@ -3578,7 +3678,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).expand();
+          ).expand(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (struct) (struct) (struct) (struct))`.trim()
@@ -3594,17 +3694,17 @@ describe('Types', function() {
 
           const refAlias = aliasOf('ref', REF_TYPE);
 
-          expect(REF_TYPE.canBeAssignedTo(REF_TYPE)).to.eq(true, 'ref -> ref == true');
-          expect(REF_TYPE.canBeAssignedTo(AB)).to.eq(false, 'ref -> AB == false');
-          expect(REF_TYPE.canBeAssignedTo(A)).to.eq(false, 'ref -> A == false');
-          expect(REF_TYPE.canBeAssignedTo(B)).to.eq(false, 'ref -> B == false');
+          expect(REF_TYPE.canBeAssignedTo(REF_TYPE, scope)).to.eq(true, 'ref -> ref == true');
+          expect(REF_TYPE.canBeAssignedTo(AB, scope)).to.eq(false, 'ref -> AB == false');
+          expect(REF_TYPE.canBeAssignedTo(A, scope)).to.eq(false, 'ref -> A == false');
+          expect(REF_TYPE.canBeAssignedTo(B, scope)).to.eq(false, 'ref -> B == false');
 
-          expect(REF_TYPE.canBeAssignedTo(refAlias)).to.eq(true, 'ref -> ref == true');
-          expect(refAlias.canBeAssignedTo(refAlias)).to.eq(true, 'ref -> ref == true');
-          expect(refAlias.canBeAssignedTo(REF_TYPE)).to.eq(true, 'ref -> ref == true');
-          expect(refAlias.canBeAssignedTo(AB)).to.eq(false, 'ref -> AB == false');
-          expect(refAlias.canBeAssignedTo(A)).to.eq(false, 'ref -> A == false');
-          expect(refAlias.canBeAssignedTo(B)).to.eq(false, 'ref -> B == false');
+          expect(REF_TYPE.canBeAssignedTo(refAlias, scope)).to.eq(true, 'ref -> ref == true');
+          expect(refAlias.canBeAssignedTo(refAlias, scope)).to.eq(true, 'ref -> ref == true');
+          expect(refAlias.canBeAssignedTo(REF_TYPE, scope)).to.eq(true, 'ref -> ref == true');
+          expect(refAlias.canBeAssignedTo(AB, scope)).to.eq(false, 'ref -> AB == false');
+          expect(refAlias.canBeAssignedTo(A, scope)).to.eq(false, 'ref -> A == false');
+          expect(refAlias.canBeAssignedTo(B, scope)).to.eq(false, 'ref -> B == false');
 
           expect(REF_TYPE.equals(REF_TYPE)).to.eq(true, 'ref == ref == true');
           expect(REF_TYPE.equals(AB)).to.eq(false, 'ref == AB == false');
@@ -3626,14 +3726,14 @@ describe('Types', function() {
 
           const refAlias = aliasOf('ref', REF_TYPE);
 
-          expect(A.canBeAssignedTo(AB)).to.eq(true, 'A -> AB == true');
-          expect(A.canBeAssignedTo(REF_TYPE)).to.eq(true, 'A -> ref == true');
-          expect(B.canBeAssignedTo(REF_TYPE)).to.eq(true, 'B -> ref == true');
-          expect(AB.canBeAssignedTo(REF_TYPE)).to.eq(true, 'AB -> ref == true');
+          expect(A.canBeAssignedTo(AB, scope)).to.eq(true, 'A -> AB == true');
+          expect(A.canBeAssignedTo(REF_TYPE, scope)).to.eq(true, 'A -> ref == true');
+          expect(B.canBeAssignedTo(REF_TYPE, scope)).to.eq(true, 'B -> ref == true');
+          expect(AB.canBeAssignedTo(REF_TYPE, scope)).to.eq(true, 'AB -> ref == true');
 
-          expect(A.canBeAssignedTo(refAlias)).to.eq(true, 'A -> ref == true');
-          expect(B.canBeAssignedTo(refAlias)).to.eq(true, 'B -> ref == true');
-          expect(AB.canBeAssignedTo(refAlias)).to.eq(true, 'AB -> ref == true');
+          expect(A.canBeAssignedTo(refAlias, scope)).to.eq(true, 'A -> ref == true');
+          expect(B.canBeAssignedTo(refAlias, scope)).to.eq(true, 'B -> ref == true');
+          expect(AB.canBeAssignedTo(refAlias, scope)).to.eq(true, 'AB -> ref == true');
 
           expect(A.equals(AB)).to.eq(false, 'A == AB == false');
           expect(A.equals(REF_TYPE)).to.eq(false, 'A == ref == false');
@@ -3653,10 +3753,10 @@ describe('Types', function() {
 
           const refAlias = aliasOf('ref', REF_TYPE);
 
-          expect(AB.canBeAssignedTo(A)).to.eq(false, 'AB -> A == false');
-          expect(AB.canBeAssignedTo(B)).to.eq(false, 'AB -> B == false');
-          expect(AB.canBeAssignedTo(REF_TYPE)).to.eq(true, 'AB -> ref == true');
-          expect(AB.canBeAssignedTo(refAlias)).to.eq(true, 'AB -> ref == true');
+          expect(AB.canBeAssignedTo(A, scope)).to.eq(false, 'AB -> A == false');
+          expect(AB.canBeAssignedTo(B, scope)).to.eq(false, 'AB -> B == false');
+          expect(AB.canBeAssignedTo(REF_TYPE, scope)).to.eq(true, 'AB -> ref == true');
+          expect(AB.canBeAssignedTo(refAlias, scope)).to.eq(true, 'AB -> ref == true');
         });
       });
 
@@ -3674,7 +3774,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(D);
+          ).subtract(D, scope);
 
           expect(newType.inspect(100)).to.eq(
             `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (struct) (struct) (struct) (struct))`.trim()
@@ -3694,7 +3794,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(REF_TYPE);
+          ).subtract(REF_TYPE, scope);
 
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
@@ -3712,7 +3812,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(REF_TYPE);
+          ).subtract(REF_TYPE, scope);
 
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
@@ -3730,7 +3830,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(aliasOf('ref', REF_TYPE));
+          ).subtract(aliasOf('ref', REF_TYPE), scope);
 
           expect(newType.inspect(100)).to.eq(`(never)`.trim());
         });
@@ -3748,7 +3848,7 @@ describe('Types', function() {
             ABC,
             D,
             union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))
-          ).subtract(ABC);
+          ).subtract(ABC, scope);
 
           expect(newType.inspect(100)).to.eq(`(union (alias D (struct)) (struct) (struct) (struct) (struct))`.trim());
         });
@@ -3762,14 +3862,14 @@ describe('Types', function() {
           const ABC = union(AB, C);
 
           const simplified = UnionType.of(
-            union(AB, ABC, D, union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))).expand()
+            union(AB, ABC, D, union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))).expand(scope)
           );
 
           expect(simplified.inspect(100)).to.eq(
             `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
 
-          const newType = simplified.subtract(ABC);
+          const newType = simplified.subtract(ABC, scope);
 
           expect(newType.inspect(100)).to.eq(`(union (alias D (struct)) (struct) (struct) (struct) (struct))`.trim());
         });
@@ -3779,8 +3879,8 @@ describe('Types', function() {
           const B = structAlias('B');
           const AB = union(A, B);
 
-          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct))`.trim());
-          expect(AB.subtract(A).inspect(100)).to.eq(`(alias B (struct))`.trim());
+          expect(AB.subtract(A, scope).inspect(100)).to.eq(`(alias B (struct))`.trim());
+          expect(AB.subtract(A, scope).inspect(100)).to.eq(`(alias B (struct))`.trim());
         });
 
         it('subtract A and B from AB should yield NeverType', () => {
@@ -3788,7 +3888,7 @@ describe('Types', function() {
           const B = structAlias('B');
           const AB = union(A, B);
 
-          expect(AB.subtract(AB).inspect(100)).to.eq(`(never)`.trim());
+          expect(AB.subtract(AB, scope).inspect(100)).to.eq(`(never)`.trim());
         });
 
         it('should subtract elements from expanded union', () => {
@@ -3800,14 +3900,14 @@ describe('Types', function() {
           const ABC = union(AB, C);
 
           const simplified = UnionType.of(
-            union(AB, ABC, D, union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))).expand()
+            union(AB, ABC, D, union(union(union(struct('F'), struct('G')), struct('H')), struct('I'))).expand(scope)
           );
 
           expect(simplified.inspect(100)).to.eq(
             `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (struct) (struct) (struct) (struct))`.trim()
           );
 
-          const newType = simplified.subtract(D);
+          const newType = simplified.subtract(D, scope);
 
           expect(newType.inspect(100)).to.eq(
             `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (struct) (struct) (struct) (struct))`.trim()
@@ -3823,7 +3923,7 @@ describe('Types', function() {
           const D = struct('D');
 
           const union = new UnionType([A, A, A, A, B, C, D, D]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3836,7 +3936,7 @@ describe('Types', function() {
           const A = struct('A');
 
           const union = new UnionType([A, A]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(`(struct)`.trim());
         });
@@ -3849,7 +3949,7 @@ describe('Types', function() {
           const AB = namedUnion('AB', A, B);
           const CD = namedUnion('CD', C, D);
 
-          const simplified = union(A, B, C, D, AB, CD, D, D).simplify();
+          const simplified = union(A, B, C, D, AB, CD, D, D).simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `(union (alias AB (union (struct) (struct))) (alias CD (union (struct) (struct))))`.trim()
@@ -3864,7 +3964,7 @@ describe('Types', function() {
           const AB = union(A, B);
           const BC = union(B, C);
 
-          const simplified = union(A, B, C, D, AB, BC, D, D).simplify();
+          const simplified = union(A, B, C, D, AB, BC, D, D).simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3881,7 +3981,7 @@ describe('Types', function() {
           const AB = union(A, B);
           const BC = union(B, C);
 
-          const simplified = union(A, B, C, D, AB, BC, D, D).simplify();
+          const simplified = union(A, B, C, D, AB, BC, D, D).simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3899,7 +3999,7 @@ describe('Types', function() {
           const AB = union(A, B, structAlias('AB1'));
           const BC = union(B, C, structAlias('BC1'));
 
-          const simplified = union(A, B, C, D, AB, BC, D, D, F).simplify();
+          const simplified = union(A, B, C, D, AB, BC, D, D, F).simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `(union (alias A (struct)) (alias B (struct)) (alias C (struct)) (alias D (struct)) (alias F (struct)) (alias AB1 (struct)) (alias BC1 (struct)))`.trim()
@@ -3913,7 +4013,7 @@ describe('Types', function() {
           const D = struct('D');
 
           const union = new UnionType([A, A, A, A, B, C, D, D, REF_TYPE]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3929,7 +4029,7 @@ describe('Types', function() {
           const B = aliasOf('B', i32);
 
           const union = new UnionType([A, B, B]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3937,10 +4037,10 @@ describe('Types', function() {
             `.trim()
           );
 
-          expect(A.canBeAssignedTo(B)).to.eq(true, 'A can be assigned to B');
-          expect(B.canBeAssignedTo(A)).to.eq(true, 'B can be assigned to A');
-          expect(B.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
-          expect(A.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
+          expect(A.canBeAssignedTo(B, scope)).to.eq(true, 'A can be assigned to B');
+          expect(B.canBeAssignedTo(A, scope)).to.eq(true, 'B can be assigned to A');
+          expect(B.canBeAssignedTo(B, scope)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A, scope)).to.eq(true, 'A can be assigned to A');
         });
 
         it('should not simplify aliases to the same type (ref)', () => {
@@ -3948,7 +4048,7 @@ describe('Types', function() {
           const B = aliasOf('B', REF_TYPE);
 
           const union = new UnionType([A, B, B]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3956,10 +4056,10 @@ describe('Types', function() {
             `.trim()
           );
 
-          expect(A.canBeAssignedTo(B)).to.eq(true, 'A can be assigned to B');
-          expect(B.canBeAssignedTo(A)).to.eq(true, 'B can be assigned to A');
-          expect(B.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
-          expect(A.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
+          expect(A.canBeAssignedTo(B, scope)).to.eq(true, 'A can be assigned to B');
+          expect(B.canBeAssignedTo(A, scope)).to.eq(true, 'B can be assigned to A');
+          expect(B.canBeAssignedTo(B, scope)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A, scope)).to.eq(true, 'A can be assigned to A');
         });
 
         it('should structs are assignable to refs', () => {
@@ -3967,7 +4067,7 @@ describe('Types', function() {
           const B = aliasOf('B', struct('B'));
 
           const union = new UnionType([A, B, B]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -3975,16 +4075,16 @@ describe('Types', function() {
             `.trim()
           );
 
-          expect(A.canBeAssignedTo(B)).to.eq(false, 'A cannot be assigned to B');
-          expect(B.canBeAssignedTo(A)).to.eq(false, 'B cannot be assigned to A');
-          expect(B.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
-          expect(A.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
-          expect(B.canBeAssignedTo(B.of)).to.eq(true, 'B can be assigned to B');
-          expect(B.of.canBeAssignedTo(B)).to.eq(true, 'B can be assigned to B');
-          expect(A.canBeAssignedTo(A.of)).to.eq(true, 'A can be assigned to A');
-          expect(A.of.canBeAssignedTo(A)).to.eq(true, 'A can be assigned to A');
-          expect(B.of.canBeAssignedTo(B.of)).to.eq(true, 'B can be assigned to B');
-          expect(A.of.canBeAssignedTo(A.of)).to.eq(true, 'A can be assigned to A');
+          expect(A.canBeAssignedTo(B, scope)).to.eq(false, 'A cannot be assigned to B');
+          expect(B.canBeAssignedTo(A, scope)).to.eq(false, 'B cannot be assigned to A');
+          expect(B.canBeAssignedTo(B, scope)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A, scope)).to.eq(true, 'A can be assigned to A');
+          expect(B.canBeAssignedTo(B.of, scope)).to.eq(true, 'B can be assigned to B');
+          expect(B.of.canBeAssignedTo(B, scope)).to.eq(true, 'B can be assigned to B');
+          expect(A.canBeAssignedTo(A.of, scope)).to.eq(true, 'A can be assigned to A');
+          expect(A.of.canBeAssignedTo(A, scope)).to.eq(true, 'A can be assigned to A');
+          expect(B.of.canBeAssignedTo(B.of, scope)).to.eq(true, 'B can be assigned to B');
+          expect(A.of.canBeAssignedTo(A.of, scope)).to.eq(true, 'A can be assigned to A');
         });
 
         it('should not remove alias to ref types', () => {
@@ -3996,7 +4096,7 @@ describe('Types', function() {
           const ref = aliasOf('Ref', REF_TYPE);
 
           const union = new UnionType([A, A, A, A, B, C, D, D, ref]);
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -4015,7 +4115,7 @@ describe('Types', function() {
 
           const union = new UnionType([A, A, A, A, B, C, unionCD, D, D]);
 
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(100)).to.eq(
             `
@@ -4034,7 +4134,7 @@ describe('Types', function() {
 
           const union = new UnionType([A, A, A, A, B, C, unionCD, D, D]);
 
-          const simplified = union.simplify();
+          const simplified = union.simplify(scope);
 
           expect(simplified.inspect(0)).to.eq(
             `
@@ -4466,7 +4566,7 @@ describe('Types', function() {
         fun(x: Z) -> boolean
         fun(x: X) -> boolean
         ---
-        Invalid signature. Expecting arguments type (Z) but got (X)
+        1) Invalid signature. Expecting arguments type: (Z) but got: (X)
       `;
     });
 

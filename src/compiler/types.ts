@@ -1,5 +1,6 @@
 import { Nodes } from './nodes';
 import { isValidType } from './types/typeHelpers';
+import { Scope } from './Scope';
 
 export type Valtype = 'i32' | 'i64' | 'f32' | 'f64' | 'u32' | 'label';
 
@@ -48,27 +49,36 @@ export abstract class Type {
     return otherType === this;
   }
 
-  canBeAssignedTo(otherType: Type): boolean {
+  canBeAssignedTo(otherType: Type, ctx: Scope): boolean {
     if (this.equals(otherType)) {
       return true;
     }
 
     if (otherType instanceof TypeAlias) {
-      return this.canBeAssignedTo(otherType.of);
+      return this.canBeAssignedTo(otherType.of, ctx);
     }
 
     if (otherType instanceof UnionType) {
-      if (otherType.of.some($ => this.canBeAssignedTo($))) {
+      if (otherType.of.some($ => this.canBeAssignedTo($, ctx))) {
         return true;
       }
     }
 
     if (otherType instanceof IntersectionType) {
-      return otherType.of.some($ => this.canBeAssignedTo($));
+      return otherType.of.some($ => this.canBeAssignedTo($, ctx));
     }
 
     if (otherType instanceof AnyType) {
       return true;
+    }
+
+    if (otherType instanceof SelfType) {
+      const resolved = ctx.get('Self');
+      const type = TypeHelpers.getNodeType(resolved.referencedNode);
+
+      if (type && type instanceof TypeType) {
+        return this.canBeAssignedTo(type.of, ctx);
+      }
     }
 
     return false;
@@ -77,7 +87,7 @@ export abstract class Type {
   abstract toString(): string;
   abstract inspect(levels: number): string;
   abstract schema(): Record<string, Type>;
-  abstract getSchemaValue(name: string): any;
+  abstract getSchemaValue(name: string, ctx: Scope): any;
 }
 
 export function areEqualTypes(typeA: Type | null | void, typeB: Type | null | void): boolean {
@@ -100,21 +110,21 @@ export class FunctionType extends Type {
     super();
   }
 
-  canBeAssignedTo(type: Type): boolean {
+  canBeAssignedTo(type: Type, ctx: Scope): boolean {
     if (type instanceof FunctionType) {
       if (this.parameterTypes.length !== type.parameterTypes.length) return false;
       if (
         // can the return type be assigned?
         !this.returnType ||
         !type.returnType ||
-        !this.returnType.canBeAssignedTo(type.returnType)
+        !this.returnType.canBeAssignedTo(type.returnType, ctx)
       ) {
         return false;
       }
       if (
         // can every parameter be assigned?
         this.parameterTypes.some(
-          ($, $$) => !$ || !type.parameterTypes[$$] || !$.canBeAssignedTo(type.parameterTypes[$$])
+          ($, $$) => !$ || !type.parameterTypes[$$] || !$.canBeAssignedTo(type.parameterTypes[$$], ctx)
         )
       ) {
         return false;
@@ -123,10 +133,10 @@ export class FunctionType extends Type {
     }
 
     if (type instanceof IntersectionType) {
-      return type.of.every($ => this.canBeAssignedTo($));
+      return type.of.every($ => this.canBeAssignedTo($, ctx));
     }
 
-    return super.canBeAssignedTo(type);
+    return super.canBeAssignedTo(type, ctx);
   }
 
   equals(type: Type) {
@@ -188,8 +198,8 @@ export class StructType extends Type {
     return '%struct';
   }
 
-  canBeAssignedTo(otherType: Type) {
-    if (super.canBeAssignedTo(otherType)) {
+  canBeAssignedTo(otherType: Type, ctx: Scope) {
+    if (super.canBeAssignedTo(otherType, ctx)) {
       return true;
     }
 
@@ -258,7 +268,7 @@ export class StackType extends Type {
     return other === this;
   }
 
-  canBeAssignedTo(other: Type) {
+  canBeAssignedTo(other: Type, ctx: Scope) {
     const otherType = getUnderlyingTypeFromAlias(other);
 
     if (
@@ -270,7 +280,7 @@ export class StackType extends Type {
       return true;
     }
 
-    return super.canBeAssignedTo(other);
+    return super.canBeAssignedTo(other, ctx);
   }
 
   toString() {
@@ -324,7 +334,7 @@ export class RefType extends Type {
     return '(ref ?)';
   }
 
-  canBeAssignedTo(otherType: Type): boolean {
+  canBeAssignedTo(otherType: Type, _ctx: Scope): boolean {
     return RefType.isRefTypeStrict(otherType);
   }
 
@@ -370,18 +380,18 @@ export class IntersectionType extends Type {
     return this.of.map($ => ($ || '?').toString()).join(' & ');
   }
 
-  canBeAssignedTo(other: Type) {
+  canBeAssignedTo(other: Type, ctx: Scope) {
     if (other instanceof IntersectionType) {
       // intersections can be assigned only if every type of
       // the other intersection can be assigned by some of the types of this intersection
-      return other.of.every(otherType => this.of.some(thisType => thisType.canBeAssignedTo(otherType)));
+      return other.of.every(otherType => this.of.some(thisType => thisType.canBeAssignedTo(otherType, ctx)));
     }
 
     if (this.equals(other)) {
       return true;
     }
 
-    return this.of.some($ => $.canBeAssignedTo(other));
+    return this.of.some($ => $.canBeAssignedTo(other, ctx));
   }
 
   inspect(levels: number = 0) {
@@ -483,8 +493,8 @@ export class UnionType extends Type {
     return '(union ' + this.of.map($ => ($ ? $.inspect(levels - 1) : '(?)')).join(' ') + ')';
   }
 
-  canBeAssignedTo(otherType: Type) {
-    return this.of.every($ => $.canBeAssignedTo(otherType));
+  canBeAssignedTo(otherType: Type, ctx: Scope) {
+    return this.of.every($ => $.canBeAssignedTo(otherType, ctx));
   }
 
   equals(other: Type): boolean {
@@ -501,7 +511,7 @@ export class UnionType extends Type {
    * This method expands the union type made by other union types into a single
    * union made of the atoms of every member of the initial union. Recursively.
    */
-  expand(): Type {
+  expand(ctx: Scope): Type {
     const newSet = new Set<Type>();
 
     function add(typeToAdd: Type) {
@@ -529,25 +539,25 @@ export class UnionType extends Type {
 
     const newTypes = Array.from(newSet.values());
 
-    return new UnionType(newTypes).simplify();
+    return new UnionType(newTypes).simplify(ctx);
   }
 
   /**
    * This method removes an element from the union
    * @param type type to subtract
    */
-  subtract(type: Type | null): Type {
+  subtract(type: Type | null, ctx: Scope): Type {
     if (!type) return this;
     const removingRefType = RefType.isRefTypeStrict(type);
 
     if (!this.simplified) {
-      return UnionType.of(this.expand()).subtract(type);
+      return UnionType.of(this.expand(ctx)).subtract(type, ctx);
     }
 
     const newSet = new Set<Type>();
 
     for (let $ of this.of) {
-      if ((!removingRefType && RefType.isRefTypeStrict($)) || !$.canBeAssignedTo(type)) {
+      if ((!removingRefType && RefType.isRefTypeStrict($)) || !$.canBeAssignedTo(type, ctx)) {
         newSet.add($);
       }
     }
@@ -578,7 +588,7 @@ export class UnionType extends Type {
    *
    *
    */
-  simplify() {
+  simplify(ctx: Scope) {
     if (this.of.length === 1) {
       return this.of[0];
     }
@@ -622,9 +632,9 @@ export class UnionType extends Type {
 
     // Find the conflictive atoms
     unions.forEach((union, ix) => {
-      const expanded = UnionType.of(union.expand());
+      const expanded = UnionType.of(union.expand(ctx));
 
-      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ !== ix && atom.canBeAssignedTo($)));
+      const hasConflict = expanded.of.some(atom => unions.some(($, $$) => $$ !== ix && atom.canBeAssignedTo($, ctx)));
       if (hasConflict) {
         blackListedUnionAtoms.push(...expanded.of);
 
@@ -650,11 +660,11 @@ export class UnionType extends Type {
         return;
       }
 
-      if (RefType.isRefTypeStrict(candidate) || blackListedUnionAtoms.some(x => candidate.canBeAssignedTo(x))) {
+      if (RefType.isRefTypeStrict(candidate) || blackListedUnionAtoms.some(x => candidate.canBeAssignedTo(x, ctx))) {
         return;
       }
 
-      if (unions.some(union => !union.equals(candidate) && candidate.canBeAssignedTo(union))) {
+      if (unions.some(union => !union.equals(candidate) && candidate.canBeAssignedTo(union, ctx))) {
         (newTypes as any)[i] = null;
       }
     });
@@ -675,13 +685,13 @@ export class UnionType extends Type {
     };
   }
 
-  getSchemaValue(name: string) {
+  getSchemaValue(name: string, ctx: Scope) {
     if (name === 'byteSize') {
       const nativeTypes = new Set<number>();
 
       this.of.forEach($ => {
         if (NeverType.isNeverType($)) return;
-        nativeTypes.add($.getSchemaValue('byteSize'));
+        nativeTypes.add($.getSchemaValue('byteSize', ctx));
       });
 
       if (nativeTypes.size === 0) {
@@ -733,15 +743,25 @@ export class TypeAlias extends Type {
     super();
   }
 
-  canBeAssignedTo(other: Type) {
-    if (other instanceof TraitType) {
-      for (let [, trait] of this.traits) {
-        if (trait.equals(other)) {
-          return true;
-        }
+  canBeAssignedTo(other: Type, ctx: Scope): boolean {
+    // | if (other instanceof TraitType) {
+    // |   for (let [, trait] of this.traits) {
+    // |     if (trait.equals(other)) {
+    // |       return true;
+    // |     }
+    // |   }
+    // | }
+
+    if (other instanceof SelfType) {
+      const resolved = ctx.get('Self');
+      const type = TypeHelpers.getNodeType(resolved.referencedNode);
+
+      if (type && type instanceof TypeType) {
+        return this.canBeAssignedTo(type.of, ctx);
       }
     }
-    return this.of.canBeAssignedTo(other);
+
+    return this.of.canBeAssignedTo(other, ctx);
   }
 
   equals(other: Type): boolean {
@@ -789,7 +809,7 @@ export class TypeAlias extends Type {
     return result;
   }
 
-  getSchemaValue(name: string) {
+  getSchemaValue(name: string, ctx: Scope) {
     if (name === 'discriminant') {
       if (this.discriminant === null) {
         throw new Error('empty discriminant');
@@ -804,8 +824,8 @@ export class TypeAlias extends Type {
           let offset = 0;
 
           for (let prop of properties) {
-            const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType);
-            offset += fn!.returnType!.getSchemaValue('byteSize');
+            const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType, ctx);
+            offset += fn!.returnType!.getSchemaValue('byteSize', ctx);
           }
 
           return offset;
@@ -825,19 +845,19 @@ export class TypeAlias extends Type {
               if (prop.index === index) {
                 break;
               }
-              const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType);
-              offset += fn!.returnType!.getSchemaValue('allocationSize');
+              const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType, ctx);
+              offset += fn!.returnType!.getSchemaValue('allocationSize', ctx);
             }
 
             return offset;
           } else if (name.endsWith('_allocationSize')) {
-            const fn = getNonVoidFunction(TypeHelpers.getNodeType(property.name) as IntersectionType);
-            return fn!.returnType!.getSchemaValue('allocationSize');
+            const fn = getNonVoidFunction(TypeHelpers.getNodeType(property.name) as IntersectionType, ctx);
+            return fn!.returnType!.getSchemaValue('allocationSize', ctx);
           }
         }
       }
     }
-    return this.of.getSchemaValue(name);
+    return this.of.getSchemaValue(name, ctx);
   }
 
   getTypeMember(name: string, getType: (node: Nodes.Node) => Type | null): [Nodes.NameIdentifierNode, Type][] {
@@ -902,7 +922,7 @@ export class TraitType extends Type {
     super();
   }
 
-  canBeAssignedTo(other: Type): boolean {
+  canBeAssignedTo(other: Type, _ctx: Scope): boolean {
     return this === other;
   }
 
@@ -914,13 +934,15 @@ export class TraitType extends Type {
     return this.traitNode.traitName.name;
   }
 
-  inspect(_levels: number = 0) {
+  inspect(levels: number = 0) {
     const subtypes: string[] = [];
 
-    this.traitNode.namespaceNames.forEach((value, key) => {
-      const t = TypeHelpers.getNodeType(value);
-      subtypes.push('[' + key + ': ' + (t ? t.inspect(1) : 'null') + ']');
-    });
+    if (levels > 1) {
+      this.traitNode.namespaceNames.forEach((value, key) => {
+        const t = TypeHelpers.getNodeType(value);
+        subtypes.push('[' + key + ': ' + (t ? t.inspect(levels - 1) : 'null') + ']');
+      });
+    }
 
     return `(trait ${this.traitNode.traitName.name}${subtypes.map($ => ' ' + $).join('')})`;
   }
@@ -942,10 +964,10 @@ export class TraitType extends Type {
   }
 }
 
-function getNonVoidFunction(type: IntersectionType): FunctionType | null {
+function getNonVoidFunction(type: IntersectionType, ctx: Scope): FunctionType | null {
   const functions = type.of as FunctionType[];
   for (let fn of functions) {
-    if (fn.returnType && !voidType.canBeAssignedTo(fn.returnType)) {
+    if (fn.returnType && !voidType.canBeAssignedTo(fn.returnType, ctx)) {
       return fn;
     }
   }
@@ -967,10 +989,10 @@ export class TypeType extends Type {
     return ret;
   }
 
-  canBeAssignedTo(other: Type): boolean {
+  canBeAssignedTo(other: Type, ctx: Scope): boolean {
     const otherType = getUnderlyingTypeFromAlias(other);
     if (otherType instanceof TypeType) {
-      return this.of.canBeAssignedTo(otherType.of);
+      return this.of.canBeAssignedTo(otherType.of, ctx);
     }
     return false;
   }
@@ -992,8 +1014,8 @@ export class TypeType extends Type {
     return this.of.schema();
   }
 
-  getSchemaValue(name: string) {
-    return this.of.getSchemaValue(name);
+  getSchemaValue(name: string, ctx: Scope) {
+    return this.of.getSchemaValue(name, ctx);
   }
 }
 
@@ -1031,8 +1053,39 @@ export class NeverType extends Type {
     return super.equals(other);
   }
 
-  canBeAssignedTo(_: Type) {
+  canBeAssignedTo(_: Type, _ctx: Scope) {
     return true;
+  }
+
+  schema() {
+    return {};
+  }
+
+  getSchemaValue(name: string) {
+    throw new Error(`Cannot read schema property ${name} of ${this.inspect()}`);
+  }
+}
+
+export class SelfType extends Type {
+  get nativeType() {
+    return NativeTypes.anyfunc;
+  }
+
+  constructor(public traitType: TraitType) {
+    super();
+  }
+
+  toString(): string {
+    return 'Self';
+  }
+
+  inspect(): string {
+    return `(self ${this.traitType.inspect(0)})`;
+  }
+
+  canBeAssignedTo(_: Type, _ctx: Scope) {
+    console.log(_ctx.inspect(true), _.inspect(1));
+    return false;
   }
 
   schema() {
@@ -1058,7 +1111,7 @@ export class AnyType extends Type {
     return '(any)';
   }
 
-  canBeAssignedTo(_: Type) {
+  canBeAssignedTo(_: Type, _ctx: Scope) {
     return false;
   }
 

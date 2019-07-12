@@ -133,6 +133,8 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
     } else if (node instanceof Nodes.TraitDirectiveNode) {
       node.scope!.set(node.traitName, 'TRAIT', node.isPublic);
       node.scope = node.scope!.newChildScope(node.traitName.name + '.');
+      node.selfTypeName = new Nodes.NameIdentifierNode(node.traitName.astNode, 'Self');
+      node.scope.set(node.selfTypeName, 'TYPE', false);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
@@ -143,6 +145,11 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
       node.scope!.set(node.variableName, 'VALUE', parent instanceof Nodes.VarDirectiveNode && parent.isPublic);
     } else if (node instanceof Nodes.ImplDirective) {
       node.scope = node.scope!.newChildScope(node.targetImpl.variable.text + '.');
+
+      if (node.baseImpl) {
+        node.selfTypeName = new Nodes.NameIdentifierNode(node.targetImpl.astNode, 'Self');
+        node.scope.set(node.selfTypeName, 'TYPE', false);
+      }
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       node.scope!.set(node.variableName, 'TYPE', node.isPublic);
     } else if (node instanceof Nodes.FunctionNode) {
