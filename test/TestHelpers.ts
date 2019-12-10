@@ -130,9 +130,9 @@ process.on('uncaughtException', function(err) {
   process.exit(1);
 });
 
-process.on('unhandledRejection', function(err) {
+process.on('unhandledRejection', function(reason: {} | null | undefined, promise: Promise<any>) {
   console.log('unhandledRejection');
-  console.error(err);
-  console.log(err.stack);
+  console.log(promise);
+  console.error(reason);
   process.exit(1);
 });
