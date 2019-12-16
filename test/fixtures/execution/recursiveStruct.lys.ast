@@ -342,9 +342,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias Empty (struct)) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias Empty (struct)) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=Empty type=(type (alias Empty (struct)))
-                |-QNameNode=Empty
-                  |-NameIdentifierNode="Empty"
+              |-ReferenceNode resolvedReference=Self type=(type (alias Empty (struct)))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -358,9 +358,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=Empty type=(type (alias Empty (struct)))
-                  |-QNameNode=Empty
-                    |-NameIdentifierNode="Empty"
+                |-ReferenceNode resolvedReference=Self type=(type (alias Empty (struct)))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean)),IsReturnExpression
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -387,9 +387,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias Empty)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias Empty (struct))
-            |-ReferenceNode resolvedReference=Empty type=(type (alias Empty (struct)))
-              |-QNameNode=Empty
-                |-NameIdentifierNode="Empty"
+            |-ReferenceNode resolvedReference=Self type=(type (alias Empty (struct)))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -586,9 +586,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
-                |-QNameNode=Node
-                  |-NameIdentifierNode="Node"
+              |-ReferenceNode resolvedReference=Self type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -602,9 +602,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
-                  |-QNameNode=Node
-                    |-NameIdentifierNode="Node"
+                |-ReferenceNode resolvedReference=Self type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean)),IsReturnExpression
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -631,9 +631,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias Node)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
-            |-ReferenceNode resolvedReference=Node type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
-              |-QNameNode=Node
-                |-NameIdentifierNode="Node"
+            |-ReferenceNode resolvedReference=Self type=(type (alias Node (struct a: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -1379,9 +1379,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias Nil (struct)) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias Nil (struct)) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=Nil type=(type (alias Nil (struct)))
-                |-QNameNode=Nil
-                  |-NameIdentifierNode="Nil"
+              |-ReferenceNode resolvedReference=Self type=(type (alias Nil (struct)))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -1395,9 +1395,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=Nil type=(type (alias Nil (struct)))
-                  |-QNameNode=Nil
-                    |-NameIdentifierNode="Nil"
+                |-ReferenceNode resolvedReference=Self type=(type (alias Nil (struct)))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean)),IsReturnExpression
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -1424,9 +1424,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias Nil)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias Nil (struct))
-            |-ReferenceNode resolvedReference=Nil type=(type (alias Nil (struct)))
-              |-QNameNode=Nil
-                |-NameIdentifierNode="Nil"
+            |-ReferenceNode resolvedReference=Self type=(type (alias Nil (struct)))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -1623,9 +1623,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
-                |-QNameNode=Cons
-                  |-NameIdentifierNode="Cons"
+              |-ReferenceNode resolvedReference=Self type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -1639,9 +1639,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
-                  |-QNameNode=Cons
-                    |-NameIdentifierNode="Cons"
+                |-ReferenceNode resolvedReference=Self type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean)),IsReturnExpression
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -1668,9 +1668,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias Cons)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))))))
-            |-ReferenceNode resolvedReference=Cons type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
-              |-QNameNode=Cons
-                |-NameIdentifierNode="Cons"
+            |-ReferenceNode resolvedReference=Self type=(type (alias Cons (struct tree: (union (alias Tree (union (alias Empty (struct)) (alias Node (struct a: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons)))))))) (alias Forest (union (alias Nil (struct)) (alias Cons (struct tree: (union (alias Tree (union (alias Empty) (alias Node))) (alias Forest (union (alias Nil) (alias Cons))))))))))))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"

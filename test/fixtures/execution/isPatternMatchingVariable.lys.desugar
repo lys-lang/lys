@@ -55,14 +55,14 @@ type C = %struct {  }
 
 impl Reference for A {
   #[inline]
-  fun is(a: (A | ref)): boolean = {
-    val discriminant: u32 = A.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: A): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -98,14 +98,14 @@ impl A {
 
 impl Reference for B {
   #[inline]
-  fun is(a: (B | ref)): boolean = {
-    val discriminant: u32 = B.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: B): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -141,14 +141,14 @@ impl B {
 
 impl Reference for C {
   #[inline]
-  fun is(a: (C | ref)): boolean = {
-    val discriminant: u32 = C.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: C): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -245,14 +245,14 @@ type Custom = %struct { a: i32 }
 
 impl Reference for Red {
   #[inline]
-  fun is(a: (Red | ref)): boolean = {
-    val discriminant: u32 = Red.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Red): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -288,14 +288,14 @@ impl Red {
 
 impl Reference for Green {
   #[inline]
-  fun is(a: (Green | ref)): boolean = {
-    val discriminant: u32 = Green.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Green): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -331,14 +331,14 @@ impl Green {
 
 impl Reference for Blue {
   #[inline]
-  fun is(a: (Blue | ref)): boolean = {
-    val discriminant: u32 = Blue.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Blue): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -374,14 +374,14 @@ impl Blue {
 
 impl Reference for Custom {
   #[inline]
-  fun is(a: (Custom | ref)): boolean = {
-    val discriminant: u32 = Custom.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Custom): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -439,14 +439,14 @@ type J = %struct {  }
 
 impl Reference for J {
   #[inline]
-  fun is(a: (J | ref)): boolean = {
-    val discriminant: u32 = J.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: J): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }

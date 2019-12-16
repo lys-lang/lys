@@ -85,9 +85,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias Simple (struct)) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias Simple (struct)) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=Simple type=(type (alias Simple (struct)))
-                |-QNameNode=Simple
-                  |-NameIdentifierNode="Simple"
+              |-ReferenceNode resolvedReference=Self type=(type (alias Simple (struct)))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -101,9 +101,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=Simple type=(type (alias Simple (struct)))
-                  |-QNameNode=Simple
-                    |-NameIdentifierNode="Simple"
+                |-ReferenceNode resolvedReference=Self type=(type (alias Simple (struct)))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean))
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -130,9 +130,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias Simple)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias Simple (struct))
-            |-ReferenceNode resolvedReference=Simple type=(type (alias Simple (struct)))
-              |-QNameNode=Simple
-                |-NameIdentifierNode="Simple"
+            |-ReferenceNode resolvedReference=Self type=(type (alias Simple (struct)))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"
@@ -337,9 +337,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias WithInt (struct a: (type (alias i32 (native i32))))) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias WithInt (struct a: (type (alias i32 (native i32))))) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=WithInt type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
-                |-QNameNode=WithInt
-                  |-NameIdentifierNode="WithInt"
+              |-ReferenceNode resolvedReference=Self type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -353,9 +353,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=WithInt type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
-                  |-QNameNode=WithInt
-                    |-NameIdentifierNode="WithInt"
+                |-ReferenceNode resolvedReference=Self type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean))
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -382,9 +382,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias WithInt)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias WithInt (struct a: (type (alias i32 (native i32)))))
-            |-ReferenceNode resolvedReference=WithInt type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
-              |-QNameNode=WithInt
-                |-NameIdentifierNode="WithInt"
+            |-ReferenceNode resolvedReference=Self type=(type (alias WithInt (struct a: (type (alias i32 (native i32))))))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"

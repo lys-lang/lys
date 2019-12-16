@@ -100,9 +100,9 @@
           |-ParameterNode annotations=Local(a:<no-type>#0)
             |-NameIdentifierNode="a" type=(union (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))) (alias ref (ref ?)))
             |-UnionTypeNode type=(union (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))) (alias ref (ref ?)))
-              |-ReferenceNode resolvedReference=Color type=(type (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))))
-                |-QNameNode=Color
-                  |-NameIdentifierNode="Color"
+              |-ReferenceNode resolvedReference=Self type=(type (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))))
+                |-QNameNode=Self
+                  |-NameIdentifierNode="Self"
               |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
                 |-QNameNode=ref
                   |-NameIdentifierNode="ref"
@@ -116,9 +116,9 @@
                 |-QNameNode=u32
                   |-NameIdentifierNode="u32"
               |-MemberNode type=(native u32) annotations=IsValueNode
-                |-ReferenceNode resolvedReference=Color type=(type (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))))
-                  |-QNameNode=Color
-                    |-NameIdentifierNode="Color"
+                |-ReferenceNode resolvedReference=Self type=(type (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))))
+                  |-QNameNode=Self
+                    |-NameIdentifierNode="Self"
                 |-NameIdentifierNode="discriminant"
             |-BinaryExpressionNode type=(alias boolean (native boolean)) annotations=IsValueNode,ImplicitCall(fun "==" ((alias u32) (alias u32)) (alias boolean)),IsReturnExpression
               |-FunctionCallNode type=(alias u32 (native u32)) annotations=IsValueNode,ImplicitCall(fun "getDiscriminant" ((alias ref)) (alias u32))
@@ -145,9 +145,9 @@
           |-NameIdentifierNode="as" type=(fun "as" ((alias Color)) (alias ref)) annotations=Explicit,Inline
           |-ParameterNode annotations=Local(lhs:<no-type>#0)
             |-NameIdentifierNode="lhs" type=(alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32)))))
-            |-ReferenceNode resolvedReference=Color type=(type (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))))
-              |-QNameNode=Color
-                |-NameIdentifierNode="Color"
+            |-ReferenceNode resolvedReference=Self type=(type (alias Color (struct r: (type (alias u32 (native u32))) g: (type (alias u32 (native u32))) b: (type (alias u32 (native u32))))))
+              |-QNameNode=Self
+                |-NameIdentifierNode="Self"
           |-ReferenceNode resolvedReference=system::core::native::ref type=(type (alias ref (ref ?)))
             |-QNameNode=ref
               |-NameIdentifierNode="ref"

@@ -45,14 +45,14 @@ type Node = %struct { a: (Tree | Forest) }
 
 impl Reference for Empty {
   #[inline]
-  fun is(a: (Empty | ref)): boolean = {
-    val discriminant: u32 = Empty.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Empty): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -88,14 +88,14 @@ impl Empty {
 
 impl Reference for Node {
   #[inline]
-  fun is(a: (Node | ref)): boolean = {
-    val discriminant: u32 = Node.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Node): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -206,14 +206,14 @@ type Cons = %struct { tree: (Tree | Forest) }
 
 impl Reference for Nil {
   #[inline]
-  fun is(a: (Nil | ref)): boolean = {
-    val discriminant: u32 = Nil.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Nil): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -249,14 +249,14 @@ impl Nil {
 
 impl Reference for Cons {
   #[inline]
-  fun is(a: (Cons | ref)): boolean = {
-    val discriminant: u32 = Cons.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Cons): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }

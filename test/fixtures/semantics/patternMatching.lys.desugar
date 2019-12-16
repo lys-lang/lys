@@ -75,14 +75,14 @@ type Complex = %struct { real: f32, imaginary: f32 }
 
 impl Reference for Infinity {
   #[inline]
-  fun is(a: (Infinity | ref)): boolean = {
-    val discriminant: u32 = Infinity.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Infinity): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -118,14 +118,14 @@ impl Infinity {
 
 impl Reference for NDet {
   #[inline]
-  fun is(a: (NDet | ref)): boolean = {
-    val discriminant: u32 = NDet.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: NDet): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -161,14 +161,14 @@ impl NDet {
 
 impl Reference for Real {
   #[inline]
-  fun is(a: (Real | ref)): boolean = {
-    val discriminant: u32 = Real.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Real): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -224,14 +224,14 @@ impl Real {
 
 impl Reference for Natural {
   #[inline]
-  fun is(a: (Natural | ref)): boolean = {
-    val discriminant: u32 = Natural.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Natural): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -287,14 +287,14 @@ impl Natural {
 
 impl Reference for Complex {
   #[inline]
-  fun is(a: (Complex | ref)): boolean = {
-    val discriminant: u32 = Complex.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Complex): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }

@@ -90,6 +90,40 @@ describe('Execution tests', () => {
   });
 
   describe('traits', () => {
+
+    test(
+      'Self\'s discriminant should be equal to Type\'s discriminant',
+      `
+        trait Checkable {
+          fun check(): u32
+          fun check2(): u32
+        }
+
+        struct A()
+        struct B()
+
+        impl Checkable for A {
+          fun check(): u32 = Self.^discriminant
+          fun check2(): u32 = A.^discriminant
+        }
+
+        impl Checkable for B {
+          fun check(): u32 = Self.^discriminant
+          fun check2(): u32 = B.^discriminant
+        }
+
+        #[export] fun A1(): u32 = A.check()
+        #[export] fun A2(): u32 = A.check2()
+        #[export] fun B1(): u32 = B.check()
+        #[export] fun B2(): u32 = B.check2()
+      `,
+      async x => {
+        expect(x.exports.A1()).to.eq(x.exports.A2());
+        expect(x.exports.B1()).to.eq(x.exports.B2());
+        expect(x.exports.A1()).to.not.eq(x.exports.B1());
+      }
+    );
+
     test(
       'concrete type must be assignable to Self in trait',
       `

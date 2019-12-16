@@ -324,14 +324,14 @@ function processStruct(
       `
             impl Reference for ${typeName} {
               #[inline]
-              fun is(a: ${typeName} | ref): boolean = {
-                val discriminant: u32 = ${typeName}.^discriminant
+              fun is(a: Self | ref): boolean = {
+                val discriminant: u32 = Self.^discriminant
                 ref.getDiscriminant(a) == discriminant
               }
 
               #[explicit]
               #[inline]
-              fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
+              fun as(lhs: Self): ref  = %wasm { (local.get $lhs) }
             }
 
             impl ${typeName} {
@@ -413,14 +413,14 @@ function processStruct(
       `
           impl Reference for ${typeName} {
             #[inline]
-            fun is(a: ${typeName} | ref): boolean = {
-              val discriminant: u32 = ${typeName}.^discriminant
+            fun is(a: Self | ref): boolean = {
+              val discriminant: u32 = Self.^discriminant
               ref.getDiscriminant(a) == discriminant
             }
 
             #[explicit]
             #[inline]
-            fun as(lhs: ${typeName}): ref  = %wasm { (local.get $lhs) }
+            fun as(lhs: Self): ref  = %wasm { (local.get $lhs) }
           }
 
           impl ${typeName} {

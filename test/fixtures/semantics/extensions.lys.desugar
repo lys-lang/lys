@@ -37,14 +37,14 @@ type BB = %struct {  }
 
 impl Reference for BB {
   #[inline]
-  fun is(a: (BB | ref)): boolean = {
-    val discriminant: u32 = BB.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: BB): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -82,14 +82,14 @@ type TT = %struct {  }
 
 impl Reference for TT {
   #[inline]
-  fun is(a: (TT | ref)): boolean = {
-    val discriminant: u32 = TT.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: TT): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }

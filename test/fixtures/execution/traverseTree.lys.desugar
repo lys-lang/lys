@@ -45,14 +45,14 @@ type Empty = %struct {  }
 
 impl Reference for Node {
   #[inline]
-  fun is(a: (Node | ref)): boolean = {
-    val discriminant: u32 = Node.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Node): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -130,14 +130,14 @@ impl Node {
 
 impl Reference for Empty {
   #[inline]
-  fun is(a: (Empty | ref)): boolean = {
-    val discriminant: u32 = Empty.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Empty): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }

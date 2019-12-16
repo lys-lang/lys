@@ -4,14 +4,14 @@ type Iterator = %struct { current: i32, target: i32 }
 
 impl Reference for Iterator {
   #[inline]
-  fun is(a: (Iterator | ref)): boolean = {
-    val discriminant: u32 = Iterator.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Iterator): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -123,14 +123,14 @@ type Some = %struct { value: i32 }
 
 impl Reference for None {
   #[inline]
-  fun is(a: (None | ref)): boolean = {
-    val discriminant: u32 = None.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: None): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -166,14 +166,14 @@ impl None {
 
 impl Reference for Some {
   #[inline]
-  fun is(a: (Some | ref)): boolean = {
-    val discriminant: u32 = Some.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Some): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }

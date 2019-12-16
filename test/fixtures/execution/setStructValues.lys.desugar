@@ -57,14 +57,14 @@ type Custom = %struct { hex: u32 }
 
 impl Reference for None {
   #[inline]
-  fun is(a: (None | ref)): boolean = {
-    val discriminant: u32 = None.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: None): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -100,14 +100,14 @@ impl None {
 
 impl Reference for Red {
   #[inline]
-  fun is(a: (Red | ref)): boolean = {
-    val discriminant: u32 = Red.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Red): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -143,14 +143,14 @@ impl Red {
 
 impl Reference for Custom {
   #[inline]
-  fun is(a: (Custom | ref)): boolean = {
-    val discriminant: u32 = Custom.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Custom): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -208,14 +208,14 @@ type CatBag = %struct { f: Color, g: (Red | None) }
 
 impl Reference for CatBag {
   #[inline]
-  fun is(a: (CatBag | ref)): boolean = {
-    val discriminant: u32 = CatBag.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: CatBag): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
@@ -294,14 +294,14 @@ type Custom2 = %struct { r: i32, g: i32 }
 
 impl Reference for Custom2 {
   #[inline]
-  fun is(a: (Custom2 | ref)): boolean = {
-    val discriminant: u32 = Custom2.^discriminant
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
     ref.getDiscriminant(a) == discriminant
   }
 
   #[explicit]
   #[inline]
-  fun as(lhs: Custom2): ref = %wasm {
+  fun as(lhs: Self): ref = %wasm {
     (local.get $lhs)
   }
 }
