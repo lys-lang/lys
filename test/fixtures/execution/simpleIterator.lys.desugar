@@ -2,6 +2,20 @@ import support::test
 
 type Iterator = %struct { current: i32, target: i32 }
 
+impl Reference for Iterator {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
 impl Iterator {
   #[inline]
   private fun Iterator$discriminant(): u64 = {
@@ -9,6 +23,7 @@ impl Iterator {
     discriminant as u64 << 32
   }
 
+  #[inline]
   fun apply(current: i32, target: i32): Iterator = {
     var $ref = fromPointer(system::core::memory::calloc(1 as u32, Iterator.^allocationSize))
     property$0($ref, current)
@@ -18,10 +33,6 @@ impl Iterator {
 
   fun as(self: Iterator): UnsafeCPointer = %wasm {
     (call addressFromRef (get_local $self))
-  }
-  #[explicit]
-  fun as(lhs: Iterator): ref = %wasm {
-    (local.get $lhs)
   }
 
   private fun fromPointer(ptr: u32): Iterator = %wasm {
@@ -56,10 +67,6 @@ impl Iterator {
   #[inline]
   private fun property$1(self: Iterator, value: i32): void = i32.store(self, value, Iterator.^property$1_offset)
 
-  fun is(a: (Iterator | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Iterator$discriminant))
-  }
-
   fun store(lhs: ref, rhs: Iterator, offset: u32): void = %wasm {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
@@ -67,30 +74,24 @@ impl Iterator {
   fun load(lhs: ref, offset: u32): Iterator = %wasm {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
-
-  fun next(iter: Iterator): Maybe = {
-    if (iter.current <= iter.target) {
-      var r = Some(iter.current)
-      iter.current = iter.current + 1
-      r
-    } else {
-      None
-    }
-  }
 }
 
 type Maybe = (None | Some)
 
-impl Maybe {
-  fun is(a: (Maybe | ref)): boolean = {
-    a is None || a is Some
+impl Reference for Maybe {
+  #[inline]
+  fun is(self: (Maybe | ref)): boolean = {
+    self is None || self is Some
   }
 
   #[explicit]
-  fun as(a: Maybe): ref = %wasm {
-    (local.get $a)
+  #[inline]
+  fun as(self: Maybe): ref = %wasm {
+    (local.get $self)
   }
+}
 
+impl Maybe {
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
 
   fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
@@ -108,23 +109,42 @@ impl None {
   fun as(lhs: None): Maybe = %wasm {
     (local.get $lhs)
   }
-  #[explicit]
-  fun as(lhs: None): ref = %wasm {
+}
+
+impl Some {
+  fun as(lhs: Some): Maybe = %wasm {
     (local.get $lhs)
   }
+}
 
+type None = %struct {  }
+
+type Some = %struct { value: i32 }
+
+impl Reference for None {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl None {
   #[inline]
   private fun None$discriminant(): i64 = {
     val discriminant: u32 = None.^discriminant
     discriminant as i64 << 32
   }
 
+  #[inline]
   fun apply(): None = %wasm {
     (call None$discriminant)
-  }
-
-  fun is(a: (None | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call None$discriminant))
   }
 
   fun ==(a: None, b: ref): boolean = %wasm {
@@ -144,28 +164,36 @@ impl None {
   }
 }
 
-impl Some {
-  fun as(lhs: Some): Maybe = %wasm {
-    (local.get $lhs)
-  }
-  fun as(self: Some): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
-  }
-  #[explicit]
-  fun as(lhs: Some): ref = %wasm {
-    (local.get $lhs)
+impl Reference for Some {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
   }
 
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl Some {
   #[inline]
   private fun Some$discriminant(): u64 = {
     val discriminant: u32 = Some.^discriminant
     discriminant as u64 << 32
   }
 
+  #[inline]
   fun apply(value: i32): Some = {
     var $ref = fromPointer(system::core::memory::calloc(1 as u32, Some.^allocationSize))
     property$0($ref, value)
     $ref
+  }
+
+  fun as(self: Some): UnsafeCPointer = %wasm {
+    (call addressFromRef (get_local $self))
   }
 
   private fun fromPointer(ptr: u32): Some = %wasm {
@@ -190,10 +218,6 @@ impl Some {
   #[inline]
   private fun property$0(self: Some, value: i32): void = i32.store(self, value, Some.^property$0_offset)
 
-  fun is(a: (Some | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Some$discriminant))
-  }
-
   fun store(lhs: ref, rhs: Some, offset: u32): void = %wasm {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
@@ -203,9 +227,17 @@ impl Some {
   }
 }
 
-type None = %struct {  }
-
-type Some = %struct { value: i32 }
+impl Iterator {
+  fun next(iter: Iterator): Maybe = {
+    if (iter.current <= iter.target) {
+      var r = Some(iter.current)
+      iter.current = iter.current + 1
+      r
+    } else {
+      None
+    }
+  }
+}
 
 fun test(from: i32, to: i32): i32 = {
   var ret = 0

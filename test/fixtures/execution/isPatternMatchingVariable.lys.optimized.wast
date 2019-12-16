@@ -80,14 +80,17 @@
        (i32.add
         (select
          (local.get $0)
-         (i32.const 8)
+         (i32.const 16)
          (i32.gt_u
           (local.get $0)
-          (i32.const 8)
+          (i32.const 16)
          )
         )
-        (local.tee $0
-         (global.get $global$6)
+        (i32.add
+         (local.tee $0
+          (global.get $global$6)
+         )
+         (i32.const 16)
         )
        )
       )
@@ -148,7 +151,10 @@
   (global.set $global$6
    (local.get $1)
   )
-  (local.get $0)
+  (i32.add
+   (local.get $0)
+   (i32.const 16)
+  )
  )
  (func $2 (; 5 ;) (type $5) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
@@ -216,14 +222,16 @@
    (drop
     (br_if $label$1
      (i32.const 0)
-     (i64.ne
-      (i64.and
-       (local.tee $0
-        (global.get $global$7)
+     (i32.ne
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$7)
+        )
+        (i64.const 32)
        )
-       (i64.const -4294967296)
       )
-      (i64.const 12884901888)
+      (i32.const 3)
      )
     )
    )
@@ -258,33 +266,37 @@
  )
  (func $6 (; 9 ;) (type $6) (param $0 i64) (result i32)
   (if (result i32)
-   (i64.eq
-    (i64.and
-     (local.get $0)
-     (i64.const -4294967296)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (local.get $0)
+      (i64.const 32)
+     )
     )
-    (i64.const 12884901888)
+    (i32.const 3)
    )
    (i32.const 1)
    (i32.ne
-    (i32.or
-     (i32.ne
-      (i64.eq
-       (i64.and
+    (if (result i32)
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
         (local.get $0)
-        (i64.const -4294967296)
+        (i64.const 32)
        )
-       (i64.const 4294967296)
       )
-      (i32.const 0)
+      (i32.const 1)
      )
+     (i32.const 1)
      (i32.ne
-      (i64.eq
-       (i64.and
-        (local.get $0)
-        (i64.const -4294967296)
+      (i32.eq
+       (i32.wrap_i64
+        (i64.shr_u
+         (local.get $0)
+         (i64.const 32)
+        )
        )
-       (i64.const 8589934592)
+       (i32.const 2)
       )
       (i32.const 0)
      )
@@ -296,12 +308,14 @@
  (func $7 (; 10 ;) (type $7) (param $0 i64) (result i64)
   (block $label$1 (result i64)
    (if
-    (i64.ne
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
+    (i32.ne
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
      )
-     (i64.const 17179869184)
+     (i32.const 4)
     )
     (block
      (drop
@@ -318,12 +332,14 @@
       (select
        (i64.const 21474836480)
        (i64.const 17179869184)
-       (i64.ne
-        (i64.and
-         (local.get $0)
-         (i64.const -4294967296)
+       (i32.ne
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $0)
+          (i64.const 32)
+         )
         )
-        (i64.const 4294967296)
+        (i32.const 1)
        )
       )
      )
@@ -337,65 +353,75 @@
    (i32.const 16)
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (call $7
-      (i64.const 17179869184)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7
+       (i64.const 17179869184)
+      )
+      (i64.const 32)
      )
-     (i64.const -4294967296)
     )
-    (i64.const 17179869184)
+    (i32.const 4)
    )
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (call $7
-      (i64.const 25769803776)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7
+       (i64.const 25769803776)
+      )
+      (i64.const 32)
      )
-     (i64.const -4294967296)
     )
-    (i64.const 17179869184)
+    (i32.const 4)
    )
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (call $7
-      (i64.const 4294967296)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7
+       (i64.const 4294967296)
+      )
+      (i64.const 32)
      )
-     (i64.const -4294967296)
     )
-    (i64.const 17179869184)
+    (i32.const 4)
    )
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (call $7
-      (i64.const 8589934592)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7
+       (i64.const 8589934592)
+      )
+      (i64.const 32)
      )
-     (i64.const -4294967296)
     )
-    (i64.const 21474836480)
+    (i32.const 5)
    )
   )
   (call $5
-   (i64.eq
-    (i64.and
-     (call $7
-      (i64.const 34359738368)
+   (i32.eq
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7
+       (i64.const 34359738368)
+      )
+      (i64.const 32)
      )
-     (i64.const -4294967296)
     )
-    (i64.const 17179869184)
+    (i32.const 4)
    )
   )
   (call $fimport$2)
  )
  (func $9 (; 12 ;) (type $2)
   (global.set $global$0
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$1
    (i32.shl

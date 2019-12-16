@@ -70,14 +70,16 @@
    (drop
     (br_if $label$1
      (i32.const 0)
-     (i64.ne
-      (i64.and
-       (local.tee $0
-        (global.get $global$7)
+     (i32.ne
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$7)
+        )
+        (i64.const 32)
        )
-       (i64.const -4294967296)
       )
-      (i64.const 12884901888)
+      (i32.const 3)
      )
     )
    )
@@ -178,7 +180,7 @@
  )
  (func $4 (; 7 ;) (type $2)
   (global.set $global$0
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$1
    (i32.shl

@@ -9,7 +9,7 @@ import system::core::boolean
 import system::core::string
 
 /** Number of alignment bits. */
-val AL_BITS = 3
+val AL_BITS = 4
 
 /** Number of possible alignment values. */
 val AL_SIZE: u32 = 0x1 << AL_BITS
@@ -26,7 +26,7 @@ private var startOffset: u32 = (HEAP_BASE + AL_MASK) & ~AL_MASK
 private var offset: u32 = startOffset
 
 #[extern "env" "segfault"]
-fun segfault(): void = panic()
+fun segfault(): void = ???
 
 #[export "test_getMaxMemory"]
 fun getMaxMemory(): u32 = offset
@@ -39,6 +39,7 @@ private fun currentMemory(): u32 = %wasm {
   (memory.size)
 }
 
+// TODO: move to utils
 private fun max(a: u32, b: u32): u32 = if (a > b) a else b
 
 fun calloc(itemCount: u32, itemSize: u32): u32 = {
@@ -56,7 +57,7 @@ fun malloc(size: u32): u32 = {
     panic()
 
   val ptr = offset
-  val newPtr = (ptr + max(size, 8 as u32) + AL_MASK) & ~AL_MASK
+  val newPtr = (ptr + 16 as u32 + max(size, 16 as u32) + AL_MASK) & ~AL_MASK
   val pagesBefore = currentMemory()
   if (newPtr > pagesBefore << 16) {
     val pagesNeeded = ((newPtr - ptr + 0xffff) & ~0xffff) >> 16
@@ -68,7 +69,7 @@ fun malloc(size: u32): u32 = {
     }
   }
   offset = newPtr
-  ptr
+  ptr + 16 as u32
 }
 
 fun free(ptr: i32): void = {

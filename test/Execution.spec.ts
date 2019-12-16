@@ -7,6 +7,154 @@ import { readBytes } from '../dist/utils/execution';
 const getBytes = require('utf8-bytes');
 
 describe('Execution tests', () => {
+  describe('multiple impl', () => {
+    test(
+      'two functions with different names',
+      `
+        struct A()
+
+        impl A {
+          fun test1(): i32 = 1
+        }
+
+        impl A {
+          fun test2(): i32 = 2
+        }
+
+        #[export]
+        fun test(): void = {
+          support::test::assert(A.test1() == 1, "test1")
+          support::test::assert(A.test2() == 2, "test2")
+        }
+      `,
+      async x => {
+        x.exports.test();
+      }
+    );
+
+    test(
+      'two functions with overloads in different impl',
+      `
+        struct A()
+
+        impl A {
+          fun test(value: i32): i32 = value
+        }
+
+        impl A {
+          fun test(value: boolean): i32 = -1
+        }
+
+        #[export]
+        fun test(): void = {
+          support::test::assert(A.test(1)     == 1,  "test 1")
+          support::test::assert(A.test(2)     == 2,  "test 2")
+          support::test::assert(A.test(false) == -1, "test 3")
+        }
+      `,
+      async x => {
+        x.exports.test();
+      }
+    );
+
+    test(
+      'implicit and explicit casts overloaded manually',
+      `
+        struct A()
+
+        impl A {
+          fun as(value: A): i32 = 1
+        }
+
+        impl A {
+          fun as(value: A): boolean = true
+        }
+
+        impl A {
+          #[explicit]
+          fun as(value: A): f32 = 3.0
+        }
+
+        #[export]
+        fun test(): void = {
+          support::test::assert(1 == A,          "test implicit i32 cast")
+          support::test::assert(true == A,       "test implicit boolean cast 1")
+          support::test::assert(A,               "test implicit boolean cast 2")
+          support::test::assert(A as f32 == 3.0, "test implicit f32 cast")
+        }
+      `,
+      async x => {
+        x.exports.test();
+      }
+    );
+  });
+
+  describe('traits', () => {
+
+    test(
+      'Self\'s discriminant should be equal to Type\'s discriminant',
+      `
+        trait Checkable {
+          fun check(): u32
+          fun check2(): u32
+        }
+
+        struct A()
+        struct B()
+
+        impl Checkable for A {
+          fun check(): u32 = Self.^discriminant
+          fun check2(): u32 = A.^discriminant
+        }
+
+        impl Checkable for B {
+          fun check(): u32 = Self.^discriminant
+          fun check2(): u32 = B.^discriminant
+        }
+
+        #[export] fun A1(): u32 = A.check()
+        #[export] fun A2(): u32 = A.check2()
+        #[export] fun B1(): u32 = B.check()
+        #[export] fun B2(): u32 = B.check2()
+      `,
+      async x => {
+        expect(x.exports.A1()).to.eq(x.exports.A2());
+        expect(x.exports.B1()).to.eq(x.exports.B2());
+        expect(x.exports.A1()).to.not.eq(x.exports.B1());
+      }
+    );
+
+    test(
+      'concrete type must be assignable to Self in trait',
+      `
+        trait Sumable {
+          fun +(lhs: Self, rhs: Self): Self
+        }
+
+        struct A(num: f32)
+        struct B(num: i32)
+
+        impl Sumable for A {
+          fun +(lhs: Self, rhs: A): A = A(lhs.num + rhs.num)
+        }
+
+        impl Sumable for B {
+          fun +(lhs: B, rhs: Self): Self = B(lhs.num + rhs.num)
+        }
+
+        #[export]
+        fun sumA(x: f32, y: f32): f32 = (A(x) + A(y)).num
+
+        #[export]
+        fun sumB(x: i32, y: i32): i32 = (B(x) + B(y)).num
+      `,
+      async x => {
+        expect(x.exports.sumA(1.5, 2)).to.eq(3.5);
+        expect(x.exports.sumB(1.1, 2.1)).to.eq(3);
+      }
+    );
+  });
+
   describe('injected wasm', () => {
     test(
       'x + 44',
@@ -24,7 +172,7 @@ describe('Execution tests', () => {
     );
   });
 
-  describe('namespaces', () => {
+  describe.skip('namespaces', () => {
     test(
       'resolve variable declarations in namespaces',
       `
@@ -278,6 +426,48 @@ describe('Execution tests', () => {
 
   describe('strings', () => {
     test(
+      'strings in different memory locations are equal',
+      `
+          var a = "asd"
+          var b = "asd"
+          var c = "xxx"
+
+          #[export] fun test(): void = {
+
+            var x = "a" ++ "s" ++ "d"
+
+            support::test::assert(a == b, "a == b")
+            support::test::assert(b == b, "b == b")
+            support::test::assert(b == a, "b == a")
+            support::test::assert(b != c, "b != c")
+            support::test::assert(a != c, "a != c")
+            support::test::assert(a == x, "a == x")
+            support::test::assert(b == x, "b == x")
+            support::test::assert(c != x, "c != x")
+
+            support::test::assert(x == a, "x == a")
+            support::test::assert(x == b, "x == b")
+            support::test::assert(x != c, "x != c")
+
+            support::test::assert(a as ref != b as ref, "a as ref != b as ref")
+            support::test::assert(b as ref == b as ref, "b as ref == b as ref")
+            support::test::assert(a as ref == a as ref, "a as ref == a as ref")
+            support::test::assert(b as ref != a as ref, "b as ref != a as ref")
+            support::test::assert(b as ref != c as ref, "b as ref != c as ref")
+            support::test::assert(a as ref != c as ref, "a as ref != c as ref")
+
+            support::test::assert(x as ref != a as ref, "x as ref != a as ref")
+            support::test::assert(x as ref != b as ref, "x as ref != b as ref")
+            support::test::assert(x as ref != c as ref, "x as ref != c as ref")
+          }
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        x.exports.test();
+      }
+    );
+
+    test(
       'str len',
       `
           #[export] fun len(): u32 = "asd".length
@@ -403,7 +593,7 @@ describe('Execution tests', () => {
     );
   });
 
-  describe.skip('named types', () => {
+  describe('type alias', () => {
     test(
       'type alias of native',
       `
@@ -416,6 +606,26 @@ describe('Execution tests', () => {
         if (err) throw err;
         expect(x.exports.add(10, 13)).to.eq(23);
         expect(x.exports.add2(30, 13)).to.eq(43);
+      }
+    );
+
+    test(
+      'alias discriminants',
+      `
+        type newKindOfString = ref
+
+        #[export] fun d_ref(): u32 = newKindOfString.^discriminant
+        #[export] fun d_str(): u32 = ref.^discriminant
+      `,
+      async (x, err) => {
+        if (err) throw err;
+        const d_ref = x.exports.d_ref();
+        const d_str = x.exports.d_str();
+
+        expect(d_ref).to.gt(0);
+        expect(d_str).to.gt(0);
+
+        expect(d_str).to.not.eq(d_ref);
       }
     );
   });

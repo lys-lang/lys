@@ -21,6 +21,8 @@ export namespace annotations {
   export class Method extends Annotation {}
   export class MethodCall extends Annotation {}
 
+  export class SignatureDeclaration extends Annotation {}
+
   export class Explicit extends Annotation {}
   export class ByPassFunction extends Annotation {}
 

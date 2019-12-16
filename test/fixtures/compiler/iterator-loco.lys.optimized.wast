@@ -69,14 +69,17 @@
        (i32.add
         (select
          (local.get $0)
-         (i32.const 8)
+         (i32.const 16)
          (i32.gt_u
           (local.get $0)
-          (i32.const 8)
+          (i32.const 16)
          )
         )
-        (local.tee $0
-         (global.get $global$6)
+        (i32.add
+         (local.tee $0
+          (global.get $global$6)
+         )
+         (i32.const 16)
         )
        )
       )
@@ -137,7 +140,10 @@
   (global.set $global$6
    (local.get $1)
   )
-  (local.get $0)
+  (i32.add
+   (local.get $0)
+   (i32.const 16)
+  )
  )
  (func $3 (; 3 ;) (type $4) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
@@ -274,16 +280,18 @@
   )
   (loop $label$1
    (if
-    (i64.eq
-     (i64.and
-      (local.tee $4
-       (call $5
-        (local.get $3)
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.tee $4
+        (call $5
+         (local.get $3)
+        )
        )
+       (i64.const 32)
       )
-      (i64.const -4294967296)
      )
-     (i64.const 12884901888)
+     (i32.const 3)
     )
     (block
      (local.set $2
@@ -304,7 +312,7 @@
  )
  (func $7 (; 7 ;) (type $0)
   (global.set $global$0
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$1
    (i32.shl

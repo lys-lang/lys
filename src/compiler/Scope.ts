@@ -5,7 +5,7 @@ import { LysScopeError } from './NodeError';
 import { indent } from '../utils/astPrinter';
 import { TypeHelpers } from './types';
 
-export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION';
+export type ReferenceType = 'TYPE' | 'VALUE' | 'FUNCTION' | 'TRAIT';
 
 export class Scope {
   localScopeDeclares: Set<string> = new Set();

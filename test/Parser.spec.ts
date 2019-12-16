@@ -603,6 +603,34 @@ describe('Parser', () => {
         type double
         type uint64e
       `;
+
+      test`
+        trait ref {
+          fun eq(): void = ???
+
+          // asd
+          fun ==(): void = ???
+        }
+
+        trait asd{}
+      `;
+
+      test`
+        trait ref {
+          fun eq(): void
+          fun ==(): void
+        }
+      `;
+
+      test`
+        impl a for b {}
+      `;
+
+      test`
+        impl Aasd for Basd {
+          fun a() = 1
+        }
+      `;
     });
 
     describe('Effects', () => {
@@ -724,6 +752,9 @@ describe('Parser', () => {
       `;
     });
 
+    test`fun test(): void`;
+    test`fun test() = 1`;
+    test`fun test()`;
     test`fun test(): i32 = 1`;
     test`fun test(): void = {}`;
     test`fun test(): void = {    }`;

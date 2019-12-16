@@ -4,16 +4,20 @@ import support::env
 
 type Color = (None | Red | Custom)
 
-impl Color {
-  fun is(a: (Color | ref)): boolean = {
-    a is None || a is Red || a is Custom
+impl Reference for Color {
+  #[inline]
+  fun is(self: (Color | ref)): boolean = {
+    self is None || self is Red || self is Custom
   }
 
   #[explicit]
-  fun as(a: Color): ref = %wasm {
-    (local.get $a)
+  #[inline]
+  fun as(self: Color): ref = %wasm {
+    (local.get $self)
   }
+}
 
+impl Color {
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
 
   fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
@@ -31,23 +35,50 @@ impl None {
   fun as(lhs: None): Color = %wasm {
     (local.get $lhs)
   }
-  #[explicit]
-  fun as(lhs: None): ref = %wasm {
+}
+
+impl Red {
+  fun as(lhs: Red): Color = %wasm {
     (local.get $lhs)
   }
+}
 
+impl Custom {
+  fun as(lhs: Custom): Color = %wasm {
+    (local.get $lhs)
+  }
+}
+
+type None = %struct {  }
+
+type Red = %struct {  }
+
+type Custom = %struct { hex: u32 }
+
+impl Reference for None {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl None {
   #[inline]
   private fun None$discriminant(): i64 = {
     val discriminant: u32 = None.^discriminant
     discriminant as i64 << 32
   }
 
+  #[inline]
   fun apply(): None = %wasm {
     (call None$discriminant)
-  }
-
-  fun is(a: (None | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call None$discriminant))
   }
 
   fun ==(a: None, b: ref): boolean = %wasm {
@@ -67,27 +98,30 @@ impl None {
   }
 }
 
-impl Red {
-  fun as(lhs: Red): Color = %wasm {
-    (local.get $lhs)
-  }
-  #[explicit]
-  fun as(lhs: Red): ref = %wasm {
-    (local.get $lhs)
+impl Reference for Red {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
   }
 
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl Red {
   #[inline]
   private fun Red$discriminant(): i64 = {
     val discriminant: u32 = Red.^discriminant
     discriminant as i64 << 32
   }
 
+  #[inline]
   fun apply(): Red = %wasm {
     (call Red$discriminant)
-  }
-
-  fun is(a: (Red | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Red$discriminant))
   }
 
   fun ==(a: Red, b: ref): boolean = %wasm {
@@ -107,28 +141,36 @@ impl Red {
   }
 }
 
-impl Custom {
-  fun as(lhs: Custom): Color = %wasm {
-    (local.get $lhs)
-  }
-  fun as(self: Custom): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
-  }
-  #[explicit]
-  fun as(lhs: Custom): ref = %wasm {
-    (local.get $lhs)
+impl Reference for Custom {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
   }
 
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl Custom {
   #[inline]
   private fun Custom$discriminant(): u64 = {
     val discriminant: u32 = Custom.^discriminant
     discriminant as u64 << 32
   }
 
+  #[inline]
   fun apply(hex: u32): Custom = {
     var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom.^allocationSize))
     property$0($ref, hex)
     $ref
+  }
+
+  fun as(self: Custom): UnsafeCPointer = %wasm {
+    (call addressFromRef (get_local $self))
   }
 
   private fun fromPointer(ptr: u32): Custom = %wasm {
@@ -153,10 +195,6 @@ impl Custom {
   #[inline]
   private fun property$0(self: Custom, value: u32): void = u32.store(self, value, Custom.^property$0_offset)
 
-  fun is(a: (Custom | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom$discriminant))
-  }
-
   fun store(lhs: ref, rhs: Custom, offset: u32): void = %wasm {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
@@ -166,13 +204,21 @@ impl Custom {
   }
 }
 
-type None = %struct {  }
-
-type Red = %struct {  }
-
-type Custom = %struct { hex: u32 }
-
 type CatBag = %struct { f: Color, g: (Red | None) }
+
+impl Reference for CatBag {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
 
 impl CatBag {
   #[inline]
@@ -181,6 +227,7 @@ impl CatBag {
     discriminant as u64 << 32
   }
 
+  #[inline]
   fun apply(f: Color, g: ((Red | None))): CatBag = {
     var $ref = fromPointer(system::core::memory::calloc(1 as u32, CatBag.^allocationSize))
     property$0($ref, f)
@@ -190,10 +237,6 @@ impl CatBag {
 
   fun as(self: CatBag): UnsafeCPointer = %wasm {
     (call addressFromRef (get_local $self))
-  }
-  #[explicit]
-  fun as(lhs: CatBag): ref = %wasm {
-    (local.get $lhs)
   }
 
   private fun fromPointer(ptr: u32): CatBag = %wasm {
@@ -238,10 +281,6 @@ impl CatBag {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $self))) (local.get $value))
   }
 
-  fun is(a: (CatBag | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call CatBag$discriminant))
-  }
-
   fun store(lhs: ref, rhs: CatBag, offset: u32): void = %wasm {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
@@ -253,6 +292,20 @@ impl CatBag {
 
 type Custom2 = %struct { r: i32, g: i32 }
 
+impl Reference for Custom2 {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
 impl Custom2 {
   #[inline]
   private fun Custom2$discriminant(): u64 = {
@@ -260,6 +313,7 @@ impl Custom2 {
     discriminant as u64 << 32
   }
 
+  #[inline]
   fun apply(r: i32, g: i32): Custom2 = {
     var $ref = fromPointer(system::core::memory::calloc(1 as u32, Custom2.^allocationSize))
     property$0($ref, r)
@@ -269,10 +323,6 @@ impl Custom2 {
 
   fun as(self: Custom2): UnsafeCPointer = %wasm {
     (call addressFromRef (get_local $self))
-  }
-  #[explicit]
-  fun as(lhs: Custom2): ref = %wasm {
-    (local.get $lhs)
   }
 
   private fun fromPointer(ptr: u32): Custom2 = %wasm {
@@ -306,10 +356,6 @@ impl Custom2 {
   private fun property$1(self: Custom2): i32 = i32.load(self, Custom2.^property$1_offset)
   #[inline]
   private fun property$1(self: Custom2, value: i32): void = i32.store(self, value, Custom2.^property$1_offset)
-
-  fun is(a: (Custom2 | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Custom2$discriminant))
-  }
 
   fun store(lhs: ref, rhs: Custom2, offset: u32): void = %wasm {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))

@@ -130,6 +130,11 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
       }
     } else if (node instanceof Nodes.OverloadedFunctionNode) {
       node.scope!.set(node.functionName, 'FUNCTION', node.isPublic);
+    } else if (node instanceof Nodes.TraitDirectiveNode) {
+      node.scope!.set(node.traitName, 'TRAIT', node.isPublic);
+      node.scope = node.scope!.newChildScope(node.traitName.name + '.');
+      node.selfTypeName = new Nodes.NameIdentifierNode(node.traitName.astNode, 'Self');
+      node.scope.set(node.selfTypeName, 'TYPE', false);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       if (node.variableName.name in InjectableTypes) {
         parsingContext.messageCollector.error(
@@ -137,13 +142,14 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
         );
       }
       node.value.scope = node.scope!.newChildScope(node.variableName.name + '_Declaration');
-      node.scope!.set(
-        node.variableName,
-        'VALUE',
-        node.parent instanceof Nodes.VarDirectiveNode && node.parent.isPublic
-      );
+      node.scope!.set(node.variableName, 'VALUE', parent instanceof Nodes.VarDirectiveNode && parent.isPublic);
     } else if (node instanceof Nodes.ImplDirective) {
-      node.scope = node.scope!.newChildScope(node.reference.variable.text + '.');
+      node.scope = node.scope!.newChildScope(node.targetImpl.variable.text + '.');
+
+      if (node.baseImpl) {
+        node.selfTypeName = new Nodes.NameIdentifierNode(node.targetImpl.astNode, 'Self');
+        node.scope.set(node.selfTypeName, 'TYPE', false);
+      }
     } else if (node instanceof Nodes.TypeDirectiveNode) {
       node.scope!.set(node.variableName, 'TYPE', node.isPublic);
     } else if (node instanceof Nodes.FunctionNode) {
@@ -155,9 +161,10 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
         }
       }
 
-      if (!node.body) {
-        parsingContext.messageCollector.error(new LysScopeError('Function has no body', node));
-      } else {
+      if (node.body) {
+        // if (node.body == false) a message is emited in the semantic phase
+        const functionBody = node.body;
+
         if (node.functionName) {
           node.body.scope = node.scope!.newChildScope(node.functionName.name + '_Body');
         } else {
@@ -165,7 +172,7 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
         }
 
         node.parameters.forEach($ => {
-          node.body!.scope!.set($.parameterName, 'VALUE', false);
+          functionBody.scope!.set($.parameterName, 'VALUE', false);
         });
       }
 
@@ -177,29 +184,27 @@ const createScopes = walkPreOrder((node: Nodes.Node, parsingContext: ParsingCont
 });
 
 function collectNamespaces(
-  namespace: Nodes.NameIdentifierNode,
+  namespace: Nodes.ImplDirective | Nodes.TraitDirectiveNode,
   directives: Nodes.DirectiveNode[],
   parsingContext: ParsingContext
 ) {
-  if (!namespace.namespaceNames) {
-    namespace.namespaceNames = new Map();
-  }
-
   const { namespaceNames } = namespace;
+
+  const nameToShow =
+    namespace instanceof Nodes.ImplDirective ? namespace.targetImpl.variable.text : namespace.traitName.name;
 
   function registerNameIdentifier(nameNode: Nodes.NameIdentifierNode) {
     if (namespaceNames.has(nameNode.name) && namespaceNames.get(nameNode.name) !== nameNode) {
       parsingContext.messageCollector.error(
-        `The name "${nameNode.name}" is already registered in the namespace "${namespace.name}"`,
+        `The name "${nameNode.name}" is already registered in the impl "${nameToShow}"`,
         nameNode.astNode
       );
       parsingContext.messageCollector.error(
-        `This is the registered name "${nameNode.name}" of "${namespace.name}"`,
+        `This is the registered name "${nameNode.name}" of "${nameToShow}"`,
         namespaceNames.get(nameNode.name)!.astNode
       );
     } else {
       namespaceNames.set(nameNode.name, nameNode);
-      nameNode.parentNamespace = namespace;
     }
   }
 
@@ -252,11 +257,13 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
     node.resolvedReference = resolved;
     node.scope!.incrementUsageQName(node.variable);
   } else if (node instanceof Nodes.ImplDirective) {
-    if (node.reference.resolvedReference) {
-      collectNamespaces(node.reference.resolvedReference.referencedNode, node.directives, parsingContext);
+    if (node.targetImpl.resolvedReference) {
+      collectNamespaces(node, node.directives, parsingContext);
     } else {
       throw new LysScopeError(`Impl is not resolved`, node);
     }
+  } else if (node instanceof Nodes.TraitDirectiveNode) {
+    collectNamespaces(node, node.directives, parsingContext);
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
       parsingContext.getPhase(node.module.text, PhaseFlags.NameInitialization);
@@ -399,7 +406,7 @@ export function executeNameInitializationPhase(moduleName: string, parsingContex
   assert(document.analysis.nextPhase === PhaseFlags.NameInitialization);
   assert(document.moduleName === moduleName);
 
-  document.scope = new Scope(parsingContext, document.moduleName, null, '[DocumentScope]');
+  document.scope = new Scope(parsingContext, document.moduleName, null, '');
 
   injectCoreImport(document, parsingContext);
 

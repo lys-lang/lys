@@ -8,9 +8,9 @@
  (type $6 (func (param i64 i32)))
  (type $7 (func (param i64)))
  (type $8 (func (param i64) (result i32)))
- (type $9 (func (param i64 i64) (result i32)))
- (type $10 (func (param i64 i64 i32)))
- (type $11 (func (param i64) (result i64)))
+ (type $9 (func (param i64) (result i64)))
+ (type $10 (func (param i64 i64) (result i32)))
+ (type $11 (func (param i64 i64 i32)))
  (type $12 (func (param i32) (result i64)))
  (type $13 (func (param i64 i64)))
  (type $14 (func (param i32 i64)))
@@ -111,14 +111,17 @@
        (i32.add
         (select
          (local.get $0)
-         (i32.const 8)
+         (i32.const 16)
          (i32.gt_u
           (local.get $0)
-          (i32.const 8)
+          (i32.const 16)
          )
         )
-        (local.tee $0
-         (global.get $global$6)
+        (i32.add
+         (local.tee $0
+          (global.get $global$6)
+         )
+         (i32.const 16)
         )
        )
       )
@@ -179,7 +182,10 @@
   (global.set $global$6
    (local.get $1)
   )
-  (local.get $0)
+  (i32.add
+   (local.get $0)
+   (i32.const 16)
+  )
  )
  (func $2 (; 6 ;) (type $5) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -284,14 +290,16 @@
    (drop
     (br_if $label$1
      (i32.const 0)
-     (i64.ne
-      (i64.and
-       (local.tee $0
-        (global.get $global$7)
+     (i32.ne
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$7)
+        )
+        (i64.const 32)
        )
-       (i64.const -4294967296)
       )
-      (i64.const 12884901888)
+      (i32.const 3)
      )
     )
    )
@@ -462,7 +470,7 @@
    (i64.const 12884901888)
   )
  )
- (func $13 (; 17 ;) (type $9) (param $0 i64) (param $1 i64) (result i32)
+ (func $13 (; 17 ;) (type $10) (param $0 i64) (param $1 i64) (result i32)
   (local $2 i32)
   (local $3 i32)
   (if (result i32)
@@ -628,7 +636,7 @@
    )
   )
  )
- (func $16 (; 20 ;) (type $10) (param $0 i64) (param $1 i64) (param $2 i32)
+ (func $16 (; 20 ;) (type $11) (param $0 i64) (param $1 i64) (param $2 i32)
   (local $3 i32)
   (local $4 i32)
   (local $5 i64)
@@ -709,7 +717,7 @@
    )
   )
  )
- (func $17 (; 21 ;) (type $11) (param $0 i64) (result i64)
+ (func $17 (; 21 ;) (type $9) (param $0 i64) (result i64)
   (local $1 i32)
   (local $2 i64)
   (if (result i64)
@@ -779,7 +787,7 @@
    )
   )
  )
- (func $18 (; 22 ;) (type $11) (param $0 i64) (result i64)
+ (func $18 (; 22 ;) (type $9) (param $0 i64) (result i64)
   (local $1 i32)
   (local $2 i64)
   (if (result i64)
@@ -1054,7 +1062,7 @@
  )
  (func $25 (; 29 ;) (type $2)
   (global.set $global$0
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$1
    (i32.shl

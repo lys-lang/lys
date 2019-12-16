@@ -1,15 +1,19 @@
 type Tree = (Node | Empty)
 
-impl Tree {
-  fun is(a: (Tree | ref)): boolean = {
-    a is Node || a is Empty
+impl Reference for Tree {
+  #[inline]
+  fun is(self: (Tree | ref)): boolean = {
+    self is Node || self is Empty
   }
 
   #[explicit]
-  fun as(a: Tree): ref = %wasm {
-    (local.get $a)
+  #[inline]
+  fun as(self: Tree): ref = %wasm {
+    (local.get $self)
   }
+}
 
+impl Tree {
   fun ==(lhs: ref, rhs: ref): boolean = lhs == rhs
 
   fun !=(lhs: ref, rhs: ref): boolean = lhs != rhs
@@ -27,26 +31,50 @@ impl Node {
   fun as(lhs: Node): Tree = %wasm {
     (local.get $lhs)
   }
-  fun as(self: Node): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
-  }
-  #[explicit]
-  fun as(lhs: Node): ref = %wasm {
+}
+
+impl Empty {
+  fun as(lhs: Empty): Tree = %wasm {
     (local.get $lhs)
   }
+}
 
+type Node = %struct { value: i32, left: Tree, right: Tree }
+
+type Empty = %struct {  }
+
+impl Reference for Node {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
+  }
+
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl Node {
   #[inline]
   private fun Node$discriminant(): u64 = {
     val discriminant: u32 = Node.^discriminant
     discriminant as u64 << 32
   }
 
+  #[inline]
   fun apply(value: i32, left: Tree, right: Tree): Node = {
     var $ref = fromPointer(system::core::memory::calloc(1 as u32, Node.^allocationSize))
     property$0($ref, value)
     property$1($ref, left)
     property$2($ref, right)
     $ref
+  }
+
+  fun as(self: Node): UnsafeCPointer = %wasm {
+    (call addressFromRef (get_local $self))
   }
 
   private fun fromPointer(ptr: u32): Node = %wasm {
@@ -91,10 +119,6 @@ impl Node {
   #[inline]
   private fun property$2(self: Node, value: Tree): void = Tree.store(self, value, Node.^property$2_offset)
 
-  fun is(a: (Node | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Node$discriminant))
-  }
-
   fun store(lhs: ref, rhs: Node, offset: u32): void = %wasm {
     (i64.store (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))) (local.get $rhs))
   }
@@ -104,27 +128,30 @@ impl Node {
   }
 }
 
-impl Empty {
-  fun as(lhs: Empty): Tree = %wasm {
-    (local.get $lhs)
-  }
-  #[explicit]
-  fun as(lhs: Empty): ref = %wasm {
-    (local.get $lhs)
+impl Reference for Empty {
+  #[inline]
+  fun is(a: (Self | ref)): boolean = {
+    val discriminant: u32 = Self.^discriminant
+    ref.getDiscriminant(a) == discriminant
   }
 
+  #[explicit]
+  #[inline]
+  fun as(lhs: Self): ref = %wasm {
+    (local.get $lhs)
+  }
+}
+
+impl Empty {
   #[inline]
   private fun Empty$discriminant(): i64 = {
     val discriminant: u32 = Empty.^discriminant
     discriminant as i64 << 32
   }
 
+  #[inline]
   fun apply(): Empty = %wasm {
     (call Empty$discriminant)
-  }
-
-  fun is(a: (Empty | ref)): boolean = %wasm {
-    (i64.eq (i64.and (i64.const 0xffffffff00000000) (local.get $a)) (call Empty$discriminant))
   }
 
   fun ==(a: Empty, b: ref): boolean = %wasm {
@@ -143,10 +170,6 @@ impl Empty {
     (i64.load (i32.add (local.get $offset) (call addressFromRef (local.get $lhs))))
   }
 }
-
-type Node = %struct { value: i32, left: Tree, right: Tree }
-
-type Empty = %struct {  }
 
 fun sum(arg: Tree): i32 = {
   match arg {

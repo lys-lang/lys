@@ -1,5 +1,7 @@
 import { Nodes } from './nodes';
-import { Type, IntersectionType } from './types';
+import { Type, IntersectionType, TraitType } from './types';
+
+export const DEBUG_TYPES = process.env.DEBUG_TYPES === '1' || process.env.DEBUG_TYPES === 'true';
 
 export interface IPositionCapable {
   readonly start: number;
@@ -23,6 +25,13 @@ export function isSamePositionOrInside(parent: IPositionCapable, child: IPositio
     isSamePosition(parent, child) ||
     (parent.moduleName === child.moduleName && parent.end >= child.end && parent.start <= child.start)
   );
+}
+
+export function printDebugType(type?: Type | null | undefined | void) {
+  if (type) {
+    return `"${type}"${DEBUG_TYPES ? ' ' + type.inspect(1) : ''}`;
+  }
+  return `<Type ${type}>`;
 }
 
 export class PositionCapableError extends Error implements IErrorPositionCapable {
@@ -58,7 +67,12 @@ export class LysCompilerError extends AstNodeError {}
 
 export class TypeMismatch extends LysTypeError {
   constructor(public givenType: Type, public expectedType: Type, node: Nodes.Node) {
-    super(`Type mismatch: Type "${givenType}" is not assignable to "${expectedType}"`, node);
+    super(
+      expectedType instanceof TraitType
+        ? `Type mismatch: Type ${printDebugType(givenType)} does not implement ${printDebugType(expectedType)}`
+        : `Type mismatch: Type ${printDebugType(givenType)} is not assignable to ${printDebugType(expectedType)}`,
+      node
+    );
   }
 }
 
@@ -69,23 +83,23 @@ export class CannotInferReturnType extends LysTypeError {
 }
 
 export class NotAValidType extends LysTypeError {
-  constructor(node: Nodes.Node) {
-    super(`This is not a type`, node);
+  constructor(node: Nodes.Node, type: Type | null) {
+    super(type ? `${printDebugType(type)} is not a type` : `This is not a type`, node);
   }
 }
 
 export class UnexpectedType extends LysTypeError {
   constructor(public type: Type, node: Nodes.Node) {
-    super(`${type} ${type.inspect(100)} is not a value, constructor or function.`, node);
+    super(`${printDebugType(type)} is not a value, constructor or function.`, node);
   }
 }
 
 export class InvalidOverload extends LysTypeError {
   constructor(public functionType: IntersectionType, public givenTypes: Type[], node: Nodes.Node) {
     super(
-      `Could not find a valid overload for function of type ${functionType} with the arguments of type (${givenTypes.join(
-        ', '
-      )})`,
+      `Could not find a valid overload for function of type ${printDebugType(
+        functionType
+      )} with the arguments of type (${givenTypes.join(', ')})`,
       node
     );
   }
@@ -94,7 +108,9 @@ export class InvalidOverload extends LysTypeError {
 export class InvalidCall extends LysTypeError {
   constructor(public expectedTypes: Type[], public givenTypes: Type[], node: Nodes.Node) {
     super(
-      `Invalid signature. Expecting arguments type (${expectedTypes.join(', ')}) but got (${givenTypes.join(', ')})`,
+      `Invalid signature. Expecting arguments type:\n  (${expectedTypes.join(', ')})\nbut got:\n  (${givenTypes.join(
+        ', '
+      )})`,
       node
     );
   }
@@ -107,7 +123,7 @@ export class UnreachableCode extends LysSemanticError {
 }
 
 export class NotAFunction extends LysTypeError {
-  constructor(public givenType: Type, node: Nodes.Node) {
-    super(`Type mismatch: Type "${givenType}" is not a function`, node);
+  constructor(public type: Type, node: Nodes.Node) {
+    super(`Type mismatch: Type ${printDebugType(type)}" is not a function`, node);
   }
 }

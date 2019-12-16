@@ -89,14 +89,16 @@
    (drop
     (br_if $label$1
      (i32.const 0)
-     (i64.ne
-      (i64.and
-       (local.tee $0
-        (global.get $global$0)
+     (i32.ne
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$0)
+        )
+        (i64.const 32)
        )
-       (i64.const -4294967296)
       )
-      (i64.const 12884901888)
+      (i32.const 3)
      )
     )
    )
@@ -139,14 +141,17 @@
        (i32.add
         (select
          (local.get $0)
-         (i32.const 8)
+         (i32.const 16)
          (i32.gt_u
           (local.get $0)
-          (i32.const 8)
+          (i32.const 16)
          )
         )
-        (local.tee $0
-         (global.get $global$7)
+        (i32.add
+         (local.tee $0
+          (global.get $global$7)
+         )
+         (i32.const 16)
         )
        )
       )
@@ -207,7 +212,10 @@
   (global.set $global$7
    (local.get $1)
   )
-  (local.get $0)
+  (i32.add
+   (local.get $0)
+   (i32.const 16)
+  )
  )
  (func $5 (; 9 ;) (type $7) (param $0 i32) (param $1 i32) (param $2 i32)
   (local.set $2
@@ -292,22 +300,26 @@
   (local $2 i64)
   (block $label$1 (result i32)
    (if
-    (i64.ne
-     (i64.and
-      (local.get $0)
-      (i64.const -4294967296)
+    (i32.ne
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
      )
-     (i64.const 8589934592)
+     (i32.const 2)
     )
     (block
      (block $label$3
       (br_if $label$3
-       (i64.eq
-        (i64.and
-         (local.get $0)
-         (i64.const -4294967296)
+       (i32.eq
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $0)
+          (i64.const 32)
+         )
         )
-        (i64.const 4294967296)
+        (i32.const 1)
        )
       )
      )
@@ -377,7 +389,7 @@
    (i64.const 8589934592)
   )
   (global.set $global$1
-   (i32.const 3)
+   (i32.const 4)
   )
   (global.set $global$2
    (i32.shl

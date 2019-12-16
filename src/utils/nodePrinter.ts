@@ -44,12 +44,15 @@ function privatePrint(node: Nodes.Node): string {
   } else if (node instanceof Nodes.DocumentNode) {
     return node.directives.map(printNode).join('\n\n');
   } else if (node instanceof Nodes.FunctionNode) {
-    const bodyText = printNode(node.body!);
+    const bodyText = node.body ? printNode(node.body) : '';
 
     const body =
-      node.body instanceof Nodes.BlockNode || node.body instanceof Nodes.WasmExpressionNode || !bodyText.includes('\n')
-        ? ' ' + bodyText
-        : '\n' + indent(bodyText);
+      bodyText &&
+      (node.body instanceof Nodes.BlockNode ||
+        node.body instanceof Nodes.WasmExpressionNode ||
+        !bodyText.includes('\n'))
+        ? ' = ' + bodyText
+        : ' =\n' + indent(bodyText);
 
     const retType = node.functionReturnType ? ': ' + printNode(node.functionReturnType) : '';
 
@@ -57,7 +60,7 @@ function privatePrint(node: Nodes.Node): string {
 
     const functionName = printNode(node.functionName);
 
-    return `fun ${functionName}(${params})${retType} =${body}`;
+    return `fun ${functionName}(${params})${retType}${body}`;
   } else if (node instanceof Nodes.ContinueNode) {
     return 'continue';
   } else if (node instanceof Nodes.BreakNode) {
@@ -72,7 +75,13 @@ function privatePrint(node: Nodes.Node): string {
 
     return `loop${body}`;
   } else if (node instanceof Nodes.ImplDirective) {
-    return `impl ${printNode(node.reference)} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
+    if (node.baseImpl) {
+      return `impl ${printNode(node.baseImpl)} for ${printNode(node.targetImpl)} {\n${indent(
+        node.directives.map(printNode).join('\n\n')
+      )}\n}`;
+    } else {
+      return `impl ${printNode(node.targetImpl)} {\n${indent(node.directives.map(printNode).join('\n\n'))}\n}`;
+    }
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     return `import ${printNode(node.module)}`;
   } else if (node instanceof Nodes.FunDirectiveNode) {
@@ -175,6 +184,10 @@ function privatePrint(node: Nodes.Node): string {
     const types = indent(node.declarations.map($ => printNode($)).join('\n'));
 
     return `enum ${printNode(node.variableName)} {\n${types}\n}`;
+  } else if (node instanceof Nodes.TraitDirectiveNode) {
+    const types = indent(node.directives.map($ => printNode($)).join('\n'));
+
+    return `trait ${printNode(node.traitName)} {\n${types}\n}`;
   } else if (node instanceof Nodes.VarDeclarationNode) {
     return (
       (node.variableName.hasAnnotation(annotations.MutableDeclaration) ? 'var ' : 'val ') +

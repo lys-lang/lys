@@ -143,9 +143,8 @@ export namespace Nodes {
   export abstract class ExpressionNode extends Node {}
 
   export class NameIdentifierNode extends Node {
+    impls = new Set<ImplDirective>();
     internalIdentifier?: string;
-    namespaceNames?: Map<string, NameIdentifierNode>;
-    parentNamespace?: NameIdentifierNode;
 
     get childrenOrEmpty(): Node[] {
       return [];
@@ -489,16 +488,25 @@ export namespace Nodes {
   }
 
   export class ImplDirective extends DirectiveNode {
+    baseImpl?: ReferenceNode;
+    selfTypeName?: NameIdentifierNode;
+    readonly namespaceNames: Map<string, NameIdentifierNode> = new Map();
+
     constructor(
       astNode: ASTNode,
-      public readonly reference: ReferenceNode,
+      public readonly targetImpl: ReferenceNode,
       public readonly directives: DirectiveNode[]
     ) {
       super(astNode);
     }
 
     get childrenOrEmpty() {
-      return [...(this.decorators || []), this.reference, ...(this.directives || [])];
+      return [
+        ...(this.decorators || []),
+        this.targetImpl,
+        ...(this.baseImpl ? [this.baseImpl] : []),
+        ...(this.directives || [])
+      ];
     }
   }
 
@@ -590,6 +598,19 @@ export namespace Nodes {
 
     get childrenOrEmpty() {
       return [...(this.decorators || []), this.variableName, this.valueType];
+    }
+  }
+
+  export class TraitDirectiveNode extends DirectiveNode {
+    readonly namespaceNames: Map<string, NameIdentifierNode> = new Map();
+    selfTypeName?: NameIdentifierNode;
+
+    constructor(astNode: ASTNode, public readonly traitName: NameIdentifierNode, public directives: DirectiveNode[]) {
+      super(astNode);
+    }
+
+    get childrenOrEmpty() {
+      return [...(this.decorators || []), this.traitName, ...this.directives];
     }
   }
 

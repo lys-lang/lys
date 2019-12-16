@@ -1,5 +1,7 @@
 # Test
 
+**THIS TEST IS SKIPPED**
+
 This tests an emergent pattern, it is a C enum-like pattern but stricter.
 
 It is compatible with C-enums.

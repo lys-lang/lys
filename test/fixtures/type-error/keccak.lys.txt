@@ -1,7 +1,10 @@
 test/fixtures/type-error/keccak.lys
     1│ fun keccak(input: bytes): bytes = {
     2│   bytes
-     │   ^^^^^ Invalid signature. Expecting arguments type (u32) but got ()
-     │   ^^^^^ Type<bytes> (type (alias bytes (native bytes))) is not a value, constructor or function.
+     │   ^^^^^ Invalid signature. Expecting arguments type:
+  (u32)
+but got:
+  ()
+     │   ^^^^^ "Type<bytes>" is not a value, constructor or function.
     3│ }
-     │ ^ Type<bytes> (type (alias bytes (native bytes))) is not a value, constructor or function.
+     │ ^ "Type<bytes>" is not a value, constructor or function.
