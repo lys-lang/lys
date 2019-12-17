@@ -20,6 +20,27 @@ export function readString(memory: ArrayBuffer, offset: number) {
   return sb.join('');
 }
 
+export function writeStringToHeap(instance: any, value: string) {
+  const allocatedString = instance.exports.malloc(4 + value.length);
+
+  // UCS16
+  const dv = new DataView(instance.exports.memory.buffer, allocatedString);
+  let len = value.length;
+  dv.setUint32(0, len, true);
+
+  let currentOffset = 4;
+  len += 4;
+
+  let i = 0;
+  while (currentOffset < len) {
+    dv.setUint16(currentOffset, value.charCodeAt(i), true);
+    currentOffset += 2;
+    i++;
+  }
+
+  return allocatedString;
+}
+
 export function readBytes(memory: ArrayBuffer, offset: number) {
   const dv = new DataView(memory, offset);
   let len = dv.getUint32(0, true);
