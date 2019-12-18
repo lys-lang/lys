@@ -88,6 +88,28 @@ impl string {
       )
     )
   }
+
+  fun min(a: u32, b: u32): u32 = if (a > b) b else a
+  fun max(a: u32, b: u32): u32 = if (a > b) a else b
+
+  #[method]
+  fun substr(self: string, start: u32, end: u32): string = {
+    val len = self.length
+    val finalStart = min(max(start, 0 as u32), len)
+    val finalEnd = min(max(end, 0 as u32), len)
+    val fromPos = min(finalStart, finalEnd) << 1
+    val toPos = max(finalStart, finalEnd) << 1
+    val size = toPos - fromPos
+    if (size == 0 as u32) {
+      ""
+    } else if (fromPos == 0 as u32 && toPos == len << 1) {
+      self
+    } else {
+      val out = bytes(size)
+      system::core::memory::memcpy(out.ptr, self.ptr + fromPos, size)
+      string.fromBytes(out)
+    }
+  }
 }
 
 // UTILS
