@@ -1,0 +1,21 @@
+on:
+  push
+
+name: Test
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: npm install
+        run: npm install
+      - name: make test
+        run: make test
+      - name: make e2e
+        run: make e2e
+      - name: make lint
+        run: make lint
