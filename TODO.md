@@ -92,7 +92,3 @@ grammar changes:
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
-
-# STDLIB
-
-- Test `string.substr`

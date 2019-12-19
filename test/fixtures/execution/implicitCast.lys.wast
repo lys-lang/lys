@@ -61,16 +61,6 @@
   (func $system::core::memory::currentMemory_1 (result i32)
     (memory.size)
   )
-  (func $system::core::memory::max_1 (param $a i32) (param $b i32) (result i32)
-    (if $IF1 (result i32) (call $system::core::u32::u32.>_1 (local.get $a) (local.get $b))
-      (then
-        (local.get $a)
-      )
-      (else
-        (local.get $b)
-      )
-    )
-  )
   (func $system::core::memory::calloc_1 (param $itemCount i32) (param $itemSize i32) (result i32)
     (local $system::core::memory::size i32)
     (local $system::core::memory::$ret i32)
@@ -101,13 +91,13 @@
           (else)
         )
       (local.set $system::core::memory::ptr (global.get $system::core::memory::offset))
-      (local.set $system::core::memory::newPtr (call $system::core::u32::u32.&_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (local.get $system::core::memory::ptr) (call $system::core::i32::i32.as_4 (i32.const 16))) (call $system::core::memory::max_1 (local.get $size) (call $system::core::i32::i32.as_4 (i32.const 16)))) (global.get $system::core::memory::AL_MASK)) (call $system::core::u32::u32.~_1 (global.get $system::core::memory::AL_MASK))))
+      (local.set $system::core::memory::newPtr (call $system::core::u32::u32.&_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.+_1 (local.get $system::core::memory::ptr) (call $system::core::i32::i32.as_4 (i32.const 16))) (call $system::core::math::max_2 (local.get $size) (call $system::core::i32::i32.as_4 (i32.const 16)))) (global.get $system::core::memory::AL_MASK)) (call $system::core::u32::u32.~_1 (global.get $system::core::memory::AL_MASK))))
       (local.set $system::core::memory::pagesBefore (call $system::core::memory::currentMemory_1))
       (if $IF4 (call $system::core::u32::u32.>_1 (local.get $system::core::memory::newPtr) (call $system::core::u32::u32.<<_1 (local.get $system::core::memory::pagesBefore) (i32.const 16)))
           (then
             (block $B5
                 (local.set $system::core::memory::pagesNeeded (call $system::core::u32::u32.>>_1 (call $system::core::u32::u32.&_1 (call $system::core::u32::u32.+_1 (call $system::core::u32::u32.-_1 (local.get $system::core::memory::newPtr) (local.get $system::core::memory::ptr)) (i32.const 0xffff)) (call $system::core::u32::u32.~_1 (i32.const 0xffff))) (i32.const 16)))
-                (local.set $system::core::memory::pagesWanted (call $system::core::memory::max_1 (local.get $system::core::memory::pagesBefore) (local.get $system::core::memory::pagesNeeded)))
+                (local.set $system::core::memory::pagesWanted (call $system::core::math::max_2 (local.get $system::core::memory::pagesBefore) (local.get $system::core::memory::pagesNeeded)))
                 (if $IF6 (call $system::core::u32::u32.<_1 (call $system::core::memory::growMemory_1 (local.get $system::core::memory::pagesWanted)) (call $system::core::i32::i32.as_4 (i32.const 0)))
                     (then
                       (block $B7
@@ -168,6 +158,126 @@
     (local $end i32)
     (set_local $end (i32.add (get_local $ptr) (get_local $len)))
     (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
+  )
+  (func $system::core::math::min_1 (param $a i32) (param $b i32) (result i32)
+    (if $IF1 (result i32) (call $system::core::i32::i32.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $b)
+      )
+      (else
+        (local.get $a)
+      )
+    )
+  )
+  (func $system::core::math::min_2 (param $a i32) (param $b i32) (result i32)
+    (if $IF1 (result i32) (call $system::core::u32::u32.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $b)
+      )
+      (else
+        (local.get $a)
+      )
+    )
+  )
+  (func $system::core::math::min_3 (param $a i64) (param $b i64) (result i64)
+    (if $IF1 (result i64) (call $system::core::i64::i64.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $b)
+      )
+      (else
+        (local.get $a)
+      )
+    )
+  )
+  (func $system::core::math::min_4 (param $a i64) (param $b i64) (result i64)
+    (if $IF1 (result i64) (call $system::core::u64::u64.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $b)
+      )
+      (else
+        (local.get $a)
+      )
+    )
+  )
+  (func $system::core::math::min_5 (param $a f32) (param $b f32) (result f32)
+    (if $IF1 (result f32) (call $system::core::f32::f32.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $b)
+      )
+      (else
+        (local.get $a)
+      )
+    )
+  )
+  (func $system::core::math::min_6 (param $a f64) (param $b f64) (result f64)
+    (if $IF1 (result f64) (call $system::core::f64::f64.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $b)
+      )
+      (else
+        (local.get $a)
+      )
+    )
+  )
+  (func $system::core::math::max_1 (param $a i32) (param $b i32) (result i32)
+    (if $IF1 (result i32) (call $system::core::i32::i32.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $a)
+      )
+      (else
+        (local.get $b)
+      )
+    )
+  )
+  (func $system::core::math::max_2 (param $a i32) (param $b i32) (result i32)
+    (if $IF1 (result i32) (call $system::core::u32::u32.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $a)
+      )
+      (else
+        (local.get $b)
+      )
+    )
+  )
+  (func $system::core::math::max_3 (param $a i64) (param $b i64) (result i64)
+    (if $IF1 (result i64) (call $system::core::i64::i64.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $a)
+      )
+      (else
+        (local.get $b)
+      )
+    )
+  )
+  (func $system::core::math::max_4 (param $a i64) (param $b i64) (result i64)
+    (if $IF1 (result i64) (call $system::core::u64::u64.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $a)
+      )
+      (else
+        (local.get $b)
+      )
+    )
+  )
+  (func $system::core::math::max_5 (param $a f32) (param $b f32) (result f32)
+    (if $IF1 (result f32) (call $system::core::f32::f32.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $a)
+      )
+      (else
+        (local.get $b)
+      )
+    )
+  )
+  (func $system::core::math::max_6 (param $a f64) (param $b f64) (result f64)
+    (if $IF1 (result f64) (call $system::core::f64::f64.>_1 (local.get $a) (local.get $b))
+      (then
+        (local.get $a)
+      )
+      (else
+        (local.get $b)
+      )
+    )
   )
   (data 0 (i32.const 214) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d\00\00")
   (data 0 (i32.const 241) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d\00\00")
@@ -441,6 +551,15 @@
   (func $support::test::mustEqual_8 (param $given i64) (param $expected i64) (param $message i64)
     (block $B1
       (call $support::test::verify_2 (call $system::core::string::string.==_1 (local.get $given) (local.get $expected)) (local.get $message))
+      (if $IF2 (call $system::core::string::string.!=_1 (local.get $given) (local.get $expected))
+          (then
+            (block $B3
+                (call $support::env::printf_15 (local.get $given))
+                (call $support::env::printf_15 (local.get $expected))
+              )
+          )
+          (else)
+        )
     )
   )
   (func $support::test::getLastErrorMessage_1 (result i32)
@@ -1608,27 +1727,7 @@
   (func $system::core::string::string.fromBytes_1 (param $bytes i64) (result i64)
     (i64.or (call $system::core::string::string.getDiscriminant_1) (i64.and (i64.const 0xFFFFFFFF) (local.get $bytes)))
   )
-  (func $system::core::string::string.min_1 (param $a i32) (param $b i32) (result i32)
-    (if $IF1 (result i32) (call $system::core::u32::u32.>_1 (local.get $a) (local.get $b))
-      (then
-        (local.get $b)
-      )
-      (else
-        (local.get $a)
-      )
-    )
-  )
-  (func $system::core::string::string.max_1 (param $a i32) (param $b i32) (result i32)
-    (if $IF1 (result i32) (call $system::core::u32::u32.>_1 (local.get $a) (local.get $b))
-      (then
-        (local.get $a)
-      )
-      (else
-        (local.get $b)
-      )
-    )
-  )
-  (func $system::core::string::string.substr_1 (param $self i64) (param $start i32) (param $end i32) (result i64)
+  (func $system::core::string::string.substring_1 (param $self i64) (param $start i32) (param $end i32) (result i64)
     (local $system::core::string::len i32)
     (local $system::core::string::finalStart i32)
     (local $system::core::string::finalEnd i32)
@@ -1637,20 +1736,20 @@
     (local $system::core::string::size i32)
     (local $system::core::string::out i64)
     (block $B1 (result i64)
-      (local.set $system::core::string::len (call $system::core::string::string.length_1 (local.get $self)))
-      (local.set $system::core::string::finalStart (call $system::core::string::string.min_1 (call $system::core::string::string.max_1 (local.get $start) (call $system::core::i32::i32.as_4 (i32.const 0))) (local.get $system::core::string::len)))
-      (local.set $system::core::string::finalEnd (call $system::core::string::string.min_1 (call $system::core::string::string.max_1 (local.get $end) (call $system::core::i32::i32.as_4 (i32.const 0))) (local.get $system::core::string::len)))
-      (local.set $system::core::string::fromPos (call $system::core::u32::u32.<<_1 (call $system::core::string::string.min_1 (local.get $system::core::string::finalStart) (local.get $system::core::string::finalEnd)) (i32.const 1)))
-      (local.set $system::core::string::toPos (call $system::core::u32::u32.<<_1 (call $system::core::string::string.max_1 (local.get $system::core::string::finalStart) (local.get $system::core::string::finalEnd)) (i32.const 1)))
-      (local.set $system::core::string::size (call $system::core::u32::u32.-_1 (local.get $system::core::string::toPos) (local.get $system::core::string::fromPos)))
-      (if $IF2 (result i64) (call $system::core::u32::u32.==_1 (local.get $system::core::string::size) (call $system::core::i32::i32.as_4 (i32.const 0)))
+      (local.set $system::core::string::len (call $system::core::u32::u32.as_5 (call $system::core::string::string.length_1 (local.get $self))))
+      (local.set $system::core::string::finalStart (call $system::core::math::min_1 (call $system::core::math::max_1 (local.get $start) (i32.const 0)) (local.get $system::core::string::len)))
+      (local.set $system::core::string::finalEnd (call $system::core::math::min_1 (call $system::core::math::max_1 (local.get $end) (i32.const 0)) (local.get $system::core::string::len)))
+      (local.set $system::core::string::fromPos (call $system::core::i32::i32.<<_1 (call $system::core::math::min_1 (local.get $system::core::string::finalStart) (local.get $system::core::string::finalEnd)) (i32.const 1)))
+      (local.set $system::core::string::toPos (call $system::core::i32::i32.<<_1 (call $system::core::math::max_1 (local.get $system::core::string::finalStart) (local.get $system::core::string::finalEnd)) (i32.const 1)))
+      (local.set $system::core::string::size (call $system::core::i32::i32.-_1 (local.get $system::core::string::toPos) (local.get $system::core::string::fromPos)))
+      (if $IF2 (result i64) (call $system::core::i32::i32.<=_1 (local.get $system::core::string::size) (i32.const 0))
           (then
             (block $B3 (result i64)
                 (i64.const 0x00000003000000a7)
               )
           )
           (else
-            (if $IF4 (result i64) (call $system::core::boolean::boolean.&&_1 (call $system::core::u32::u32.==_1 (local.get $system::core::string::fromPos) (call $system::core::i32::i32.as_4 (i32.const 0))) (call $system::core::u32::u32.==_1 (local.get $system::core::string::toPos) (call $system::core::u32::u32.<<_1 (local.get $system::core::string::len) (i32.const 1))))
+            (if $IF4 (result i64) (call $system::core::boolean::boolean.&&_1 (call $system::core::i32::i32.==_1 (local.get $system::core::string::fromPos) (i32.const 0)) (call $system::core::i32::i32.>=_1 (local.get $system::core::string::toPos) (call $system::core::i32::i32.<<_1 (local.get $system::core::string::len) (i32.const 1))))
                 (then
                   (block $B5 (result i64)
                       (local.get $self)
@@ -1658,14 +1757,19 @@
                 )
                 (else
                   (block $B6 (result i64)
-                      (local.set $system::core::string::out (call $system::core::bytes::bytes.apply_1 (local.get $system::core::string::size)))
-                      (drop (call $system::core::memory::memcpy_1 (call $system::core::bytes::bytes.ptr_1 (local.get $system::core::string::out)) (call $system::core::u32::u32.+_1 (call $system::core::string::string.ptr_1 (local.get $self)) (local.get $system::core::string::fromPos)) (local.get $system::core::string::size)))
+                      (local.set $system::core::string::out (call $system::core::bytes::bytes.apply_1 (call $system::core::i32::i32.as_4 (local.get $system::core::string::size))))
+                      (drop (call $system::core::memory::memcpy_1 (call $system::core::bytes::bytes.ptr_1 (local.get $system::core::string::out)) (call $system::core::u32::u32.+_1 (call $system::core::string::string.ptr_1 (local.get $self)) (call $system::core::i32::i32.as_4 (local.get $system::core::string::fromPos))) (call $system::core::i32::i32.as_4 (local.get $system::core::string::size))))
                       (call $system::core::string::string.fromBytes_1 (local.get $system::core::string::out))
                     )
                 )
               )
           )
         )
+    )
+  )
+  (func $system::core::string::string.substring_2 (param $self i64) (param $start i32) (result i64)
+    (block $B1 (result i64)
+      (call $system::core::string::string.substring_1 (local.get $self) (local.get $start) (call $system::core::u32::u32.as_5 (i32.const 0x7FFFFFFF)))
     )
   )
   (func $system::core::string::string.concat_1 (param $lhs i64) (param $rhs i64) (result i64)
@@ -1715,17 +1819,23 @@
                           (block $Break7
                               (loop $Loop7
                                   (block $B8
-                                      (local.set $system::core::string::len_1 (call $system::core::u32::u32.-_1 (local.get $system::core::string::len_1) (call $system::core::i32::i32.as_4 (i32.const 1))))
-                                      (if $IF9 (call $system::core::u16::u16.!=_2 (call $system::core::string::string.___1 (local.get $lhs) (local.get $system::core::string::len_1)) (call $system::core::string::string.___1 (local.get $rhs) (local.get $system::core::string::len_1)))
+                                      (if $IF9 (call $system::core::u32::u32.<=_1 (local.get $system::core::string::len_1) (call $system::core::i32::i32.as_4 (i32.const 0)))
                                           (then
-                                            (block $B10
+                                            (br $Break7)
+                                          )
+                                          (else)
+                                        )
+                                      (local.set $system::core::string::len_1 (call $system::core::u32::u32.-_1 (local.get $system::core::string::len_1) (call $system::core::i32::i32.as_4 (i32.const 1))))
+                                      (if $IF10 (call $system::core::u16::u16.!=_2 (call $system::core::string::string.___1 (local.get $lhs) (local.get $system::core::string::len_1)) (call $system::core::string::string.___1 (local.get $rhs) (local.get $system::core::string::len_1)))
+                                          (then
+                                            (block $B11
                                                 (local.set $system::core::string::equals (i32.const 0))
                                                 (br $Break7)
                                               )
                                           )
                                           (else)
                                         )
-                                      (if $IF11 (call $system::core::u32::u32.>_1 (local.get $system::core::string::len_1) (call $system::core::i32::i32.as_4 (i32.const 0)))
+                                      (if $IF12 (call $system::core::u32::u32.>_1 (local.get $system::core::string::len_1) (call $system::core::i32::i32.as_4 (i32.const 0)))
                                           (then
                                             (br $Loop7)
                                           )
@@ -1741,7 +1851,7 @@
               )
           )
           (else
-            (block $B12 (result i32)
+            (block $B13 (result i32)
                 (i32.const 0)
               )
           )

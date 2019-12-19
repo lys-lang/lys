@@ -19,6 +19,7 @@ fun mustEqual(given: f64, expected: f64, message: string): void = {
     support::env::printf("  expected: %d", expected)
   }
 }
+
 fun mustEqual(given: f32, expected: f32, message: string): void = {
   verify(given == expected, message)
   if (given != expected) {
@@ -66,6 +67,10 @@ fun mustEqual(given: boolean, expected: boolean, message: string): void = {
 }
 fun mustEqual(given: string, expected: string, message: string): void = {
   verify(given == expected, message)
+  if (given != expected) {
+    support::env::printf(given)
+    support::env::printf(expected)
+  }
 }
 
 #[export "test_getLastErrorMessage"]
