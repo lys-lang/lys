@@ -1,8 +1,8 @@
 (module
  (type $0 (func))
- (type $1 (func (result i32)))
- (type $2 (func (param i32) (result i32)))
- (type $3 (func (param i32 i32) (result i32)))
+ (type $1 (func (param i32 i32) (result i32)))
+ (type $2 (func (result i32)))
+ (type $3 (func (param i32) (result i32)))
  (type $4 (func (param i32 i32 i32)))
  (type $5 (func (param i64) (result i64)))
  (type $6 (func (param i32 i32) (result i64)))
@@ -22,10 +22,10 @@
  (export "test_getMaxMemory" (func $0))
  (export "test" (func $6))
  (start $7)
- (func $0 (; 0 ;) (type $1) (result i32)
+ (func $0 (; 0 ;) (type $2) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 1 ;) (type $3) (param $0 i32) (param $1 i32) (result i32)
+ (func $1 (; 1 ;) (type $1) (param $0 i32) (param $1 i32) (result i32)
   (call $3
    (local.tee $1
     (call $2
@@ -42,7 +42,7 @@
   )
   (local.get $1)
  )
- (func $2 (; 2 ;) (type $2) (param $0 i32) (result i32)
+ (func $2 (; 2 ;) (type $3) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -268,7 +268,7 @@
    (i64.const 8589934592)
   )
  )
- (func $6 (; 6 ;) (type $3) (param $0 i32) (param $1 i32) (result i32)
+ (func $6 (; 6 ;) (type $1) (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
   (local $3 i64)
   (local $4 i64)

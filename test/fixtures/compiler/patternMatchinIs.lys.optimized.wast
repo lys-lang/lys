@@ -2,10 +2,10 @@
  (type $0 (func))
  (type $1 (func (param i32)))
  (type $2 (func (param i32 i32)))
- (type $3 (func (param i64) (result i32)))
- (type $4 (func (param i32) (result i32)))
- (type $5 (func (result i32)))
- (type $6 (func (param i32 i32) (result i32)))
+ (type $3 (func (param i32 i32) (result i32)))
+ (type $4 (func (param i64) (result i32)))
+ (type $5 (func (param i32) (result i32)))
+ (type $6 (func (result i32)))
  (type $7 (func (param i32 i32 i32)))
  (type $8 (func (result i64)))
  (import "test" "registerAssertion" (func $fimport$0 (param i32 i32)))
@@ -53,7 +53,7 @@
  (export "isCustom" (func $14))
  (export "testPassing" (func $15))
  (start $16)
- (func $0 (; 1 ;) (type $5) (result i32)
+ (func $0 (; 1 ;) (type $6) (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -118,10 +118,10 @@
    )
   )
  )
- (func $2 (; 3 ;) (type $5) (result i32)
+ (func $2 (; 3 ;) (type $6) (result i32)
   (global.get $global$7)
  )
- (func $3 (; 4 ;) (type $6) (param $0 i32) (param $1 i32) (result i32)
+ (func $3 (; 4 ;) (type $3) (param $0 i32) (param $1 i32) (result i32)
   (call $5
    (local.tee $1
     (call $4
@@ -138,7 +138,7 @@
   )
   (local.get $1)
  )
- (func $4 (; 5 ;) (type $4) (param $0 i32) (result i32)
+ (func $4 (; 5 ;) (type $5) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -274,7 +274,7 @@
    )
   )
  )
- (func $6 (; 7 ;) (type $3) (param $0 i64) (result i32)
+ (func $6 (; 7 ;) (type $4) (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -315,7 +315,7 @@
    )
   )
  )
- (func $7 (; 8 ;) (type $3) (param $0 i64) (result i32)
+ (func $7 (; 8 ;) (type $4) (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -391,7 +391,7 @@
   )
   (local.get $0)
  )
- (func $9 (; 10 ;) (type $3) (param $0 i64) (result i32)
+ (func $9 (; 10 ;) (type $4) (param $0 i64) (result i32)
   (select
    (i32.const 0)
    (i32.const 1)
@@ -406,7 +406,7 @@
    )
   )
  )
- (func $10 (; 11 ;) (type $3) (param $0 i64) (result i32)
+ (func $10 (; 11 ;) (type $4) (param $0 i64) (result i32)
   (select
    (i32.const 0)
    (i32.const 1)
@@ -421,7 +421,7 @@
    )
   )
  )
- (func $11 (; 12 ;) (type $3) (param $0 i64) (result i32)
+ (func $11 (; 12 ;) (type $4) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (drop
     (br_if $label$1
@@ -436,7 +436,7 @@
    (i32.const 1)
   )
  )
- (func $12 (; 13 ;) (type $3) (param $0 i64) (result i32)
+ (func $12 (; 13 ;) (type $4) (param $0 i64) (result i32)
   (select
    (i32.const 0)
    (i32.const 1)
@@ -451,7 +451,7 @@
    )
   )
  )
- (func $13 (; 14 ;) (type $3) (param $0 i64) (result i32)
+ (func $13 (; 14 ;) (type $4) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (drop
     (br_if $label$1
@@ -466,7 +466,7 @@
    (i32.const 1)
   )
  )
- (func $14 (; 15 ;) (type $3) (param $0 i64) (result i32)
+ (func $14 (; 15 ;) (type $4) (param $0 i64) (result i32)
   (select
    (i32.const 0)
    (i32.const 1)
