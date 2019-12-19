@@ -1,9 +1,9 @@
 (module
- (type $0 (func (param i32)))
- (type $1 (func (param i32 i32)))
- (type $2 (func))
- (type $3 (func (result i32)))
- (type $4 (func (param i32 i64)))
+ (type $none_=>_none (func))
+ (type $none_=>_i32 (func (result i32)))
+ (type $i32_=>_none (func (param i32)))
+ (type $i32_i32_=>_none (func (param i32 i32)))
+ (type $i64_=>_none (func (param i64)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
@@ -61,10 +61,10 @@
  (export "test_getLastErrorMessage" (func $1))
  (export "main" (func $3))
  (start $4)
- (func $0 (; 3 ;) (type $3) (result i32)
+ (func $0 (; 3 ;) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 4 ;) (type $3) (result i32)
+ (func $1 (; 4 ;) (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -92,107 +92,83 @@
    )
   )
  )
- (func $2 (; 5 ;) (type $4) (param $0 i32) (param $1 i64)
+ (func $2 (; 5 ;) (param $0 i64)
   (call $fimport$1
-   (local.get $0)
+   (i32.const 1)
    (i32.wrap_i64
-    (local.get $1)
+    (local.get $0)
    )
   )
  )
- (func $3 (; 6 ;) (type $2)
+ (func $3 (; 6 ;)
   (call $fimport$0
    (i32.const 16)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884901949)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884901956)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884901973)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884901992)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902013)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902020)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902065)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902110)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902155)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902162)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902169)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902176)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902183)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902190)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902197)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902204)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902213)
   )
   (call $2
-   (i32.const 1)
    (i64.const 12884902232)
   )
   (call $fimport$2)
  )
- (func $4 (; 7 ;) (type $2)
+ (func $4 (; 7 ;)
   (global.set $global$0
    (i32.const 4)
   )
   (global.set $global$1
-   (i32.shl
-    (i32.const 1)
-    (global.get $global$0)
-   )
+   (i32.const 16)
   )
   (global.set $global$2
-   (i32.sub
-    (global.get $global$1)
-    (i32.const 1)
-   )
+   (i32.const 15)
   )
   (global.set $global$3
    (i32.const 1073741824)
@@ -201,16 +177,7 @@
    (i32.const 65536)
   )
   (global.set $global$5
-   (i32.and
-    (i32.add
-     (global.get $global$4)
-     (global.get $global$2)
-    )
-    (i32.xor
-     (global.get $global$2)
-     (i32.const -1)
-    )
-   )
+   (i32.const 65536)
   )
   (global.set $global$6
    (global.get $global$5)

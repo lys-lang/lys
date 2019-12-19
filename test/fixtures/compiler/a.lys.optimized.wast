@@ -1,10 +1,10 @@
 (module
- (type $0 (func))
- (type $1 (func (result i32)))
- (type $2 (func (param i32) (result i32)))
- (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param f32 f32) (result f32)))
- (type $5 (func (param f32 f64) (result f32)))
+ (type $none_=>_i32 (func (result i32)))
+ (type $f32_f32_=>_f32 (func (param f32 f32) (result f32)))
+ (type $none_=>_none (func))
+ (type $i32_=>_i32 (func (param i32) (result i32)))
+ (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
+ (type $f32_f64_=>_f32 (func (param f32 f64) (result f32)))
  (memory $0 1)
  (data (i32.const 21) "\08\00\00\00t\00r\00u\00e")
  (data (i32.const 34) "\n\00\00\00f\00a\00l\00s\00e")
@@ -27,31 +27,31 @@
  (export "addInts" (func $5))
  (export "x" (func $6))
  (start $7)
- (func $0 (; 0 ;) (type $1) (result i32)
+ (func $0 (; 0 ;) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 1 ;) (type $2) (param $0 i32) (result i32)
+ (func $1 (; 1 ;) (param $0 i32) (result i32)
   (local.get $0)
  )
- (func $2 (; 2 ;) (type $1) (result i32)
+ (func $2 (; 2 ;) (result i32)
   (i32.const 1)
  )
- (func $3 (; 3 ;) (type $5) (param $0 f32) (param $1 f64) (result f32)
+ (func $3 (; 3 ;) (param $0 f32) (param $1 f64) (result f32)
   (local.get $0)
  )
- (func $4 (; 4 ;) (type $4) (param $0 f32) (param $1 f32) (result f32)
+ (func $4 (; 4 ;) (param $0 f32) (param $1 f32) (result f32)
   (f32.add
    (local.get $0)
    (local.get $1)
   )
  )
- (func $5 (; 5 ;) (type $3) (param $0 i32) (param $1 i32) (result i32)
+ (func $5 (; 5 ;) (param $0 i32) (param $1 i32) (result i32)
   (i32.add
    (local.get $0)
    (local.get $1)
   )
  )
- (func $6 (; 6 ;) (type $4) (param $0 f32) (param $1 f32) (result f32)
+ (func $6 (; 6 ;) (param $0 f32) (param $1 f32) (result f32)
   (f32.mul
    (f32.add
     (local.get $0)
@@ -60,21 +60,15 @@
    (local.get $1)
   )
  )
- (func $7 (; 7 ;) (type $0)
+ (func $7 (; 7 ;)
   (global.set $global$0
    (i32.const 4)
   )
   (global.set $global$1
-   (i32.shl
-    (i32.const 1)
-    (global.get $global$0)
-   )
+   (i32.const 16)
   )
   (global.set $global$2
-   (i32.sub
-    (global.get $global$1)
-    (i32.const 1)
-   )
+   (i32.const 15)
   )
   (global.set $global$3
    (i32.const 1073741824)
@@ -83,16 +77,7 @@
    (i32.const 65536)
   )
   (global.set $global$5
-   (i32.and
-    (i32.add
-     (global.get $global$4)
-     (global.get $global$2)
-    )
-    (i32.xor
-     (global.get $global$2)
-     (i32.const -1)
-    )
-   )
+   (i32.const 65536)
   )
   (global.set $global$6
    (global.get $global$5)
