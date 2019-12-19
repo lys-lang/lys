@@ -11,6 +11,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12.x
+      - name: npm install
+        run: npm install
       - name: make test
         run: make test
       - name: make e2e
