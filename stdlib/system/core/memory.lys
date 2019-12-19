@@ -7,6 +7,7 @@ import system::core::i64
 import system::core::bytes
 import system::core::boolean
 import system::core::string
+import system::core::math
 
 /** Number of alignment bits. */
 val AL_BITS = 4
@@ -38,9 +39,6 @@ private fun growMemory(pages: u32): u32 = %wasm {
 private fun currentMemory(): u32 = %wasm {
   (memory.size)
 }
-
-// TODO: move to utils
-private fun max(a: u32, b: u32): u32 = if (a > b) a else b
 
 fun calloc(itemCount: u32, itemSize: u32): u32 = {
   val size = itemCount * itemSize
