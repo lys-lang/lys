@@ -681,8 +681,13 @@ describe('Parser', () => {
         var c = true
         var d = false
         var f = "a string 'single' quote"
-        // var g = 'a string "double" quote'
+        var g = "an \\"escaped string"
+        // var h = 'a string "double" quote'
       `;
+
+      test`
+        fun x(): string = "\\"'\`\\\\"
+      `
     });
 
     describe('bin op', () => {

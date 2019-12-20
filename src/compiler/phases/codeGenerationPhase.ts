@@ -478,9 +478,9 @@ export class CodeGenerationPhaseResult {
           module.optimize();
           let next = module.emitBinary();
           if (next.length >= last.length) {
-            if (next.length > last.length) {
-              this.parsingContext.system.write('Last converge was suboptimial.\n');
-            }
+            // a if (next.length > last.length) {
+            // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
+            // a }
             break;
           }
           last = next;
