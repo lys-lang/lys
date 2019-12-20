@@ -92,3 +92,9 @@ grammar changes:
 ```
 
 porque si dallta checkeo de tipos sigue de largo para ExecutionHelper#testSrc?
+
+
+```lys
+fun externalEat(): UnsafeCPointer = eat() // fails horribly with wasm validation errors
+fun externalEat(): UnsafeCPointer = eat() as UnsafeCPointer // doesn't fail
+```

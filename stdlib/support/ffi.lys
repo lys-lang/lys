@@ -1,0 +1,27 @@
+private fun stringDiscriminant(): u64 = {
+  val discriminant: u32 = string.^discriminant
+  discriminant as u64 << 32
+}
+
+#[export "ffi_allocateString"]
+private fun allocateString(sizeInChars: u32): UnsafeCPointer = {
+  string.fromBytes(bytes(sizeInChars << 1)) as UnsafeCPointer
+}
+
+type UCS2 = void
+
+impl UCS2 {
+  // Converts a pointer resulted from a allocBytes to a string
+  fun fromPtr(bytesPointer: UnsafeCPointer): string = %wasm {
+    (i64.or
+      (call $stringDiscriminant)
+      (i64.and
+        (i64.const 0xFFFFFFFF)
+        (i64.extend_u/i32
+          (i32.sub
+            (get_local $bytesPointer)
+            (i32.const 4)))))
+  }
+
+  fun toPtr(str: string): UnsafeCPointer = str as UnsafeCPointer
+}
