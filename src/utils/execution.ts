@@ -1,3 +1,5 @@
+// @lys-require=support::ffi
+
 export function readString(memory: ArrayBuffer, offset: number) {
   const dv = new DataView(memory, offset);
   let len = dv.getUint32(0, true);
@@ -21,24 +23,42 @@ export function readString(memory: ArrayBuffer, offset: number) {
 }
 
 export function writeStringToHeap(instance: any, value: string) {
-  const allocatedString = instance.exports.malloc(4 + value.length);
+  const allocatedString = instance.exports.ffi_allocateString(value.length);
 
-  // UCS16
+  // UCS2
   const dv = new DataView(instance.exports.memory.buffer, allocatedString);
-  let len = value.length;
-  dv.setUint32(0, len * 2, true);
-
-  let currentOffset = 4;
-  len += 4;
+  const len = value.length;
 
   let i = 0;
-  while (currentOffset < len) {
-    dv.setUint16(currentOffset, value.charCodeAt(i), true);
-    currentOffset += 2;
+  while (i < len) {
+    dv.setUint16(i * 2, value.charCodeAt(i), true);
     i++;
   }
 
   return allocatedString;
+}
+
+export function readStringFromHeap(instance: any, unsafeCPointer: number): string {
+  const dv = new DataView(instance.exports.memory.buffer, unsafeCPointer - 4);
+  let len = dv.getUint32(0, true);
+
+  if (len === 0) {
+    return '';
+  }
+
+  let currentOffset = 4;
+  len += 4;
+
+  const sb: string[] = [];
+
+  while (currentOffset < len) {
+    const r = dv.getUint16(currentOffset, true);
+    if (r === 0) break; // Break if we find a null character
+    sb.push(String.fromCharCode(r));
+    currentOffset += 2;
+  }
+
+  return sb.join('');
 }
 
 export function readBytes(memory: ArrayBuffer, offset: number) {
