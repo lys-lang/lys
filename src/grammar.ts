@@ -183,7 +183,7 @@ PostfixNumber     ::= (HexLiteral | NumberLiteral) Reference? {pin=1,simplifyWhe
 NumberLiteral     ::= !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=2}
 NegNumberLiteral  ::= '-'? NumberLiteral {pin=2}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
-StringLiteral     ::= '"' (!'"' [#x20-#xFFFF])* '"' | "'" (!"'" [#x20-#xFFFF])* "'"
+StringLiteral     ::= STRING_DELIMITER ((![\\\\"] [#x20-#xFFFF])* | ('\\\\' (STRING_DELIMITER | '\\\\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' HEXDIG HEXDIG HEXDIG HEXDIG)?))* STRING_DELIMITER
 Literal           ::= StringLiteral
                     | PostfixNumber
                     | BooleanLiteral {fragment=true}
@@ -316,6 +316,7 @@ CLOSE_PAREN       ::= ')'
 OPEN_ARRAY        ::= '['
 OPEN_DECORATION   ::= '#[' {pin=1}
 CLOSE_ARRAY       ::= ']' {pin=1}
+STRING_DELIMITER  ::= '"' {pin=1}
 OPEN_BRACKET      ::= '{'
 CLOSE_BRACKET     ::= '}'
 THIN_ARROW        ::= '->'
@@ -328,7 +329,7 @@ COMMENT           ::= '//' (![#x0A#x0D] [#x00-#xFFFF])* EOL
 MULTI_COMMENT     ::= OPEN_DOC_COMMENT DOC_COMMENT* CLOSE_DOC_COMMENT {pin=1}
 WS                ::= COMMENT | MULTI_COMMENT | [#x20#x09#x0A#x0D]+ {fragment=true}
 EOL               ::= [#x0A#x0D]+
-
+HEXDIG            ::= [a-fA-F0-9]
 NEW_LINE          ::= [#x20#x09]* (EOL | COMMENT)
 
 `;

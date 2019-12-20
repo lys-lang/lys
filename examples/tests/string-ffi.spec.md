@@ -14,7 +14,7 @@ import support::ffi
 
 #[export] fun validateNonEmptyString(str: UnsafeCPointer): boolean = {
   val received = UCS2.fromPtr(str)
-  received == "TesT!"
+  received == "TesT!\""
 }
 
 #[export] fun getEmptyString(): UnsafeCPointer = {
@@ -59,7 +59,7 @@ getInstance => {
     errors.push('validateEmptyString1')
   }
 
-  if (!exports.validateNonEmptyString(write("TesT!"))) {
+  if (!exports.validateNonEmptyString(write("TesT!\""))) {
     errors.push('validateNonEmptyString1')
   }
 
@@ -67,7 +67,7 @@ getInstance => {
     errors.push('validateEmptyString2')
   }
 
-  if (!exports.validateNonEmptyString(write("TesT!"))) {
+  if (!exports.validateNonEmptyString(write("TesT!\""))) {
     errors.push('validateNonEmptyString2')
   }
 
@@ -79,17 +79,17 @@ getInstance => {
     errors.push('getNonEmptyString')
   }
 
-  ['', "a", "1234", "௸", "🥶"].forEach(t => {
+  ['', "a", "1234", "௸", "🥶", "\n\r\t\""].forEach(t => {
     if (read(write(t)) != t) {
       errors.push(`read(write(${t}))`)
     }
-  })
+  });
 
-  // ['', "a", "1234", "௸", "🥶"].forEach(t => {
-  //   if (read(exports.identity(write(t))) != t) {
-  //     errors.push(`identity ${t}`)
-  //   }
-  // })
+  ['', "a", "1234", "௸", "🥶", "\n\r\t\""].forEach(t => {
+    if (read(exports.identity(write(t))) != t) {
+      errors.push(`identity ${t}`)
+    }
+  })
 
   if (errors.length) {
     throw new Error(errors.join(', '))
