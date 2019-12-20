@@ -26,7 +26,7 @@ export function writeStringToHeap(instance: any, value: string) {
   // UCS16
   const dv = new DataView(instance.exports.memory.buffer, allocatedString);
   let len = value.length;
-  dv.setUint32(0, len, true);
+  dv.setUint32(0, len * 2, true);
 
   let currentOffset = 4;
   len += 4;

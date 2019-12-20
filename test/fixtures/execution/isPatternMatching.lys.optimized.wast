@@ -1,13 +1,11 @@
 (module
- (type $0 (func (param i32)))
- (type $1 (func (param i32 i32)))
- (type $2 (func))
- (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (result i32)))
- (type $5 (func (param i32) (result i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i64) (result i32)))
- (type $8 (func (result i64)))
+ (type $none_=>_none (func))
+ (type $i64_=>_i32 (func (param i64) (result i32)))
+ (type $i32_=>_none (func (param i32)))
+ (type $i32_i32_=>_none (func (param i32 i32)))
+ (type $none_=>_i32 (func (result i32)))
+ (type $i32_=>_i32 (func (param i32) (result i32)))
+ (type $none_=>_i64 (func (result i64)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
@@ -50,27 +48,22 @@
  (export "test_getLastErrorMessage" (func $4))
  (export "main" (func $10))
  (start $11)
- (func $0 (; 3 ;) (type $4) (result i32)
+ (func $0 (; 3 ;) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 4 ;) (type $3) (param $0 i32) (param $1 i32) (result i32)
+ (func $1 (; 4 ;) (param $0 i32) (result i32)
+  (local $1 i32)
   (call $3
    (local.tee $1
     (call $2
-     (local.tee $0
-      (i32.mul
-       (local.get $0)
-       (local.get $1)
-      )
-     )
+     (local.get $0)
     )
    )
-   (i32.const 0)
    (local.get $0)
   )
   (local.get $1)
  )
- (func $2 (; 5 ;) (type $5) (param $0 i32) (result i32)
+ (func $2 (; 5 ;) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -90,11 +83,17 @@
   )
   (if
    (i32.gt_u
-    (local.tee $1
+    (local.tee $0
      (i32.and
       (i32.add
        (global.get $global$2)
        (i32.add
+        (i32.add
+         (local.tee $1
+          (global.get $global$6)
+         )
+         (i32.const 16)
+        )
         (select
          (local.get $0)
          (i32.const 16)
@@ -102,12 +101,6 @@
           (local.get $0)
           (i32.const 16)
          )
-        )
-        (i32.add
-         (local.tee $0
-          (global.get $global$6)
-         )
-         (i32.const 16)
         )
        )
       )
@@ -135,8 +128,8 @@
           (i32.and
            (i32.add
             (i32.sub
-             (local.get $1)
              (local.get $0)
+             (local.get $1)
             )
             (i32.const 65535)
            )
@@ -166,33 +159,31 @@
    )
   )
   (global.set $global$6
-   (local.get $1)
+   (local.get $0)
   )
   (i32.add
-   (local.get $0)
+   (local.get $1)
    (i32.const 16)
   )
  )
- (func $3 (; 6 ;) (type $6) (param $0 i32) (param $1 i32) (param $2 i32)
-  (local.set $2
+ (func $3 (; 6 ;) (param $0 i32) (param $1 i32)
+  (local.set $1
    (i32.add
     (local.get $0)
-    (local.get $2)
+    (local.get $1)
    )
   )
   (loop $label$1
    (if
-    (i32.eqz
-     (i32.eq
-      (local.get $0)
-      (local.get $2)
-     )
+    (i32.ne
+     (local.get $0)
+     (local.get $1)
     )
     (block
      (i32.store8
       (local.get $0)
       (i32.load8_u
-       (local.get $1)
+       (i32.const 0)
       )
      )
      (local.set $0
@@ -206,7 +197,7 @@
    )
   )
  )
- (func $4 (; 7 ;) (type $4) (result i32)
+ (func $4 (; 7 ;) (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -234,7 +225,7 @@
    )
   )
  )
- (func $5 (; 8 ;) (type $0) (param $0 i32)
+ (func $5 (; 8 ;) (param $0 i32)
   (local $1 i64)
   (call $fimport$1
    (local.get $0)
@@ -254,7 +245,6 @@
        (i64.or
         (i64.extend_i32_u
          (call $1
-          (i32.const 1)
           (i32.const 8)
          )
         )
@@ -271,7 +261,7 @@
    )
   )
  )
- (func $6 (; 9 ;) (type $7) (param $0 i64) (result i32)
+ (func $6 (; 9 ;) (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -312,7 +302,7 @@
    )
   )
  )
- (func $7 (; 10 ;) (type $7) (param $0 i64) (result i32)
+ (func $7 (; 10 ;) (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -368,7 +358,7 @@
    )
   )
  )
- (func $8 (; 11 ;) (type $8) (result i64)
+ (func $8 (; 11 ;) (result i64)
   (local $0 i64)
   (i32.store
    (i32.wrap_i64
@@ -376,7 +366,6 @@
      (i64.or
       (i64.extend_i32_u
        (call $1
-        (i32.const 1)
         (i32.const 4)
        )
       )
@@ -388,7 +377,7 @@
   )
   (local.get $0)
  )
- (func $9 (; 12 ;) (type $7) (param $0 i64) (result i32)
+ (func $9 (; 12 ;) (param $0 i64) (result i32)
   (block $label$1 (result i32)
    (drop
     (br_if $label$1
@@ -403,7 +392,7 @@
    (i32.const 1)
   )
  )
- (func $10 (; 13 ;) (type $2)
+ (func $10 (; 13 ;)
   (call $fimport$0
    (i32.const 16)
   )
@@ -703,21 +692,15 @@
   )
   (call $fimport$2)
  )
- (func $11 (; 14 ;) (type $2)
+ (func $11 (; 14 ;)
   (global.set $global$0
    (i32.const 4)
   )
   (global.set $global$1
-   (i32.shl
-    (i32.const 1)
-    (global.get $global$0)
-   )
+   (i32.const 16)
   )
   (global.set $global$2
-   (i32.sub
-    (global.get $global$1)
-    (i32.const 1)
-   )
+   (i32.const 15)
   )
   (global.set $global$3
    (i32.const 1073741824)
@@ -726,16 +709,7 @@
    (i32.const 65536)
   )
   (global.set $global$5
-   (i32.and
-    (i32.add
-     (global.get $global$4)
-     (global.get $global$2)
-    )
-    (i32.xor
-     (global.get $global$2)
-     (i32.const -1)
-    )
-   )
+   (i32.const 65536)
   )
   (global.set $global$6
    (global.get $global$5)

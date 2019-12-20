@@ -1,15 +1,13 @@
 (module
- (type $0 (func (param f32)))
- (type $1 (func (param i32)))
- (type $2 (func (param i32 i32)))
- (type $3 (func))
- (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func (result i32)))
- (type $6 (func (param i32) (result i32)))
- (type $7 (func (param i32 i32 i32)))
- (type $8 (func (param i64) (result i32)))
- (type $9 (func (param i32 i64)))
- (type $10 (func (param i64 f64 i64 i64) (result i64)))
+ (type $none_=>_none (func))
+ (type $i32_=>_none (func (param i32)))
+ (type $i32_i32_=>_none (func (param i32 i32)))
+ (type $none_=>_i32 (func (result i32)))
+ (type $i32_=>_i32 (func (param i32) (result i32)))
+ (type $i32_i64_=>_none (func (param i32 i64)))
+ (type $f32_=>_none (func (param f32)))
+ (type $i64_=>_i32 (func (param i64) (result i32)))
+ (type $none_=>_i64 (func (result i64)))
  (import "test" "printNumber" (func $fimport$0 (param f32)))
  (import "test" "printNumber" (func $fimport$1 (param i32)))
  (import "test" "pushTest" (func $fimport$2 (param i32)))
@@ -73,27 +71,22 @@
  (export "test_getLastErrorMessage" (func $4))
  (export "main" (func $8))
  (start $9)
- (func $0 (; 5 ;) (type $5) (result i32)
+ (func $0 (; 5 ;) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 6 ;) (type $4) (param $0 i32) (param $1 i32) (result i32)
+ (func $1 (; 6 ;) (param $0 i32) (result i32)
+  (local $1 i32)
   (call $3
    (local.tee $1
     (call $2
-     (local.tee $0
-      (i32.mul
-       (local.get $0)
-       (local.get $1)
-      )
-     )
+     (local.get $0)
     )
    )
-   (i32.const 0)
    (local.get $0)
   )
   (local.get $1)
  )
- (func $2 (; 7 ;) (type $6) (param $0 i32) (result i32)
+ (func $2 (; 7 ;) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -113,11 +106,17 @@
   )
   (if
    (i32.gt_u
-    (local.tee $1
+    (local.tee $0
      (i32.and
       (i32.add
        (global.get $global$2)
        (i32.add
+        (i32.add
+         (local.tee $1
+          (global.get $global$6)
+         )
+         (i32.const 16)
+        )
         (select
          (local.get $0)
          (i32.const 16)
@@ -125,12 +124,6 @@
           (local.get $0)
           (i32.const 16)
          )
-        )
-        (i32.add
-         (local.tee $0
-          (global.get $global$6)
-         )
-         (i32.const 16)
         )
        )
       )
@@ -158,8 +151,8 @@
           (i32.and
            (i32.add
             (i32.sub
-             (local.get $1)
              (local.get $0)
+             (local.get $1)
             )
             (i32.const 65535)
            )
@@ -189,33 +182,31 @@
    )
   )
   (global.set $global$6
-   (local.get $1)
+   (local.get $0)
   )
   (i32.add
-   (local.get $0)
+   (local.get $1)
    (i32.const 16)
   )
  )
- (func $3 (; 8 ;) (type $7) (param $0 i32) (param $1 i32) (param $2 i32)
-  (local.set $2
+ (func $3 (; 8 ;) (param $0 i32) (param $1 i32)
+  (local.set $1
    (i32.add
     (local.get $0)
-    (local.get $2)
+    (local.get $1)
    )
   )
   (loop $label$1
    (if
-    (i32.eqz
-     (i32.eq
-      (local.get $0)
-      (local.get $2)
-     )
+    (i32.ne
+     (local.get $0)
+     (local.get $1)
     )
     (block
      (i32.store8
       (local.get $0)
       (i32.load8_u
-       (local.get $1)
+       (i32.const 0)
       )
      )
      (local.set $0
@@ -229,7 +220,7 @@
    )
   )
  )
- (func $4 (; 9 ;) (type $5) (result i32)
+ (func $4 (; 9 ;) (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -257,7 +248,7 @@
    )
   )
  )
- (func $5 (; 10 ;) (type $9) (param $0 i32) (param $1 i64)
+ (func $5 (; 10 ;) (param $0 i32) (param $1 i64)
   (call $fimport$3
    (local.get $0)
    (i32.wrap_i64
@@ -265,7 +256,7 @@
    )
   )
  )
- (func $6 (; 11 ;) (type $8) (param $0 i64) (result i32)
+ (func $6 (; 11 ;) (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -336,15 +327,14 @@
    )
   )
  )
- (func $7 (; 12 ;) (type $10) (param $0 i64) (param $1 f64) (param $2 i64) (param $3 i64) (result i64)
-  (local $4 i64)
+ (func $7 (; 12 ;) (result i64)
+  (local $0 i64)
   (i32.store
    (i32.wrap_i64
-    (local.tee $4
+    (local.tee $0
      (i64.or
       (i64.extend_i32_u
        (call $1
-        (i32.const 1)
         (i32.const 41)
        )
       )
@@ -357,7 +347,7 @@
   (i32.store8
    (i32.add
     (i32.wrap_i64
-     (local.get $4)
+     (local.get $0)
     )
     (i32.const 4)
    )
@@ -366,7 +356,7 @@
   (f32.store
    (i32.add
     (i32.wrap_i64
-     (local.get $4)
+     (local.get $0)
     )
     (i32.const 5)
    )
@@ -375,42 +365,42 @@
   (i64.store
    (i32.add
     (i32.wrap_i64
-     (local.get $4)
+     (local.get $0)
     )
     (i32.const 9)
    )
-   (local.get $0)
+   (i64.const 8)
   )
   (f64.store
    (i32.add
     (i32.wrap_i64
-     (local.get $4)
+     (local.get $0)
     )
     (i32.const 17)
    )
-   (local.get $1)
+   (f64.const 0.4000000059604645)
   )
   (i64.store
    (i32.add
     (i32.wrap_i64
-     (local.get $4)
+     (local.get $0)
     )
     (i32.const 25)
    )
-   (local.get $2)
+   (i64.const 8589934592)
   )
   (i64.store
    (i32.add
     (i32.wrap_i64
-     (local.get $4)
+     (local.get $0)
     )
     (i32.const 33)
    )
-   (local.get $3)
+   (i64.const 8589934592)
   )
-  (local.get $4)
+  (local.get $0)
  )
- (func $8 (; 13 ;) (type $3)
+ (func $8 (; 13 ;)
   (local $0 i64)
   (local $1 i64)
   (call $fimport$2
@@ -421,12 +411,7 @@
     (i32.wrap_i64
      (i64.shr_u
       (local.tee $0
-       (call $7
-        (i64.const 8)
-        (f64.const 0.4000000059604645)
-        (i64.const 8589934592)
-        (i64.const 8589934592)
-       )
+       (call $7)
       )
       (i64.const 32)
      )
@@ -625,7 +610,6 @@
      (i64.or
       (i64.extend_i32_u
        (call $1
-        (i32.const 1)
         (i32.const 4)
        )
       )
@@ -891,21 +875,15 @@
   )
   (call $fimport$4)
  )
- (func $9 (; 14 ;) (type $3)
+ (func $9 (; 14 ;)
   (global.set $global$0
    (i32.const 4)
   )
   (global.set $global$1
-   (i32.shl
-    (i32.const 1)
-    (global.get $global$0)
-   )
+   (i32.const 16)
   )
   (global.set $global$2
-   (i32.sub
-    (global.get $global$1)
-    (i32.const 1)
-   )
+   (i32.const 15)
   )
   (global.set $global$3
    (i32.const 1073741824)
@@ -914,16 +892,7 @@
    (i32.const 65536)
   )
   (global.set $global$5
-   (i32.and
-    (i32.add
-     (global.get $global$4)
-     (global.get $global$2)
-    )
-    (i32.xor
-     (global.get $global$2)
-     (i32.const -1)
-    )
-   )
+   (i32.const 65536)
   )
   (global.set $global$6
    (global.get $global$5)

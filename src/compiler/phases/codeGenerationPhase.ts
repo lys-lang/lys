@@ -35,8 +35,8 @@ const starterName = t.identifier('%%START%%');
 declare var WebAssembly: any;
 declare var console: any;
 
-(binaryen as any).setOptimizeLevel(3);
-(binaryen as any).setShrinkLevel(0);
+const optimizeLevel = 3;
+const shrinkLevel = 0;
 
 const secSymbol = Symbol('secuentialId');
 
@@ -246,7 +246,10 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode): any {
     return t.numberLiteralFromRaw(node.value);
   }
 
-  return t.instruction(node.symbol, (node.args || []).map($ => emitWast($ as any, document)));
+  return t.instruction(
+    node.symbol,
+    (node.args || []).map($ => emitWast($ as any, document))
+  );
 }
 
 function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
@@ -438,6 +441,8 @@ export class CodeGenerationPhaseResult {
   }> {
     let text = print(this.programAST);
 
+    await wabt.ready;
+
     const wabtModule = wabt.parseWat(this.document.moduleName, text);
 
     try {
@@ -453,6 +458,10 @@ export class CodeGenerationPhaseResult {
     wabtModule.destroy();
 
     try {
+      binaryen.setOptimizeLevel(optimizeLevel);
+      binaryen.setShrinkLevel(shrinkLevel);
+      binaryen.setDebugInfo(debug || !optimize);
+
       const module = binaryen.readBinary(binary.buffer);
 
       module.runPasses(['duplicate-function-elimination']);
@@ -462,11 +471,23 @@ export class CodeGenerationPhaseResult {
         this.parsingContext.messageCollector.error(new LysCompilerError('binaryen validation failed', this.document));
       }
 
+      let last = module.emitBinary();
+
       if (optimize) {
-        module.optimize();
+        do {
+          module.optimize();
+          let next = module.emitBinary();
+          if (next.length >= last.length) {
+            if (next.length > last.length) {
+              this.parsingContext.system.write('Last converge was suboptimial.\n');
+            }
+            break;
+          }
+          last = next;
+        } while (true);
       }
 
-      this.buffer = module.emitBinary();
+      this.buffer = last;
 
       module.dispose();
 
