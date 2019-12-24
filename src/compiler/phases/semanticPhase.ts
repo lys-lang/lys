@@ -127,7 +127,7 @@ function explicitDecorator(
 }
 
 function processFunctionDecorations(node: Nodes.FunDirectiveNode, parsingContext: ParsingContext) {
-  if (node.decorators && node.decorators.length) {
+  if (node && node.decorators && node.decorators.length) {
     node.decorators.forEach($ => {
       switch ($.decoratorName.name) {
         case 'extern':
@@ -153,7 +153,7 @@ function processFunctionDecorations(node: Nodes.FunDirectiveNode, parsingContext
 }
 
 function rejectDecorator(node: Nodes.DirectiveNode, parsingContext: ParsingContext) {
-  if (node.decorators && node.decorators.length) {
+  if (node && node.decorators && node.decorators.length) {
     node.decorators.forEach($ => {
       parsingContext.messageCollector.error(
         `Unknown decorator "${$.decoratorName.name}" for ${node.nodeName}`,
@@ -190,30 +190,32 @@ const overloadFunctions = function(
         document.directives[ix] = overloaded;
       }
     } else {
-      rejectDecorator(node, parsingContext);
+      if (node) {
+        rejectDecorator(node, parsingContext);
 
-      if (node instanceof Nodes.ImplDirective) {
-        overloadFunctions(node, parsingContext);
-      } else if (node instanceof Nodes.TraitDirectiveNode) {
-        node.directives.forEach($ => {
-          if ($ instanceof Nodes.FunDirectiveNode) {
-            if ($.functionNode.body) {
-              parsingContext.messageCollector.error(
-                `Unexpected function body. Traits only accept signatures.`,
-                $.functionNode.body.astNode
-              );
-            }
-            if ($.decorators.length > 0) {
-              $.decorators.forEach($ => {
+        if (node instanceof Nodes.ImplDirective) {
+          overloadFunctions(node, parsingContext);
+        } else if (node instanceof Nodes.TraitDirectiveNode) {
+          node.directives.forEach($ => {
+            if ($ instanceof Nodes.FunDirectiveNode) {
+              if ($.functionNode.body) {
                 parsingContext.messageCollector.error(
-                  `Unexpected decorator. Traits only accept signatures.`,
-                  $.astNode
+                  `Unexpected function body. Traits only accept signatures.`,
+                  $.functionNode.body.astNode
                 );
-              });
+              }
+              if ($.decorators.length > 0) {
+                $.decorators.forEach($ => {
+                  parsingContext.messageCollector.error(
+                    `Unexpected decorator. Traits only accept signatures.`,
+                    $.astNode
+                  );
+                });
+              }
             }
-          }
-        });
-        overloadFunctions(node, parsingContext);
+          });
+          overloadFunctions(node, parsingContext);
+        }
       }
     }
   });

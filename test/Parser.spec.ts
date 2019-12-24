@@ -688,6 +688,36 @@ describe('Parser', () => {
       test`
         fun x(): string = "\\"'\`\\\\"
       `
+
+      // test`
+      //   fun x(): string = "// a comment inside a string"
+
+      //   fun singleLineComment(): void = {
+      //     START("Single line comment")
+      //     {
+      //       val p = Parser("// asd")
+
+      //       validateToken(p, LineComment, "// asd")
+      //       validateToken(p, EndOfFile, "")
+
+      //       END()
+      //     }
+
+      //     START("Single line comment 2")
+      //     {
+      //       val p = Parser("asd // asd\n  asd")
+
+      //       validateToken(p, Identifier, "asd")
+      //       validateToken(p, LineComment, "// asd")
+      //       validateToken(p, NewLine, "\n")
+      //       validateToken(p, Whitespace, "  ")
+      //       validateToken(p, Identifier, "asd")
+      //       validateToken(p, EndOfFile, "")
+
+      //       END()
+      //     }
+      //   }
+      // `
     });
 
     describe('bin op', () => {

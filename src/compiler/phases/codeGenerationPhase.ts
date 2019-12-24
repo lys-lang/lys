@@ -422,6 +422,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 export class CodeGenerationPhaseResult {
   programAST: any;
   buffer?: Uint8Array;
+  sourceMap: string | null = null;
 
   constructor(public document: Nodes.DocumentNode, public parsingContext: ParsingContext) {
     failWithErrors(`Compilation`, parsingContext);
@@ -464,30 +465,53 @@ export class CodeGenerationPhaseResult {
 
       const module = binaryen.readBinary(binary.buffer);
 
-      module.runPasses(['duplicate-function-elimination']);
+      if (!debug) {
+        module.runPasses(['duplicate-function-elimination']);
+      }
       module.runPasses(['remove-unused-module-elements']);
 
       if (module.validate() === 0) {
         this.parsingContext.messageCollector.error(new LysCompilerError('binaryen validation failed', this.document));
       }
 
-      let last = module.emitBinary();
+      if (debug) {
+        let last = module.emitBinary('sourceMap.map');
 
-      if (optimize) {
-        do {
-          module.optimize();
-          let next = module.emitBinary();
-          if (next.length >= last.length) {
-            // a if (next.length > last.length) {
-            // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
-            // a }
-            break;
-          }
-          last = next;
-        } while (true);
+        if (optimize) {
+          do {
+            module.optimize();
+            let next = module.emitBinary('sourceMap.map');
+            if (next.binary.length >= last.binary.length) {
+              // a if (next.length > last.length) {
+              // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
+              // a }
+              break;
+            }
+            last = next;
+          } while (true);
+        }
+
+        this.buffer = last.binary;
+        this.sourceMap = last.sourceMap;
+      } else {
+        let last = module.emitBinary();
+
+        if (optimize) {
+          do {
+            module.optimize();
+            let next = module.emitBinary();
+            if (next.length >= last.length) {
+              // a if (next.length > last.length) {
+              // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
+              // a }
+              break;
+            }
+            last = next;
+          } while (true);
+        }
+
+        this.buffer = last;
       }
-
-      this.buffer = last;
 
       module.dispose();
 

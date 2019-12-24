@@ -294,12 +294,15 @@ export class StackType extends Type {
   schema() {
     return {
       byteSize: StackType.of('u32', NativeTypes.i32, 4),
-      allocationSize: StackType.of('u32', NativeTypes.i32, 4)
+      allocationSize: StackType.of('u32', NativeTypes.i32, 4),
+      stackSize: StackType.of('u32', NativeTypes.i32, 4)
     };
   }
 
   getSchemaValue(name: string) {
     if (name === 'byteSize') {
+      return this.byteSize;
+    } else if (name === 'stackSize') {
       return this.byteSize;
     } else if (name === 'allocationSize') {
       return this.byteSize;
@@ -354,12 +357,15 @@ export class RefType extends Type {
   schema() {
     return {
       byteSize: StackType.of('u32', NativeTypes.i32, 4),
+      stackSize: StackType.of('u32', NativeTypes.i32, 4),
       allocationSize: StackType.of('u32', NativeTypes.i32, 4)
     };
   }
 
   getSchemaValue(name: string) {
     if (name === 'byteSize') {
+      return 8;
+    } else if (name === 'stackSize') {
       return 8;
     } else if (name === 'allocationSize') {
       return 8;
@@ -681,7 +687,8 @@ export class UnionType extends Type {
 
   schema() {
     return {
-      byteSize: u32
+      byteSize: u32,
+      stackSize: u32
     };
   }
 
@@ -704,6 +711,8 @@ export class UnionType extends Type {
         throw new Error('Cannot find a consistent byteSize in ' + this.inspect(100));
       }
     } else if (name === 'allocationSize') {
+      return 8;
+    } else if (name === 'stackSize') {
       return 8;
     }
     throw new Error(`Cannot read schema property ${name} of ${this.inspect(10)}`);
@@ -797,6 +806,7 @@ export class TypeAlias extends Type {
 
     if (baseType instanceof StructType) {
       result['allocationSize'] = u32;
+      result['stackSize'] = u32;
 
       const properties = this.getOrderedProperties();
 
@@ -818,7 +828,9 @@ export class TypeAlias extends Type {
     } else {
       const baseType = getUnderlyingTypeFromAlias(this);
       if (baseType instanceof StructType) {
-        if (name === 'allocationSize') {
+        if (name === 'stackSize') {
+          return 8;
+        } else if (name === 'allocationSize') {
           const properties = this.getOrderedProperties();
 
           let offset = 0;
@@ -846,7 +858,7 @@ export class TypeAlias extends Type {
                 break;
               }
               const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType, ctx);
-              offset += fn!.returnType!.getSchemaValue('allocationSize', ctx);
+              offset += fn!.returnType!.getSchemaValue('stackSize', ctx);
             }
 
             return offset;

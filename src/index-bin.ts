@@ -2,13 +2,14 @@ import * as arg from 'arg';
 import { ParsingContext } from './compiler/ParsingContext';
 import { dirname, basename, relative } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
-import { getTestResults } from './utils/libs/test';
+import { getTestResults, TestDescription } from './utils/libs/test';
 import { nodeSystem } from './support/NodeSystem';
 import { writeFileSync } from 'fs';
 import { ForegroundColors, formatColorAndReset } from './utils/colors';
 import { LysError } from './utils/errorPrinter';
 import { compile } from './index';
 import { loadFromMD } from './utils/loadFromMD';
+import { printNode } from './utils/nodePrinter';
 
 function mkdirRecursive(dir: string) {
   // we explicitly don't use `path.sep` to have it platform independent;
@@ -42,6 +43,7 @@ export async function main(cwd: string, argv: string[]) {
       '--lib': [String],
       '--test': Boolean,
       '--debug': Boolean,
+      '--desugar': Boolean,
       '--run': '--test'
     },
     {
@@ -53,6 +55,7 @@ export async function main(cwd: string, argv: string[]) {
   args['--lib'] = args['--lib'] || [];
 
   const DEBUG = !!args['--debug'];
+  const DESUGAR = !!args['--desugar'];
 
   const file = args._[0];
 
@@ -123,10 +126,14 @@ export async function main(cwd: string, argv: string[]) {
 
   const optimize = !args['--no-optimize'];
 
-  await codeGen.validate(optimize, DEBUG);
+  await codeGen.validate(optimize, DEBUG || args['--wast']);
 
   if (args['--wast']) {
     nodeSystem.writeFile(outFileFullWithoutExtension + '.wast', codeGen.emitText());
+  }
+
+  if (codeGen.sourceMap) {
+    nodeSystem.writeFile(nodeSystem.resolvePath(outPath, 'sourceMap.map'), codeGen.sourceMap);
   }
 
   if (!codeGen.buffer) {
@@ -176,6 +183,17 @@ exports.default = async function() {
 
   nodeSystem.writeFile(outFileFullWithoutExtension + '.js', src.join('\n'));
 
+  if (DESUGAR) {
+    parsingContext.modulesInContext.forEach(module => {
+      if (module.fileName.startsWith(nodeSystem.cwd)) {
+        const relativePath = nodeSystem.relative(nodeSystem.cwd, module.fileName);
+        const targetFile = nodeSystem.resolvePath(outPath + '/desugar/', relativePath);
+        mkdirRecursive(dirname(targetFile));
+        nodeSystem.writeFile(targetFile, printNode(module));
+      }
+    });
+  }
+
   if (args['--test']) {
     const testInstance = await generateTestInstance(codeGen.buffer, libs);
 
@@ -215,13 +233,46 @@ exports.default = async function() {
       }
     }
 
+    let totalTime = 0;
+    let totalTests = 0;
+    let totalPass = 0;
+
+    const summarizeItem = (result: TestDescription) => {
+      totalTime += result.endTime - result.startTime;
+      totalTests++;
+      if (result.passed) {
+        totalPass++;
+      }
+      result.tests && result.tests.forEach(summarizeItem);
+    };
+
+    const summarize = (results: TestDescription[]) => {
+      results.forEach(summarizeItem);
+    };
+
     if (testResults && testResults.length) {
+      summarize(testResults);
+
       nodeSystem.writeFile('_lys_test_results.json', JSON.stringify(testResults, null, 2));
-      if (testResults.some($ => !$.passed)) {
-        console.error(formatColorAndReset('\n\n  Some tests failed.\n\n', ForegroundColors.Red));
+      if (totalPass !== totalTests) {
+        console.error(
+          formatColorAndReset(
+            `\n\n  Some tests failed. Passed: ${totalPass} Failed: ${totalTests - totalPass} (${(
+              totalTime / 1000
+            ).toFixed(2)}s)\n\n`,
+            ForegroundColors.Red
+          )
+        );
         process.exit(1);
       } else {
-        console.error(formatColorAndReset('\n\n  All tests passed.\n\n', ForegroundColors.Green));
+        console.error(
+          formatColorAndReset(
+            `\n\n  All tests passed. Passed: ${totalPass} Failed: ${totalTests - totalPass} (${(
+              totalTime / 1000
+            ).toFixed(2)}s)\n\n`,
+            ForegroundColors.Green
+          )
+        );
       }
     }
   }

@@ -3,7 +3,7 @@ import { Parser, Grammars, IRule } from 'ebnf';
 export const grammar = `
 {ws=explicit}
 
-Document          ::= WS* Directives WS* EOF? {ws=implicit}
+Document          ::= WS* Directives WS* EOF?
 Directives        ::= Directive WS* Directives? WS* {pin=1,recoverUntil=DIRECTIVE_RECOVERY,fragment=true}
 
 Directive         ::= FunctionDirective
