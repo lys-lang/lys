@@ -542,8 +542,8 @@ const visitor = {
       return new Nodes.IfNode(astNode, condition, truePart);
     }
   },
-  SyntaxError(_: Nodes.ASTNode) {
-    return null;
+  SyntaxError(node: Nodes.ASTNode) {
+    return new PositionCapableError(node.errors[0].message, node);
   },
   StructDirective(astNode: Nodes.ASTNode) {
     const children = astNode.children.slice();
@@ -648,7 +648,13 @@ function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
     throw new Error('astNode is null');
   }
   if ((visitor as any)[astNode.type]) {
-    return (visitor as any)[astNode.type](astNode);
+    const x = (visitor as any)[astNode.type](astNode);
+
+    if (!x) {
+      throw new PositionCapableError('Error visiting node ' + astNode.type, astNode);
+    }
+
+    return x;
   } else {
     throw new PositionCapableError(`Visitor not implemented for ${astNode.type}`, astNode);
   }

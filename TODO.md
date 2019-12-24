@@ -13,6 +13,37 @@
 - for in sugar syntax
 - robust type alias use cases and test suites
 
+```lys
+// this should yield an error
+match x {
+  case 1 -> ???
+  case 1 -> ???
+  case 1 -> ???
+  case 1 -> ???
+}
+```
+
+```lys
+// doesnt work
+match x {
+  else char -> ...
+}
+```
+
+```lys
+// assignment as firts code block stmt dowsnt work
+match parse(rule, ruleName, parser, level + 1) {
+  case is Nil -> break
+  case ast is AST -> {
+    ret = match ret {
+      case is Nil -> ast
+      else -> AstCons(ret, ast)
+    }
+    continue
+  }
+}
+```
+
 every declaration with the same name of different impl must have the same visibility
 
 exhaustive test of implicit coercion
