@@ -56,6 +56,10 @@ export class MessageCollector {
     }
   }
 
+  removeErrorsFromModule(moduleName: string) {
+    this.errors = this.errors.filter($ => $.position && $.position.moduleName !== moduleName);
+  }
+
   hasErrorForBranch(position: IPositionCapable): any {
     return this.errors.some($ => isSamePositionOrInside(position, $.position) && !$.warning);
   }
