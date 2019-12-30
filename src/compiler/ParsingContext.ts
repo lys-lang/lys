@@ -33,6 +33,7 @@ export class ParsingContext {
       currentModule.importedBy.forEach(importedBy => {
         this.invalidateModule(importedBy);
       });
+      this.messageCollector.removeErrorsFromModule(moduleName);
     }
   }
 

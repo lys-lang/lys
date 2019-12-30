@@ -4,7 +4,7 @@ import { dirname, basename, relative } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
 import { getTestResults, TestDescription } from './utils/libs/test';
 import { nodeSystem } from './support/NodeSystem';
-import { writeFileSync } from 'fs';
+import { writeFileSync, watch } from 'fs';
 import { ForegroundColors, formatColorAndReset } from './utils/colors';
 import { LysError } from './utils/errorPrinter';
 import { compile } from './index';
@@ -26,7 +26,7 @@ function mkdirRecursive(dir: string) {
   }
 }
 
-export async function main(cwd: string, argv: string[]) {
+function getParsingContext(cwd: string, argv: string[]) {
   nodeSystem.cwd = cwd;
   const parsingContext = new ParsingContext(nodeSystem);
   parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
@@ -44,6 +44,7 @@ export async function main(cwd: string, argv: string[]) {
       '--test': Boolean,
       '--debug': Boolean,
       '--desugar': Boolean,
+      '--watch': Boolean,
       '--run': '--test'
     },
     {
@@ -56,6 +57,9 @@ export async function main(cwd: string, argv: string[]) {
 
   const DEBUG = !!args['--debug'];
   const DESUGAR = !!args['--desugar'];
+  const WAST = !!args['--wast'];
+  const WATCH = !!args['--watch'];
+  const OPTIMIZE = !args['--no-optimize'];
 
   const file = args._[0];
 
@@ -122,34 +126,55 @@ export async function main(cwd: string, argv: string[]) {
   const outPath = dirname(outFileFullWithoutExtension);
   mkdirRecursive(outPath);
 
-  const codeGen = compile(parsingContext, mainModule, DEBUG);
+  return Object.assign(parsingContext, {
+    mainModule,
+    options: {
+      DEBUG,
+      DESUGAR,
+      WAST,
+      OPTIMIZE,
+      WATCH,
+      TEST: args['--test']
+    },
+    outFileFullWithoutExtension,
+    outPath,
+    libPaths,
+    libs,
+    customAssertions
+  });
+}
 
-  const optimize = !args['--no-optimize'];
+async function emit(parsingContext: ReturnType<typeof getParsingContext>): Promise<boolean> {
+  const codeGen = compile(parsingContext, parsingContext.mainModule, parsingContext.options.DEBUG);
 
-  await codeGen.validate(optimize, DEBUG || args['--wast']);
+  await codeGen.validate(parsingContext.options.OPTIMIZE, parsingContext.options.DEBUG || parsingContext.options.WAST);
 
-  if (args['--wast']) {
-    nodeSystem.writeFile(outFileFullWithoutExtension + '.wast', codeGen.emitText());
+  if (parsingContext.options.WAST) {
+    nodeSystem.writeFile(parsingContext.outFileFullWithoutExtension + '.wast', codeGen.emitText());
   }
 
   if (codeGen.sourceMap) {
-    nodeSystem.writeFile(nodeSystem.resolvePath(outPath, 'sourceMap.map'), codeGen.sourceMap);
+    nodeSystem.writeFile(nodeSystem.resolvePath(parsingContext.outPath, 'sourceMap.map'), codeGen.sourceMap);
   }
 
   if (!codeGen.buffer) {
     throw new LysError('Could not generate WASM binary');
   }
 
-  writeFileSync(outFileFullWithoutExtension + '.wasm', codeGen.buffer);
+  writeFileSync(parsingContext.outFileFullWithoutExtension + '.wasm', codeGen.buffer);
 
   let src = [];
 
   src.push('Object.defineProperty(exports, "__esModule", { value: true });');
   src.push('const modules = [];');
 
-  for (let i in libPaths) {
-    const path = libPaths[i];
-    src.push(`modules.push(require(${JSON.stringify(relative(dirname(outFileFullWithoutExtension), path))}).default);`);
+  for (let i in parsingContext.libPaths) {
+    const path = parsingContext.libPaths[i];
+    src.push(
+      `modules.push(require(${JSON.stringify(
+        relative(dirname(parsingContext.outFileFullWithoutExtension), path)
+      )}).default);`
+    );
   }
 
   const values: number[] = [];
@@ -181,21 +206,21 @@ exports.default = async function() {
 }
   `);
 
-  nodeSystem.writeFile(outFileFullWithoutExtension + '.js', src.join('\n'));
+  nodeSystem.writeFile(parsingContext.outFileFullWithoutExtension + '.js', src.join('\n'));
 
-  if (DESUGAR) {
+  if (parsingContext.options.DESUGAR) {
     parsingContext.modulesInContext.forEach(module => {
       if (module.fileName.startsWith(nodeSystem.cwd)) {
         const relativePath = nodeSystem.relative(nodeSystem.cwd, module.fileName);
-        const targetFile = nodeSystem.resolvePath(outPath + '/desugar/', relativePath);
+        const targetFile = nodeSystem.resolvePath(parsingContext.outPath + '/desugar/', relativePath);
         mkdirRecursive(dirname(targetFile));
         nodeSystem.writeFile(targetFile, printNode(module));
       }
     });
   }
 
-  if (args['--test']) {
-    const testInstance = await generateTestInstance(codeGen.buffer, libs);
+  if (parsingContext.options.TEST) {
+    const testInstance = await generateTestInstance(codeGen.buffer, parsingContext.libs);
 
     if (typeof testInstance.exports.test !== 'function') {
       if (typeof testInstance.exports.main !== 'function') {
@@ -209,10 +234,10 @@ exports.default = async function() {
 
     const testResults = getTestResults(testInstance);
 
-    for (let path in customAssertions) {
+    for (let path in parsingContext.customAssertions) {
       const startTime = Date.now();
       try {
-        customAssertions[path](() => testInstance);
+        parsingContext.customAssertions[path](() => testInstance);
 
         testResults.push({
           title: path,
@@ -263,7 +288,7 @@ exports.default = async function() {
             ForegroundColors.Red
           )
         );
-        process.exit(1);
+        return false;
       } else {
         console.error(
           formatColorAndReset(
@@ -273,7 +298,54 @@ exports.default = async function() {
             ForegroundColors.Green
           )
         );
+        return true;
       }
+    }
+  }
+  return parsingContext.messageCollector.errors.length === 0;
+}
+
+export async function main(cwd: string, argv: string[]) {
+  const parsingContext = getParsingContext(cwd, argv);
+
+  if (parsingContext.options.WATCH) {
+    let invalidated = true;
+    let running = false;
+
+    watch(cwd, { recursive: true }, (event, fileName) => {
+      const fqn = parsingContext.getModuleFQNForFile(fileName);
+      const inContext = parsingContext.modulesInContext.has(fqn);
+
+      if (inContext) {
+        console.log(event, fileName);
+        parsingContext.invalidateModule(fqn);
+        invalidated = true;
+      }
+    });
+
+    setInterval(async () => {
+      if (invalidated && !running) {
+        invalidated = false;
+
+        const start = Date.now();
+        console.log('Starting incremental compilation...');
+        running = true;
+        emit(parsingContext)
+          .then(() => {
+            running = false;
+            console.log(formatColorAndReset('[OK] ' + (Date.now() - start).toFixed(1) + 'ms', ForegroundColors.Green));
+          })
+          .catch(() => {
+            running = false;
+            console.log(formatColorAndReset('[ERROR] ' + (Date.now() - start).toFixed(1) + 'ms', ForegroundColors.Red));
+          });
+      }
+    }, 2000);
+
+    await new Promise(() => void 0); // wait forever
+  } else {
+    if ((await emit(parsingContext)) === false) {
+      process.exit(1);
     }
   }
 }
