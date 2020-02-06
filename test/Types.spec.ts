@@ -195,6 +195,35 @@ describe('Types', function() {
       fun() -> void
     `;
 
+    checkMainType`// #![no-std]
+      /// function type, used for call_indirect
+
+      type void = %injected
+
+      fun t(): void = {/* empty block */}
+
+      var x: fun() -> void = t
+      ---
+      fun() -> void
+      x := (fun () (alias void))
+    `;
+
+    checkMainType`// #![no-std]
+      /// function type assignment, used for call_indirect
+
+      type void = %injected
+      type ref = %injected
+
+      fun t(): ref = ???
+
+      var x: fun() -> void = t
+      ---
+      fun() -> ref
+      x := (fun () (alias void))
+      ---
+      Type mismatch
+    `;
+
     checkMainType.skip`// #![no-std]
       /// self declaration must fail
 

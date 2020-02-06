@@ -1,12 +1,16 @@
-import { UnionType, FunctionType, Type, IntersectionType, TypeType, TypeAlias, TraitType, TypeHelpers } from '../types';
+import { UnionType, FunctionType, Type, IntersectionType, TypeType, TypeAlias, TraitType, TypeHelpers, FunctionSignatureType } from '../types';
 
 export function isValidType(type: Type | null | void): type is Type {
   if (type instanceof IntersectionType || type instanceof UnionType) {
     return type.of.every(isValidType);
   }
 
-  if (type instanceof FunctionType) {
+  if (type instanceof FunctionSignatureType) {
     return isValidType(type.returnType) && type.parameterTypes.every(isValidType);
+  }
+
+  if (type instanceof FunctionType) {
+    return isValidType(type.signature);
   }
 
   if (type instanceof TypeAlias) {

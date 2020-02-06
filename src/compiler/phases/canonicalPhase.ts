@@ -413,9 +413,9 @@ const visitor = {
   },
   FunctionTypeParameter(astNode: Nodes.ASTNode) {
     const type = visitChildTypeOrFail(astNode, 'Type') as Nodes.TypeNode;
-    const ret = new Nodes.FunctionParameterTypeNode(astNode, type);
+    const ret = new Nodes.SignatureParameterNode(astNode, type);
 
-    ret.name = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
+    ret.parameterName = visitChildTypeOrNull(astNode, 'NameIdentifier') as Nodes.NameIdentifierNode;
 
     return ret;
   },

@@ -10,6 +10,9 @@ export class ParsingContext {
 
   public modulesInContext = new Map<string, Nodes.DocumentNode>();
 
+  // internalIdentifiers of the functions that should be part of the wasm table
+  public functionsInTable = new Set<string>();
+
   private typeNumbers = new Map<string, number>();
 
   constructor(public system: System) {
@@ -18,7 +21,22 @@ export class ParsingContext {
 
   reset() {
     this.typeNumbers.clear();
+    this.functionsInTable.clear();
     this.messageCollector.errors.length = 0;
+  }
+
+  addFunctionToTable(funInternalIdentifier: string) {
+    this.functionsInTable.add(funInternalIdentifier);
+  }
+
+  getOrderedTable(): string[] {
+    return Array.from(this.functionsInTable);
+  }
+
+  getFunctionInTableNumber(funInternalIdentifier: string): number {
+    // change my mind
+    this.addFunctionToTable(funInternalIdentifier);
+    return this.getOrderedTable().indexOf(funInternalIdentifier);
   }
 
   /**
@@ -30,6 +48,11 @@ export class ParsingContext {
     const currentModule = this.modulesInContext.get(moduleName);
     if (currentModule) {
       this.modulesInContext.delete(moduleName);
+      this.functionsInTable.forEach($ => {
+        if ($.startsWith(moduleName + '::')) {
+          this.functionsInTable.delete($);
+        }
+      });
       currentModule.importedBy.forEach(importedBy => {
         this.invalidateModule(importedBy);
       });

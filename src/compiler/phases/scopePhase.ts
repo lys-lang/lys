@@ -44,6 +44,7 @@ const findValueNodes = walkPreOrder((node: Nodes.Node) => {
     let returnsVoidValue = false;
 
     if (node.functionReturnType) {
+      // TODO: dehardcode this... Unit type may be a good approach
       returnsVoidValue =
         node.functionReturnType instanceof Nodes.ReferenceNode && node.functionReturnType.variable.text === 'void';
     }

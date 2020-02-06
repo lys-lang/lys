@@ -7,6 +7,30 @@ import { readBytes } from '../dist/utils/execution';
 const getBytes = require('utf8-bytes');
 
 describe('Execution tests', () => {
+  describe('call indirect', () => {
+    test(
+      'call indirect #1',
+      `
+        fun a(): i32 = 10
+        fun b(): i32 = 20
+
+        fun caller(c: fun() -> i32): i32 = c()
+
+        #[export]
+        fun test(x: i32): void = {
+          if (x == 1) {
+            support::test::assert(caller(a) == 10, "Case a")
+          } else {
+            support::test::assert(caller(b) == 20, "Case b")
+          }
+        }
+      `,
+      async x => {
+        x.exports.test(1);
+      }
+    );
+  })
+
   describe('multiple impl', () => {
     test(
       'two functions with different names',

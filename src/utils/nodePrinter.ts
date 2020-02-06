@@ -18,9 +18,9 @@ function privatePrint(node: Nodes.Node): string {
     return node.name;
   } else if (node instanceof Nodes.QNameNode) {
     return node.text;
-  } else if (node instanceof Nodes.FunctionParameterTypeNode) {
-    if (node.name) {
-      return `${printNode(node.name)}: ${printNode(node.parameterType)}`;
+  } else if (node instanceof Nodes.SignatureParameterNode) {
+    if (node.parameterName) {
+      return `${printNode(node.parameterName)}: ${printNode(node.parameterType)}`;
     } else {
       return `${printNode(node.parameterType)}`;
     }

@@ -13,7 +13,7 @@ import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
 import { findParentType } from '../nodeHelpers';
-import { FunctionType, TypeHelpers, IntersectionType } from '../types';
+import { FunctionType, TypeHelpers, IntersectionType, FunctionSignatureType, Type } from '../types';
 import { LysCompilerError } from '../NodeError';
 import { ParsingContext } from '../ParsingContext';
 import { printAST } from '../../utils/astPrinter';
@@ -62,32 +62,47 @@ function getStarterFunction(statements: any[]) {
   );
 }
 
+function getTypeForFunctionType(fn: Type | null, errorNode: Nodes.Node, includeNames: boolean) {
+  if (!fn) {
+    throw new LysCompilerError('node has no type', errorNode);
+  } else if (fn instanceof FunctionSignatureType) {
+    if (fn.returnType) {
+      const ret = fn.returnType;
+
+      const retType = ret.binaryenType ? [ret.binaryenType] : [];
+
+      // tslint:disable:ter-indent
+      return t.signature(
+        includeNames
+          ? fn.parameterTypes.map(($, $$) => ({
+              id: fn.parameterNames[$$] || '$param' + $$,
+              valtype: $.binaryenType
+            }))
+          : fn.parameterTypes.map($ => ({
+              valtype: $.binaryenType
+            })),
+        retType
+      );
+    }
+    throw new LysCompilerError(fn + ' has no return type', errorNode);
+  } else {
+    throw new LysCompilerError(fn + ' is not a function 1', errorNode);
+  }
+}
+
 function getTypeForFunction(fn: Nodes.FunctionNode) {
   const fnType = TypeHelpers.getNodeType(fn.functionName);
 
   if (fnType && fnType instanceof FunctionType) {
-    if (fnType.returnType) {
-      const ret = fnType.returnType;
-
-      const retType = ret.binaryenType ? [ret.binaryenType] : [];
-
-      return t.signature(
-        fn.parameters.map(($, $$) => ({
-          id: $.parameterName.name,
-          valtype: fnType.parameterTypes[$$].binaryenType
-        })),
-        retType
-      );
-    }
-    throw new LysCompilerError(fnType + ' has no return type', fn);
+    return getTypeForFunctionType(fnType.signature, fn, true);
   } else if (fnType) {
-    throw new LysCompilerError(fnType + ' is not a function', fn);
+    throw new LysCompilerError(fnType + ' is not a function 2', fn);
   } else {
     throw new LysCompilerError('Function did not resolve any type', fn);
   }
 }
 
-function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
+function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   const fnType = getTypeForFunction(fn);
 
   restartFunctionSeqId(fn);
@@ -101,13 +116,13 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode) {
   const moduleFun = t.func(
     t.identifier(fn.functionName.internalIdentifier), // name
     fnType, // signature
-    [...locals, ...emitList(fn.body, document)] // body
+    [...locals, ...emitList(fn.body, document, parsingContext)] // body
   );
 
   return moduleFun;
 }
 
-function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode) {
+function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   const loopId = getFunctionSeqId(node);
 
   node.annotate(new annotations.LabelId(loopId));
@@ -115,16 +130,22 @@ function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode) {
   const continueLabel = t.identifier('Loop' + loopId);
   const breakLabel = t.identifier('Break' + loopId);
 
-  return t.blockInstruction(breakLabel, [t.loopInstruction(continueLabel, void 0, emitList(node.body, document))]);
+  return t.blockInstruction(breakLabel, [
+    t.loopInstruction(continueLabel, void 0, emitList(node.body, document, parsingContext))
+  ]);
 }
 
-function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.DocumentNode) {
+function emitMatchingNode(
+  match: Nodes.PatternMatcherNode,
+  document: Nodes.DocumentNode,
+  parsingContext: ParsingContext
+) {
   const matchers = match.matchingSet.slice(0);
   const ixDefaultBranch = matchers.findIndex($ => $ instanceof Nodes.MatchDefaultNode);
 
   const local = match.getAnnotation(annotations.LocalIdentifier)!.local;
 
-  const lhs = t.instruction('local.set', [t.identifier(local.name), emit(match.lhs, document)]);
+  const lhs = t.instruction('local.set', [t.identifier(local.name), emit(match.lhs, document, parsingContext)]);
 
   if (ixDefaultBranch !== -1) {
     // the default branch must be the last element
@@ -136,7 +157,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
   const blocks = matchers
     .map(function emitNode(node: Nodes.MatcherNode): { condition: any; body: any } {
       if (node instanceof Nodes.MatchDefaultNode) {
-        const body = emit(node.rhs, document);
+        const body = emit(node.rhs, document, parsingContext);
         return { condition: null, body };
       } else if (node instanceof Nodes.MatchLiteralNode) {
         const ofType = node.resolvedFunctionType;
@@ -147,10 +168,10 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           t.instruction('local.get', [t.identifier(local.name)]),
-          emit(node.literal, document)
+          emit(node.literal, document, parsingContext)
         ]);
 
-        const body = emit(node.rhs, document);
+        const body = emit(node.rhs, document, parsingContext);
         return {
           condition,
           body
@@ -166,7 +187,7 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
           t.instruction('local.get', [t.identifier(local.name)])
         ]);
 
-        const body = emit(node.rhs, document);
+        const body = emit(node.rhs, document, parsingContext);
         return {
           condition,
           body
@@ -201,15 +222,15 @@ function emitMatchingNode(match: Nodes.PatternMatcherNode, document: Nodes.Docum
   return t.blockInstruction(t.identifier(exitBlock), flatten([lhs, ret]), matchType.binaryenType);
 }
 
-function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode) {
+function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   if (nodes instanceof Array) {
-    return flatten(nodes.map($ => emit($, document)));
+    return flatten(nodes.map($ => emit($, document, parsingContext)));
   } else {
-    return flatten([emit(nodes, document)]);
+    return flatten([emit(nodes, document, parsingContext)]);
   }
 }
 
-function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode): any {
+function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode, parsingContext: ParsingContext): any {
   if (node instanceof Nodes.ReferenceNode) {
     let ofType = TypeHelpers.getNodeType(node);
 
@@ -248,11 +269,11 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode): any {
 
   return t.instruction(
     node.symbol,
-    (node.args || []).map($ => emitWast($ as any, document))
+    (node.args || []).map($ => emitWast($ as any, document, parsingContext))
   );
 }
 
-function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
+function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   const implicitCallData = node.getAnnotation(annotations.ImplicitCall)!;
 
   const ofType = implicitCallData.implicitCall.resolvedFunctionType;
@@ -262,19 +283,61 @@ function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode) {
 
   return t.callInstruction(
     t.identifier(ofType.name.internalIdentifier),
-    implicitCallData.implicitCall.argumentsNode.map($ => emit($, document))
+    implicitCallData.implicitCall.argumentsNode.map($ => emit($, document, parsingContext))
   );
 }
 
-function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
+function getReferencedSymbol(node: Nodes.Node): { symbol: string; type: 'VALUE' | 'TABLE' } {
+  const local = node.getAnnotation(annotations.LocalIdentifier);
+
+  if (local) {
+    return {
+      symbol: local.local.name,
+      type: 'VALUE'
+    };
+  }
+
+  const fn = node.getAnnotation(annotations.FunctionInTable);
+
+  if (fn) {
+    if (!fn.nameIdentifier.internalIdentifier) {
+      throw new LysCompilerError('fn.nameIdentifier.internalIdentifier is falsy', node);
+    }
+
+    return {
+      symbol: fn.nameIdentifier.internalIdentifier,
+      type: 'TABLE'
+    };
+  }
+
+  throw new LysCompilerError('Cannot resolve WASM symbol', node);
+}
+
+function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: ParsingContext): any {
   function _emit() {
     if (node.hasAnnotation(annotations.ImplicitCall)) {
-      return emitImplicitCall(node, document);
+      return emitImplicitCall(node, document, parsingContext);
     } else if (node instanceof Nodes.AbstractFunctionCallNode) {
       const funType = node.resolvedFunctionType;
 
       if (!funType && node.hasAnnotation(annotations.ByPassFunction)) {
-        return emit(node.argumentsNode[0], document);
+        return emit(node.argumentsNode[0], document, parsingContext);
+      }
+
+      if (!funType && node instanceof Nodes.FunctionCallNode) {
+        const annotation = node.getAnnotation(annotations.IsFunctionReference);
+
+        if (annotation) {
+          const fnType = TypeHelpers.getNodeType(node.functionNode);
+          const signature = getTypeForFunctionType(fnType, node, false);
+
+          return t.callIndirectInstruction(
+            signature,
+            [emit(node.functionNode, document, parsingContext)].concat(
+              node.argumentsNode.map($ => emit($, document, parsingContext))
+            )
+          );
+        }
       }
 
       if (!funType) {
@@ -285,12 +348,12 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       return t.callInstruction(
         t.identifier(funType.name.internalIdentifier),
-        node.argumentsNode.map($ => emit($, document))
+        node.argumentsNode.map($ => emit($, document, parsingContext))
       );
     } else if (node instanceof Nodes.UnknownExpressionNode) {
       return t.instruction('unreachable', []);
     } else if (node instanceof Nodes.WasmExpressionNode) {
-      return flatten(node.atoms.map($ => emitWast($, document)));
+      return flatten(node.atoms.map($ => emitWast($, document, parsingContext)));
     } else if (node instanceof Nodes.ContinueNode) {
       const loopLabel = node.getAnnotation(annotations.CurrentLoop)!.loop.getAnnotation(annotations.LabelId)!;
       return t.instruction('br', [t.identifier('Loop' + loopLabel.label)]);
@@ -310,12 +373,12 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.FloatLiteral) {
       return t.objectInstruction('const', 'f32', [t.numberLiteralFromRaw(node.value)]);
     } else if (node instanceof Nodes.PatternMatcherNode) {
-      return emitMatchingNode(node, document);
+      return emitMatchingNode(node, document, parsingContext);
     } else if (node instanceof Nodes.LoopNode) {
-      return emitLoop(node, document);
+      return emitLoop(node, document, parsingContext);
     } else if (node instanceof Nodes.VarDeclarationNode) {
       const local = node.getAnnotation(annotations.LocalIdentifier)!.local;
-      return t.instruction('local.set', [t.identifier(local.name), emit(node.value, document)]);
+      return t.instruction('local.set', [t.identifier(local.name), emit(node.value, document, parsingContext)]);
     } else if (node instanceof Nodes.AssignmentNode) {
       if (node.lhs instanceof Nodes.ReferenceNode) {
         const isLocal = node.lhs.isLocal;
@@ -324,21 +387,21 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
         if (isLocal) {
           const instr = isValueNode ? 'local.tee' : 'local.set';
           const local = node.lhs.getAnnotation(annotations.LocalIdentifier)!.local;
-          return t.instruction(instr, [t.identifier(local.name), emit(node.rhs, document)]);
+          return t.instruction(instr, [t.identifier(local.name), emit(node.rhs, document, parsingContext)]);
         } else {
           if (isValueNode) {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier)!.local;
             return t.blockInstruction(
               t.identifier('tee_global_' + getFunctionSeqId(node)),
               [
-                t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]),
+                t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document, parsingContext)]),
                 t.instruction('global.get', [t.identifier(local.name)])
               ],
               TypeHelpers.getNodeType(node.rhs)!.binaryenType
             );
           } else {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier)!.local;
-            return t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document)]);
+            return t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document, parsingContext)]);
           }
         }
       } else {
@@ -352,7 +415,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
 
       node.statements.forEach($ => {
         // TODO: Drop here things
-        let emited = emit($, document);
+        let emited = emit($, document, parsingContext);
         const type = TypeHelpers.getNodeType($);
 
         if (type && type.binaryenType !== undefined && !$.hasAnnotation(annotations.IsValueNode)) {
@@ -374,15 +437,22 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode): any {
     } else if (node instanceof Nodes.IfNode) {
       return t.ifInstruction(
         t.identifier('IF' + getFunctionSeqId(node)),
-        [emit(node.condition, document)],
+        [emit(node.condition, document, parsingContext)],
         TypeHelpers.getNodeType(node)!.binaryenType,
-        emitList(node.truePart, document),
-        node.falsePart ? emitList(node.falsePart, document) : []
+        emitList(node.truePart, document, parsingContext),
+        node.falsePart ? emitList(node.falsePart, document, parsingContext) : []
       );
     } else if (node instanceof Nodes.ReferenceNode) {
-      const instr = node.isLocal ? 'local.get' : 'global.get';
-      const local = node.getAnnotation(annotations.LocalIdentifier)!.local;
-      return t.instruction(instr, [t.identifier(local.name)]);
+      const ref = getReferencedSymbol(node);
+
+      if (ref.type === 'VALUE') {
+        const instr = node.isLocal ? 'local.get' : 'global.get';
+        return t.instruction(instr, [t.identifier(ref.symbol)]);
+      } else if (ref.type === 'TABLE') {
+        const index = parsingContext.getFunctionInTableNumber(ref.symbol);
+        const numberLiteral = t.numberLiteralFromRaw(index, 'i32');
+        return t.objectInstruction('const', 'i32', [numberLiteral]);
+      }
     } else if (node instanceof Nodes.MemberNode) {
       if (node.operator === '.^') {
         const schemaType = TypeHelpers.getNodeType(node.lhs);
@@ -443,8 +513,14 @@ export class CodeGenerationPhaseResult {
     let text = print(this.programAST);
 
     await wabt.ready;
+    let wabtModule: _wabt.WasmModule;
 
-    const wabtModule = wabt.parseWat(this.document.moduleName, text);
+    try {
+      wabtModule = wabt.parseWat(this.document.moduleName, text);
+    } catch (e) {
+      console.log(text);
+      throw e;
+    }
 
     try {
       wabtModule.resolveNames();
@@ -612,7 +688,9 @@ export class CodeGenerationPhaseResult {
       const local = localDecl.local;
       const identifier = t.identifier(local.name);
 
-      starters.push(t.instruction('global.set', [identifier, ...emitList($.decl.value, document)]));
+      starters.push(
+        t.instruction('global.set', [identifier, ...emitList($.decl.value, document, this.parsingContext)])
+      );
 
       return t.global(
         t.globalType(binaryenType, mut),
@@ -638,7 +716,7 @@ export class CodeGenerationPhaseResult {
             )
           );
         } else {
-          createdFunctions.push(emitFunction(fun.functionNode, document));
+          createdFunctions.push(emitFunction(fun.functionNode, document, this.parsingContext));
         }
 
         const exportedAnnotation = functionName.getAnnotation(annotations.Export);
@@ -689,7 +767,24 @@ export class CodeGenerationPhaseResult {
 
     const starters: any[] = [];
 
+    const tableElems = this.parsingContext.getOrderedTable();
+
+    const table = t.table('anyfunc', t.limit(tableElems.length), t.identifier('lys::internal-functions'));
+    const elem = t.elem(
+      // table
+      t.indexLiteral(0),
+      // offset
+      [t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(0)])],
+      // elems
+      tableElems.map(x => t.identifier(x))
+    );
+
     const memory = t.memory(t.limit(1), t.identifier('mem'));
+
+    if (tableElems.length) {
+      moduleParts.push(table);
+      moduleParts.push(elem);
+    }
 
     moduleParts.push(memory);
     moduleParts.push(t.moduleExport('memory', t.moduleExportDescr('Memory', t.identifier('mem'))));

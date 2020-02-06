@@ -57,6 +57,13 @@ strings
 closure functions
 
 ```lys
+// doesnt work
+var x = if(cond) 1 else 2
+// does work
+var x = if(cond) {1} else {2}
+```
+
+```lys
 // test parsing
 enum test {}
 ```
