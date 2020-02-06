@@ -12,6 +12,7 @@ export class ParsingContext {
 
   // internalIdentifiers of the functions that should be part of the wasm table
   public functionsInTable = new Set<string>();
+  public signatures = new Map<string, any>();
 
   private typeNumbers = new Map<string, number>();
 
@@ -22,6 +23,7 @@ export class ParsingContext {
   reset() {
     this.typeNumbers.clear();
     this.functionsInTable.clear();
+    this.signatures.clear();
     this.messageCollector.errors.length = 0;
   }
 

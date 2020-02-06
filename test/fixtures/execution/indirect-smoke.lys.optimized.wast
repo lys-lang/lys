@@ -79,11 +79,11 @@
    )
    (block
     (call $0
-     (i64.const 17179869913)
+     (i64.const 12884902617)
      (local.get $0)
     )
     (call $0
-     (i64.const 17179869940)
+     (i64.const 12884902644)
      (local.get $1)
     )
    )
@@ -104,7 +104,7 @@
         (i64.const 32)
        )
       )
-      (i32.const 19)
+      (i32.const 3)
      )
     )
    )
@@ -126,23 +126,33 @@
  )
  (func $5 (; 9 ;)
   (call $4
-   (i64.const 17179869200)
+   (i64.const 12884901904)
   )
   (call $2
    (i32.const 1)
    (i32.const 1)
-   (i64.const 17179869277)
+   (i64.const 12884901981)
   )
   (call $2
    (i32.const 2)
    (i32.const 2)
-   (i64.const 17179869284)
+   (i64.const 12884901988)
   )
   (call $fimport$2)
   (call $4
-   (i64.const 17179869291)
+   (i64.const 12884901995)
   )
-  (unreachable)
+  (call $2
+   (i32.const 2)
+   (i32.const 2)
+   (i64.const 12884902072)
+  )
+  (call $2
+   (i32.const 3)
+   (i32.const 3)
+   (i64.const 12884902079)
+  )
+  (call $fimport$2)
  )
  (func $6 (; 10 ;)
   (global.set $global$0
@@ -167,7 +177,7 @@
    (global.get $global$5)
   )
   (global.set $global$7
-   (i64.const 77309411328)
+   (i64.const 8589934592)
   )
  )
 )

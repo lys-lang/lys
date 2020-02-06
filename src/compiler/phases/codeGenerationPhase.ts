@@ -62,7 +62,7 @@ function getStarterFunction(statements: any[]) {
   );
 }
 
-function getTypeForFunctionType(fn: Type | null, errorNode: Nodes.Node, includeNames: boolean) {
+function getTypeForFunctionType(fn: Type | null, errorNode: Nodes.Node) {
   if (!fn) {
     throw new LysCompilerError('node has no type', errorNode);
   } else if (fn instanceof FunctionSignatureType) {
@@ -73,14 +73,10 @@ function getTypeForFunctionType(fn: Type | null, errorNode: Nodes.Node, includeN
 
       // tslint:disable:ter-indent
       return t.signature(
-        includeNames
-          ? fn.parameterTypes.map(($, $$) => ({
-              id: fn.parameterNames[$$] || '$param' + $$,
-              valtype: $.binaryenType
-            }))
-          : fn.parameterTypes.map($ => ({
-              valtype: $.binaryenType
-            })),
+        fn.parameterTypes.map(($, $$) => ({
+          id: fn.parameterNames[$$] || '$param' + $$,
+          valtype: $.binaryenType
+        })),
         retType
       );
     }
@@ -94,7 +90,7 @@ function getTypeForFunction(fn: Nodes.FunctionNode) {
   const fnType = TypeHelpers.getNodeType(fn.functionName);
 
   if (fnType && fnType instanceof FunctionType) {
-    return getTypeForFunctionType(fnType.signature, fn, true);
+    return getTypeForFunctionType(fnType.signature, fn);
   } else if (fnType) {
     throw new LysCompilerError(fnType + ' is not a function 2', fn);
   } else {
@@ -313,6 +309,41 @@ function getReferencedSymbol(node: Nodes.Node): { symbol: string; type: 'VALUE' 
   throw new LysCompilerError('Cannot resolve WASM symbol', node);
 }
 
+function getTypeSignature(fn: Type | null, errorNode: Nodes.Node, parsingContext: ParsingContext): any {
+  if (!fn) {
+    throw new LysCompilerError('node has no type', errorNode);
+  } else if (fn instanceof FunctionSignatureType) {
+    if (fn.returnType) {
+      const ret = fn.returnType;
+
+      const retType = ret.binaryenType ? [ret.binaryenType] : [];
+
+      const name =
+        'lys::' + fn.parameterTypes.map($ => $.binaryenType).join('_') + '->' + (retType.join('_') || 'void');
+
+      if (!parsingContext.signatures.has(name)) {
+        parsingContext.signatures.set(
+          name,
+          t.typeInstruction(
+            t.identifier(name),
+            t.signature(
+              fn.parameterTypes.map($ => ({
+                valtype: $.binaryenType
+              })),
+              retType
+            )
+          )
+        );
+      }
+
+      return t.identifier(name);
+    }
+    throw new LysCompilerError(fn + ' has no return type', errorNode);
+  } else {
+    throw new LysCompilerError(fn + ' is not a function 1', errorNode);
+  }
+}
+
 function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: ParsingContext): any {
   function _emit() {
     if (node.hasAnnotation(annotations.ImplicitCall)) {
@@ -329,13 +360,13 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
 
         if (annotation) {
           const fnType = TypeHelpers.getNodeType(node.functionNode);
-          const signature = getTypeForFunctionType(fnType, node, false);
+          const signature = getTypeSignature(fnType, node, parsingContext);
 
           return t.callIndirectInstruction(
             signature,
-            [emit(node.functionNode, document, parsingContext)].concat(
-              node.argumentsNode.map($ => emit($, document, parsingContext))
-            )
+            node.argumentsNode
+              .map($ => emit($, document, parsingContext))
+              .concat(emit(node.functionNode, document, parsingContext))
           );
         }
       }
@@ -768,6 +799,8 @@ export class CodeGenerationPhaseResult {
     const starters: any[] = [];
 
     const tableElems = this.parsingContext.getOrderedTable();
+
+    this.parsingContext.signatures.forEach($ => moduleParts.push($));
 
     const table = t.table('anyfunc', t.limit(tableElems.length), t.identifier('lys::internal-functions'));
     const elem = t.elem(
