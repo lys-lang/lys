@@ -1,4 +1,5 @@
 import { Local, Nodes, Global } from './nodes';
+import { FunctionSignatureType } from './types';
 
 export abstract class Annotation {
   get name(): string {
@@ -45,6 +46,16 @@ export namespace annotations {
       super();
     }
   }
+  export class FunctionInTable extends Annotation {
+    constructor(public nameIdentifier: Nodes.NameIdentifierNode) {
+      super();
+    }
+
+    toString() {
+      return `FunctionInTable(${this.nameIdentifier.name})`;
+    }
+  }
+
   export class LocalIdentifier extends Annotation {
     constructor(public local: Local | Global) {
       super();
@@ -81,6 +92,11 @@ export namespace annotations {
     }
   }
 
+  export class IsFunctionReference extends Annotation {
+    constructor(public fun: FunctionSignatureType) {
+      super();
+    }
+  }
   export class IsUnreachable extends Annotation {}
   export class IsValueNode extends Annotation {}
   export class IsAssignationLHS extends Annotation {}

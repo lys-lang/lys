@@ -197,15 +197,15 @@ export namespace Nodes {
     }
   }
 
-  export class FunctionParameterTypeNode extends TypeNode {
-    name?: NameIdentifierNode;
+  export class SignatureParameterNode extends TypeNode {
+    parameterName?: NameIdentifierNode;
 
     constructor(astNode: ASTNode, public readonly parameterType: TypeNode) {
       super(astNode);
     }
 
     get childrenOrEmpty() {
-      return [this.name, this.parameterType];
+      return [this.parameterName, this.parameterType];
     }
   }
 
@@ -214,7 +214,7 @@ export namespace Nodes {
     effect?: TypeNode;
     returnType?: TypeNode;
 
-    constructor(astNode: ASTNode, public readonly parameters: FunctionParameterTypeNode[]) {
+    constructor(astNode: ASTNode, public readonly parameters: SignatureParameterNode[]) {
       super(astNode);
     }
 
@@ -226,7 +226,7 @@ export namespace Nodes {
   export class EffectMemberDeclarationNode extends TypeNode {
     name?: NameIdentifierNode;
     typeParameters?: string[];
-    parameters?: FunctionParameterTypeNode[];
+    parameters?: SignatureParameterNode[];
     returnType?: TypeNode;
 
     get childrenOrEmpty() {

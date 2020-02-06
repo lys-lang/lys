@@ -124,6 +124,6 @@ export class UnreachableCode extends LysSemanticError {
 
 export class NotAFunction extends LysTypeError {
   constructor(public type: Type, node: Nodes.Node) {
-    super(`Type mismatch: Type ${printDebugType(type)}" is not a function`, node);
+    super(`Type mismatch: Type ${printDebugType(type)} is not a function`, node);
   }
 }

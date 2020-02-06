@@ -1,0 +1,35 @@
+import support::test
+
+fun a(): i32 = 1
+fun a(x: i32): i32 = 1 + x
+
+fun b(): i32 = 2
+fun b(y: i32): i32 = 2 + y
+
+fun x(which: fun() -> i32): i32 = which()
+fun x(which: fun(i32) -> i32, z: i32): i32 = which(z)
+
+fun test(cual: boolean): i32 =
+  if (cual) {
+    x(a)
+  } else {
+    x(b)
+  }
+fun test(cual: boolean, num: i32): i32 =
+  if (cual) {
+    x(a, num)
+  } else {
+    x(b, num)
+  }
+
+#[export]
+fun main(): void = {
+  START("Test indirect call with no arguments")
+  mustEqual(test(true), 1, "A")
+  mustEqual(test(false), 2, "B")
+  END()
+  START("Test indirect call with one argument")
+  mustEqual(test(true, 1), 2, "A")
+  mustEqual(test(false, 1), 3, "B")
+  END()
+}

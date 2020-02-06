@@ -20,6 +20,7 @@ export abstract class Type {
 
   get binaryenType(): Valtype | void {
     switch (this.nativeType) {
+      case NativeTypes.func:
       case NativeTypes.i32:
         return 'i32';
 
@@ -29,7 +30,6 @@ export abstract class Type {
       case NativeTypes.f64:
         return 'f64';
 
-      case NativeTypes.func:
       case NativeTypes.i64:
         return 'i64';
 
@@ -100,18 +100,14 @@ export function areEqualTypes(typeA: Type | null | void, typeB: Type | null | vo
   return false;
 }
 
-export class FunctionType extends Type {
+export class FunctionSignatureType extends Type {
   readonly nativeType: NativeTypes = NativeTypes.func;
   readonly parameterTypes: Type[] = [];
   readonly parameterNames: string[] = [];
   returnType?: Type;
 
-  constructor(public name: Nodes.NameIdentifierNode) {
-    super();
-  }
-
   canBeAssignedTo(type: Type, ctx: Scope): boolean {
-    if (type instanceof FunctionType) {
+    if (type instanceof FunctionSignatureType) {
       if (this.parameterTypes.length !== type.parameterTypes.length) return false;
       if (
         // can the return type be assigned?
@@ -141,8 +137,7 @@ export class FunctionType extends Type {
 
   equals(type: Type) {
     if (!type) return false;
-    if (!(type instanceof FunctionType)) return false;
-    if (this.name !== type.name) return false;
+    if (!(type instanceof FunctionSignatureType)) return false;
     if (this.parameterTypes.length !== type.parameterTypes.length) return false;
     if (!areEqualTypes(this.returnType, type.returnType)) return false;
     if (this.parameterTypes.some(($, $$) => !areEqualTypes($, type.parameterTypes[$$]))) return false;
@@ -150,18 +145,17 @@ export class FunctionType extends Type {
   }
 
   toString() {
-    const params = this.parameterNames.map(($, ix) => {
-      const type = this.parameterTypes && this.parameterTypes[ix];
+    const params = this.parameterTypes.map((type, ix) => {
+      const name = this.parameterNames && this.parameterNames[ix];
 
-      return $ + ': ' + (type || '?');
+      return (name ? name + ': ' : '') + (type || '?');
     });
 
     return `fun(${params.join(', ')}) -> ${this.returnType ? this.returnType : '?'}`;
   }
 
   inspect(_depth: number) {
-    const params = this.parameterNames.map((_, ix) => {
-      const type = this.parameterTypes && this.parameterTypes[ix];
+    const params = this.parameterTypes.map(type => {
       if (!type) {
         return '(?)';
       } else {
@@ -169,8 +163,59 @@ export class FunctionType extends Type {
       }
     });
 
-    return `(fun ${JSON.stringify(this.name.name)} (${params.join(' ')}) ${(this.returnType &&
-      this.returnType.inspect(0)) ||
+    return `(fun (${params.join(' ')}) ${(this.returnType && this.returnType.inspect(0)) || '?'})`;
+  }
+
+  schema() {
+    return {};
+  }
+
+  getSchemaValue(name: string) {
+    throw new Error(`Cannot read schema property ${name} of ${this.inspect(10)}`);
+  }
+}
+
+export class FunctionType extends Type {
+  readonly nativeType: NativeTypes = NativeTypes.func;
+  readonly signature: FunctionSignatureType = new FunctionSignatureType();
+
+  constructor(public name: Nodes.NameIdentifierNode) {
+    super();
+  }
+
+  equals(type: Type): boolean {
+    if (!type) return false;
+    if (!(type instanceof FunctionType)) return false;
+    if (this.name !== type.name) return false;
+    if (!this.signature.equals(type.signature)) return false;
+    return true;
+  }
+
+  canBeAssignedTo(type: Type, ctx: Scope): boolean {
+    if (type instanceof FunctionType) {
+      return this.signature.canBeAssignedTo(type.signature, ctx);
+    } else if (type instanceof FunctionSignatureType) {
+      return this.signature.canBeAssignedTo(type, ctx);
+    }
+    return false;
+  }
+
+  toString() {
+    return this.signature.toString();
+  }
+
+  inspect(_depth: number) {
+    const params = this.signature.parameterNames.map((_, ix) => {
+      const type = this.signature.parameterTypes && this.signature.parameterTypes[ix];
+      if (!type) {
+        return '(?)';
+      } else {
+        return type.inspect(0);
+      }
+    });
+
+    return `(fun ${JSON.stringify(this.name.name)} (${params.join(' ')}) ${(this.signature.returnType &&
+      this.signature.returnType.inspect(0)) ||
       '?'})`;
   }
 
@@ -837,7 +882,7 @@ export class TypeAlias extends Type {
 
           for (let prop of properties) {
             const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType, ctx);
-            offset += fn!.returnType!.getSchemaValue('byteSize', ctx);
+            offset += fn!.signature.returnType!.getSchemaValue('byteSize', ctx);
           }
 
           return offset;
@@ -858,13 +903,13 @@ export class TypeAlias extends Type {
                 break;
               }
               const fn = getNonVoidFunction(TypeHelpers.getNodeType(prop.name) as IntersectionType, ctx);
-              offset += fn!.returnType!.getSchemaValue('stackSize', ctx);
+              offset += fn!.signature.returnType!.getSchemaValue('stackSize', ctx);
             }
 
             return offset;
           } else if (name.endsWith('_allocationSize')) {
             const fn = getNonVoidFunction(TypeHelpers.getNodeType(property.name) as IntersectionType, ctx);
-            return fn!.returnType!.getSchemaValue('allocationSize', ctx);
+            return fn!.signature.returnType!.getSchemaValue('allocationSize', ctx);
           }
         }
       }
@@ -979,7 +1024,7 @@ export class TraitType extends Type {
 function getNonVoidFunction(type: IntersectionType, ctx: Scope): FunctionType | null {
   const functions = type.of as FunctionType[];
   for (let fn of functions) {
-    if (fn.returnType && !voidType.canBeAssignedTo(fn.returnType, ctx)) {
+    if (fn.signature.returnType && !voidType.canBeAssignedTo(fn.signature.returnType, ctx)) {
       return fn;
     }
   }
