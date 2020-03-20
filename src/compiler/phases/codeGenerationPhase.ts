@@ -28,12 +28,11 @@ type CompilationModuleResult = {
   imports: any[];
 };
 
-const wabt: typeof _wabt = (_wabt as any)();
+const wabt = _wabt();
 
 const starterName = t.identifier('%%START%%');
 
 declare var WebAssembly: any;
-declare var console: any;
 
 const optimizeLevel = 3;
 const shrinkLevel = 0;
@@ -544,20 +543,28 @@ export class CodeGenerationPhaseResult {
     let text = print(this.programAST);
 
     await wabt.ready;
-    let wabtModule: _wabt.WasmModule;
+    let wabtModule: ReturnType<typeof wabt.parseWat>;
 
     try {
-      wabtModule = wabt.parseWat(this.document.moduleName, text);
+      wabtModule = wabt.parseWat(this.document.moduleName, text, {});
     } catch (e) {
-      console.log(text);
-      throw e;
+      const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
+      this.parsingContext.system.writeFile(invalidFile, text)
+      console.error('Error while parsing generated code. Writing debug WAT to ' + invalidFile)
+      console.error(e);
+       throw e;
     }
 
     try {
       wabtModule.resolveNames();
       wabtModule.validate();
     } catch (e) {
-      this.parsingContext.system.write(text);
+      const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
+      this.parsingContext.system.writeFile(invalidFile, text)
+
+      console.error('Error while resolving names and validate code. Writing debug WAT to ' + invalidFile)
+      console.error(e);
+
       this.parsingContext.messageCollector.error(e, this.document.astNode);
       throw e;
     }
@@ -814,8 +821,9 @@ export class CodeGenerationPhaseResult {
 
     const memory = t.memory(t.limit(1), t.identifier('mem'));
 
+    moduleParts.push(table);
+
     if (tableElems.length) {
-      moduleParts.push(table);
       moduleParts.push(elem);
     }
 

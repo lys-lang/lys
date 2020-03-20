@@ -1,13 +1,13 @@
 (module
- (type $none_=>_none (func))
- (type $i32_=>_none (func (param i32)))
- (type $i32_i32_=>_none (func (param i32 i32)))
- (type $none_=>_i32 (func (result i32)))
- (type $i32_=>_i32 (func (param i32) (result i32)))
- (type $i32_i64_=>_none (func (param i32 i64)))
- (type $f32_=>_none (func (param f32)))
- (type $i64_=>_i32 (func (param i64) (result i32)))
- (type $none_=>_i64 (func (result i64)))
+ (type $0 (func (param f32)))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func))
+ (type $4 (func (result i32)))
+ (type $5 (func (param i64) (result i32)))
+ (type $6 (func (param i32 i64)))
+ (type $7 (func (param i32) (result i32)))
+ (type $8 (func (result i64)))
  (import "test" "printNumber" (func $fimport$0 (param f32)))
  (import "test" "printNumber" (func $fimport$1 (param i32)))
  (import "test" "pushTest" (func $fimport$2 (param i32)))
@@ -71,10 +71,10 @@
  (export "test_getLastErrorMessage" (func $4))
  (export "main" (func $8))
  (start $9)
- (func $0 (; 5 ;) (result i32)
+ (func $0 (; 5 ;) (type $4) (result i32)
   (global.get $global$6)
  )
- (func $1 (; 6 ;) (param $0 i32) (result i32)
+ (func $1 (; 6 ;) (type $7) (param $0 i32) (result i32)
   (local $1 i32)
   (call $3
    (local.tee $1
@@ -86,7 +86,7 @@
   )
   (local.get $1)
  )
- (func $2 (; 7 ;) (param $0 i32) (result i32)
+ (func $2 (; 7 ;) (type $7) (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -189,7 +189,7 @@
    (i32.const 16)
   )
  )
- (func $3 (; 8 ;) (param $0 i32) (param $1 i32)
+ (func $3 (; 8 ;) (type $2) (param $0 i32) (param $1 i32)
   (local.set $1
    (i32.add
     (local.get $0)
@@ -220,7 +220,7 @@
    )
   )
  )
- (func $4 (; 9 ;) (result i32)
+ (func $4 (; 9 ;) (type $4) (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -248,7 +248,7 @@
    )
   )
  )
- (func $5 (; 10 ;) (param $0 i32) (param $1 i64)
+ (func $5 (; 10 ;) (type $6) (param $0 i32) (param $1 i64)
   (call $fimport$3
    (local.get $0)
    (i32.wrap_i64
@@ -256,7 +256,7 @@
    )
   )
  )
- (func $6 (; 11 ;) (param $0 i64) (result i32)
+ (func $6 (; 11 ;) (type $5) (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -327,7 +327,7 @@
    )
   )
  )
- (func $7 (; 12 ;) (result i64)
+ (func $7 (; 12 ;) (type $8) (result i64)
   (local $0 i64)
   (i32.store
    (i32.wrap_i64
@@ -400,7 +400,7 @@
   )
   (local.get $0)
  )
- (func $8 (; 13 ;)
+ (func $8 (; 13 ;) (type $3)
   (local $0 i64)
   (local $1 i64)
   (call $fimport$2
@@ -875,15 +875,21 @@
   )
   (call $fimport$4)
  )
- (func $9 (; 14 ;)
+ (func $9 (; 14 ;) (type $3)
   (global.set $global$0
    (i32.const 4)
   )
   (global.set $global$1
-   (i32.const 16)
+   (i32.shl
+    (i32.const 1)
+    (global.get $global$0)
+   )
   )
   (global.set $global$2
-   (i32.const 15)
+   (i32.sub
+    (global.get $global$1)
+    (i32.const 1)
+   )
   )
   (global.set $global$3
    (i32.const 1073741824)
@@ -892,7 +898,16 @@
    (i32.const 65536)
   )
   (global.set $global$5
-   (i32.const 65536)
+   (i32.and
+    (i32.add
+     (global.get $global$4)
+     (global.get $global$2)
+    )
+    (i32.xor
+     (global.get $global$2)
+     (i32.const -1)
+    )
+   )
   )
   (global.set $global$6
    (global.get $global$5)
