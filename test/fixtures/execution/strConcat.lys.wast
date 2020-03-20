@@ -18,6 +18,7 @@
   (import "env" "printf" (func $support::env::printf_5 (param $number i32) (param $extra i32)))
   (import "env" "printf" (func $support::env::printf_6 (param $number i32) (param $extra i32)))
   (import "env" "printf" (func $support::env::printf_7 (param $number i32) (param $extra i32)))
+  (table $lys::internal-functions 0 anyfunc)
   (memory $mem 1)
   (export "memory" (memory $mem))
   (func $support::env::printf_8 (param $str i64) (param $extra i32)
