@@ -59,7 +59,7 @@ describe('Canonical', function() {
 
     // add the last literal
     result += literals[literals.length - 1];
-    testParseToken(result, getFileName(), 'Document', async () => void 0, phases);
+    testParseToken(result, getFileName(), async () => void 0, phases);
   }
 
   test`var a = 1`;

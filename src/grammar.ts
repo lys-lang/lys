@@ -183,7 +183,7 @@ PostfixNumber     ::= (HexLiteral | NumberLiteral) Reference? {pin=1,simplifyWhe
 NumberLiteral     ::= !('0x') ("0" | [1-9] [0-9]*) ("." [0-9]+)? (("e" | "E") ( "-" | "+" )? ("0" | [1-9] [0-9]*))? {pin=2}
 NegNumberLiteral  ::= '-'? NumberLiteral {pin=2}
 HexLiteral        ::= "0x" [0-9A-Fa-f]+ {pin=1}
-StringLiteral     ::= STRING_DELIMITER ((![\\\\"] [#x20-#xFFFF])* | ('\\\\' (STRING_DELIMITER | '\\\\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' HEXDIG HEXDIG HEXDIG HEXDIG)?))* STRING_DELIMITER
+StringLiteral     ::= STRING_DELIMITER ((![\\\\"] [#x20-#xFFFF])* | ('\\' (STRING_DELIMITER | '\\' | '/' | 'b' | 'f' | 'n' | 'r' | 't' | 'u' HEXDIG HEXDIG HEXDIG HEXDIG)?))* STRING_DELIMITER {pin=1}
 Literal           ::= StringLiteral
                     | PostfixNumber
                     | BooleanLiteral {fragment=true}
