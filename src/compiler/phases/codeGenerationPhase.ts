@@ -542,11 +542,11 @@ export class CodeGenerationPhaseResult {
   }> {
     let text = print(this.programAST);
 
-    await wabt.ready;
-    let wabtModule: ReturnType<typeof wabt.parseWat>;
+    const theWabt = await wabt;
+    let wabtModule: ReturnType<typeof theWabt.parseWat>;
 
     try {
-      wabtModule = wabt.parseWat(this.document.moduleName, text, {});
+      wabtModule = theWabt.parseWat(this.document.moduleName, text, {});
     } catch (e) {
       const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
       this.parsingContext.system.writeFile(invalidFile, text)
