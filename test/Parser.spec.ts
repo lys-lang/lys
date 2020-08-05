@@ -8,7 +8,7 @@ import { nodeSystem } from '../dist/support/NodeSystem';
 import { printErrors } from '../dist/utils/errorPrinter';
 
 describe('Parser', () => {
-  const phases = function(txt: string, fileName: string) {
+  const phases = function (txt: string, fileName: string) {
     const parsingContext = new ParsingContext(nodeSystem);
 
     parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
@@ -18,7 +18,7 @@ describe('Parser', () => {
 
     return {
       document: parsingContext.getParsingPhaseForContent(fileName, moduleName, txt),
-      parsingContext
+      parsingContext,
     };
   };
   describe('Failing examples', () => {
@@ -46,7 +46,7 @@ describe('Parser', () => {
     return `tests/parser_tests_${testCount++}.lys`;
   }
 
-  describe('Basic sanity tests', function() {
+  describe('Basic sanity tests', function () {
     function test(literals: any, ...placeholders: any[]) {
       let result = '';
 
@@ -58,7 +58,7 @@ describe('Parser', () => {
 
       // add the last literal
       result += literals[literals.length - 1];
-      testParseToken(result, getFileName(), 'Document', async () => void 0, phases);
+      testParseToken(result, getFileName(),async () => void 0, phases);
     }
 
     function testEquivalence(a: string, b: string) {
@@ -67,7 +67,6 @@ describe('Parser', () => {
       testParseToken(
         a,
         getFileName(),
-        'Document',
         async (doc, err) => {
           if (err) throw err;
           if (!doc) throw new Error('No result');
@@ -78,7 +77,6 @@ describe('Parser', () => {
       testParseToken(
         b,
         getFileName(),
-        'Document',
         async (doc, err) => {
           if (err) throw err;
           if (!doc) throw new Error('No result');
@@ -675,6 +673,25 @@ describe('Parser', () => {
     });
 
     describe('Literals', () => {
+      function testLiteral(text: string) {
+        testParseToken(
+          'var a = ' + text,
+          getFileName(),
+          async (result, e) => {
+            if (e) throw e;
+            if (!result) throw new Error('No result');
+          },
+          phases
+        );
+      }
+
+      testLiteral(JSON.stringify('\\'));
+      testLiteral(JSON.stringify('\"'));
+      testLiteral(JSON.stringify('A string'));
+      testLiteral(JSON.stringify('A string'));
+      testLiteral(JSON.stringify("asdasd`\"`'''`\\\""));
+      testLiteral(JSON.stringify(213422342344234));
+
       test`
         var a = 1
         var b = 2.0
@@ -687,7 +704,7 @@ describe('Parser', () => {
 
       test`
         fun x(): string = "\\"'\`\\\\"
-      `
+      `;
 
       // test`
       //   fun x(): string = "// a comment inside a string"
