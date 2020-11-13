@@ -16,8 +16,8 @@ function mkdirRecursive(dir: string) {
   let sep = '/';
 
   let segments = dir.split(sep);
-  let current = '';
-  let i = 0;
+  let current = segments[0];
+  let i = 1;
 
   while (i < segments.length) {
     current = current + sep + segments[i];
