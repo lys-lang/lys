@@ -3,14 +3,27 @@ on:
 
 name: Test
 jobs:
-  install:
-    runs-on: ubuntu-latest
+  ci:
+    name: ${{ matrix.os }} - ${{ matrix.buildtype }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        buildtype: [Release] #, Debug]
+        include:
+          - os: windows-latest
+            triplet: x64-windows
+          - os: ubuntu-latest
+            triplet: x64-linux
+          - os: macos-latest
+            triplet: x64-osx-10.13
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 12.x
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 14.x
       - name: npm install
         run: npm install
       - name: make test
