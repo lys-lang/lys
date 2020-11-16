@@ -45,9 +45,7 @@ export function testParseTokenFailsafe<V extends PhasesResult = PhasesResult>(
   phases: (txt: string, fileName: string) => V,
   debug?: boolean
 ) {
-  it(fileName || inspect(txt, false, 1, true) + ' must resolve', async function(
-    this: any
-  ) {
+  it(fileName || inspect(txt, false, 1, true) + ' must resolve', async function (this: any) {
     this.timeout(10000);
 
     debug && console.log('      ---------------------------------------------------');
@@ -98,9 +96,10 @@ export function folderBasedTest<V extends PhasesResult = PhasesResult>(
           }
         }
 
-        let result = (await fn(resultNode, err)).replace(/\r\n/g, '\n');
+        let result = await fn(resultNode, err);
 
         if (result !== null && extension !== null) {
+          result = result.replace(/\r\n/g, '\n');
           const compareToFileName = fileName + extension;
           const compareFileExists = existsSync(compareToFileName);
           const compareTo = compareFileExists ? readFileSync(compareToFileName).toString().replace(/\r\n/g, '\n') : '';
@@ -119,14 +118,14 @@ export function folderBasedTest<V extends PhasesResult = PhasesResult>(
   glob.sync(grep).map(testFile);
 }
 
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', function (err) {
   console.log('UncaughtException');
   console.error(err);
   console.log(err.stack);
   process.exit(1);
 });
 
-process.on('unhandledRejection', function(reason: {} | null | undefined, promise: Promise<any>) {
+process.on('unhandledRejection', function (reason: {} | null | undefined, promise: Promise<any>) {
   console.log('unhandledRejection');
   console.log(promise);
   console.error(reason);
