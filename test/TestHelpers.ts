@@ -98,12 +98,12 @@ export function folderBasedTest<V extends PhasesResult = PhasesResult>(
           }
         }
 
-        let result = await fn(resultNode, err);
+        let result = (await fn(resultNode, err)).replace(/\r\n/g, '\n');
 
         if (result !== null && extension !== null) {
           const compareToFileName = fileName + extension;
           const compareFileExists = existsSync(compareToFileName);
-          const compareTo = compareFileExists ? readFileSync(compareToFileName).toString() : '';
+          const compareTo = compareFileExists ? readFileSync(compareToFileName).toString().replace(/\r\n/g, '\n') : '';
           if (writeToFile || !compareFileExists) {
             writeFileSync(compareToFileName, result);
           }
