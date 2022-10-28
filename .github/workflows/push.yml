@@ -3,7 +3,20 @@ on: push
 name: Test
 jobs:
   test:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} - ${{ matrix.buildtype }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        buildtype: [Release] #, Debug]
+        include:
+          - os: windows-latest
+            triplet: x64-windows
+          - os: ubuntu-latest
+            triplet: x64-linux
+          - os: macos-latest
+            triplet: x64-osx-10.13
     steps:
       - uses: actions/checkout@master
       - name: Use Node.js 16.x
