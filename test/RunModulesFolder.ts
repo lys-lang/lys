@@ -1,6 +1,6 @@
 import glob from 'glob';
 import { resolve, dirname } from 'path';
-import { main } from '../src/index-bin';
+import { main } from '../dist/index-bin';
 
 let didSomethingFail = false;
 

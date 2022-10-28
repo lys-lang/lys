@@ -44,7 +44,7 @@ e2e:
 	cd test/fixtures/cli/smoke && ../../../../dist/bin.js main.lys --test --debug --wast
 	cd test/fixtures/cli/custom-lib && ../../../../dist/bin.js main.lys --test --debug --wast --lib lib.js
 
-md-tests:
+md-tests: build
 	./node_modules/.bin/ts-node test/RunModulesFolder.ts
 
 snapshot: export UPDATE_AST=true
