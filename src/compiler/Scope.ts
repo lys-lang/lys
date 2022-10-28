@@ -100,7 +100,7 @@ export class Scope {
   canResolveName(localName: string) {
     try {
       return !!this.get(localName);
-    } catch (e) {
+    } catch (e: any) {
       return false;
     }
   }

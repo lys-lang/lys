@@ -80,9 +80,9 @@
    (unreachable)
   )
   (if
-   (i32.gt_u
-    (local.get $0)
+   (i32.lt_u
     (global.get $global$1)
+    (local.get $0)
    )
    (unreachable)
   )
@@ -122,8 +122,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -150,16 +150,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )

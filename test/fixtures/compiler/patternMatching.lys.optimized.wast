@@ -31,9 +31,9 @@
   (local $3 i32)
   (local $4 i32)
   (if
-   (i32.gt_u
-    (i32.const 4)
+   (i32.lt_u
     (global.get $global$1)
+    (i32.const 4)
    )
    (unreachable)
   )
@@ -63,8 +63,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -91,16 +91,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -145,13 +149,9 @@
   )
  )
  (func $3 (param $0 i32) (result i32)
-  (select
-   (i32.const 0)
+  (i32.eq
+   (local.get $0)
    (i32.const 1)
-   (i32.ne
-    (local.get $0)
-    (i32.const 1)
-   )
   )
  )
  (func $4 (param $0 i32) (result i32)

@@ -1634,7 +1634,7 @@ export class TypeAnalyzer extends TypeResolver {
             }
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         return null;
       }
     }

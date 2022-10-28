@@ -227,7 +227,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
     const typeName = 'boolean';
     try {
       node.scope!.get(typeName);
-    } catch (e) {
+    } catch (e: any) {
       throw new LysScopeError(e.toString(), node);
     }
 
@@ -237,7 +237,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
   } else if (node instanceof Nodes.LiteralNode) {
     try {
       node.scope!.get(node.typeName);
-    } catch (e) {
+    } catch (e: any) {
       throw new LysScopeError(e.toString(), node);
     }
 
@@ -247,7 +247,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
   } else if (node instanceof Nodes.ReferenceNode) {
     try {
       node.scope!.getQName(node.variable);
-    } catch (e) {
+    } catch (e: any) {
       throw new LysScopeError(e.toString(), node.variable);
     }
 
@@ -268,7 +268,7 @@ const resolveVariables = walkPreOrder(undefined, (node: Nodes.Node, parsingConte
   } else if (node instanceof Nodes.ImportDirectiveNode) {
     try {
       parsingContext.getPhase(node.module.text, PhaseFlags.NameInitialization);
-    } catch (e) {
+    } catch (e: any) {
       parsingContext.messageCollector.error(`Unable to load module ${node.module.text}: ` + e, node.astNode);
     }
   }

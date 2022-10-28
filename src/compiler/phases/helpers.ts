@@ -70,7 +70,7 @@ export function getModuleSet(document: Nodes.DocumentNode, parsingContext: Parsi
         } else {
           // ERROR
         }
-      } catch (e) {
+      } catch (e: any) {
         // ERROR
       }
     });

@@ -15,20 +15,20 @@ type ProcessSignal = %stack { lowLevelType="i32" byteSize=1 }
 
 /** Signal condition. */
 impl ProcessSignal {
-  private fun apply(value: i32): ProcessSignal = %wasm { (get_local $value) }
+  private fun apply(value: i32): ProcessSignal = %wasm { (local.get $value) }
 
   // implicit cast to i32 is allowed
-  fun as(self: ProcessSignal): i32 = %wasm { (get_local $self) }
+  fun as(self: ProcessSignal): i32 = %wasm { (local.get $self) }
 
   // implicit cast to boolean is allowed
   fun as(self: ProcessSignal): boolean =
-    %wasm { (i32.ne (i32.const 0) (get_local $self)) }
+    %wasm { (i32.ne (i32.const 0) (local.get $self)) }
 
   fun ==(lhs: ProcessSignal, rhs: ProcessSignal): boolean =
-    %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
+    %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
 
   fun !=(lhs: ProcessSignal, rhs: ProcessSignal): boolean =
-    %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
+    %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
 
   /** Hangup. */
   val HUP = ProcessSignal(1)

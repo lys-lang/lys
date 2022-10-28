@@ -34,7 +34,7 @@ function fileSystemEntryExists(path: string, entryKind: FileSystemEntryKind): bo
       default:
         return false;
     }
-  } catch (e) {
+  } catch (e: any) {
     return false;
   }
 }

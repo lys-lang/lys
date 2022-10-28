@@ -1,9 +1,7 @@
-declare var describe: any, it: any;
-
 import { testParseToken, folderBasedTest, PhasesResult } from './TestHelpers';
-import { printAST } from '../dist/utils/astPrinter';
-import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { nodeSystem } from '../dist/support/NodeSystem';
+import { printAST } from '../src/utils/astPrinter';
+import { ParsingContext } from '../src/compiler/ParsingContext';
+import { nodeSystem } from '../src/support/NodeSystem';
 
 const phases = function(txt: string, fileName: string): PhasesResult {
   const parsingContext = new ParsingContext(nodeSystem);

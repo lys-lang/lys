@@ -92,9 +92,9 @@
    (unreachable)
   )
   (if
-   (i32.gt_u
-    (local.get $0)
+   (i32.lt_u
     (global.get $global$1)
+    (local.get $0)
    )
    (unreachable)
   )
@@ -134,8 +134,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -162,16 +162,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -199,9 +203,9 @@
   )
   (loop $label$1
    (if
-    (i32.lt_u
-     (local.get $3)
+    (i32.gt_u
      (local.get $2)
+     (local.get $3)
     )
     (block
      (i32.store8
@@ -371,13 +375,6 @@
    )
    (unreachable)
   )
-  (if
-   (i32.lt_u
-    (local.get $1)
-    (i32.const 0)
-   )
-   (unreachable)
-  )
   (i32.load16_u
    (i32.add
     (i32.wrap_i64
@@ -515,9 +512,8 @@
      (loop $label$4
       (block $label$5
        (br_if $label$5
-        (i32.le_u
+        (i32.eqz
          (local.get $2)
-         (i32.const 0)
         )
        )
        (if
@@ -544,10 +540,7 @@
         )
        )
        (br_if $label$4
-        (i32.gt_u
-         (local.get $2)
-         (i32.const 0)
-        )
+        (local.get $2)
        )
       )
      )
@@ -621,7 +614,7 @@
       )
      )
      (br_if $label$3
-      (i64.gt_u
+      (i64.ne
        (local.tee $0
         (i64.div_u
          (local.get $0)
@@ -638,79 +631,62 @@
  )
  (func $16 (param $0 i64) (param $1 i64) (param $2 i32)
   (local $3 i32)
-  (local $4 i32)
-  (local $5 i64)
-  (local $6 i64)
   (loop $label$1
+   (if
+    (i32.lt_u
+     (i32.load
+      (i32.wrap_i64
+       (local.get $0)
+      )
+     )
+     (i32.add
+      (local.tee $3
+       (i32.shl
+        (local.tee $2
+         (i32.sub
+          (local.get $2)
+          (i32.const 1)
+         )
+        )
+        (i32.const 1)
+       )
+      )
+      (i32.const 1)
+     )
+    )
+    (unreachable)
+   )
+   (i32.store16
+    (i32.add
+     (local.get $3)
+     (i32.wrap_i64
+      (i64.extend_i32_s
+       (i32.add
+        (i32.wrap_i64
+         (local.get $0)
+        )
+        (i32.const 4)
+       )
+      )
+     )
+    )
+    (i32.add
+     (i32.wrap_i64
+      (i64.rem_u
+       (local.get $1)
+       (i64.const 10)
+      )
+     )
+     (i32.const 48)
+    )
+   )
    (br_if $label$1
     (i32.eqz
      (i64.eqz
       (local.tee $1
-       (block (result i64)
-        (local.set $6
-         (i64.div_u
-          (local.get $1)
-          (i64.const 10)
-         )
-        )
-        (local.set $3
-         (i32.and
-          (i32.add
-           (i32.and
-            (i32.wrap_i64
-             (i64.rem_u
-              (local.get $1)
-              (i64.const 10)
-             )
-            )
-            (i32.const 65535)
-           )
-           (i32.const 48)
-          )
-          (i32.const 65535)
-         )
-        )
-        (if
-         (i32.gt_u
-          (i32.add
-           (local.tee $4
-            (i32.shl
-             (local.tee $2
-              (i32.sub
-               (local.get $2)
-               (i32.const 1)
-              )
-             )
-             (i32.const 1)
-            )
-           )
-           (i32.const 1)
-          )
-          (i32.load
-           (i32.wrap_i64
-            (local.get $0)
-           )
-          )
-         )
-         (unreachable)
-        )
-        (i32.store16
-         (i32.add
-          (local.get $4)
-          (i32.wrap_i64
-           (i64.extend_i32_s
-            (i32.add
-             (i32.wrap_i64
-              (local.get $0)
-             )
-             (i32.const 4)
-            )
-           )
-          )
-         )
-         (local.get $3)
-        )
-        (local.get $6)
+       (i64.div_u
+        (local.get $1)
+        (i64.const 10)
        )
       )
      )
@@ -852,9 +828,7 @@
   (local $2 i32)
   (local $3 i32)
   (if
-   (select
-    (i32.const 0)
-    (i32.const 1)
+   (i32.eqz
     (local.tee $3
      (i32.eq
       (local.get $1)
@@ -907,9 +881,7 @@
    )
   )
   (if
-   (select
-    (i32.const 0)
-    (i32.const 1)
+   (i32.eqz
     (local.tee $2
      (call $13
       (local.get $0)

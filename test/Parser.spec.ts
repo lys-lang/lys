@@ -1,11 +1,9 @@
-declare var describe: any;
-
 import { folderBasedTest, testParseToken } from './TestHelpers';
-import { expect } from 'chai';
-import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { printAST } from '../dist/utils/astPrinter';
-import { nodeSystem } from '../dist/support/NodeSystem';
-import { printErrors } from '../dist/utils/errorPrinter';
+import expect from 'expect';
+import { ParsingContext } from '../src/compiler/ParsingContext';
+import { printAST } from '../src/utils/astPrinter';
+import { nodeSystem } from '../src/support/NodeSystem';
+import { printErrors } from '../src/utils/errorPrinter';
 
 describe('Parser', () => {
   const phases = function (txt: string, fileName: string) {
@@ -80,7 +78,7 @@ describe('Parser', () => {
         async (doc, err) => {
           if (err) throw err;
           if (!doc) throw new Error('No result');
-          expect(printAST(aDocument!.document)).to.eq(printAST(doc.document));
+          expect(printAST(aDocument!.document)).toEqual(printAST(doc.document));
         },
         phases
       );

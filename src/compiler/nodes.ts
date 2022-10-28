@@ -629,7 +629,8 @@ export namespace Nodes {
   }
 
   export abstract class LiteralNode<T> extends ExpressionNode {
-    value?: T;
+    get value(): T {throw new Error('not implemented')}
+    set value(_:T) {throw new Error('not implemented')}
     rawValue: string = '';
     resolvedReference?: Reference;
 
@@ -728,7 +729,13 @@ export namespace Nodes {
   }
 
   export class StringLiteral extends LiteralNode<string> {
-    value?: string;
+    get value(): string {
+      return this.rawValue;
+    }
+    set value(value: string) {
+      this.rawValue = value;
+    }
+
     offset?: number;
     length?: number;
 

@@ -1,13 +1,11 @@
-declare var describe: any;
-
 import { folderBasedTest, PhasesResult } from './TestHelpers';
 
-import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGenerationPhase';
-import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { printAST } from '../dist/utils/astPrinter';
-import { failWithErrors } from '../dist/compiler/findAllErrors';
-import { nodeSystem } from '../dist/support/NodeSystem';
-import { PhaseFlags } from '../dist/compiler/nodes';
+import { CodeGenerationPhaseResult } from '../src/compiler/phases/codeGenerationPhase';
+import { ParsingContext } from '../src/compiler/ParsingContext';
+import { printAST } from '../src/utils/astPrinter';
+import { failWithErrors } from '../src/compiler/findAllErrors';
+import { nodeSystem } from '../src/support/NodeSystem';
+import { PhaseFlags } from '../src/compiler/nodes';
 
 const compilerTestParsingContext = new ParsingContext(nodeSystem);
 compilerTestParsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));

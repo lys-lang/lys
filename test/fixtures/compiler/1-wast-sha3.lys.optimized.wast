@@ -1,6 +1,6 @@
 (module
- (type $i32_i32_=>_none (func (param i32 i32)))
  (type $i64_=>_none (func (param i64)))
+ (type $i32_i32_=>_none (func (param i32 i32)))
  (type $i32_=>_none (func (param i32)))
  (type $i32_i32_i32_=>_none (func (param i32 i32 i32)))
  (type $none_=>_none (func))
@@ -39,9 +39,9 @@
    (unreachable)
   )
   (if
-   (i32.gt_u
-    (local.get $0)
+   (i32.lt_u
     (global.get $global$1)
+    (local.get $0)
    )
    (unreachable)
   )
@@ -81,8 +81,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -109,16 +109,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -146,9 +150,9 @@
   )
   (loop $label$1
    (if
-    (i32.lt_u
-     (local.get $3)
+    (i32.gt_u
      (local.get $2)
+     (local.get $3)
     )
     (block
      (i32.store8
@@ -2777,14 +2781,14 @@
        (local.get $1)
       )
       (if
-       (i32.lt_u
-        (local.get $2)
+       (i32.gt_u
         (local.tee $4
          (i32.sub
           (i32.const 136)
           (local.get $3)
          )
         )
+        (local.get $2)
        )
        (local.set $4
         (local.get $2)
@@ -2856,10 +2860,7 @@
    )
   )
   (if
-   (i32.gt_u
-    (local.get $2)
-    (i32.const 0)
-   )
+   (local.get $2)
    (block
     (call $2
      (i32.add

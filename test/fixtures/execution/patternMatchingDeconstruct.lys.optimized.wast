@@ -58,9 +58,9 @@
   (local $3 i32)
   (local $4 i32)
   (if
-   (i32.gt_u
-    (i32.const 12)
+   (i32.lt_u
     (global.get $global$1)
+    (i32.const 12)
    )
    (unreachable)
   )
@@ -90,8 +90,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -118,16 +118,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -284,47 +288,35 @@
      )
      (br $label$1
       (i32.and
-       (i32.ne
-        (i32.and
-         (i32.ne
-          (i32.eq
-           (i32.load
-            (i32.wrap_i64
-             (local.get $0)
-            )
-           )
-           (i32.const 255)
+       (i32.eqz
+        (i32.load
+         (i32.add
+          (i32.wrap_i64
+           (local.get $0)
           )
-          (i32.const 0)
-         )
-         (i32.ne
-          (i32.eqz
-           (i32.load
-            (i32.add
-             (i32.wrap_i64
-              (local.get $0)
-             )
-             (i32.const 4)
-            )
-           )
-          )
-          (i32.const 0)
+          (i32.const 8)
          )
         )
-        (i32.const 0)
        )
-       (i32.ne
+       (i32.and
         (i32.eqz
          (i32.load
           (i32.add
            (i32.wrap_i64
             (local.get $0)
            )
-           (i32.const 8)
+           (i32.const 4)
           )
          )
         )
-        (i32.const 0)
+        (i32.eq
+         (i32.load
+          (i32.wrap_i64
+           (local.get $0)
+          )
+         )
+         (i32.const 255)
+        )
        )
       )
      )

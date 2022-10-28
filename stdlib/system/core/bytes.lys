@@ -25,7 +25,7 @@ impl bytes {
     (local $allocationSize i32)
 
     // allocate header + size
-    (local.set $allocationSize (i32.add (get_local $size) (i32.const 4)))
+    (local.set $allocationSize (i32.add (local.get $size) (i32.const 4)))
 
     // allocate the memory and save the pointer
     (local.set $allocation
@@ -33,26 +33,26 @@ impl bytes {
     )
 
     (call $system::core::memory::memset
-      (get_local $allocation)
+      (local.get $allocation)
       (i32.const 0)
       (local.get $allocationSize)
     )
 
     // store the size in the first int
-    (i32.store (get_local $allocation) (get_local $size))
+    (i32.store (local.get $allocation) (local.get $size))
 
     (i64.or
       (call $bytesDiscriminant)
-      (i64.extend_u/i32 (get_local $allocation))
+      (i64.extend_i32_u (local.get $allocation))
     )
   }
 
   private fun toAddr(str: bytes): u32 = %wasm {
-    (call $addressFromRef (get_local $str))
+    (call $addressFromRef (local.get $str))
   }
 
   #[explicit]
-  fun as(lhs: bytes): ref = %wasm { (get_local $lhs) }
+  fun as(lhs: bytes): ref = %wasm { (local.get $lhs) }
 
   #[getter]
   fun length(self: bytes): u32 = u32.load(self as ref)
@@ -68,7 +68,7 @@ impl bytes {
   fun as(self: bytes): UnsafeCPointer = %wasm {
     (i32.add
       (i32.const 4)
-      (call $addressFromRef (get_local $self))
+      (call $addressFromRef (local.get $self))
     )
   }
 
@@ -93,7 +93,7 @@ impl bytes {
   }
 
   fun fromString(str: string): bytes = %wasm {
-    (get_local $str)
+    (local.get $str)
   }
 
   fun get(data: bytes, at: u32): u8 = {
@@ -118,28 +118,28 @@ impl bytes {
   }
 
   fun store(lhs: ref, rhs: bytes): void = %wasm {
-    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+    (i64.store (call $addressFromRef (local.get $lhs)) (local.get $rhs))
   }
 
   fun store(lhs: ref, rhs: bytes, offset: u32): void = %wasm {
     (i64.store
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
-      (get_local $rhs)
+      (local.get $rhs)
     )
   }
 
   fun load(lhs: ref): bytes = %wasm {
-    (i64.load (call $addressFromRef (get_local $lhs)))
+    (i64.load (call $addressFromRef (local.get $lhs)))
   }
 
   fun load(lhs: ref, offset: u32): bytes = %wasm {
     (i64.load
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
     )
   }

@@ -32,11 +32,11 @@ impl Iterator {
   }
 
   fun as(self: Iterator): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Iterator = %wasm {
-    (i64.or (call Iterator$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Iterator$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Iterator, b: Iterator): boolean = %wasm {
@@ -193,11 +193,11 @@ impl Some {
   }
 
   fun as(self: Some): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Some = %wasm {
-    (i64.or (call Some$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Some$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Some, b: Some): boolean = %wasm {

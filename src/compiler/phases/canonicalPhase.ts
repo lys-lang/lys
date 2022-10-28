@@ -513,7 +513,7 @@ const visitor = {
       const ret = new Nodes.StringLiteral(x, 'string');
       ret.value = JSON.parse(x.text);
       return ret;
-    } catch (e) {
+    } catch (e: any) {
       const err = 'Cannot parse string: ' + x.text;
       console.log(err);
       return new PositionCapableError(err, x);
@@ -709,7 +709,7 @@ export function getAST(fileName: string, moduleName: string, content: string, pa
     parsingContext.modulesInContext.set(moduleName, document);
 
     return document;
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof PositionCapableError) {
       let document = new Nodes.DocumentNode(parsingTree);
 

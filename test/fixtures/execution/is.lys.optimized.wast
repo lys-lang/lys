@@ -43,8 +43,8 @@
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $0))
  (export "test_getLastErrorMessage" (func $4))
- (export "main" (func $9))
- (start $10)
+ (export "main" (func $8))
+ (start $9)
  (func $0 (result i32)
   (global.get $global$3)
  )
@@ -72,9 +72,9 @@
    (unreachable)
   )
   (if
-   (i32.gt_u
-    (local.get $0)
+   (i32.lt_u
     (global.get $global$1)
+    (local.get $0)
    )
    (unreachable)
   )
@@ -114,8 +114,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -142,16 +142,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -229,11 +233,8 @@
    (i32.const 644)
   )
   (if
-   (i32.eq
-    (i32.eqz
-     (local.get $0)
-    )
-    (i32.const 1)
+   (i32.eqz
+    (local.get $0)
    )
    (block
     (i64.store
@@ -259,19 +260,9 @@
   )
  )
  (func $6 (param $0 i64) (result i32)
-  (if (result i32)
-   (i32.eq
-    (i32.wrap_i64
-     (i64.shr_u
-      (local.get $0)
-      (i64.const 32)
-     )
-    )
-    (i32.const 3)
-   )
-   (i32.const 1)
-   (i32.ne
-    (if (result i32)
+  (i32.or
+   (i32.or
+    (i32.or
      (i32.eq
       (i32.wrap_i64
        (i64.shr_u
@@ -279,28 +270,28 @@
         (i64.const 32)
        )
       )
-      (i32.const 1)
+      (i32.const 4)
      )
-     (i32.const 1)
-     (i32.ne
-      (i32.eq
-       (i32.wrap_i64
-        (i64.shr_u
-         (local.get $0)
-         (i64.const 32)
-        )
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.get $0)
+        (i64.const 32)
        )
-       (i32.const 2)
       )
-      (i32.const 0)
+      (i32.const 5)
      )
     )
-    (i32.const 0)
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
+     )
+     (i32.const 6)
+    )
    )
-  )
- )
- (func $7 (param $0 i64) (result i32)
-  (if (result i32)
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
@@ -310,52 +301,9 @@
     )
     (i32.const 7)
    )
-   (i32.const 1)
-   (i32.ne
-    (if (result i32)
-     (i32.eq
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $0)
-        (i64.const 32)
-       )
-      )
-      (i32.const 6)
-     )
-     (i32.const 1)
-     (i32.ne
-      (if (result i32)
-       (i32.eq
-        (i32.wrap_i64
-         (i64.shr_u
-          (local.get $0)
-          (i64.const 32)
-         )
-        )
-        (i32.const 4)
-       )
-       (i32.const 1)
-       (i32.ne
-        (i32.eq
-         (i32.wrap_i64
-          (i64.shr_u
-           (local.get $0)
-           (i64.const 32)
-          )
-         )
-         (i32.const 5)
-        )
-        (i32.const 0)
-       )
-      )
-      (i32.const 0)
-     )
-    )
-    (i32.const 0)
-   )
   )
  )
- (func $8 (result i64)
+ (func $7 (result i64)
   (local $0 i64)
   (i32.store
    (i32.wrap_i64
@@ -374,7 +322,8 @@
   )
   (local.get $0)
  )
- (func $9
+ (func $8
+  (local $0 i64)
   (call $fimport$0
    (i32.const 16)
   )
@@ -382,13 +331,10 @@
    (i32.const 1)
   )
   (call $5
-   (i32.eqz
-    (i32.eqz
-     (call $6
-      (i64.const 4294967296)
-     )
-    )
-   )
+   (i32.const 1)
+  )
+  (call $5
+   (i32.const 1)
   )
   (call $5
    (i32.const 1)
@@ -397,28 +343,13 @@
    (i32.const 1)
   )
   (call $5
-   (i32.eqz
-    (i32.eqz
-     (call $6
-      (i64.const 8589934592)
-     )
-    )
-   )
-  )
-  (call $5
    (i32.const 1)
   )
   (call $5
    (i32.const 1)
   )
   (call $5
-   (i32.eqz
-    (i32.eqz
-     (call $6
-      (i64.const 12884901888)
-     )
-    )
-   )
+   (i32.const 1)
   )
   (call $5
    (i32.const 1)
@@ -435,25 +366,48 @@
    )
   )
   (call $5
-   (i32.eq
-    (i32.ne
-     (i32.wrap_i64
-      (i64.shr_u
-       (global.get $global$5)
-       (i64.const 32)
-      )
-     )
-     (i32.const 2)
-    )
-    (i32.const 1)
-   )
-  )
-  (call $5
-   (i32.eqz
-    (i32.eqz
-     (call $6
+   (i32.ne
+    (i32.wrap_i64
+     (i64.shr_u
       (global.get $global$5)
+      (i64.const 32)
      )
+    )
+    (i32.const 2)
+   )
+  )
+  (call $5
+   (i32.or
+    (i32.or
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$5)
+        )
+        (i64.const 32)
+       )
+      )
+      (i32.const 1)
+     )
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.get $0)
+        (i64.const 32)
+       )
+      )
+      (i32.const 2)
+     )
+    )
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
+     )
+     (i32.const 3)
     )
    )
   )
@@ -469,25 +423,48 @@
    )
   )
   (call $5
-   (i32.eq
-    (i32.ne
-     (i32.wrap_i64
-      (i64.shr_u
-       (global.get $global$6)
-       (i64.const 32)
-      )
+   (i32.ne
+    (i32.wrap_i64
+     (i64.shr_u
+      (global.get $global$6)
+      (i64.const 32)
      )
-     (i32.const 2)
     )
-    (i32.const 1)
+    (i32.const 2)
    )
   )
   (call $5
-   (i32.eqz
-    (i32.eqz
-     (call $6
-      (global.get $global$6)
+   (i32.or
+    (i32.or
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$6)
+        )
+        (i64.const 32)
+       )
+      )
+      (i32.const 1)
      )
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.get $0)
+        (i64.const 32)
+       )
+      )
+      (i32.const 2)
+     )
+    )
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
+     )
+     (i32.const 3)
     )
    )
   )
@@ -503,40 +480,60 @@
    )
   )
   (call $5
-   (i32.eq
-    (i32.ne
-     (i32.wrap_i64
-      (i64.shr_u
-       (global.get $global$7)
-       (i64.const 32)
-      )
-     )
-     (i32.const 2)
-    )
-    (i32.const 1)
-   )
-  )
-  (call $5
-   (i32.eqz
-    (i32.eqz
-     (call $6
+   (i32.ne
+    (i32.wrap_i64
+     (i64.shr_u
       (global.get $global$7)
+      (i64.const 32)
      )
+    )
+    (i32.const 2)
+   )
+  )
+  (call $5
+   (i32.or
+    (i32.or
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.tee $0
+         (global.get $global$7)
+        )
+        (i64.const 32)
+       )
+      )
+      (i32.const 1)
+     )
+     (i32.eq
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.get $0)
+        (i64.const 32)
+       )
+      )
+      (i32.const 2)
+     )
+    )
+    (i32.eq
+     (i32.wrap_i64
+      (i64.shr_u
+       (local.get $0)
+       (i64.const 32)
+      )
+     )
+     (i32.const 3)
     )
    )
   )
   (call $5
-   (i32.eq
-    (i32.ne
-     (i32.wrap_i64
-      (i64.shr_u
-       (global.get $global$7)
-       (i64.const 32)
-      )
+   (i32.ne
+    (i32.wrap_i64
+     (i64.shr_u
+      (global.get $global$7)
+      (i64.const 32)
      )
-     (i32.const 4)
     )
-    (i32.const 1)
+    (i32.const 4)
    )
   )
   (call $5
@@ -545,8 +542,8 @@
   (call $5
    (i32.eqz
     (i32.eqz
-     (call $7
-      (call $8)
+     (call $6
+      (call $7)
      )
     )
    )
@@ -555,7 +552,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (call $8)
+      (call $7)
       (i64.const 32)
      )
     )
@@ -563,36 +560,30 @@
    )
   )
   (call $5
-   (i32.eq
-    (i32.ne
-     (i32.wrap_i64
-      (i64.shr_u
-       (call $8)
-       (i64.const 32)
-      )
+   (i32.ne
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7)
+      (i64.const 32)
      )
-     (i32.const 4)
     )
-    (i32.const 1)
+    (i32.const 4)
    )
   )
   (call $5
-   (i32.eq
-    (i32.ne
-     (i32.wrap_i64
-      (i64.shr_u
-       (call $8)
-       (i64.const 32)
-      )
+   (i32.ne
+    (i32.wrap_i64
+     (i64.shr_u
+      (call $7)
+      (i64.const 32)
      )
-     (i32.const 2)
     )
-    (i32.const 1)
+    (i32.const 2)
    )
   )
   (call $fimport$2)
  )
- (func $10
+ (func $9
   (global.set $global$0
    (i32.const 15)
   )

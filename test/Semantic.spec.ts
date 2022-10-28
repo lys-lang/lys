@@ -1,12 +1,10 @@
-declare var describe: any, console: any;
-
-import * as expect from 'expect';
-import { findNodesByType, Nodes, PhaseFlags } from '../dist/compiler/nodes';
+import { findNodesByType, Nodes, PhaseFlags } from '../src/compiler/nodes';
 import { folderBasedTest, testParseToken, testParseTokenFailsafe, PhasesResult } from './TestHelpers';
-import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { printNode } from '../dist/utils/nodePrinter';
-import { printAST } from '../dist/utils/astPrinter';
-import { nodeSystem } from '../dist/support/NodeSystem';
+import { ParsingContext } from '../src/compiler/ParsingContext';
+import { printNode } from '../src/utils/nodePrinter';
+import { printAST } from '../src/utils/astPrinter';
+import { nodeSystem } from '../src/support/NodeSystem';
+import expect from 'expect';
 
 const parsingContext = new ParsingContext(nodeSystem);
 parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));

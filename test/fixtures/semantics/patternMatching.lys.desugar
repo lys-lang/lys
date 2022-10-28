@@ -188,11 +188,11 @@ impl Real {
   }
 
   fun as(self: Real): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Real = %wasm {
-    (i64.or (call Real$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Real$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Real, b: Real): boolean = %wasm {
@@ -251,11 +251,11 @@ impl Natural {
   }
 
   fun as(self: Natural): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Natural = %wasm {
-    (i64.or (call Natural$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Natural$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Natural, b: Natural): boolean = %wasm {
@@ -315,11 +315,11 @@ impl Complex {
   }
 
   fun as(self: Complex): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Complex = %wasm {
-    (i64.or (call Complex$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Complex$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Complex, b: Complex): boolean = %wasm {

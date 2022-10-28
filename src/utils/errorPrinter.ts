@@ -116,7 +116,7 @@ function printErrors_(
           errorOnLines[l].add(error);
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       printableErrors.add({
         start: null,
         end: null,

@@ -1,9 +1,8 @@
-import { IToken } from 'ebnf';
 import { PositionCapableError } from './NodeError';
 import { Nodes } from './nodes';
 import { ParsingContext } from './ParsingContext';
 
-export function walkPreOrder<T extends { children: any[] } = IToken>(
+export function walkPreOrder<T extends { children: any[] }>(
   cbEnter?: (node: T, phaseResult: ParsingContext, parent: T | null) => boolean | void,
   cbLeave?: (node: T, phaseResult: ParsingContext, parent: T | null) => void
 ) {
@@ -14,7 +13,7 @@ export function walkPreOrder<T extends { children: any[] } = IToken>(
   return leFn;
 }
 
-export function walk<T extends { children: any[] } = IToken>(
+export function walk<T extends { children: any[] }>(
   node: T,
   phaseResult: ParsingContext,
   cbEnter?: (node: T, phaseResult: ParsingContext, parent: T | null) => boolean | void,
@@ -28,7 +27,7 @@ export function walk<T extends { children: any[] } = IToken>(
         if (false === cbEnter.call(null, node, phaseResult, parent)) {
           traverseIn = false;
         }
-      } catch (e) {
+      } catch (e: any) {
         if (phaseResult.messageCollector && e instanceof PositionCapableError) {
           phaseResult.messageCollector.error(e);
         } else if (phaseResult.messageCollector && node instanceof Nodes.Node) {
@@ -52,7 +51,7 @@ export function walk<T extends { children: any[] } = IToken>(
       if (cbLeave) {
         try {
           cbLeave.call(null, node, phaseResult, parent);
-        } catch (e) {
+        } catch (e: any) {
           if (phaseResult.messageCollector && e instanceof PositionCapableError) {
             phaseResult.messageCollector.error(e);
           } else if (phaseResult.messageCollector && node instanceof Nodes.Node) {

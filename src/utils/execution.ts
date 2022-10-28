@@ -95,12 +95,12 @@ function padStart2(str: string) {
 export function hexDump(memory: ArrayBuffer, max = DUMP_LIMIT, start = 0) {
   const buffer = new Uint8Array(memory);
 
-  let lines = [];
+  let lines: any[] = [];
 
   for (let i = start; i < buffer.byteLength && i < max; i += BLOCK_SIZE) {
     let address = padStart8(i.toString(16)); // address
-    let hexArray = [];
-    let asciiArray = [];
+    let hexArray: any[] = [];
+    let asciiArray: any[] = [];
 
     for (let b = 0; b < BLOCK_SIZE; b += 1) {
       const value = buffer[i + b];

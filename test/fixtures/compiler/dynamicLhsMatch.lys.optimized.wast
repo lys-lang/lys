@@ -17,10 +17,10 @@
   (global.get $global$0)
  )
  (func $1 (param $0 i32) (result i32)
-  (select
-   (i32.const 1)
-   (i32.const 0)
-   (local.get $0)
+  (i32.eqz
+   (i32.eqz
+    (local.get $0)
+   )
   )
  )
  (func $2
