@@ -80,7 +80,9 @@ function printErrors_(
   let fileNameToPrint = parsing.fileName || moduleName;
 
   fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '/', '');
-  fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '\\', '');
+  fileNameToPrint = fileNameToPrint.replace(parsingContext.system.getCurrentDirectory() + '\\', '')
+  // normalize filename for windows
+  fileNameToPrint = fileNameToPrint.replace(/\\/g, '/');
 
   printLines.push(formatColorAndReset(fileNameToPrint || '(no file)', gutterStyleSequence));
 
