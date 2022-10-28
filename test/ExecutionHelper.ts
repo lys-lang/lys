@@ -15,8 +15,6 @@ import { NodeSystem } from '../src/support/NodeSystem';
 import { PhaseFlags } from '../src/compiler/nodes';
 import { failWithErrors } from '../src/compiler/findAllErrors';
 
-declare var it: any;
-
 const newSystem = new NodeSystem();
 newSystem.cwd = path.resolve(__dirname, 'fixtures', 'execution');
 
@@ -144,6 +142,7 @@ export function testFolder(pattern: string) {
     const content = readFileSync(fileName).toString();
 
     it(fileName.replace(parsingContext.system.getCurrentDirectory(), ''), async function(this: any) {
+      this.timeout(10000)
       await testSrc(
         content,
         async (x, err) => {
@@ -152,7 +151,7 @@ export function testFolder(pattern: string) {
         },
         fileName
       );
-    }, 10000);
+    });
   }
   glob.sync(parsingContext.system.getCurrentDirectory() + pattern).map(testFile);
 }
@@ -161,6 +160,7 @@ let executionNumber = 0;
 
 export function test(name: string, src: string, customTest: (document: any, error?: Error) => Promise<any>) {
   it(name, async function(this: any) {
+    this.timeout(10000)
     await testSrc(src, customTest, 'inline_execution_test' + (++executionNumber).toString());
-  }, 10000);
+  });
 }
