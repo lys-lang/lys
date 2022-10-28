@@ -127,9 +127,9 @@
    (unreachable)
   )
   (if
-   (i32.gt_u
-    (local.get $0)
+   (i32.lt_u
     (global.get $global$1)
+    (local.get $0)
    )
    (unreachable)
   )
@@ -169,8 +169,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -197,16 +197,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -234,9 +238,9 @@
   )
   (loop $label$1
    (if
-    (i32.lt_u
-     (local.get $3)
+    (i32.gt_u
      (local.get $2)
+     (local.get $3)
     )
     (block
      (i32.store8
@@ -360,9 +364,7 @@
    (local.get $2)
   )
   (if
-   (select
-    (i32.const 0)
-    (i32.const 1)
+   (i32.eqz
     (call $16
      (local.get $0)
      (local.get $1)
@@ -439,13 +441,6 @@
      )
      (i32.const 1)
     )
-   )
-   (unreachable)
-  )
-  (if
-   (i32.lt_u
-    (local.get $1)
-    (i32.const 0)
    )
    (unreachable)
   )
@@ -586,9 +581,8 @@
      (loop $label$4
       (block $label$5
        (br_if $label$5
-        (i32.le_u
+        (i32.eqz
          (local.get $2)
-         (i32.const 0)
         )
        )
        (if
@@ -615,10 +609,7 @@
         )
        )
        (br_if $label$4
-        (i32.gt_u
-         (local.get $2)
-         (i32.const 0)
-        )
+        (local.get $2)
        )
       )
      )

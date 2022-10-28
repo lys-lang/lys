@@ -1,4 +1,4 @@
-import * as arg from 'arg';
+import arg from 'arg';
 import { ParsingContext } from './compiler/ParsingContext';
 import { dirname, basename, relative } from 'path';
 import { generateTestInstance } from './utils/testEnvironment';
@@ -150,7 +150,7 @@ async function emit(parsingContext: ReturnType<typeof getParsingContext>): Promi
   await codeGen.validate(parsingContext.options.OPTIMIZE, parsingContext.options.DEBUG || parsingContext.options.WAST);
 
   if (parsingContext.options.WAST) {
-    nodeSystem.writeFile(parsingContext.outFileFullWithoutExtension + '.wast', codeGen.emitText());
+    nodeSystem.writeFile(parsingContext.outFileFullWithoutExtension + '.wast', await codeGen.emitText());
   }
 
   if (codeGen.sourceMap) {

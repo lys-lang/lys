@@ -3,7 +3,6 @@
  (type $i32_=>_none (func (param i32)))
  (type $none_=>_i32 (func (result i32)))
  (type $i32_i32_=>_none (func (param i32 i32)))
- (type $i64_=>_i32 (func (param i64) (result i32)))
  (type $i64_=>_i64 (func (param i64) (result i64)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
@@ -39,8 +38,8 @@
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $0))
  (export "test_getLastErrorMessage" (func $3))
- (export "main" (func $7))
- (start $8)
+ (export "main" (func $6))
+ (start $7)
  (func $0 (result i32)
   (global.get $global$3)
  )
@@ -51,9 +50,9 @@
   (local $3 i32)
   (local $4 i32)
   (if
-   (i32.gt_u
-    (i32.const 8)
+   (i32.lt_u
     (global.get $global$1)
+    (i32.const 8)
    )
    (unreachable)
   )
@@ -83,8 +82,8 @@
      (i32.const 16)
     )
    )
-   (if
-    (i32.lt_u
+   (block
+    (drop
      (memory.grow
       (select
        (local.get $2)
@@ -111,16 +110,20 @@
        )
       )
      )
-     (i32.const 0)
     )
     (if
-     (i32.lt_u
-      (memory.grow
-       (local.get $3)
+     (i32.const 0)
+     (block
+      (drop
+       (memory.grow
+        (local.get $3)
+       )
       )
-      (i32.const 0)
+      (if
+       (i32.const 0)
+       (unreachable)
+      )
      )
-     (unreachable)
     )
    )
   )
@@ -199,11 +202,8 @@
    (i32.const 712)
   )
   (if
-   (i32.eq
-    (i32.eqz
-     (local.get $0)
-    )
-    (i32.const 1)
+   (i32.eqz
+    (local.get $0)
    )
    (block
     (call $2
@@ -231,48 +231,7 @@
    )
   )
  )
- (func $5 (param $0 i64) (result i32)
-  (if (result i32)
-   (i32.eq
-    (i32.wrap_i64
-     (i64.shr_u
-      (local.get $0)
-      (i64.const 32)
-     )
-    )
-    (i32.const 3)
-   )
-   (i32.const 1)
-   (i32.ne
-    (if (result i32)
-     (i32.eq
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $0)
-        (i64.const 32)
-       )
-      )
-      (i32.const 1)
-     )
-     (i32.const 1)
-     (i32.ne
-      (i32.eq
-       (i32.wrap_i64
-        (i64.shr_u
-         (local.get $0)
-         (i64.const 32)
-        )
-       )
-       (i32.const 2)
-      )
-      (i32.const 0)
-     )
-    )
-    (i32.const 0)
-   )
-  )
- )
- (func $6 (param $0 i64) (result i64)
+ (func $5 (param $0 i64) (result i64)
   (block $label$1 (result i64)
    (if
     (i32.ne
@@ -289,8 +248,36 @@
       (br_if $label$1
        (i64.const 17179869184)
        (i32.eqz
-        (call $5
-         (local.get $0)
+        (i32.or
+         (i32.or
+          (i32.eq
+           (i32.wrap_i64
+            (i64.shr_u
+             (local.get $0)
+             (i64.const 32)
+            )
+           )
+           (i32.const 1)
+          )
+          (i32.eq
+           (i32.wrap_i64
+            (i64.shr_u
+             (local.get $0)
+             (i64.const 32)
+            )
+           )
+           (i32.const 2)
+          )
+         )
+         (i32.eq
+          (i32.wrap_i64
+           (i64.shr_u
+            (local.get $0)
+            (i64.const 32)
+           )
+          )
+          (i32.const 3)
+         )
         )
        )
       )
@@ -315,7 +302,7 @@
    (local.get $0)
   )
  )
- (func $7
+ (func $6
   (call $fimport$0
    (i32.const 16)
   )
@@ -323,7 +310,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (call $6
+      (call $5
        (i64.const 17179869184)
       )
       (i64.const 32)
@@ -336,7 +323,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (call $6
+      (call $5
        (i64.const 25769803776)
       )
       (i64.const 32)
@@ -349,7 +336,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (call $6
+      (call $5
        (i64.const 4294967296)
       )
       (i64.const 32)
@@ -362,7 +349,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (call $6
+      (call $5
        (i64.const 8589934592)
       )
       (i64.const 32)
@@ -375,7 +362,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (call $6
+      (call $5
        (i64.const 34359738368)
       )
       (i64.const 32)
@@ -386,7 +373,7 @@
   )
   (call $fimport$2)
  )
- (func $8
+ (func $7
   (global.set $global$0
    (i32.const 15)
   )

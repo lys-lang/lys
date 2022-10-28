@@ -1,9 +1,9 @@
 import * as t from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
 
-declare var global: any;
+declare var globalThis: any;
 
-global['Binaryen'] = {
+globalThis['Binaryen'] = {
   TOTAL_MEMORY: 16777216 * 8
 };
 
@@ -636,7 +636,7 @@ export class CodeGenerationPhaseResult {
     }
   }
 
-  emitText() {
+  async emitText() {
     if (this.buffer) {
       const module = binaryen.readBinary(this.buffer);
       const ret = module.emitText();
