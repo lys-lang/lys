@@ -36,9 +36,6 @@ watch: build
 lint:
 	node_modules/.bin/tslint src/**/*.ts --project tsconfig.json
 
-dist:
-	npx oddish
-
 e2e:
 	$(MAKE) md-tests
 	cd test/fixtures/cli/smoke && ../../../../dist/bin.js main.lys --test --debug --wast
