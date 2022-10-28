@@ -223,7 +223,7 @@ export class ParsingContext {
         throw new Error(`File ${fileName} does not exist`);
       }
 
-      return this.getParsingPhaseForContent(fileName, moduleName, content);
+      return this.getParsingPhaseForContent(fileName, moduleName, content!);
     }
   }
 

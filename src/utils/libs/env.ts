@@ -37,7 +37,7 @@ export default function(getInstance: () => any) {
           });
 
           console.log(str);
-        } catch (e) {
+        } catch (e: any) {
           console.log(e.message, 'offset:', offset, 'extra:', args);
         }
       },

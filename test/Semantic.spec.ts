@@ -1,18 +1,16 @@
-declare var describe: any, console: any;
-
-import * as expect from 'expect';
-import { findNodesByType, Nodes, PhaseFlags } from '../dist/compiler/nodes';
+import { findNodesByType, Nodes, PhaseFlags } from '../src/compiler/nodes';
 import { folderBasedTest, testParseToken, testParseTokenFailsafe, PhasesResult } from './TestHelpers';
-import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { printNode } from '../dist/utils/nodePrinter';
-import { printAST } from '../dist/utils/astPrinter';
-import { nodeSystem } from '../dist/support/NodeSystem';
+import { ParsingContext } from '../src/compiler/ParsingContext';
+import { printNode } from '../src/utils/nodePrinter';
+import { printAST } from '../src/utils/astPrinter';
+import { nodeSystem } from '../src/support/NodeSystem';
+import expect from 'expect';
 
 const parsingContext = new ParsingContext(nodeSystem);
 parsingContext.paths.push(nodeSystem.resolvePath(__dirname, '../stdlib'));
 
-describe('Semantic', function() {
-  const semanticPhases = function(txt: string, fileName: string): PhasesResult {
+describe('Semantic', function () {
+  const semanticPhases = function (txt: string, fileName: string): PhasesResult {
     parsingContext.reset();
     const moduleName = parsingContext.getModuleFQNForFile(fileName);
     parsingContext.invalidateModule(moduleName);
@@ -20,7 +18,7 @@ describe('Semantic', function() {
     return { parsingContext, document: parsingContext.getPhase(moduleName, PhaseFlags.Semantic) };
   };
 
-  const scopePhases = function(txt: string, fileName: string): PhasesResult {
+  const scopePhases = function (txt: string, fileName: string): PhasesResult {
     parsingContext.reset();
     const moduleName = parsingContext.getModuleFQNForFile(fileName);
     parsingContext.invalidateModule(moduleName);
@@ -85,7 +83,7 @@ describe('Semantic', function() {
     testParseToken(
       result,
       getFileName(),
-      'Document',
+
       async (_, e) => {
         if (e) throw e;
         expect(parsingContext.messageCollector.hasErrors()).toEqual(false);
@@ -108,7 +106,7 @@ describe('Semantic', function() {
     testParseTokenFailsafe(
       result,
       'MUST_FAIL_' + getFileName(),
-      'Document',
+
       async (result, err) => {
         const didFail = !!err || !result || parsingContext.messageCollector.hasErrors();
         if (!didFail && result) {
@@ -191,7 +189,7 @@ describe('Semantic', function() {
           b
         }`,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -211,7 +209,7 @@ describe('Semantic', function() {
           b
         }`,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -301,7 +299,7 @@ describe('Semantic', function() {
           map(1,3)
         }`,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -320,7 +318,7 @@ describe('Semantic', function() {
         }
       `,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -339,7 +337,7 @@ describe('Semantic', function() {
           b
         }`,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -357,7 +355,7 @@ describe('Semantic', function() {
         fun a(): void = {}
       `,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -374,7 +372,7 @@ describe('Semantic', function() {
         fun a(): void = {}
       `,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -389,7 +387,7 @@ describe('Semantic', function() {
         fun a(): i32 = system::random::nextInt()
       `,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');
@@ -403,7 +401,7 @@ describe('Semantic', function() {
         fun hash(): i32 = 1
       `,
       getFileName(),
-      'Document',
+
       async (result, e) => {
         if (e) throw e;
         if (!result) throw new Error('No result');

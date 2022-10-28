@@ -1,21 +1,60 @@
-on:
-  push
+on: push
 
 name: Test
 jobs:
-  install:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 12.x
+      - name: Use Node.js 16.x
         uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 16.x
       - name: npm install
         run: npm install
       - name: make test
         run: make test
-      - name: make e2e
-        run: make e2e
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: npm install
+        run: npm install
       - name: make lint
         run: make lint
+
+  markdown-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: npm install
+        run: npm install
+      - name: make e2e
+        run: make e2e
+
+  build-publish:
+    runs-on: ubuntu-latest
+    needs: ['markdown-test', 'lint', 'test']
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.x
+      - name: npm install
+        run: npm install
+      - name: Publish
+        uses: menduz/oddish-action@master
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          access: public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}

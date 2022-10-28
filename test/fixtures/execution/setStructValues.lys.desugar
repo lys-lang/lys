@@ -170,11 +170,11 @@ impl Custom {
   }
 
   fun as(self: Custom): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Custom = %wasm {
-    (i64.or (call Custom$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Custom$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Custom, b: Custom): boolean = %wasm {
@@ -236,11 +236,11 @@ impl CatBag {
   }
 
   fun as(self: CatBag): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): CatBag = %wasm {
-    (i64.or (call CatBag$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call CatBag$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: CatBag, b: CatBag): boolean = %wasm {
@@ -322,11 +322,11 @@ impl Custom2 {
   }
 
   fun as(self: Custom2): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Custom2 = %wasm {
-    (i64.or (call Custom2$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Custom2$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Custom2, b: Custom2): boolean = %wasm {

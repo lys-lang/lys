@@ -17,11 +17,11 @@ fun u32_one(): u32 = %wasm {
 }
 
 fun i32const_u32(x: i32): u32 = %wasm {
-  (get_local $x)
+  (local.get $x)
 }
 
 fun i32const_i32(x: i32): i32 = %wasm {
-  (get_local $x)
+  (local.get $x)
 }
 
 #[export]

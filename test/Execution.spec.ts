@@ -1,8 +1,6 @@
-declare var describe: any;
-
 import { test, testFolder } from './ExecutionHelper';
-import { expect } from 'chai';
-import { readBytes } from '../dist/utils/execution';
+import expect from 'expect';
+import { readBytes } from '../src/utils/execution';
 
 const getBytes = require('utf8-bytes');
 
@@ -142,9 +140,9 @@ describe('Execution tests', () => {
         #[export] fun B2(): u32 = B.check2()
       `,
       async x => {
-        expect(x.exports.A1()).to.eq(x.exports.A2());
-        expect(x.exports.B1()).to.eq(x.exports.B2());
-        expect(x.exports.A1()).to.not.eq(x.exports.B1());
+        expect(x.exports.A1()).toEqual(x.exports.A2());
+        expect(x.exports.B1()).toEqual(x.exports.B2());
+        expect(x.exports.A1()).not.toEqual(x.exports.B1());
       }
     );
 
@@ -173,8 +171,8 @@ describe('Execution tests', () => {
         fun sumB(x: i32, y: i32): i32 = (B(x) + B(y)).num
       `,
       async x => {
-        expect(x.exports.sumA(1.5, 2)).to.eq(3.5);
-        expect(x.exports.sumB(1.1, 2.1)).to.eq(3);
+        expect(x.exports.sumA(1.5, 2)).toEqual(3.5);
+        expect(x.exports.sumB(1.1, 2.1)).toEqual(3);
       }
     );
   });
@@ -190,8 +188,8 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main(1)).to.eq(45);
-        expect(x.exports.main(2)).to.eq(46);
+        expect(x.exports.main(1)).toEqual(45);
+        expect(x.exports.main(2)).toEqual(46);
       }
     );
   });
@@ -209,7 +207,7 @@ describe('Execution tests', () => {
         #[export] fun main(): boolean = A.x
       `,
       async x => {
-        expect(x.exports.main()).to.eq(1);
+        expect(x.exports.main()).toEqual(1);
       }
     );
   });
@@ -224,7 +222,7 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.i32f32(44.9)).to.eq(44);
+        expect(x.exports.i32f32(44.9)).toEqual(44);
       }
     );
   });
@@ -251,10 +249,10 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.a()).to.eq(1);
-        expect(x.exports.b()).to.eq(2);
-        expect(x.exports.c()).to.eq(3);
-        expect(x.exports.d()).to.eq(4);
+        expect(x.exports.a()).toEqual(1);
+        expect(x.exports.b()).toEqual(2);
+        expect(x.exports.c()).toEqual(3);
+        expect(x.exports.d()).toEqual(4);
       }
     );
 
@@ -283,15 +281,15 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.next()).to.eq(1);
-        expect(x.exports.next()).to.eq(2);
-        expect(x.exports.next()).to.eq(3);
-        expect(x.exports.next()).to.eq(4);
+        expect(x.exports.next()).toEqual(1);
+        expect(x.exports.next()).toEqual(2);
+        expect(x.exports.next()).toEqual(3);
+        expect(x.exports.next()).toEqual(4);
         x.exports.reset();
-        expect(x.exports.next()).to.eq(1);
-        expect(x.exports.next()).to.eq(2);
-        expect(x.exports.next()).to.eq(3);
-        expect(x.exports.next()).to.eq(4);
+        expect(x.exports.next()).toEqual(1);
+        expect(x.exports.next()).toEqual(2);
+        expect(x.exports.next()).toEqual(3);
+        expect(x.exports.next()).toEqual(4);
       }
     );
 
@@ -314,8 +312,8 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.mul(123)).to.eq(123 * 123);
-        expect(x.exports.bool(false)).to.eq(123);
+        expect(x.exports.mul(123)).toEqual(123 * 123);
+        expect(x.exports.bool(false)).toEqual(123);
       }
     );
   });
@@ -329,7 +327,7 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.test1()).to.be.gt(0);
+        expect(x.exports.test1()).toBeGreaterThan(0);
       }
     );
     test(
@@ -413,7 +411,7 @@ describe('Execution tests', () => {
           [x.exports.catBagOffsets(6), 33]
         ];
 
-        expect(JSON.stringify(results.map($ => $[0]))).to.eq(JSON.stringify(results.map($ => $[1])));
+        expect(JSON.stringify(results.map($ => $[0]))).toEqual(JSON.stringify(results.map($ => $[1])));
       }
     );
   });
@@ -443,7 +441,7 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.sumTimes(10)).to.eq(10);
+        expect(x.exports.sumTimes(10)).toEqual(10);
       }
     );
   });
@@ -509,12 +507,12 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.len()).to.eq(3);
-        expect(x.exports.b(0)).to.eq(0);
-        expect(x.exports.b(1)).to.eq(1);
-        expect(x.exports.b(2)).to.eq(2);
-        expect(x.exports.b(3)).to.eq(3);
-        expect(() => x.exports.b(92)).to.throw();
+        expect(x.exports.len()).toEqual(3);
+        expect(x.exports.b(0)).toEqual(0);
+        expect(x.exports.b(1)).toEqual(1);
+        expect(x.exports.b(2)).toEqual(2);
+        expect(x.exports.b(3)).toEqual(3);
+        expect(() => x.exports.b(92)).toThrow();
       }
     );
 
@@ -528,13 +526,13 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.len()).to.eq(6);
+        expect(x.exports.len()).toEqual(6);
 
         let str = String.fromCodePoint(...[0, 1, 2, 3, 4, 5].map($ => x.exports.charAt($)));
 
-        expect(str).to.eq('asd❮𝐑');
+        expect(str).toEqual('asd❮𝐑');
 
-        expect(() => x.exports.charAt(100)).to.throw();
+        expect(() => x.exports.charAt(100)).toThrow();
       }
     );
 
@@ -585,21 +583,21 @@ describe('Execution tests', () => {
           }
 
           const retAddress = x.exports.resultAddress(0);
-          expect(retAddress).to.gt(0, 'retAddress must be > 0');
+          expect(retAddress).toBeGreaterThan(0) // , 'retAddress must be > 0');
           return readBytes(x.exports.memory.buffer, retAddress)
             .map($ => ('00' + $.toString(16)).substr(-2))
             .join('');
         };
 
         const bytes = getResult();
-        expect(bytes.length).to.eq(64);
-        expect(bytes).to.eq('c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470');
+        expect(bytes.length).toEqual(64);
+        expect(bytes).toEqual('c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470');
 
         const testStr = (data: string, hash: string) => {
           x.exports.reset();
           update(data);
           const result = getResult(true);
-          expect(result).to.eq(hash, `hash of ${JSON.stringify(data)}`);
+          expect(result).toEqual(hash) //, `hash of ${JSON.stringify(data)}`);
         };
 
         // test asd
@@ -628,8 +626,8 @@ describe('Execution tests', () => {
       `,
       async (x, err) => {
         if (err) throw err;
-        expect(x.exports.add(10, 13)).to.eq(23);
-        expect(x.exports.add2(30, 13)).to.eq(43);
+        expect(x.exports.add(10, 13)).toEqual(23);
+        expect(x.exports.add2(30, 13)).toEqual(43);
       }
     );
 
@@ -646,10 +644,10 @@ describe('Execution tests', () => {
         const d_ref = x.exports.d_ref();
         const d_str = x.exports.d_str();
 
-        expect(d_ref).to.gt(0);
-        expect(d_str).to.gt(0);
+        expect(d_ref).toBeGreaterThan(0);
+        expect(d_str).toBeGreaterThan(0);
 
-        expect(d_str).to.not.eq(d_ref);
+        expect(d_str).not.toEqual(d_ref);
       }
     );
   });
@@ -678,7 +676,7 @@ describe('Execution tests', () => {
         if (err) throw err;
         x.exports.testPassing();
 
-        expect(() => x.exports.testFailing()).to.throw();
+        expect(() => x.exports.testFailing()).toThrow();
       }
     );
 
@@ -771,7 +769,7 @@ describe('Execution tests', () => {
       async (x, err) => {
         if (err) throw err;
         x.exports.testPassing();
-        expect(() => x.exports.testFailing()).to.throw();
+        expect(() => x.exports.testFailing()).toThrow();
       }
     );
 
@@ -871,7 +869,7 @@ describe('Execution tests', () => {
       async (x, err) => {
         if (err) throw err;
         x.exports.testPassing();
-        expect(() => x.exports.testFailing()).to.throw();
+        expect(() => x.exports.testFailing()).toThrow();
       }
     );
 
@@ -1012,8 +1010,8 @@ describe('Execution tests', () => {
         const a = x.exports.retRef();
         const b = x.exports.retRef();
         const c = x.exports.retRef();
-        expect(b).to.gt(a);
-        expect(c).to.gt(b);
+        expect(b).toBeGreaterThan(a);
+        expect(c).toBeGreaterThan(b);
       }
     );
   });
@@ -1046,9 +1044,9 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main1(1, 1.0)).to.eq(4);
-        expect(x.exports.main2(1, 1.0)).to.eq(0);
-        expect(x.exports.main3(1, 1)).to.eq(1);
+        expect(x.exports.main1(1, 1.0)).toEqual(4);
+        expect(x.exports.main2(1, 1.0)).toEqual(0);
+        expect(x.exports.main3(1, 1)).toEqual(1);
       }
     );
 
@@ -1060,7 +1058,7 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main(1, 1)).to.eq(2);
+        expect(x.exports.main(1, 1)).toEqual(2);
       }
     );
   });
@@ -1075,7 +1073,7 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main()).to.eq(undefined);
+        expect(x.exports.main()).toEqual(undefined);
       }
     );
     test(
@@ -1085,7 +1083,7 @@ describe('Execution tests', () => {
         #[export] fun main(): void = {}
       `,
       async x => {
-        expect(x.exports.main()).to.eq(undefined);
+        expect(x.exports.main()).toEqual(undefined);
       }
     );
   });
@@ -1164,9 +1162,8 @@ describe('Execution tests', () => {
             !!x.exports.testBool11(),
             !!x.exports.testBool12(),
             !!x.exports.testBool99()
-          ].map(($, $$) => `fn ${$$} -> ${$}`),
-          'fn compare'
-        ).to.deep.eq(
+          ].map(($, $$) => `fn ${$$} -> ${$}`)
+        ).toEqual(
           [true, false, false, true, true, false, false, false, true, false, true, true, false, true].map(
             ($, $$) => `fn ${$$} -> ${$}`
           )
@@ -1189,11 +1186,10 @@ describe('Execution tests', () => {
             x.exports.testBool(12),
             x.exports.testBool(99)
           ].map(($, $$) => `${$$} -> ${$}`),
-          'match compare'
-        ).to.deep.eq([1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1].map(($, $$) => `${$$} -> ${$}`));
+        ).toEqual([1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1].map(($, $$) => `${$$} -> ${$}`));
 
-        expect(() => x.exports.testPanic1(), 'testPanic1').to.throw();
-        expect(() => x.exports.testPanic2(), 'testPanic2').to.throw();
+        expect(() => x.exports.testPanic1()).toThrow();
+        expect(() => x.exports.testPanic2()).toThrow();
       }
     );
   });
@@ -1223,16 +1219,16 @@ describe('Execution tests', () => {
         #[export] fun getValue(): i32 = a
       `,
       async x => {
-        expect(x.exports.getValue()).to.eq(-1);
+        expect(x.exports.getValue()).toEqual(-1);
 
-        expect(x.exports.main(1)).to.eq(undefined);
-        expect(x.exports.getValue()).to.eq(1);
-        expect(x.exports.main(3)).to.eq(undefined);
-        expect(x.exports.getValue()).to.eq(3);
-        expect(x.exports.main(-3)).to.eq(undefined);
-        expect(x.exports.getValue()).to.eq(0);
-        expect(x.exports.main(30)).to.eq(undefined);
-        expect(x.exports.getValue()).to.eq(30);
+        expect(x.exports.main(1)).toEqual(undefined);
+        expect(x.exports.getValue()).toEqual(1);
+        expect(x.exports.main(3)).toEqual(undefined);
+        expect(x.exports.getValue()).toEqual(3);
+        expect(x.exports.main(-3)).toEqual(undefined);
+        expect(x.exports.getValue()).toEqual(0);
+        expect(x.exports.main(30)).toEqual(undefined);
+        expect(x.exports.getValue()).toEqual(30);
       }
     );
 
@@ -1250,8 +1246,8 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main(1)).to.eq(3);
-        expect(x.exports.main(3)).to.eq(1);
+        expect(x.exports.main(1)).toEqual(3);
+        expect(x.exports.main(3)).toEqual(1);
       }
     );
 
@@ -1269,8 +1265,8 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main(1)).to.eq(3);
-        expect(x.exports.main(3)).to.eq(1);
+        expect(x.exports.main(1)).toEqual(3);
+        expect(x.exports.main(3)).toEqual(1);
       }
     );
 
@@ -1288,8 +1284,8 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.main(1)).to.eq(3);
-        expect(x.exports.main(3)).to.eq(1);
+        expect(x.exports.main(1)).toEqual(3);
+        expect(x.exports.main(3)).toEqual(1);
       }
     );
   });
@@ -1306,11 +1302,11 @@ describe('Execution tests', () => {
         }
       `,
       async x => {
-        expect(x.exports.add(1, 2)).to.eq(3);
-        expect(x.exports.add(-1, 2)).to.eq(1);
-        expect(x.exports.add2(1, 2)).to.eq(3);
-        expect(x.exports.add2(0.2, 0.3)).to.eq(0.5);
-        expect(x.exports.add2(-1, 2)).to.eq(1);
+        expect(x.exports.add(1, 2)).toEqual(3);
+        expect(x.exports.add(-1, 2)).toEqual(1);
+        expect(x.exports.add2(1, 2)).toEqual(3);
+        expect(x.exports.add2(0.2, 0.3)).toEqual(0.5);
+        expect(x.exports.add2(-1, 2)).toEqual(1);
       }
     );
 
@@ -1325,11 +1321,11 @@ describe('Execution tests', () => {
         }}
       `,
       async x => {
-        expect(x.exports.add(1, 2)).to.eq(3);
-        expect(x.exports.add(-1, 2)).to.eq(1);
-        expect(x.exports.add2(1, 2)).to.eq(3);
-        expect(x.exports.add2(0.2, 0.3)).to.eq(0.5);
-        expect(x.exports.add2(-1, 2)).to.eq(1);
+        expect(x.exports.add(1, 2)).toEqual(3);
+        expect(x.exports.add(-1, 2)).toEqual(1);
+        expect(x.exports.add2(1, 2)).toEqual(3);
+        expect(x.exports.add2(0.2, 0.3)).toEqual(0.5);
+        expect(x.exports.add2(-1, 2)).toEqual(1);
       }
     );
 
@@ -1349,11 +1345,11 @@ describe('Execution tests', () => {
         #[export] fun testFloat2(a: f32): f32 = sum(a)
       `,
       async x => {
-        expect(x.exports.testInt(46, 3)).to.eq(49);
-        expect(x.exports.testFloat(0.2, 0.3)).to.eq(0.5);
+        expect(x.exports.testInt(46, 3)).toEqual(49);
+        expect(x.exports.testFloat(0.2, 0.3)).toEqual(0.5);
 
-        expect(x.exports.testInt2(46)).to.eq(146);
-        expect(x.exports.testFloat2(0.5)).to.eq(100.5);
+        expect(x.exports.testInt2(46)).toEqual(146);
+        expect(x.exports.testFloat2(0.5)).toEqual(100.5);
       }
     );
 
@@ -1388,23 +1384,23 @@ describe('Execution tests', () => {
           }
       `,
       async x => {
-        expect(x.exports.test1(1)).to.eq(1);
-        expect(x.exports.test1(0)).to.eq(0);
-        expect(x.exports.test2(10)).to.eq(1);
-        expect(x.exports.test2(20)).to.eq(2);
-        expect(x.exports.test2(30)).to.eq(3);
-        expect(x.exports.test2(40)).to.eq(4);
-        expect(x.exports.test2(50)).to.eq(5);
-        expect(x.exports.test2(60)).to.eq(6);
-        expect(x.exports.test2(70)).to.eq(7);
-        expect(x.exports.test2(80)).to.eq(8);
-        expect(x.exports.test2(90)).to.eq(9);
-        expect(x.exports.test2(700)).to.eq(0);
-        expect(x.exports.test2(71)).to.eq(0);
-        expect(x.exports.test2(-170)).to.eq(0);
-        expect(x.exports.test2(0)).to.eq(0);
-        expect(x.exports.test3(0)).to.eq(1);
-        expect(x.exports.test3(-1)).to.eq(0);
+        expect(x.exports.test1(1)).toEqual(1);
+        expect(x.exports.test1(0)).toEqual(0);
+        expect(x.exports.test2(10)).toEqual(1);
+        expect(x.exports.test2(20)).toEqual(2);
+        expect(x.exports.test2(30)).toEqual(3);
+        expect(x.exports.test2(40)).toEqual(4);
+        expect(x.exports.test2(50)).toEqual(5);
+        expect(x.exports.test2(60)).toEqual(6);
+        expect(x.exports.test2(70)).toEqual(7);
+        expect(x.exports.test2(80)).toEqual(8);
+        expect(x.exports.test2(90)).toEqual(9);
+        expect(x.exports.test2(700)).toEqual(0);
+        expect(x.exports.test2(71)).toEqual(0);
+        expect(x.exports.test2(-170)).toEqual(0);
+        expect(x.exports.test2(0)).toEqual(0);
+        expect(x.exports.test3(0)).toEqual(1);
+        expect(x.exports.test3(-1)).toEqual(0);
       }
     );
   });

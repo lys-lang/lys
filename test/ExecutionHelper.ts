@@ -1,21 +1,19 @@
-import { CodeGenerationPhaseResult } from '../dist/compiler/phases/codeGenerationPhase';
-import { ParsingContext } from '../dist/compiler/ParsingContext';
-import { printErrors } from '../dist/utils/errorPrinter';
-import { readString } from '../dist/utils/execution';
-import { generateTestInstance } from '../dist/utils/testEnvironment';
-import { loadFromMD } from '../dist/utils/loadFromMD';
-import { compile } from '../dist';
-import glob = require('glob');
-import path = require('path');
+import { CodeGenerationPhaseResult } from '../src/compiler/phases/codeGenerationPhase';
+import { ParsingContext } from '../src/compiler/ParsingContext';
+import { printErrors } from '../src/utils/errorPrinter';
+import { readString } from '../src/utils/execution';
+import { generateTestInstance } from '../src/utils/testEnvironment';
+import { loadFromMD } from '../src/utils/loadFromMD';
+import { compile } from '../src';
+import * as glob from 'glob';
+import * as path from 'path';
 import { readFileSync } from 'fs';
 
-import envLib from '../dist/utils/libs/env';
-import testLib, { getTestResults } from '../dist/utils/libs/test';
-import { NodeSystem } from '../dist/support/NodeSystem';
-import { PhaseFlags } from '../dist/compiler/nodes';
-import { failWithErrors } from '../dist/compiler/findAllErrors';
-
-declare var it: any;
+import envLib from '../src/utils/libs/env';
+import testLib, { getTestResults } from '../src/utils/libs/test';
+import { NodeSystem } from '../src/support/NodeSystem';
+import { PhaseFlags } from '../src/compiler/nodes';
+import { failWithErrors } from '../src/compiler/findAllErrors';
 
 const newSystem = new NodeSystem();
 newSystem.cwd = path.resolve(__dirname, 'fixtures', 'execution');
@@ -74,7 +72,7 @@ async function testSrc(content: string, customTest: (document: any, error?: Erro
         for (let path in customAssertions) {
           customAssertions[path](() => instance);
         }
-      } catch (e) {
+      } catch (e: any) {
         // const maxMemory = instance.exports.test_getMaxMemory();
 
         console.log(printErrors(compilationPhaseResult.parsingContext));
@@ -125,12 +123,12 @@ async function testSrc(content: string, customTest: (document: any, error?: Erro
         for (let path in customAssertions) {
           customAssertions[path](() => newInstance);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error('OPTIMIZED VERSION FAILED');
         throw e;
       }
     }
-  } catch (e) {
+  } catch (e: any) {
     if (customTest && customTest.length >= 2) {
       await customTest(null, e);
     } else {
@@ -144,8 +142,7 @@ export function testFolder(pattern: string) {
     const content = readFileSync(fileName).toString();
 
     it(fileName.replace(parsingContext.system.getCurrentDirectory(), ''), async function(this: any) {
-      this.timeout(10000);
-
+      this.timeout(10000)
       await testSrc(
         content,
         async (x, err) => {
@@ -163,8 +160,7 @@ let executionNumber = 0;
 
 export function test(name: string, src: string, customTest: (document: any, error?: Error) => Promise<any>) {
   it(name, async function(this: any) {
-    this.timeout(10000);
-
+    this.timeout(10000)
     await testSrc(src, customTest, 'inline_execution_test' + (++executionNumber).toString());
   });
 }

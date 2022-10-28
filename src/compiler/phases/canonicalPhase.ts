@@ -112,7 +112,7 @@ const visitor = {
     return ret;
   },
   ImplDirective(astNode: Nodes.ASTNode) {
-    const references = astNode.children.filter($ => $.type === 'Reference');
+    const references = astNode.children.filter(($) => $.type === 'Reference');
 
     // the last Reference is the target
     const target = visit(references.pop()!);
@@ -141,7 +141,7 @@ const visitor = {
     const list = findChildrenType(astNode, 'EffectElementList');
 
     if (list) {
-      ret.elements = list.children.map($ => visit($));
+      ret.elements = list.children.map(($) => visit($));
     } else {
       // TODO: warn
     }
@@ -159,7 +159,7 @@ const visitor = {
       throw new PositionCapableError('Missing param list in function declaration', astNode);
     }
 
-    ret.parameters = params.children.map($ => visit($));
+    ret.parameters = params.children.map(($) => visit($));
 
     return ret;
   },
@@ -232,7 +232,7 @@ const visitor = {
 
     const typeDeclElements = findChildrenType(astNode, 'TypeDeclElements');
 
-    const declarations = typeDeclElements ? typeDeclElements.children.map($ => visit($)) : [];
+    const declarations = typeDeclElements ? typeDeclElements.children.map(($) => visit($)) : [];
 
     const ret = new Nodes.EnumDirectiveNode(astNode, variableName, declarations);
     ret.isPublic = isPublic;
@@ -254,9 +254,9 @@ const visitor = {
 
     const typeDeclElements = findChildrenType(astNode, 'TraitDeclElements');
 
-    const declarations = typeDeclElements ? typeDeclElements.children.map($ => visit($)) : [];
+    const declarations = typeDeclElements ? typeDeclElements.children.map(($) => visit($)) : [];
 
-    declarations.forEach($ => {
+    declarations.forEach(($) => {
       if ($ instanceof Nodes.FunDirectiveNode && !$.functionNode.body) {
         $.functionNode.annotate(new annotations.SignatureDeclaration());
       }
@@ -287,7 +287,7 @@ const visitor = {
       throw new PositionCapableError('Missing param list in function declaration', astNode);
     }
 
-    fun.parameters = params.children.map($ => visit($));
+    fun.parameters = params.children.map(($) => visit($));
 
     const body = findChildrenType(astNode, 'FunAssignExpression');
 
@@ -325,7 +325,7 @@ const visitor = {
     return ret;
   },
   CodeBlock(astNode: Nodes.ASTNode) {
-    const statements = astNode.children.map($ => visit($)).filter($ => !!$);
+    const statements = astNode.children.map(($) => visit($)).filter(($) => !!$);
     return new Nodes.BlockNode(astNode, statements);
   },
   Parameter(astNode: Nodes.ASTNode) {
@@ -368,7 +368,7 @@ const visitor = {
       const doesItHaveMemberExpression = currentNode && currentNode.type === 'MemberExpression';
 
       if (doesItHaveCallArguments) {
-        const argumentsNode = currentNode.children.map($ => visit($));
+        const argumentsNode = currentNode.children.map(($) => visit($));
         const fnCall = new Nodes.FunctionCallNode(currentNode, ret, argumentsNode);
         fnCall.isInfix = true;
         ret = fnCall;
@@ -394,7 +394,7 @@ const visitor = {
   },
   MatchExpression(astNode: Nodes.ASTNode) {
     const lhs = visit(astNode.children[0]);
-    const matchingSet = astNode.children[1].children.map($ => visit($));
+    const matchingSet = astNode.children[1].children.map(($) => visit($));
 
     return new Nodes.PatternMatcherNode(astNode, lhs, matchingSet);
   },
@@ -422,7 +422,7 @@ const visitor = {
   FunctionTypeLiteral(child: Nodes.ASTNode) {
     const parametersNode = findChildrenType(child, 'FunctionTypeParameters');
 
-    const ret = new Nodes.FunctionTypeNode(child, parametersNode ? parametersNode.children.map($ => visit($)) : []);
+    const ret = new Nodes.FunctionTypeNode(child, parametersNode ? parametersNode.children.map(($) => visit($)) : []);
 
     ret.returnType = visitChildTypeOrNull(child, 'Type') as Nodes.TypeNode;
 
@@ -458,7 +458,7 @@ const visitor = {
     const deconstruct = findChildrenType(x, 'DeconstructStruct');
 
     if (deconstruct) {
-      ret.deconstructorNames = deconstruct.children.map($ => visit($));
+      ret.deconstructorNames = deconstruct.children.map(($) => visit($));
     }
 
     return ret;
@@ -509,9 +509,15 @@ const visitor = {
     return new Nodes.HexLiteral(x, typeName);
   },
   StringLiteral(x: Nodes.ASTNode) {
-    const ret = new Nodes.StringLiteral(x, 'string');
-    ret.value = JSON.parse(x.text);
-    return ret;
+    try {
+      const ret = new Nodes.StringLiteral(x, 'string');
+      ret.value = JSON.parse(x.text);
+      return ret;
+    } catch (e: any) {
+      const err = 'Cannot parse string: ' + x.text;
+      console.log(err);
+      return new PositionCapableError(err, x);
+    }
   },
   BinNegExpression(x: Nodes.ASTNode) {
     return new Nodes.UnaryExpressionNode(x, Nodes.NameIdentifierNode.fromString('~', x), visit(x.children[0]));
@@ -527,7 +533,7 @@ const visitor = {
   },
   Document(astNode: Nodes.ASTNode) {
     const doc = new Nodes.DocumentNode(astNode);
-    astNode.children.forEach($ => doc.directives.push(visit($)));
+    astNode.children.forEach(($) => doc.directives.push(visit($)));
 
     return doc;
   },
@@ -566,7 +572,7 @@ const visitor = {
   },
   StructLiteral(astNode: Nodes.ASTNode) {
     const parametersNode = findChildrenTypeOrFail(astNode, 'StructParamsList');
-    const parameters = parametersNode.children.filter($ => $.type === 'Parameter').map($ => visit($));
+    const parameters = parametersNode.children.filter(($) => $.type === 'Parameter').map(($) => visit($));
     return new Nodes.StructTypeNode(astNode, parameters);
   },
   StackLiteral(astNode: Nodes.ASTNode) {
@@ -588,16 +594,16 @@ const visitor = {
 
     const params = findChildrenType(astNode, 'FunctionParamsList');
 
-    return new Nodes.StructDeclarationNode(astNode, declaredName, params ? params.children.map($ => visit($)) : []);
+    return new Nodes.StructDeclarationNode(astNode, declaredName, params ? params.children.map(($) => visit($)) : []);
   },
   UnionType(astNode: Nodes.ASTNode) {
     const ret = new Nodes.UnionTypeNode(astNode);
-    ret.of = astNode.children.map($ => visit($));
+    ret.of = astNode.children.map(($) => visit($));
     return ret;
   },
   IntersectionType(astNode: Nodes.ASTNode) {
     const ret = new Nodes.IntersectionTypeNode(astNode);
-    ret.of = astNode.children.map($ => visit($));
+    ret.of = astNode.children.map(($) => visit($));
     return ret;
   },
   TypeParen(astNode: Nodes.ASTNode) {
@@ -606,14 +612,14 @@ const visitor = {
     return ret;
   },
   WasmExpression(astNode: Nodes.ASTNode) {
-    const atoms = astNode.children.map($ => visit($));
+    const atoms = astNode.children.map(($) => visit($));
     return new Nodes.WasmExpressionNode(astNode, atoms);
   },
   SExpression(astNode: Nodes.ASTNode) {
     const children = astNode.children.slice();
     const symbol = children.shift() as any;
 
-    const newChildren = children.map($ => visit($) as Nodes.ExpressionNode);
+    const newChildren = children.map(($) => visit($) as Nodes.ExpressionNode);
 
     const ret = new Nodes.WasmAtomNode(astNode, symbol.text, newChildren);
 
@@ -639,7 +645,7 @@ const visitor = {
     }
 
     return ret;
-  }
+  },
 };
 
 function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
@@ -661,13 +667,13 @@ function visit<T extends Nodes.Node>(astNode: Nodes.ASTNode): T & any {
 }
 
 function findChildrenTypeOrFail(token: Nodes.ASTNode, type: string, message?: string) {
-  const ret = token.children.find($ => $.type === type);
+  const ret = token.children.find(($) => $.type === type);
   if (!ret) throw new PositionCapableError(message || `Cannot find child node of type ${type}`, token);
   return ret;
 }
 
 function findChildrenType(token: Nodes.ASTNode, type: string) {
-  return token.children.find($ => $.type === type);
+  return token.children.find(($) => $.type === type);
 }
 
 function visitChildTypeOrNull(token: Nodes.ASTNode, type: string) {
@@ -703,7 +709,7 @@ export function getAST(fileName: string, moduleName: string, content: string, pa
     parsingContext.modulesInContext.set(moduleName, document);
 
     return document;
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof PositionCapableError) {
       let document = new Nodes.DocumentNode(parsingTree);
 

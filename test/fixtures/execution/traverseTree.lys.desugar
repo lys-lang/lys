@@ -74,11 +74,11 @@ impl Node {
   }
 
   fun as(self: Node): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Node = %wasm {
-    (i64.or (call Node$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Node$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Node, b: Node): boolean = %wasm {

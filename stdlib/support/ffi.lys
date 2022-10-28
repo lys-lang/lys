@@ -17,9 +17,9 @@ impl UCS2 {
       (call $stringDiscriminant)
       (i64.and
         (i64.const 0xFFFFFFFF)
-        (i64.extend_u/i32
+        (i64.extend_i32_u
           (i32.sub
-            (get_local $bytesPointer)
+            (local.get $bytesPointer)
             (i32.const 4)))))
   }
 

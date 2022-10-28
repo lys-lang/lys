@@ -10,13 +10,13 @@ export enum NativeTypes {
   f32 = 'f32',
   f64 = 'f64',
 
-  anyfunc = 'anyfunc',
+  funcref = 'funcref',
   func = 'func',
   void = 'void'
 }
 
 export abstract class Type {
-  nativeType?: NativeTypes;
+  abstract nativeType?: NativeTypes;
 
   get binaryenType(): Valtype | void {
     switch (this.nativeType) {
@@ -420,7 +420,7 @@ export class RefType extends Type {
 }
 
 export class IntersectionType extends Type {
-  nativeType: NativeTypes = NativeTypes.anyfunc;
+  nativeType: NativeTypes = NativeTypes.funcref;
 
   constructor(public of: Type[] = []) {
     super();
@@ -500,6 +500,8 @@ export function getUnderlyingTypeFromAlias(type: Type): Type {
 }
 
 export class UnionType extends Type {
+  nativeType?: NativeTypes | undefined;
+
   get binaryenType(): Valtype {
     const nativeTypes = new Set<Valtype>();
 
@@ -1032,6 +1034,7 @@ function getNonVoidFunction(type: IntersectionType, ctx: Scope): FunctionType | 
 }
 
 export class TypeType extends Type {
+  nativeType?: NativeTypes | undefined;
   static memMap = new WeakMap<Type, TypeType>();
   private constructor(public readonly of: Type) {
     super();
@@ -1125,7 +1128,7 @@ export class NeverType extends Type {
 
 export class SelfType extends Type {
   get nativeType() {
-    return NativeTypes.anyfunc;
+    return NativeTypes.funcref;
   }
 
   constructor(public traitType: TraitType) {
@@ -1157,7 +1160,7 @@ export class SelfType extends Type {
 // https://en.wikipedia.org/wiki/Top_type
 export class AnyType extends Type {
   get nativeType() {
-    return NativeTypes.anyfunc;
+    return NativeTypes.funcref;
   }
 
   toString(): string {
@@ -1180,7 +1183,7 @@ export class AnyType extends Type {
   }
 }
 
-export const InjectableTypes = Object.assign(Object.create(null) as unknown, {
+export const InjectableTypes = Object.assign(Object.create(null) as any, {
   void: voidType,
   ref: RefType.instance,
   never: new NeverType(),

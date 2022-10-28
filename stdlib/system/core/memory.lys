@@ -33,7 +33,7 @@ fun segfault(): void = ???
 fun getMaxMemory(): u32 = offset
 
 private fun growMemory(pages: u32): u32 = %wasm {
-  (memory.grow (get_local $pages))
+  (memory.grow (local.get $pages))
 }
 
 private fun currentMemory(): u32 = %wasm {
@@ -94,12 +94,12 @@ fun memcpy(dst: u32, src: u32, length: u32): u32 = {
 
 fun memset(ptr: u32, content: u8, len: u32): void = %wasm {
   (local $end i32)
-  (set_local $end (i32.add (get_local $ptr) (get_local $len)))
+  (local.set $end (i32.add (local.get $ptr) (local.get $len)))
   (block $exit
     (loop $cont
-      (br_if $exit (i32.eq (get_local $ptr) (get_local $end)))
-      (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content)))
-      (set_local $ptr (i32.add (get_local $ptr) (i32.const 1)))
+      (br_if $exit (i32.eq (local.get $ptr) (local.get $end)))
+      (i32.store8 (local.get $ptr) (i32.load8_u (local.get $content)))
+      (local.set $ptr (i32.add (local.get $ptr) (i32.const 1)))
       (br $cont)
     )
   )

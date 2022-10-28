@@ -249,7 +249,7 @@ export function executeTypeCheck(moduleName: string, parsingContext: ParsingCont
 
   try {
     iterate(moduleName, parsingContext, debug);
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof AstNodeError) {
       parsingContext.messageCollector.error(e);
     } else {
