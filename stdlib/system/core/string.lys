@@ -32,7 +32,7 @@ impl string {
   fun ptr(self: string): u32 = %wasm {
     (i32.add
       (i32.const 4)
-      (call $addressFromRef (get_local $self))
+      (call $addressFromRef (local.get $self))
     )
   }
 
@@ -41,7 +41,7 @@ impl string {
    * Can be explicitly converted to references.
    */
   #[explicit]
-  fun as(self: string): ref = %wasm { (get_local $self) }
+  fun as(self: string): ref = %wasm { (local.get $self) }
 
   /**
    * CPointer implicit coercion.
@@ -49,7 +49,7 @@ impl string {
   fun as(self: string): UnsafeCPointer = %wasm {
     (i32.add
       (i32.const 4)
-      (call $addressFromRef (get_local $self))
+      (call $addressFromRef (local.get $self))
     )
   }
 
@@ -137,28 +137,28 @@ impl string {
   }
 
   fun store(lhs: ref, rhs: string): void = %wasm {
-    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+    (i64.store (call $addressFromRef (local.get $lhs)) (local.get $rhs))
   }
 
   fun store(lhs: ref, rhs: string, offset: u32): void = %wasm {
     (i64.store
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
-      (get_local $rhs)
+      (local.get $rhs)
     )
   }
 
   fun load(lhs: ref): string = %wasm {
-    (i64.load (call $addressFromRef (get_local $lhs)))
+    (i64.load (call $addressFromRef (local.get $lhs)))
   }
 
   fun load(lhs: ref, offset: u32): string = %wasm {
     (i64.load
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
     )
   }

@@ -14,57 +14,57 @@ import system::core::u8
 type f32 = %stack { lowLevelType="f32" byteSize=4 }
 
 impl f32 {
-  fun as(lhs: f32): f64 = %wasm { (f64.promote/f32 (get_local $lhs)) }
+  fun as(lhs: f32): f64 = %wasm { (f64.promote_f32 (local.get $lhs)) }
 
   #[explicit]
-  fun as(lhs: f32): i64 = %wasm { (i64.trunc_s/f32 (get_local $lhs)) }
+  fun as(lhs: f32): i64 = %wasm { (i64.trunc_f32_s (local.get $lhs)) }
 
   #[explicit]
-  fun as(lhs: f32): u64 = %wasm { (i64.trunc_u/f32 (get_local $lhs)) }
+  fun as(lhs: f32): u64 = %wasm { (i64.trunc_f32_u (local.get $lhs)) }
 
   #[explicit]
-  fun as(lhs: f32): i32 = %wasm { (i32.trunc_s/f32 (get_local $lhs)) }
+  fun as(lhs: f32): i32 = %wasm { (i32.trunc_f32_s (local.get $lhs)) }
 
   #[explicit]
-  fun as(lhs: f32): u32 = %wasm { (i32.trunc_u/f32 (get_local $lhs)) }
+  fun as(lhs: f32): u32 = %wasm { (i32.trunc_f32_u (local.get $lhs)) }
 
-  fun +(lhs: f32, rhs: f32): f32 = %wasm { (f32.add (get_local $lhs) (get_local $rhs)) }
-  fun -(lhs: f32, rhs: f32): f32 = %wasm { (f32.sub (get_local $lhs) (get_local $rhs)) }
-  fun -(rhs: f32): f32 = %wasm { (f32.neg (get_local $rhs)) }
-  fun *(lhs: f32, rhs: f32): f32 = %wasm { (f32.mul (get_local $lhs) (get_local $rhs)) }
-  fun /(lhs: f32, rhs: f32): f32 = %wasm { (f32.div (get_local $lhs) (get_local $rhs)) }
-  fun ==(lhs: f32, rhs: f32): boolean = %wasm { (f32.eq (get_local $lhs) (get_local $rhs)) }
-  fun >=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ge (get_local $lhs) (get_local $rhs)) }
-  fun <=(lhs: f32, rhs: f32): boolean = %wasm { (f32.le (get_local $lhs) (get_local $rhs)) }
-  fun >(lhs: f32, rhs: f32): boolean = %wasm { (f32.gt (get_local $lhs) (get_local $rhs)) }
-  fun <(lhs: f32, rhs: f32): boolean = %wasm { (f32.lt (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (get_local $lhs) (get_local $rhs)) }
+  fun +(lhs: f32, rhs: f32): f32 = %wasm { (f32.add (local.get $lhs) (local.get $rhs)) }
+  fun -(lhs: f32, rhs: f32): f32 = %wasm { (f32.sub (local.get $lhs) (local.get $rhs)) }
+  fun -(rhs: f32): f32 = %wasm { (f32.neg (local.get $rhs)) }
+  fun *(lhs: f32, rhs: f32): f32 = %wasm { (f32.mul (local.get $lhs) (local.get $rhs)) }
+  fun /(lhs: f32, rhs: f32): f32 = %wasm { (f32.div (local.get $lhs) (local.get $rhs)) }
+  fun ==(lhs: f32, rhs: f32): boolean = %wasm { (f32.eq (local.get $lhs) (local.get $rhs)) }
+  fun >=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ge (local.get $lhs) (local.get $rhs)) }
+  fun <=(lhs: f32, rhs: f32): boolean = %wasm { (f32.le (local.get $lhs) (local.get $rhs)) }
+  fun >(lhs: f32, rhs: f32): boolean = %wasm { (f32.gt (local.get $lhs) (local.get $rhs)) }
+  fun <(lhs: f32, rhs: f32): boolean = %wasm { (f32.lt (local.get $lhs) (local.get $rhs)) }
+  fun !=(lhs: f32, rhs: f32): boolean = %wasm { (f32.ne (local.get $lhs) (local.get $rhs)) }
 
   fun sqrt(n: f32): f32 = %wasm { (f32.sqrt (local.get $n)) }
 
   fun store(lhs: ref, rhs: f32): void = %wasm {
-    (f32.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+    (f32.store (call $addressFromRef (local.get $lhs)) (local.get $rhs))
   }
 
   fun store(lhs: ref, rhs: f32, offset: u32): void = %wasm {
     (f32.store
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
-      (get_local $rhs)
+      (local.get $rhs)
     )
   }
 
   fun load(lhs: ref): f32 = %wasm {
-    (f32.load (call $addressFromRef (get_local $lhs)))
+    (f32.load (call $addressFromRef (local.get $lhs)))
   }
 
   fun load(lhs: ref, offset: u32): f32 = %wasm {
     (f32.load
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
     )
   }

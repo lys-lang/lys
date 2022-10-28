@@ -9,7 +9,7 @@ type never = %injected
 type UnsafeCPointer = %stack { lowLevelType="i32" byteSize=4 }
 
 fun addressFromRef(pointer: ref): u32 = %wasm {
-  (i32.wrap_i64 (get_local $pointer))
+  (i32.wrap_i64 (local.get $pointer))
 }
 
 fun panic(): never = %wasm { (unreachable) }
@@ -31,14 +31,14 @@ impl Reference for ref {
 }
 
 impl ref {
-  fun ==(lhs: ref, rhs: ref): boolean = %wasm { (i64.eq (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: ref, rhs: ref): boolean = %wasm { (i64.ne (get_local $lhs) (get_local $rhs)) }
+  fun ==(lhs: ref, rhs: ref): boolean = %wasm { (i64.eq (local.get $lhs) (local.get $rhs)) }
+  fun !=(lhs: ref, rhs: ref): boolean = %wasm { (i64.ne (local.get $lhs) (local.get $rhs)) }
 
   /**
    * CPointer implicit coercion.
    */
   fun as(self: ref): UnsafeCPointer = %wasm {
-    (call $addressFromRef (get_local $self))
+    (call $addressFromRef (local.get $self))
   }
 
   /**
@@ -55,28 +55,28 @@ impl ref {
   }
 
   fun store(lhs: ref, rhs: ref): void = %wasm {
-    (i64.store (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+    (i64.store (call $addressFromRef (local.get $lhs)) (local.get $rhs))
   }
 
   fun store(lhs: ref, rhs: ref, offset: u32): void = %wasm {
     (i64.store
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
-      (get_local $rhs)
+      (local.get $rhs)
     )
   }
 
   fun load(lhs: ref): ref = %wasm {
-    (i64.load (call $addressFromRef (get_local $lhs)))
+    (i64.load (call $addressFromRef (local.get $lhs)))
   }
 
   fun load(lhs: ref, offset: u32): ref = %wasm {
     (i64.load
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
     )
   }

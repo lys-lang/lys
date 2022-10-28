@@ -662,7 +662,7 @@ export class CodeGenerationPhaseResult {
         memoryBase: 0,
         tableBase: 0,
         memory: new WebAssembly.Memory({ initial: 256 }),
-        table: new WebAssembly.Table({ initial: 0, element: 'anyfunc' })
+        table: new WebAssembly.Table({ initial: 0, element: 'funcref' })
       }
     };
 
@@ -809,7 +809,7 @@ export class CodeGenerationPhaseResult {
 
     this.parsingContext.signatures.forEach($ => moduleParts.push($));
 
-    const table = t.table('anyfunc', t.limit(tableElems.length), t.identifier('lys::internal-functions'));
+    const table = t.table('funcref', t.limit(tableElems.length), t.identifier('lys::internal-functions'));
     const elem = t.elem(
       // table
       t.indexLiteral(0),

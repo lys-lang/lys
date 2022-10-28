@@ -15,50 +15,50 @@ import system::core::u64
 type u8 = %stack { lowLevelType="i32" byteSize=1 }
 
 impl u8 {
-  fun as(lhs: u8): i16 = %wasm { (get_local $lhs) }
-  fun as(lhs: u8): u16 = %wasm { (get_local $lhs) }
-  fun as(lhs: u8): i32 = %wasm { (get_local $lhs) }
-  fun as(lhs: u8): u32 = %wasm { (get_local $lhs) }
-  fun as(lhs: u8): i64 = %wasm { (i64.extend_i32_u (get_local $lhs)) }
-  fun as(lhs: u8): u64 = %wasm { (i64.extend_i32_s (get_local $lhs)) }
-  fun as(lhs: u8): f32 = %wasm { (f32.convert_i32_u (get_local $lhs)) }
-  fun as(lhs: u8): f64 = %wasm { (f64.convert_i32_u (get_local $lhs)) }
+  fun as(lhs: u8): i16 = %wasm { (local.get $lhs) }
+  fun as(lhs: u8): u16 = %wasm { (local.get $lhs) }
+  fun as(lhs: u8): i32 = %wasm { (local.get $lhs) }
+  fun as(lhs: u8): u32 = %wasm { (local.get $lhs) }
+  fun as(lhs: u8): i64 = %wasm { (i64.extend_i32_u (local.get $lhs)) }
+  fun as(lhs: u8): u64 = %wasm { (i64.extend_i32_s (local.get $lhs)) }
+  fun as(lhs: u8): f32 = %wasm { (f32.convert_i32_u (local.get $lhs)) }
+  fun as(lhs: u8): f64 = %wasm { (f64.convert_i32_u (local.get $lhs)) }
 
-  fun |(lhs: u8, rhs: u8): u8 = %wasm { (i32.or (get_local $lhs) (get_local $rhs)) }
-  fun &(lhs: u8, rhs: u8): u8 = %wasm { (i32.and (get_local $lhs) (get_local $rhs)) }
-  fun ^(lhs: u8, rhs: u8): u8 = %wasm { (i32.xor (get_local $lhs) (get_local $rhs)) }
+  fun |(lhs: u8, rhs: u8): u8 = %wasm { (i32.or (local.get $lhs) (local.get $rhs)) }
+  fun &(lhs: u8, rhs: u8): u8 = %wasm { (i32.and (local.get $lhs) (local.get $rhs)) }
+  fun ^(lhs: u8, rhs: u8): u8 = %wasm { (i32.xor (local.get $lhs) (local.get $rhs)) }
 
-  fun ==(lhs: u8, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
-  fun ==(lhs: u8, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
-  fun ==(lhs: u8, rhs: u8): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
+  fun ==(lhs: u8, rhs: u32): boolean = %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
+  fun ==(lhs: u8, rhs: u16): boolean = %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
+  fun ==(lhs: u8, rhs: u8): boolean = %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
 
-  fun !=(lhs: u8, rhs: u32): boolean = %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: u8, rhs: u16): boolean = %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: u8, rhs: u8): boolean = %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
+  fun !=(lhs: u8, rhs: u32): boolean = %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
+  fun !=(lhs: u8, rhs: u16): boolean = %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
+  fun !=(lhs: u8, rhs: u8): boolean = %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
 
   fun store(lhs: ref, rhs: u8): void = %wasm {
-    (i32.store8 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+    (i32.store8 (call $addressFromRef (local.get $lhs)) (local.get $rhs))
   }
 
   fun store(lhs: ref, rhs: u8, offset: u32): void = %wasm {
     (i32.store8
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
-      (get_local $rhs)
+      (local.get $rhs)
     )
   }
 
   fun load(lhs: ref): u8 = %wasm {
-    (i32.load8_u (call $addressFromRef (get_local $lhs)))
+    (i32.load8_u (call $addressFromRef (local.get $lhs)))
   }
 
   fun load(lhs: ref, offset: u32): u8 = %wasm {
     (i32.load8_u
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
     )
   }

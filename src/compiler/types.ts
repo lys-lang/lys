@@ -10,7 +10,7 @@ export enum NativeTypes {
   f32 = 'f32',
   f64 = 'f64',
 
-  anyfunc = 'anyfunc',
+  funcref = 'funcref',
   func = 'func',
   void = 'void'
 }
@@ -420,7 +420,7 @@ export class RefType extends Type {
 }
 
 export class IntersectionType extends Type {
-  nativeType: NativeTypes = NativeTypes.anyfunc;
+  nativeType: NativeTypes = NativeTypes.funcref;
 
   constructor(public of: Type[] = []) {
     super();
@@ -1128,7 +1128,7 @@ export class NeverType extends Type {
 
 export class SelfType extends Type {
   get nativeType() {
-    return NativeTypes.anyfunc;
+    return NativeTypes.funcref;
   }
 
   constructor(public traitType: TraitType) {
@@ -1160,7 +1160,7 @@ export class SelfType extends Type {
 // https://en.wikipedia.org/wiki/Top_type
 export class AnyType extends Type {
   get nativeType() {
-    return NativeTypes.anyfunc;
+    return NativeTypes.funcref;
   }
 
   toString(): string {

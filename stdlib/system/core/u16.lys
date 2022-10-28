@@ -14,56 +14,56 @@ import system::core::u8
 type u16 = %stack { lowLevelType="i32" byteSize=2 }
 
 impl u16 {
-  fun as(lhs: u16): i32 = %wasm { (get_local $lhs) }
-  fun as(lhs: u16): u32 = %wasm { (get_local $lhs) }
-  fun as(lhs: u16): i64 = %wasm { (i64.extend_i32_u (get_local $lhs)) }
-  fun as(lhs: u16): u64 = %wasm { (i64.extend_i32_u (get_local $lhs)) }
-  fun as(lhs: u16): f32 = %wasm { (f32.convert_i32_u (get_local $lhs)) }
-  fun as(lhs: u16): f64 = %wasm { (f64.convert_i32_u (get_local $lhs)) }
+  fun as(lhs: u16): i32 = %wasm { (local.get $lhs) }
+  fun as(lhs: u16): u32 = %wasm { (local.get $lhs) }
+  fun as(lhs: u16): i64 = %wasm { (i64.extend_i32_u (local.get $lhs)) }
+  fun as(lhs: u16): u64 = %wasm { (i64.extend_i32_u (local.get $lhs)) }
+  fun as(lhs: u16): f32 = %wasm { (f32.convert_i32_u (local.get $lhs)) }
+  fun as(lhs: u16): f64 = %wasm { (f64.convert_i32_u (local.get $lhs)) }
 
   #[explicit]
-  fun as(lhs: u16): u8 = %wasm { (i32.and (i32.const 0xFF) (get_local $lhs)) }
+  fun as(lhs: u16): u8 = %wasm { (i32.and (i32.const 0xFF) (local.get $lhs)) }
 
-  fun ==(lhs: u16, rhs: u32): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
-  fun ==(lhs: u16, rhs: u16): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
-  fun ==(lhs: u16, rhs: u8): boolean = %wasm { (i32.eq (get_local $lhs) (get_local $rhs)) }
+  fun ==(lhs: u16, rhs: u32): boolean = %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
+  fun ==(lhs: u16, rhs: u16): boolean = %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
+  fun ==(lhs: u16, rhs: u8): boolean = %wasm { (i32.eq (local.get $lhs) (local.get $rhs)) }
 
-  fun !=(lhs: u16, rhs: u32): boolean = %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: u16, rhs: u16): boolean = %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
-  fun !=(lhs: u16, rhs: u8): boolean = %wasm { (i32.ne (get_local $lhs) (get_local $rhs)) }
+  fun !=(lhs: u16, rhs: u32): boolean = %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
+  fun !=(lhs: u16, rhs: u16): boolean = %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
+  fun !=(lhs: u16, rhs: u8): boolean = %wasm { (i32.ne (local.get $lhs) (local.get $rhs)) }
 
-  fun &(lhs: u16, rhs: u16): u16 = %wasm { (i32.and (get_local $lhs) (get_local $rhs)) }
-  fun |(lhs: u16, rhs: u16): u16 = %wasm { (i32.or (get_local $lhs) (get_local $rhs)) }
-  fun ^(lhs: u16, rhs: u16): u16 = %wasm { (i32.xor (get_local $lhs) (get_local $rhs)) }
+  fun &(lhs: u16, rhs: u16): u16 = %wasm { (i32.and (local.get $lhs) (local.get $rhs)) }
+  fun |(lhs: u16, rhs: u16): u16 = %wasm { (i32.or (local.get $lhs) (local.get $rhs)) }
+  fun ^(lhs: u16, rhs: u16): u16 = %wasm { (i32.xor (local.get $lhs) (local.get $rhs)) }
 
   fun +(lhs: u16, rhs: u16): u16 = %wasm {
     (i32.and (i32.const 0xFFFF)
-      (i32.add (get_local $lhs) (get_local $rhs))
+      (i32.add (local.get $lhs) (local.get $rhs))
     )
   }
 
   fun -(lhs: u16, rhs: u16): u16 = %wasm {
     (i32.and
       (i32.const 0xFFFF)
-      (i32.sub (get_local $lhs) (get_local $rhs))
+      (i32.sub (local.get $lhs) (local.get $rhs))
     )
   }
 
   fun *(lhs: u16, rhs: u16): u16 = %wasm {
-    (i32.and (i32.const 0xFFFF) (i32.mul (get_local $lhs) (get_local $rhs)))
+    (i32.and (i32.const 0xFFFF) (i32.mul (local.get $lhs) (local.get $rhs)))
   }
 
   // if RHS is 0, then panic()
-  fun /(lhs: u16, rhs: u16): u16 = %wasm { (i32.div_s (get_local $lhs) (get_local $rhs)) }
+  fun /(lhs: u16, rhs: u16): u16 = %wasm { (i32.div_s (local.get $lhs) (local.get $rhs)) }
 
-  fun ~(rhs: u16): u16 = %wasm { (i32.xor (i32.const 0xFFFF) (get_local $rhs)) }
+  fun ~(rhs: u16): u16 = %wasm { (i32.xor (i32.const 0xFFFF) (local.get $rhs)) }
 
   fun >>(lhs: u16, rhs: u16): u16 = %wasm {
     (i32.and
       (i32.const 0xFFFF)
       (i32.shr_u
-        (get_local $lhs)
-        (i32.and (get_local $rhs) (i32.const 15))
+        (local.get $lhs)
+        (i32.and (local.get $rhs) (i32.const 15))
       )
     )
   }
@@ -72,42 +72,42 @@ impl u16 {
     (i32.and
       (i32.const 0xFFFF)
       (i32.shl
-        (get_local $lhs)
-        (i32.and (get_local $rhs) (i32.const 15))
+        (local.get $lhs)
+        (i32.and (local.get $rhs) (i32.const 15))
       )
     )
   }
 
-  fun ^(lhs: u16, rhs: u16): u16 = %wasm { (i32.xor (get_local $lhs) (get_local $rhs)) }
-  fun >=(lhs: u16, rhs: u16): boolean = %wasm { (i32.ge_u (get_local $lhs) (get_local $rhs)) }
-  fun <=(lhs: u16, rhs: u16): boolean = %wasm { (i32.le_u (get_local $lhs) (get_local $rhs)) }
-  fun >(lhs: u16, rhs: u16): boolean = %wasm { (i32.gt_u (get_local $lhs) (get_local $rhs)) }
-  fun <(lhs: u16, rhs: u16): boolean = %wasm { (i32.lt_u (get_local $lhs) (get_local $rhs)) }
-  fun %(lhs: u16, rhs: u16): u16 = %wasm { (i32.rem_u (get_local $lhs) (get_local $rhs)) }
+  fun ^(lhs: u16, rhs: u16): u16 = %wasm { (i32.xor (local.get $lhs) (local.get $rhs)) }
+  fun >=(lhs: u16, rhs: u16): boolean = %wasm { (i32.ge_u (local.get $lhs) (local.get $rhs)) }
+  fun <=(lhs: u16, rhs: u16): boolean = %wasm { (i32.le_u (local.get $lhs) (local.get $rhs)) }
+  fun >(lhs: u16, rhs: u16): boolean = %wasm { (i32.gt_u (local.get $lhs) (local.get $rhs)) }
+  fun <(lhs: u16, rhs: u16): boolean = %wasm { (i32.lt_u (local.get $lhs) (local.get $rhs)) }
+  fun %(lhs: u16, rhs: u16): u16 = %wasm { (i32.rem_u (local.get $lhs) (local.get $rhs)) }
 
   fun store(lhs: ref, rhs: u16): void = %wasm {
-    (i32.store16 (call $addressFromRef (get_local $lhs)) (get_local $rhs))
+    (i32.store16 (call $addressFromRef (local.get $lhs)) (local.get $rhs))
   }
 
   fun store(lhs: ref, rhs: u16, offset: u32): void = %wasm {
     (i32.store16
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
-      (get_local $rhs)
+      (local.get $rhs)
     )
   }
 
   fun load(lhs: ref): u16 = %wasm {
-    (i32.load16_u (call $addressFromRef (get_local $lhs)))
+    (i32.load16_u (call $addressFromRef (local.get $lhs)))
   }
 
   fun load(lhs: ref, offset: u32): u16 = %wasm {
     (i32.load16_u
       (i32.add
-        (get_local $offset)
-        (call $addressFromRef (get_local $lhs))
+        (local.get $offset)
+        (call $addressFromRef (local.get $lhs))
       )
     )
   }

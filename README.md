@@ -141,13 +141,13 @@ type int = %stack { wasm="i32", size=4 }
 /** Implement some operators for the type `int` */
 impl int {
   fun +(lhs: int, rhs: int): int = %wasm {
-    (i32.add (get_local $lhs) (get_local $rhs))
+    (i32.add (local.get $lhs) (local.get $rhs))
   }
   fun -(lhs: int, rhs: int): int = %wasm {
-    (i32.sub (get_local $lhs) (get_local $rhs))
+    (i32.sub (local.get $lhs) (local.get $rhs))
   }
   fun >(lhs: int, rhs: int): boolean = %wasm {
-    (i32.gt_s (get_local $lhs) (get_local $rhs))
+    (i32.gt_s (local.get $lhs) (local.get $rhs))
   }
 }
 
@@ -221,7 +221,7 @@ impl u8 {
    */
 
 
-  fun as(lhs: u8): f32 = %wasm { (f32.convert_i32_u (get_local $lhs)) }
+  fun as(lhs: u8): f32 = %wasm { (f32.convert_i32_u (local.get $lhs)) }
 }
 
 fun byteAsFloat(value: u8): f32 = value as f32
@@ -288,7 +288,7 @@ impl Node {
 
   // this function converts a raw address into a valid Node type
   private fun fromPointer(ptr: u32): Node = %wasm {
-    (i64.or (call Node$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Node$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Node, b: Node): boolean = %wasm {

@@ -77,9 +77,9 @@ private fun max(a: i32, b: i32): i32 =
 #[inline]
 fun allocBytes(size: i32): bytes = %wasm {
   (local $allocation i32)
-  (set_local $allocation (call malloc (get_local $size)))
+  (local.set $allocation (call malloc (get_local $size)))
   (i32.store (get_local $allocation) (get_local $size))
-  (i64.or (i64.extend_s/i32 (get_local $allocation)) (i64.shl (i64.extend_s/i32 (i32.const 0)) (i64.const 32)))
+  (i64.or (i64.extend_s_i32 (get_local $allocation)) (i64.shl (i64.extend_s_i32 (i32.const 0)) (i64.const 32)))
 }
 
 #[inline]
@@ -124,14 +124,14 @@ fun discriminant(v: ref): u64 = %wasm {
 
 fun memcpy(to: i32, from: i32, len: i32): void = %wasm {
   (local $end i32)
-  (set_local $end (i32.add (get_local $from) (get_local $len)))
-  (block $exit (loop $cont (br_if $exit (i32.eq (get_local $from) (get_local $end))) (i32.store8 (get_local $to) (i32.load8_u (get_local $from))) (set_local $from (i32.add (get_local $from) (i32.const 1))) (set_local $to (i32.add (get_local $to) (i32.const 1))) (br $cont)))
+  (local.set $end (i32.add (get_local $from) (get_local $len)))
+  (block $exit (loop $cont (br_if $exit (i32.eq (get_local $from) (get_local $end))) (i32.store8 (get_local $to) (i32.load8_u (get_local $from))) (local.set $from (i32.add (get_local $from) (i32.const 1))) (local.set $to (i32.add (get_local $to) (i32.const 1))) (br $cont)))
 }
 
 fun memset(ptr: i32, content: i32, len: i32): void = %wasm {
   (local $end i32)
-  (set_local $end (i32.add (get_local $ptr) (get_local $len)))
-  (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (set_local $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
+  (local.set $end (i32.add (get_local $ptr) (get_local $len)))
+  (block $exit (loop $cont (br_if $exit (i32.eq (get_local $ptr) (get_local $end))) (i32.store8 (get_local $ptr) (i32.load8_u (get_local $content))) (local.set $ptr (i32.add (get_local $ptr) (i32.const 1))) (br $cont)))
 }
 
 type String = %struct { data: bytes }
@@ -165,11 +165,11 @@ impl String {
   }
 
   fun as(self: String): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): String = %wasm {
-    (i64.or (call String$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call String$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: String, b: String): boolean = %wasm {
@@ -502,11 +502,11 @@ impl Node {
   }
 
   fun as(self: Node): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Node = %wasm {
-    (i64.or (call Node$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Node$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Node, b: Node): boolean = %wasm {
@@ -663,11 +663,11 @@ impl Cons {
   }
 
   fun as(self: Cons): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Cons = %wasm {
-    (i64.or (call Cons$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Cons$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Cons, b: Cons): boolean = %wasm {
@@ -772,11 +772,11 @@ impl Color {
   }
 
   fun as(self: Color): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Color = %wasm {
-    (i64.or (call Color$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Color$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Color, b: Color): boolean = %wasm {
@@ -1002,11 +1002,11 @@ impl Iterator {
   }
 
   fun as(self: Iterator): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Iterator = %wasm {
-    (i64.or (call Iterator$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Iterator$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Iterator, b: Iterator): boolean = %wasm {
@@ -1163,11 +1163,11 @@ impl Some {
   }
 
   fun as(self: Some): UnsafeCPointer = %wasm {
-    (call addressFromRef (get_local $self))
+    (call addressFromRef (local.get $self))
   }
 
   private fun fromPointer(ptr: u32): Some = %wasm {
-    (i64.or (call Some$discriminant) (i64.extend_u/i32 (local.get $ptr)))
+    (i64.or (call Some$discriminant) (i64.extend_i32_u (local.get $ptr)))
   }
 
   fun ==(a: Some, b: Some): boolean = %wasm {

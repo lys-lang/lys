@@ -12,7 +12,7 @@ var freeblock = 0
 
 fun malloc(size: i32): i32 = %wasm {
   (local $address i32)
-  (set_local $address (get_global freeblock))
+  (local.set $address (get_global freeblock))
   (set_global
     $freeblock
     (i32.add
@@ -28,8 +28,8 @@ fun strAdd(a: i32, b: i32): i32 = %wasm {
   (local $aSize i32)
   (local $newStr i32)
   (return
-    (set_local $aSize (i32.load8_u a))
-    (set_local $sum
+    (local.set $aSize (i32.load8_u a))
+    (local.set $sum
       (i32.sub
         (i32.add
           (get_local $aSize)
@@ -38,7 +38,7 @@ fun strAdd(a: i32, b: i32): i32 = %wasm {
         (i32.const 1)
       )
     )
-    (set_local $newStr
+    (local.set $newStr
       (call malloc
         (i32.add
           (get_local $sum)

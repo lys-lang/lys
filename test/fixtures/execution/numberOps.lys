@@ -11,8 +11,8 @@ fun maxI16inI64(): i64 = %wasm {
 
 fun i32_one(): i32 = %wasm { (i32.const 1) }
 fun u32_one(): u32 = %wasm { (i32.const 1) }
-fun i32const_u32(x: i32): u32 = %wasm { (get_local $x) }
-fun i32const_i32(x: i32): i32 = %wasm { (get_local $x) }
+fun i32const_u32(x: i32): u32 = %wasm { (local.get $x) }
+fun i32const_i32(x: i32): i32 = %wasm { (local.get $x) }
 
 #[export]
 fun main(): void = {
