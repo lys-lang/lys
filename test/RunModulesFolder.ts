@@ -1,6 +1,6 @@
-import glob = require('glob');
+import glob from 'glob';
 import { resolve, dirname } from 'path';
-import { main } from '../dist/index-bin';
+import { main } from '../src/index-bin';
 
 let didSomethingFail = false;
 
@@ -14,7 +14,7 @@ async function test(globPath: string) {
       console.log(`> lys ` + argv.join(' '));
 
       await main(dirname(file), argv);
-    } catch (e) {
+    } catch (e: any) {
       didSomethingFail = true;
       console.error(e);
     }

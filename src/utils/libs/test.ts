@@ -1,6 +1,11 @@
 import { hexDump, readString } from '../execution';
 import { ForegroundColors, formatColorAndReset } from '../colors';
 
+function writeLn(message: string) {
+  process.stderr.write(message)
+  process.stderr.write('\n')
+}
+
 /**
  * Description of a single test's results.
  */
@@ -42,7 +47,7 @@ export default function(getInstance: () => any) {
   return {
     test: {
       printMemory: (start: number, length: number) => {
-        console.log(`Dump from ${start.toString(16)} of ${length} bytes`);
+        writeLn(`Dump from ${start.toString(16)} of ${length} bytes`);
 
         while (start % 16 !== 0 && start !== 0) {
           // tslint:disable-next-line:no-parameter-reassignment
@@ -54,7 +59,7 @@ export default function(getInstance: () => any) {
           length++;
         }
 
-        console.log(hexDump(getInstance().exports.memory.buffer, start + length, start));
+        writeLn(hexDump(getInstance().exports.memory.buffer, start + length, start));
       },
       pushTest: (offset: number) => {
         const title = readString(getInstance().exports.memory.buffer, offset);
@@ -78,7 +83,7 @@ export default function(getInstance: () => any) {
         const level = getTestStack().length;
         const indentation = '  '.repeat(level);
 
-        console.log('\n' + indentation + title + ':');
+        writeLn('\n' + indentation + title + ':');
       },
       popTest: () => {
         if (getTestStack().length) {
@@ -113,13 +118,13 @@ export default function(getInstance: () => any) {
         const indentation = '  '.repeat(level + 1);
 
         if (didPass) {
-          console.log(
+          writeLn(
             indentation +
               formatColorAndReset('✓ ', ForegroundColors.Green) +
               formatColorAndReset(title, ForegroundColors.Grey)
           );
         } else {
-          console.log(
+          writeLn(
             indentation +
               formatColorAndReset('X ', ForegroundColors.Red) +
               formatColorAndReset(title, ForegroundColors.Grey)
@@ -127,11 +132,11 @@ export default function(getInstance: () => any) {
         }
       },
       printNumber: (x: number) => {
-        console.log('printNumber: ' + x);
+        writeLn('printNumber: ' + x);
       },
       printString: (offset: number) => {
         const str = readString(getInstance().exports.memory.buffer, offset);
-        console.log(str);
+        writeLn(str);
       }
     }
   };

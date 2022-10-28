@@ -19,18 +19,15 @@
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
  (global $global$3 (mut i32) (i32.const 0))
- (global $global$4 (mut i32) (i32.const 0))
- (global $global$5 (mut i32) (i32.const 0))
- (global $global$6 (mut i32) (i32.const 0))
- (global $global$7 (mut i64) (i64.const 0))
+ (global $global$4 (mut i64) (i64.const 0))
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $0))
  (export "keccak" (func $15))
  (start $16)
- (func $0 (; 0 ;) (result i32)
-  (global.get $global$6)
+ (func $0 (result i32)
+  (global.get $global$3)
  )
- (func $1 (; 1 ;) (param $0 i32) (result i32)
+ (func $1 (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -44,7 +41,7 @@
   (if
    (i32.gt_u
     (local.get $0)
-    (global.get $global$3)
+    (global.get $global$1)
    )
    (unreachable)
   )
@@ -53,11 +50,11 @@
     (local.tee $0
      (i32.and
       (i32.add
-       (global.get $global$2)
+       (global.get $global$0)
        (i32.add
         (i32.add
          (local.tee $1
-          (global.get $global$6)
+          (global.get $global$3)
          )
          (i32.const 16)
         )
@@ -72,7 +69,7 @@
        )
       )
       (i32.xor
-       (global.get $global$2)
+       (global.get $global$0)
        (i32.const -1)
       )
      )
@@ -125,7 +122,7 @@
     )
    )
   )
-  (global.set $global$6
+  (global.set $global$3
    (local.get $0)
   )
   (i32.add
@@ -133,7 +130,7 @@
    (i32.const 16)
   )
  )
- (func $2 (; 2 ;) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $2 (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (local $4 i64)
   (local $5 i64)
@@ -181,7 +178,7 @@
    )
   )
  )
- (func $3 (; 3 ;) (param $0 i32) (param $1 i32)
+ (func $3 (param $0 i32) (param $1 i32)
   (local.set $1
    (i32.add
     (local.get $0)
@@ -212,7 +209,7 @@
    )
   )
  )
- (func $4 (; 4 ;) (param $0 i64) (param $1 i64) (result i64)
+ (func $4 (param $0 i64) (param $1 i64) (result i64)
   (local $2 i32)
   (local $3 i64)
   (call $3
@@ -247,7 +244,7 @@
   )
   (local.get $3)
  )
- (func $5 (; 5 ;) (param $0 i64)
+ (func $5 (param $0 i64)
   (local $1 i64)
   (local $2 i64)
   (local $3 i64)
@@ -1009,7 +1006,7 @@
    )
   )
  )
- (func $6 (; 6 ;) (param $0 i64) (param $1 i64)
+ (func $6 (param $0 i64) (param $1 i64)
   (local $2 i32)
   (local $3 i32)
   (local $4 i64)
@@ -1068,7 +1065,7 @@
    )
   )
  )
- (func $7 (; 7 ;) (param $0 i64)
+ (func $7 (param $0 i64)
   (local $1 i64)
   (local.set $1
    (i64.load
@@ -1458,7 +1455,7 @@
    (local.get $1)
   )
  )
- (func $8 (; 8 ;) (param $0 i64)
+ (func $8 (param $0 i64)
   (local $1 i32)
   (local $2 i64)
   (local $3 i64)
@@ -1765,7 +1762,7 @@
    )
   )
  )
- (func $9 (; 9 ;) (param $0 i32)
+ (func $9 (param $0 i32)
   (local $1 i64)
   (local $2 i64)
   (local $3 i64)
@@ -1847,7 +1844,7 @@
    )
   )
  )
- (func $10 (; 10 ;) (param $0 i32) (param $1 i32)
+ (func $10 (param $0 i32) (param $1 i32)
   (local $2 i64)
   (local $3 i64)
   (i64.store
@@ -2295,7 +2292,7 @@
    (local.get $1)
   )
  )
- (func $11 (; 11 ;) (param $0 i32)
+ (func $11 (param $0 i32)
   (local $1 i64)
   (call $3
    (local.get $0)
@@ -2742,7 +2739,7 @@
    (i32.const 14)
   )
  )
- (func $12 (; 12 ;) (param $0 i32) (param $1 i32) (param $2 i32)
+ (func $12 (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   (local $4 i32)
   (local $5 i32)
@@ -2884,7 +2881,7 @@
    )
   )
  )
- (func $13 (; 13 ;) (param $0 i32) (param $1 i32)
+ (func $13 (param $0 i32) (param $1 i32)
   (local $2 i32)
   (local $3 i32)
   (local $4 i64)
@@ -3029,7 +3026,7 @@
    )
   )
  )
- (func $14 (; 14 ;) (param $0 i32) (result i64)
+ (func $14 (param $0 i32) (result i64)
   (local $1 i32)
   (local $2 i32)
   (call $3
@@ -3056,13 +3053,13 @@
    (i64.const 38654705664)
   )
  )
- (func $15 (; 15 ;) (param $0 i64) (result i64)
+ (func $15 (param $0 i64) (result i64)
   (call $11
    (i32.add
     (i32.wrap_i64
      (i64.load
       (i32.wrap_i64
-       (global.get $global$7)
+       (global.get $global$4)
       )
      )
     )
@@ -3074,7 +3071,7 @@
     (i32.wrap_i64
      (i64.load
       (i32.wrap_i64
-       (global.get $global$7)
+       (global.get $global$4)
       )
      )
     )
@@ -3098,7 +3095,7 @@
      (i64.load
       (i32.wrap_i64
        (local.tee $0
-        (global.get $global$7)
+        (global.get $global$4)
        )
       )
      )
@@ -3128,29 +3125,20 @@
    )
   )
  )
- (func $16 (; 16 ;)
+ (func $16
   (local $0 i64)
   (local $1 i64)
   (global.set $global$0
-   (i32.const 4)
-  )
-  (global.set $global$1
-   (i32.const 16)
-  )
-  (global.set $global$2
    (i32.const 15)
   )
-  (global.set $global$3
+  (global.set $global$1
    (i32.const 1073741824)
   )
-  (global.set $global$4
+  (global.set $global$2
    (i32.const 65536)
   )
-  (global.set $global$5
-   (i32.const 65536)
-  )
-  (global.set $global$6
-   (global.get $global$5)
+  (global.set $global$3
+   (global.get $global$2)
   )
   (local.set $0
    (call $14
@@ -3170,7 +3158,7 @@
     (i32.const 4)
    )
   )
-  (global.set $global$7
+  (global.set $global$4
    (call $4
     (local.get $0)
     (local.get $1)

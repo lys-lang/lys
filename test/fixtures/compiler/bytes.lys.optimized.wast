@@ -10,51 +10,23 @@
  (data (i32.const 16) "\0c\00\00\00a\00s\00d\00a\00s\00d")
  (data (i32.const 33) "\10\00\00\00u\00t\00f\00 \00\ab\00\100\110\bb")
  (global $global$0 (mut i32) (i32.const 0))
- (global $global$1 (mut i32) (i32.const 0))
- (global $global$2 (mut i32) (i32.const 0))
- (global $global$3 (mut i32) (i32.const 0))
- (global $global$4 (mut i32) (i32.const 0))
- (global $global$5 (mut i32) (i32.const 0))
- (global $global$6 (mut i32) (i32.const 0))
- (global $global$7 (mut i64) (i64.const 0))
- (global $global$8 (mut i64) (i64.const 0))
+ (global $global$1 (mut i64) (i64.const 0))
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $0))
  (export "main" (func $1))
  (start $2)
- (func $0 (; 0 ;) (result i32)
-  (global.get $global$6)
+ (func $0 (result i32)
+  (global.get $global$0)
  )
- (func $1 (; 1 ;) (result i64)
-  (global.get $global$7)
+ (func $1 (result i64)
+  (global.get $global$1)
  )
- (func $2 (; 2 ;)
+ (func $2
   (global.set $global$0
-   (i32.const 4)
+   (i32.const 65536)
   )
   (global.set $global$1
-   (i32.const 16)
-  )
-  (global.set $global$2
-   (i32.const 15)
-  )
-  (global.set $global$3
-   (i32.const 1073741824)
-  )
-  (global.set $global$4
-   (i32.const 65536)
-  )
-  (global.set $global$5
-   (i32.const 65536)
-  )
-  (global.set $global$6
-   (global.get $global$5)
-  )
-  (global.set $global$7
    (i64.const 12884901904)
-  )
-  (global.set $global$8
-   (i64.const 12884901921)
   )
  )
 )

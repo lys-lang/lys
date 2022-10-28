@@ -16,7 +16,7 @@ export enum NativeTypes {
 }
 
 export abstract class Type {
-  nativeType?: NativeTypes;
+  abstract nativeType?: NativeTypes;
 
   get binaryenType(): Valtype | void {
     switch (this.nativeType) {
@@ -500,6 +500,8 @@ export function getUnderlyingTypeFromAlias(type: Type): Type {
 }
 
 export class UnionType extends Type {
+  nativeType?: NativeTypes | undefined;
+
   get binaryenType(): Valtype {
     const nativeTypes = new Set<Valtype>();
 
@@ -1032,6 +1034,7 @@ function getNonVoidFunction(type: IntersectionType, ctx: Scope): FunctionType | 
 }
 
 export class TypeType extends Type {
+  nativeType?: NativeTypes | undefined;
   static memMap = new WeakMap<Type, TypeType>();
   private constructor(public readonly of: Type) {
     super();
@@ -1180,7 +1183,7 @@ export class AnyType extends Type {
   }
 }
 
-export const InjectableTypes = Object.assign(Object.create(null) as unknown, {
+export const InjectableTypes = Object.assign(Object.create(null) as any, {
   void: voidType,
   ref: RefType.instance,
   never: new NeverType(),

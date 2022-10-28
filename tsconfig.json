@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "paths": { "*": ["types/*"] },
     "module": "commonjs",
-    "target": "es2018",
+    "target": "es2020",
     "diagnostics": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -19,11 +19,13 @@
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "strict": true,
+    "alwaysStrict": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "resolveJsonModule": true,
-    "lib": ["es2018"],
-    "plugins": [{ "name": "tslint-language-service" }]
+    "lib": ["es2020"]
   },
   "exclude": ["node_modules", "test/**/*", "dist"],
   "include": ["src/**/*"]

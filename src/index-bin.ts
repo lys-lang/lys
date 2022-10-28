@@ -246,7 +246,7 @@ exports.default = async function() {
           passed: true,
           skipped: false
         });
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
         testResults.push({
           title: path,

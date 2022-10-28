@@ -7,8 +7,8 @@ global['Binaryen'] = {
   TOTAL_MEMORY: 16777216 * 8
 };
 
-import * as binaryen from 'binaryen';
-import _wabt = require('wabt');
+import binaryen from 'binaryen';
+import _wabt from 'wabt';
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
@@ -28,12 +28,11 @@ type CompilationModuleResult = {
   imports: any[];
 };
 
-const wabt: typeof _wabt = (_wabt as any)();
+const wabt = _wabt();
 
 const starterName = t.identifier('%%START%%');
 
 declare var WebAssembly: any;
-declare var console: any;
 
 const optimizeLevel = 3;
 const shrinkLevel = 0;
@@ -497,7 +496,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
             throw new LysCompilerError(`Value was undefined`, node.memberName);
           }
           return t.objectInstruction('const', type.binaryenType, [t.numberLiteralFromRaw(value)]);
-        } catch (e) {
+        } catch (e: any) {
           if (e instanceof LysCompilerError) throw e;
           throw new LysCompilerError(e.message, node.memberName);
         }
@@ -530,7 +529,7 @@ export class CodeGenerationPhaseResult {
 
     try {
       this.execute();
-    } catch (e) {
+    } catch (e: any) {
       this.parsingContext.messageCollector.error(e, this.document.astNode);
     }
   }
@@ -543,21 +542,29 @@ export class CodeGenerationPhaseResult {
   }> {
     let text = print(this.programAST);
 
-    await wabt.ready;
-    let wabtModule: _wabt.WasmModule;
+    const theWabt = await wabt;
+    let wabtModule: ReturnType<typeof theWabt.parseWat>;
 
     try {
-      wabtModule = wabt.parseWat(this.document.moduleName, text);
-    } catch (e) {
-      console.log(text);
-      throw e;
+      wabtModule = theWabt.parseWat(this.document.moduleName, text, {});
+    } catch (e: any) {
+      const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
+      this.parsingContext.system.writeFile(invalidFile, text)
+      console.error('Error while parsing generated code. Writing debug WAT to ' + invalidFile)
+      console.error(e);
+       throw e;
     }
 
     try {
       wabtModule.resolveNames();
       wabtModule.validate();
-    } catch (e) {
-      this.parsingContext.system.write(text);
+    } catch (e: any) {
+      const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
+      this.parsingContext.system.writeFile(invalidFile, text)
+
+      console.error('Error while resolving names and validate code. Writing debug WAT to ' + invalidFile)
+      console.error(e);
+
       this.parsingContext.messageCollector.error(e, this.document.astNode);
       throw e;
     }
@@ -623,7 +630,7 @@ export class CodeGenerationPhaseResult {
       module.dispose();
 
       return {};
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof Error) throw e;
       throw new Error(e);
     }
@@ -787,7 +794,7 @@ export class CodeGenerationPhaseResult {
 
     let currentMemory = 16;
 
-    const moduleParts = [];
+    const moduleParts: any[] = [];
 
     const generatedModules = exportList.map($ => {
       const ret = this.generatePhase($, currentMemory);
@@ -814,8 +821,9 @@ export class CodeGenerationPhaseResult {
 
     const memory = t.memory(t.limit(1), t.identifier('mem'));
 
+    moduleParts.push(table);
+
     if (tableElems.length) {
-      moduleParts.push(table);
       moduleParts.push(elem);
     }
 

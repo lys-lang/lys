@@ -195,7 +195,7 @@ const run = async () => {
         const pkgName = (await execute(`npm info . name`)).trim();
         await execute(`npm dist-tag add ${pkgName}@${newVersion} latest`);
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
     }
   }

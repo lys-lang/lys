@@ -2,6 +2,7 @@
   (import "env" "printf" (func $test::fixtures::compiler::extern::printf_1 (param $str i32) (param $extra i32)))
   (import "env" "putchar" (func $test::fixtures::compiler::extern::putchar_1 (param $char i32)))
   (import "env" "segfault" (func $system::core::memory::segfault_1))
+  (table $lys::internal-functions 0 anyfunc)
   (memory $mem 1)
   (export "memory" (memory $mem))
   (global $system::core::memory::AL_BITS (mut i32) (i32.const 0))

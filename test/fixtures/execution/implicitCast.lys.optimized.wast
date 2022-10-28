@@ -35,22 +35,16 @@
  (data (i32.const 127) "\0e\00\00\00m\00a\00t\00c\00h\00 \001")
  (data (i32.const 146) "\10\00\00\000\00.\000\00 \00=\00=\00 \000")
  (global $global$0 (mut i32) (i32.const 0))
- (global $global$1 (mut i32) (i32.const 0))
- (global $global$2 (mut i32) (i32.const 0))
- (global $global$3 (mut i32) (i32.const 0))
- (global $global$4 (mut i32) (i32.const 0))
- (global $global$5 (mut i32) (i32.const 0))
- (global $global$6 (mut i32) (i32.const 0))
- (global $global$7 (mut i64) (i64.const 0))
+ (global $global$1 (mut i64) (i64.const 0))
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $0))
  (export "test_getLastErrorMessage" (func $1))
  (export "main" (func $3))
  (start $4)
- (func $0 (; 3 ;) (result i32)
-  (global.get $global$6)
+ (func $0 (result i32)
+  (global.get $global$0)
  )
- (func $1 (; 4 ;) (result i32)
+ (func $1 (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -60,7 +54,7 @@
       (i32.wrap_i64
        (i64.shr_u
         (local.tee $0
-         (global.get $global$7)
+         (global.get $global$1)
         )
         (i64.const 32)
        )
@@ -78,7 +72,7 @@
    )
   )
  )
- (func $2 (; 5 ;) (param $0 i64)
+ (func $2 (param $0 i64)
   (call $fimport$1
    (i32.const 1)
    (i32.wrap_i64
@@ -86,7 +80,7 @@
    )
   )
  )
- (func $3 (; 6 ;)
+ (func $3
   (call $fimport$0
    (i32.const 16)
   )
@@ -104,29 +98,11 @@
   )
   (call $fimport$2)
  )
- (func $4 (; 7 ;)
+ (func $4
   (global.set $global$0
-   (i32.const 4)
+   (i32.const 65536)
   )
   (global.set $global$1
-   (i32.const 16)
-  )
-  (global.set $global$2
-   (i32.const 15)
-  )
-  (global.set $global$3
-   (i32.const 1073741824)
-  )
-  (global.set $global$4
-   (i32.const 65536)
-  )
-  (global.set $global$5
-   (i32.const 65536)
-  )
-  (global.set $global$6
-   (global.get $global$5)
-  )
-  (global.set $global$7
    (i64.const 8589934592)
   )
  )

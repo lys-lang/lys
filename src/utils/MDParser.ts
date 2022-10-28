@@ -113,7 +113,7 @@ function readHeader(): Header | null {
 }
 
 function eatUntil(token: RegExp): string | null {
-  let content = null;
+  let content: any = null;
   while (true) {
     const line = eatLine();
     if (line === null) break;

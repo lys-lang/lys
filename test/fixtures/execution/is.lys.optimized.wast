@@ -36,22 +36,19 @@
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
  (global $global$3 (mut i32) (i32.const 0))
- (global $global$4 (mut i32) (i32.const 0))
- (global $global$5 (mut i32) (i32.const 0))
- (global $global$6 (mut i32) (i32.const 0))
+ (global $global$4 (mut i64) (i64.const 0))
+ (global $global$5 (mut i64) (i64.const 0))
+ (global $global$6 (mut i64) (i64.const 0))
  (global $global$7 (mut i64) (i64.const 0))
- (global $global$8 (mut i64) (i64.const 0))
- (global $global$9 (mut i64) (i64.const 0))
- (global $global$10 (mut i64) (i64.const 0))
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $0))
  (export "test_getLastErrorMessage" (func $4))
  (export "main" (func $9))
  (start $10)
- (func $0 (; 3 ;) (result i32)
-  (global.get $global$6)
+ (func $0 (result i32)
+  (global.get $global$3)
  )
- (func $1 (; 4 ;) (param $0 i32) (result i32)
+ (func $1 (param $0 i32) (result i32)
   (local $1 i32)
   (call $3
    (local.tee $1
@@ -63,7 +60,7 @@
   )
   (local.get $1)
  )
- (func $2 (; 5 ;) (param $0 i32) (result i32)
+ (func $2 (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
@@ -77,7 +74,7 @@
   (if
    (i32.gt_u
     (local.get $0)
-    (global.get $global$3)
+    (global.get $global$1)
    )
    (unreachable)
   )
@@ -86,11 +83,11 @@
     (local.tee $0
      (i32.and
       (i32.add
-       (global.get $global$2)
+       (global.get $global$0)
        (i32.add
         (i32.add
          (local.tee $1
-          (global.get $global$6)
+          (global.get $global$3)
          )
          (i32.const 16)
         )
@@ -105,7 +102,7 @@
        )
       )
       (i32.xor
-       (global.get $global$2)
+       (global.get $global$0)
        (i32.const -1)
       )
      )
@@ -158,7 +155,7 @@
     )
    )
   )
-  (global.set $global$6
+  (global.set $global$3
    (local.get $0)
   )
   (i32.add
@@ -166,7 +163,7 @@
    (i32.const 16)
   )
  )
- (func $3 (; 6 ;) (param $0 i32) (param $1 i32)
+ (func $3 (param $0 i32) (param $1 i32)
   (local.set $1
    (i32.add
     (local.get $0)
@@ -197,7 +194,7 @@
    )
   )
  )
- (func $4 (; 7 ;) (result i32)
+ (func $4 (result i32)
   (local $0 i64)
   (block $label$1 (result i32)
    (drop
@@ -207,7 +204,7 @@
       (i32.wrap_i64
        (i64.shr_u
         (local.tee $0
-         (global.get $global$7)
+         (global.get $global$4)
         )
         (i64.const 32)
        )
@@ -225,7 +222,7 @@
    )
   )
  )
- (func $5 (; 8 ;) (param $0 i32)
+ (func $5 (param $0 i32)
   (local $1 i64)
   (call $fimport$1
    (local.get $0)
@@ -254,14 +251,14 @@
      )
      (i64.const 12884902532)
     )
-    (global.set $global$7
+    (global.set $global$4
      (local.get $1)
     )
     (unreachable)
    )
   )
  )
- (func $6 (; 9 ;) (param $0 i64) (result i32)
+ (func $6 (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -302,7 +299,7 @@
    )
   )
  )
- (func $7 (; 10 ;) (param $0 i64) (result i32)
+ (func $7 (param $0 i64) (result i32)
   (if (result i32)
    (i32.eq
     (i32.wrap_i64
@@ -358,7 +355,7 @@
    )
   )
  )
- (func $8 (; 11 ;) (result i64)
+ (func $8 (result i64)
   (local $0 i64)
   (i32.store
    (i32.wrap_i64
@@ -377,7 +374,7 @@
   )
   (local.get $0)
  )
- (func $9 (; 12 ;)
+ (func $9
   (call $fimport$0
    (i32.const 16)
   )
@@ -430,7 +427,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (global.get $global$8)
+      (global.get $global$5)
       (i64.const 32)
      )
     )
@@ -442,7 +439,7 @@
     (i32.ne
      (i32.wrap_i64
       (i64.shr_u
-       (global.get $global$8)
+       (global.get $global$5)
        (i64.const 32)
       )
      )
@@ -455,7 +452,7 @@
    (i32.eqz
     (i32.eqz
      (call $6
-      (global.get $global$8)
+      (global.get $global$5)
      )
     )
    )
@@ -464,7 +461,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (global.get $global$9)
+      (global.get $global$6)
       (i64.const 32)
      )
     )
@@ -476,7 +473,7 @@
     (i32.ne
      (i32.wrap_i64
       (i64.shr_u
-       (global.get $global$9)
+       (global.get $global$6)
        (i64.const 32)
       )
      )
@@ -489,7 +486,7 @@
    (i32.eqz
     (i32.eqz
      (call $6
-      (global.get $global$9)
+      (global.get $global$6)
      )
     )
    )
@@ -498,7 +495,7 @@
    (i32.eq
     (i32.wrap_i64
      (i64.shr_u
-      (global.get $global$10)
+      (global.get $global$7)
       (i64.const 32)
      )
     )
@@ -510,7 +507,7 @@
     (i32.ne
      (i32.wrap_i64
       (i64.shr_u
-       (global.get $global$10)
+       (global.get $global$7)
        (i64.const 32)
       )
      )
@@ -523,7 +520,7 @@
    (i32.eqz
     (i32.eqz
      (call $6
-      (global.get $global$10)
+      (global.get $global$7)
      )
     )
    )
@@ -533,7 +530,7 @@
     (i32.ne
      (i32.wrap_i64
       (i64.shr_u
-       (global.get $global$10)
+       (global.get $global$7)
        (i64.const 32)
       )
      )
@@ -595,38 +592,29 @@
   )
   (call $fimport$2)
  )
- (func $10 (; 13 ;)
+ (func $10
   (global.set $global$0
-   (i32.const 4)
-  )
-  (global.set $global$1
-   (i32.const 16)
-  )
-  (global.set $global$2
    (i32.const 15)
   )
-  (global.set $global$3
+  (global.set $global$1
    (i32.const 1073741824)
   )
+  (global.set $global$2
+   (i32.const 65536)
+  )
+  (global.set $global$3
+   (global.get $global$2)
+  )
   (global.set $global$4
-   (i32.const 65536)
-  )
-  (global.set $global$5
-   (i32.const 65536)
-  )
-  (global.set $global$6
-   (global.get $global$5)
-  )
-  (global.set $global$7
    (i64.const 8589934592)
   )
-  (global.set $global$8
+  (global.set $global$5
    (i64.const 4294967296)
   )
-  (global.set $global$9
+  (global.set $global$6
    (i64.const 4294967296)
   )
-  (global.set $global$10
+  (global.set $global$7
    (i64.const 4294967296)
   )
  )
