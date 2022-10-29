@@ -689,6 +689,13 @@ describe('Parser', () => {
       testLiteral(JSON.stringify('A string'));
       testLiteral(JSON.stringify("asdasd`\"`'''`\\\""));
       testLiteral(JSON.stringify(213422342344234));
+      testLiteral(JSON.stringify("\\u001B[2J"));
+      testLiteral(JSON.stringify("\\u001b[H\\u001b[2J\\u001b[3J"));
+
+      test`
+        var a = "\\u001B[2J"
+        var b = "\\u001b[H\\u001b[2J\\u001b[3J"
+      `;
 
       test`
         var a = 1

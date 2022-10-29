@@ -8,13 +8,13 @@ build:
 	node dist/utils/packStdLib.js
 
 GREP="."
-TEST_FILE=*
+TEST_FILE="test/*.spec.ts"
 
 DEBUG_TYPES=0
 
 just-test:
 	DEBUG_TYPES=$(DEBUG_TYPES) \
-		node ./node_modules/mocha/bin/_mocha --grep "$(GREP)" "test/$(TEST_FILE).spec.ts"
+		node ./node_modules/mocha/bin/_mocha --grep "$(GREP)" $(TEST_FILE)
 
 test: | build just-test
 

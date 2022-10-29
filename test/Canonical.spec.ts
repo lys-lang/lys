@@ -65,6 +65,8 @@ describe('Canonical', function() {
   test`var a: Number = 0x0`;
   test`var a: Number = 0x1facbeda0192830190238019283`;
   test`var a: Number = -0x1facbeda0192830190238019283`;
+  test`var a = "\\u001B[2J"`;
+  test`var b = "\\u001b[H\\u001b[2J\\u001b[3J"`;
   test`var a = false`;
 
   test`
