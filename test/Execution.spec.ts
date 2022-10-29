@@ -2,7 +2,11 @@ import { test, testFolder } from './ExecutionHelper';
 import expect from 'expect';
 import { readBytes } from '../src/utils/execution';
 
-const getBytes = require('utf8-bytes');
+declare var TextEncoder: any
+
+const encoder = new TextEncoder()
+
+const getBytes = encoder.encode.bind(encoder);
 
 describe('Execution tests', () => {
   describe('call indirect', () => {
