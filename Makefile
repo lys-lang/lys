@@ -2,8 +2,8 @@ export PATH := $(shell npm bin):$(PATH)
 
 build:
 	rm -rf dist || true
-	$(shell npm bin)/tsc -p tsconfig.json
-	$(shell npm bin)/tsc -p test/tsconfig.json
+	$(shell npm root)/.bin/tsc -p tsconfig.json
+	$(shell npm root)/.bin/tsc -p test/tsconfig.json
 	chmod +x dist/bin.js
 	node dist/utils/packStdLib.js
 
@@ -20,10 +20,10 @@ test: | build just-test
 
 xml-test:
 	MOCHA_FILE=./test/TEST-RESULTS.xml \
-		$(shell npm bin)/mocha --reporter mocha-junit-reporter
+		$(shell npm root)/.bin/mocha --reporter mocha-junit-reporter
 
 coverage:
-	$(shell npm bin)/nyc ./node_modules/mocha/bin/_mocha
+	$(shell npm root)/.bin/nyc ./node_modules/mocha/bin/_mocha
 
 ci-test: | lint test e2e
 
@@ -33,11 +33,11 @@ inspect: build
 	node --inspect ./node_modules/mocha/bin/_mocha --require source-map-support/register test/*.spec.js
 
 watch: build
-	$(shell npm bin)/tsc -p tsconfig.json --watch & $(shell npm bin)/tsc -p test/tsconfig.json --watch
+	$(shell npm root)/.bin/tsc -p tsconfig.json --watch & $(shell npm root)/.bin/tsc -p test/tsconfig.json --watch
 
 lint:
 	echo "true"
-	# $(shell npm bin)/tslint src/**/*.ts --project tsconfig.json
+	# $(shell npm root)/.bin/tslint src/**/*.ts --project tsconfig.json
 
 e2e:
 	$(MAKE) md-tests
@@ -45,7 +45,7 @@ e2e:
 	cd test/fixtures/cli/custom-lib && ../../../../dist/bin.js main.lys --test --debug --wast --lib lib.js
 
 md-tests: build
-	$(shell npm bin)/ts-node test/RunModulesFolder.ts
+	$(shell npm root)/.bin/ts-node test/RunModulesFolder.ts
 
 snapshot: export UPDATE_AST=true
 snapshot: just-test
