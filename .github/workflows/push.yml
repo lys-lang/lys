@@ -19,10 +19,10 @@ jobs:
             triplet: x64-osx-10.13
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 16.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 22.x
       - name: npm install
         run: npm install
       - name: make test
@@ -31,10 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 16.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 22.x
       - name: npm install
         run: npm install
       - name: make lint
@@ -44,10 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 16.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 22.x
       - name: npm install
         run: npm install
       - name: make e2e
@@ -58,10 +58,10 @@ jobs:
     needs: ['markdown-test', 'lint', 'test']
     steps:
       - uses: actions/checkout@master
-      - name: Use Node.js 16.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v1
         with:
-          node-version: 16.x
+          node-version: 22.x
       - name: npm install
         run: npm install
       - name: Publish
