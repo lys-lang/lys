@@ -54,6 +54,9 @@ jobs:
         run: make e2e
 
   build-publish:
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     needs: ['markdown-test', 'lint', 'test']
     steps:
