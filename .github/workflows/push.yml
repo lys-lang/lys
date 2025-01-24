@@ -37,6 +37,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 22.x
+      - name: npm install
+        run: npm install
       - name: make test
         run: make build
       - name: Checkout lys-compiler
