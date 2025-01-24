@@ -1,14 +1,7 @@
-import * as t from '@webassemblyjs/ast';
+import * as ast from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
+const t = ast as any;
 
-declare var globalThis: any;
-
-globalThis['Binaryen'] = {
-  TOTAL_MEMORY: 16777216 * 8
-};
-
-import binaryen from 'binaryen';
-import _wabt from 'wabt';
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
@@ -27,8 +20,6 @@ type CompilationModuleResult = {
   endMemory: number;
   imports: any[];
 };
-
-const wabt = _wabt();
 
 const starterName = t.identifier('%%START%%');
 
@@ -57,7 +48,7 @@ function getStarterFunction(statements: any[]) {
   return t.func(
     starterName, // name
     fnType, // signature
-    statements // body
+    statements, // body
   );
 }
 
@@ -74,9 +65,9 @@ function getTypeForFunctionType(fn: Type | null, errorNode: Nodes.Node) {
       return t.signature(
         fn.parameterTypes.map(($, $$) => ({
           id: fn.parameterNames[$$] || '$param' + $$,
-          valtype: $.binaryenType
+          valtype: $.binaryenType,
         })),
-        retType
+        retType,
       );
     }
     throw new LysCompilerError(fn + ' has no return type', errorNode);
@@ -102,8 +93,8 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode, pars
 
   restartFunctionSeqId(fn);
 
-  const locals = fn.additionalLocals.map($ =>
-    t.instruction('local', [t.identifier($.name), t.valtypeLiteral($.type!.binaryenType)])
+  const locals = fn.additionalLocals.map(($) =>
+    t.instruction('local', [t.identifier($.name), t.valtypeLiteral($.type!.binaryenType)]),
   );
 
   if (!fn.body) throw new LysCompilerError('Function has no body', fn);
@@ -111,7 +102,7 @@ function emitFunction(fn: Nodes.FunctionNode, document: Nodes.DocumentNode, pars
   const moduleFun = t.func(
     t.identifier(fn.functionName.internalIdentifier), // name
     fnType, // signature
-    [...locals, ...emitList(fn.body, document, parsingContext)] // body
+    [...locals, ...emitList(fn.body, document, parsingContext)], // body
   );
 
   return moduleFun;
@@ -126,17 +117,17 @@ function emitLoop(node: Nodes.LoopNode, document: Nodes.DocumentNode, parsingCon
   const breakLabel = t.identifier('Break' + loopId);
 
   return t.blockInstruction(breakLabel, [
-    t.loopInstruction(continueLabel, void 0, emitList(node.body, document, parsingContext))
+    t.loopInstruction(continueLabel, void 0, emitList(node.body, document, parsingContext)),
   ]);
 }
 
 function emitMatchingNode(
   match: Nodes.PatternMatcherNode,
   document: Nodes.DocumentNode,
-  parsingContext: ParsingContext
+  parsingContext: ParsingContext,
 ) {
   const matchers = match.matchingSet.slice(0);
-  const ixDefaultBranch = matchers.findIndex($ => $ instanceof Nodes.MatchDefaultNode);
+  const ixDefaultBranch = matchers.findIndex(($) => $ instanceof Nodes.MatchDefaultNode);
 
   const local = match.getAnnotation(annotations.LocalIdentifier)!.local;
 
@@ -163,13 +154,13 @@ function emitMatchingNode(
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
           t.instruction('local.get', [t.identifier(local.name)]),
-          emit(node.literal, document, parsingContext)
+          emit(node.literal, document, parsingContext),
         ]);
 
         const body = emit(node.rhs, document, parsingContext);
         return {
           condition,
-          body
+          body,
         };
       } else if (node instanceof Nodes.MatchCaseIsNode) {
         const ofType = node.resolvedFunctionType;
@@ -179,23 +170,23 @@ function emitMatchingNode(
         const local = match.getAnnotation(annotations.LocalIdentifier)!.local;
 
         const condition = t.callInstruction(t.identifier(ofType.name.internalIdentifier), [
-          t.instruction('local.get', [t.identifier(local.name)])
+          t.instruction('local.get', [t.identifier(local.name)]),
         ]);
 
         const body = emit(node.rhs, document, parsingContext);
         return {
           condition,
-          body
+          body,
         };
       }
       throw new LysCompilerError("I don't know how handle this", node);
     })
-    .filter($ => !!$);
+    .filter(($) => !!$);
   const exitBlock = 'B' + getFunctionSeqId(match);
   const exitLabel = t.identifier(exitBlock);
 
   const breaks = blocks
-    .filter($ => !!$.condition)
+    .filter(($) => !!$.condition)
     .map(($, $$) => t.instruction('br_if', [t.identifier(`${exitBlock}_${$$}`), $.condition]));
 
   const ret = blocks.reduceRight((prev, curr, ix) => {
@@ -219,7 +210,7 @@ function emitMatchingNode(
 
 function emitList(nodes: Nodes.Node[] | Nodes.Node, document: Nodes.DocumentNode, parsingContext: ParsingContext) {
   if (nodes instanceof Array) {
-    return flatten(nodes.map($ => emit($, document, parsingContext)));
+    return flatten(nodes.map(($) => emit($, document, parsingContext)));
   } else {
     return flatten([emit(nodes, document, parsingContext)]);
   }
@@ -233,7 +224,7 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode, parsin
       if (ofType.of.length > 1) {
         throw new LysCompilerError(
           'This reference has multiple overloads. From WASM you can only reference non-overloaded functions',
-          node
+          node,
         );
       }
       ofType = ofType.of[0];
@@ -264,7 +255,7 @@ function emitWast(node: Nodes.WasmAtomNode, document: Nodes.DocumentNode, parsin
 
   return t.instruction(
     node.symbol,
-    (node.args || []).map($ => emitWast($ as any, document, parsingContext))
+    (node.args || []).map(($) => emitWast($ as any, document, parsingContext)),
   );
 }
 
@@ -278,7 +269,7 @@ function emitImplicitCall(node: Nodes.Node, document: Nodes.DocumentNode, parsin
 
   return t.callInstruction(
     t.identifier(ofType.name.internalIdentifier),
-    implicitCallData.implicitCall.argumentsNode.map($ => emit($, document, parsingContext))
+    implicitCallData.implicitCall.argumentsNode.map(($) => emit($, document, parsingContext)),
   );
 }
 
@@ -288,7 +279,7 @@ function getReferencedSymbol(node: Nodes.Node): { symbol: string; type: 'VALUE' 
   if (local) {
     return {
       symbol: local.local.name,
-      type: 'VALUE'
+      type: 'VALUE',
     };
   }
 
@@ -301,7 +292,7 @@ function getReferencedSymbol(node: Nodes.Node): { symbol: string; type: 'VALUE' 
 
     return {
       symbol: fn.nameIdentifier.internalIdentifier,
-      type: 'TABLE'
+      type: 'TABLE',
     };
   }
 
@@ -318,7 +309,7 @@ function getTypeSignature(fn: Type | null, errorNode: Nodes.Node, parsingContext
       const retType = ret.binaryenType ? [ret.binaryenType] : [];
 
       const name =
-        'lys::' + fn.parameterTypes.map($ => $.binaryenType).join('_') + '->' + (retType.join('_') || 'void');
+        'lys::' + fn.parameterTypes.map(($) => $.binaryenType).join('_') + '->' + (retType.join('_') || 'void');
 
       if (!parsingContext.signatures.has(name)) {
         parsingContext.signatures.set(
@@ -326,12 +317,12 @@ function getTypeSignature(fn: Type | null, errorNode: Nodes.Node, parsingContext
           t.typeInstruction(
             t.identifier(name),
             t.signature(
-              fn.parameterTypes.map($ => ({
-                valtype: $.binaryenType
+              fn.parameterTypes.map(($) => ({
+                valtype: $.binaryenType,
               })),
-              retType
-            )
-          )
+              retType,
+            ),
+          ),
         );
       }
 
@@ -364,8 +355,8 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
           return t.callIndirectInstruction(
             signature,
             node.argumentsNode
-              .map($ => emit($, document, parsingContext))
-              .concat(emit(node.functionNode, document, parsingContext))
+              .map(($) => emit($, document, parsingContext))
+              .concat(emit(node.functionNode, document, parsingContext)),
           );
         }
       }
@@ -378,12 +369,12 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
 
       return t.callInstruction(
         t.identifier(funType.name.internalIdentifier),
-        node.argumentsNode.map($ => emit($, document, parsingContext))
+        node.argumentsNode.map(($) => emit($, document, parsingContext)),
       );
     } else if (node instanceof Nodes.UnknownExpressionNode) {
       return t.instruction('unreachable', []);
     } else if (node instanceof Nodes.WasmExpressionNode) {
-      return flatten(node.atoms.map($ => emitWast($, document, parsingContext)));
+      return flatten(node.atoms.map(($) => emitWast($, document, parsingContext)));
     } else if (node instanceof Nodes.ContinueNode) {
       const loopLabel = node.getAnnotation(annotations.CurrentLoop)!.loop.getAnnotation(annotations.LabelId)!;
       return t.instruction('br', [t.identifier('Loop' + loopLabel.label)]);
@@ -425,9 +416,9 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
               t.identifier('tee_global_' + getFunctionSeqId(node)),
               [
                 t.instruction('global.set', [t.identifier(local.name), emit(node.rhs, document, parsingContext)]),
-                t.instruction('global.get', [t.identifier(local.name)])
+                t.instruction('global.get', [t.identifier(local.name)]),
               ],
-              TypeHelpers.getNodeType(node.rhs)!.binaryenType
+              TypeHelpers.getNodeType(node.rhs)!.binaryenType,
             );
           } else {
             const local = node.lhs.getAnnotation(annotations.LocalIdentifier)!.local;
@@ -443,7 +434,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
       const type = TypeHelpers.getNodeType(node)!.binaryenType;
       let instr: any[] = [];
 
-      node.statements.forEach($ => {
+      node.statements.forEach(($) => {
         // TODO: Drop here things
         let emited = emit($, document, parsingContext);
         const type = TypeHelpers.getNodeType($);
@@ -470,7 +461,7 @@ function emit(node: Nodes.Node, document: Nodes.DocumentNode, parsingContext: Pa
         [emit(node.condition, document, parsingContext)],
         TypeHelpers.getNodeType(node)!.binaryenType,
         emitList(node.truePart, document, parsingContext),
-        node.falsePart ? emitList(node.falsePart, document, parsingContext) : []
+        node.falsePart ? emitList(node.falsePart, document, parsingContext) : [],
       );
     } else if (node instanceof Nodes.ReferenceNode) {
       const ref = getReferencedSymbol(node);
@@ -524,7 +515,10 @@ export class CodeGenerationPhaseResult {
   buffer?: Uint8Array;
   sourceMap: string | null = null;
 
-  constructor(public document: Nodes.DocumentNode, public parsingContext: ParsingContext) {
+  constructor(
+    public document: Nodes.DocumentNode,
+    public parsingContext: ParsingContext,
+  ) {
     failWithErrors(`Compilation`, parsingContext);
 
     try {
@@ -536,53 +530,44 @@ export class CodeGenerationPhaseResult {
 
   async validate(
     optimize: boolean = true,
-    debug = false
+    debug = false,
   ): Promise<{
     callGraph?: string;
   }> {
-    let text = print(this.programAST);
+    const { default: binaryen } = await import('binaryen');
 
-    const theWabt = await wabt;
-    let wabtModule: ReturnType<typeof theWabt.parseWat>;
-
-    try {
-      wabtModule = theWabt.parseWat(this.document.moduleName, text, {});
-    } catch (e: any) {
-      const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
-      this.parsingContext.system.writeFile(invalidFile, text)
-      console.error('Error while parsing generated code. Writing debug WAT to ' + invalidFile)
-      console.error(e);
-       throw e;
-    }
-
-    try {
-      wabtModule.resolveNames();
-      wabtModule.validate();
-    } catch (e: any) {
-      const invalidFile = this.parsingContext.system.resolvePath(this.parsingContext.system.getCurrentDirectory(), 'failed_debug_wat.wat')
-      this.parsingContext.system.writeFile(invalidFile, text)
-
-      console.error('Error while resolving names and validate code. Writing debug WAT to ' + invalidFile)
-      console.error(e);
-
-      this.parsingContext.messageCollector.error(e, this.document.astNode);
-      throw e;
-    }
-
-    const binary = wabtModule.toBinary({ log: false, write_debug_names: debug });
-    wabtModule.destroy();
+    const parseText = (text: string) => {
+      try {
+        return binaryen.parseText(text);
+      } catch (e: any) {
+        const invalidFile = this.parsingContext.system.resolvePath(
+          this.parsingContext.system.getCurrentDirectory(),
+          'failed_debug_wat.wat',
+        );
+        this.parsingContext.system.writeFile(invalidFile, text);
+        console.error('Error while parsing generated code. Writing debug WAT to ' + invalidFile);
+        console.error(e);
+        throw e;
+      }
+    };
 
     try {
       binaryen.setOptimizeLevel(optimizeLevel);
       binaryen.setShrinkLevel(shrinkLevel);
       binaryen.setDebugInfo(debug || !optimize);
 
-      const module = binaryen.readBinary(binary.buffer);
+      let text = print(this.programAST);
+      const module = parseText(text);
 
-      if (!debug) {
-        module.runPasses(['duplicate-function-elimination']);
-      }
+      //  if (!debug) {
+      //    module.runPasses(['duplicate-function-elimination']);
+      //  }
+
       module.runPasses(['remove-unused-module-elements']);
+
+      if (optimize) {
+        module.optimize();
+      }
 
       if (module.validate() === 0) {
         this.parsingContext.messageCollector.error(new LysCompilerError('binaryen validation failed', this.document));
@@ -590,41 +575,10 @@ export class CodeGenerationPhaseResult {
 
       if (debug) {
         let last = module.emitBinary('sourceMap.map');
-
-        if (optimize) {
-          do {
-            module.optimize();
-            let next = module.emitBinary('sourceMap.map');
-            if (next.binary.length >= last.binary.length) {
-              // a if (next.length > last.length) {
-              // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
-              // a }
-              break;
-            }
-            last = next;
-          } while (true);
-        }
-
         this.buffer = last.binary;
         this.sourceMap = last.sourceMap;
       } else {
-        let last = module.emitBinary();
-
-        if (optimize) {
-          do {
-            module.optimize();
-            let next = module.emitBinary();
-            if (next.length >= last.length) {
-              // a if (next.length > last.length) {
-              // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
-              // a }
-              break;
-            }
-            last = next;
-          } while (true);
-        }
-
-        this.buffer = last;
+        this.buffer = module.emitBinary();
       }
 
       module.dispose();
@@ -638,6 +592,7 @@ export class CodeGenerationPhaseResult {
 
   async emitText() {
     if (this.buffer) {
+      const { default: binaryen } = await import('binaryen');
       const module = binaryen.readBinary(this.buffer);
       const ret = module.emitText();
       module.dispose();
@@ -662,8 +617,8 @@ export class CodeGenerationPhaseResult {
         memoryBase: 0,
         tableBase: 0,
         memory: new WebAssembly.Memory({ initial: 256 }),
-        table: new WebAssembly.Table({ initial: 0, element: 'funcref' })
-      }
+        table: new WebAssembly.Table({ initial: 0, element: 'funcref' }),
+      },
     };
 
     // Create the instance.
@@ -711,13 +666,14 @@ export class CodeGenerationPhaseResult {
         const numberLiteral = t.numberLiteralFromRaw(offset, 'i32');
         const offsetToken = t.objectInstruction('const', 'i32', [numberLiteral]);
 
-        dataSection.push(t.data(t.memIndexLiteral(0), offsetToken, t.byteArray(bytes)));
+        // dataSection.push(t.data(t.memIndexLiteral(dataCount++), offsetToken, t.byteArray(bytes)));
+        dataSection.push(t.data(t.identifier(`mem_${offset}`), offsetToken, t.byteArray(bytes)));
 
         return offset + size;
       }
     }, startMemory);
 
-    const createdGlobals = globals.map($ => {
+    const createdGlobals = globals.map(($) => {
       // TODO: If the value is a literal, do not defer initialization to starters
 
       const mut = 'var'; // TODO: $ instanceof Nodes.ValDeclarationNode ? 'const' : 'var';
@@ -727,19 +683,19 @@ export class CodeGenerationPhaseResult {
       const identifier = t.identifier(local.name);
 
       starters.push(
-        t.instruction('global.set', [identifier, ...emitList($.decl.value, document, this.parsingContext)])
+        t.instruction('global.set', [identifier, ...emitList($.decl.value, document, this.parsingContext)]),
       );
 
       return t.global(
         t.globalType(binaryenType, mut),
         [t.objectInstruction('const', binaryenType, [t.numberLiteralFromRaw(0)])], // emitList($.decl.value, compilationPhase.document),
-        identifier
+        identifier,
       );
     });
 
-    functions.forEach($ => {
+    functions.forEach(($) => {
       if ($.parent instanceof Nodes.TraitDirectiveNode) return;
-      $.functions.forEach(fun => {
+      $.functions.forEach((fun) => {
         const functionName = fun.functionNode.functionName;
 
         if (functionName.hasAnnotation(annotations.Extern)) {
@@ -750,8 +706,8 @@ export class CodeGenerationPhaseResult {
             t.moduleImport(
               extern.module,
               extern.fn,
-              t.funcImportDescr(t.identifier(functionName.internalIdentifier), fnType)
-            )
+              t.funcImportDescr(t.identifier(functionName.internalIdentifier), fnType),
+            ),
           );
         } else {
           createdFunctions.push(emitFunction(fun.functionNode, document, this.parsingContext));
@@ -763,8 +719,8 @@ export class CodeGenerationPhaseResult {
           exportedElements.push(
             t.moduleExport(
               exportedAnnotation.exportedName,
-              t.moduleExportDescr('Func', t.identifier(functionName.internalIdentifier))
-            )
+              t.moduleExportDescr('Func', t.identifier(functionName.internalIdentifier)),
+            ),
           );
         }
       });
@@ -775,7 +731,7 @@ export class CodeGenerationPhaseResult {
       moduleParts: [...dataSection, ...createdGlobals, ...(exports ? exportedElements : []), ...createdFunctions],
       starters,
       endMemory,
-      imports
+      imports,
     };
   }
 
@@ -784,7 +740,7 @@ export class CodeGenerationPhaseResult {
 
     const moduleList = getModuleSet(this.document, this.parsingContext);
 
-    moduleList.forEach($ => {
+    moduleList.forEach(($) => {
       const compilation = this.parsingContext.getPhase($, PhaseFlags.Compilation);
 
       if (!exportList.includes(compilation)) {
@@ -796,7 +752,7 @@ export class CodeGenerationPhaseResult {
 
     const moduleParts: any[] = [];
 
-    const generatedModules = exportList.map($ => {
+    const generatedModules = exportList.map(($) => {
       const ret = this.generatePhase($, currentMemory);
       currentMemory = ret.endMemory;
       moduleParts.push(...ret.imports);
@@ -807,16 +763,16 @@ export class CodeGenerationPhaseResult {
 
     const tableElems = this.parsingContext.getOrderedTable();
 
-    this.parsingContext.signatures.forEach($ => moduleParts.push($));
+    this.parsingContext.signatures.forEach(($) => moduleParts.push($));
 
     const table = t.table('funcref', t.limit(tableElems.length), t.identifier('lys::internal-functions'));
     const elem = t.elem(
       // table
-      t.indexLiteral(0),
+      t.identifier('elem_table_0'),
       // offset
       [t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(0)])],
       // elems
-      tableElems.map(x => t.identifier(x))
+      tableElems.map((x) => t.identifier(x)),
     );
 
     const memory = t.memory(t.limit(1), t.identifier('mem'));
@@ -830,7 +786,7 @@ export class CodeGenerationPhaseResult {
     moduleParts.push(memory);
     moduleParts.push(t.moduleExport('memory', t.moduleExportDescr('Memory', t.identifier('mem'))));
 
-    generatedModules.reverse().forEach(ret => {
+    generatedModules.reverse().forEach((ret) => {
       moduleParts.push(...ret.moduleParts);
       starters.push(...ret.starters);
     });

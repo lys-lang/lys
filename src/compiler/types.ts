@@ -515,7 +515,7 @@ export class UnionType extends Type {
     }
 
     if (nativeTypes.size === 1) {
-      return nativeTypes.values().next().value;
+      return nativeTypes.values().next().value!;
     } else {
       throw new Error('Cannot find a suitable low level type for ' + this.toString());
     }

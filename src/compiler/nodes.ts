@@ -21,7 +21,11 @@ export class Global implements LocalGlobalHeapReference {
 export class Local implements LocalGlobalHeapReference {
   type?: Type;
   /** index in the function */
-  constructor(public index: number, public name: string, public declarationNode?: Nodes.Node) {}
+  constructor(
+    public index: number,
+    public name: string,
+    public declarationNode?: Nodes.Node,
+  ) {}
 }
 
 export enum PhaseFlags {
@@ -32,7 +36,7 @@ export enum PhaseFlags {
   TypeCheck,
   PreCompilation,
   Compilation,
-  CodeGeneration
+  CodeGeneration,
 }
 
 export namespace Nodes {
@@ -73,7 +77,7 @@ export namespace Nodes {
     }
 
     get children(): Node[] {
-      return this.childrenOrEmpty.filter($ => !!$) as Node[];
+      return this.childrenOrEmpty.filter(($) => !!$) as Node[];
     }
 
     abstract get childrenOrEmpty(): (Node | void)[];
@@ -91,7 +95,7 @@ export namespace Nodes {
     getAnnotationsByClass<T extends Annotation>(klass: IAnnotationConstructor<T>): T[] {
       const ret: T[] = [];
       if (this.annotations) {
-        this.annotations.forEach($ => {
+        this.annotations.forEach(($) => {
           if ($ instanceof klass) ret.push($);
         });
       }
@@ -101,7 +105,7 @@ export namespace Nodes {
     getAnnotation<T extends Annotation>(klass: IAnnotationConstructor<T>): T | null {
       const ret: T[] = [];
       if (this.annotations) {
-        this.annotations.forEach($ => {
+        this.annotations.forEach(($) => {
           if ($ instanceof klass) ret.push($);
         });
       }
@@ -113,7 +117,7 @@ export namespace Nodes {
         this.annotations && this.annotations.delete(name);
       } else {
         this.annotations &&
-          this.getAnnotationsByClass(name).forEach($ => this.annotations && this.annotations.delete($));
+          this.getAnnotationsByClass(name).forEach(($) => this.annotations && this.annotations.delete($));
       }
     }
 
@@ -127,7 +131,7 @@ export namespace Nodes {
     getAnnotations<T extends Annotation>(klass?: IAnnotationConstructor<T>): T[] {
       const ret: T[] = [];
       if (this.annotations) {
-        this.annotations.forEach($ => {
+        this.annotations.forEach(($) => {
           if (!klass || $ instanceof klass) ret.push($ as T);
         });
       }
@@ -150,7 +154,10 @@ export namespace Nodes {
       return [];
     }
 
-    constructor(astNode: ASTNode, public name: string) {
+    constructor(
+      astNode: ASTNode,
+      public name: string,
+    ) {
       super(astNode);
     }
 
@@ -161,12 +168,15 @@ export namespace Nodes {
   }
 
   export class QNameNode extends Node {
-    constructor(astNode: ASTNode, public readonly names: NameIdentifierNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly names: NameIdentifierNode[],
+    ) {
       super(astNode);
     }
 
     static fromString(name: string, astNode: ASTNode): QNameNode {
-      const names = name.split('::').map($ => NameIdentifierNode.fromString($, astNode));
+      const names = name.split('::').map(($) => NameIdentifierNode.fromString($, astNode));
       const r = new QNameNode(astNode, names);
       return r;
     }
@@ -178,14 +188,14 @@ export namespace Nodes {
     deconstruct() {
       const moduleName = this.names
         .slice(0, -1)
-        .map($ => $.name)
+        .map(($) => $.name)
         .join('::');
       const variable = this.names[this.names.length - 1].name;
       return { moduleName, variable };
     }
 
     get text() {
-      return this.names.map($ => $.name).join('::');
+      return this.names.map(($) => $.name).join('::');
     }
   }
 
@@ -200,7 +210,10 @@ export namespace Nodes {
   export class SignatureParameterNode extends TypeNode {
     parameterName?: NameIdentifierNode;
 
-    constructor(astNode: ASTNode, public readonly parameterType: TypeNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly parameterType: TypeNode,
+    ) {
       super(astNode);
     }
 
@@ -214,7 +227,10 @@ export namespace Nodes {
     effect?: TypeNode;
     returnType?: TypeNode;
 
-    constructor(astNode: ASTNode, public readonly parameters: SignatureParameterNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly parameters: SignatureParameterNode[],
+    ) {
       super(astNode);
     }
 
@@ -238,7 +254,10 @@ export namespace Nodes {
     isLocal: boolean = false;
     resolvedReference?: Reference;
 
-    constructor(astNode: ASTNode, public readonly variable: QNameNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly variable: QNameNode,
+    ) {
       super(astNode);
     }
 
@@ -250,7 +269,10 @@ export namespace Nodes {
   export class BlockNode extends ExpressionNode {
     label?: string;
 
-    constructor(astNode: ASTNode, public readonly statements: Node[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly statements: Node[],
+    ) {
       super(astNode);
     }
 
@@ -266,7 +288,7 @@ export namespace Nodes {
       astNode: ASTNode,
       public readonly lhs: ExpressionNode,
       public readonly operator: string,
-      public readonly memberName: NameIdentifierNode
+      public readonly memberName: NameIdentifierNode,
     ) {
       super(astNode);
     }
@@ -280,7 +302,7 @@ export namespace Nodes {
     constructor(
       astNode: ASTNode,
       public readonly decoratorName: NameIdentifierNode,
-      public readonly args: LiteralNode<any>[]
+      public readonly args: LiteralNode<any>[],
     ) {
       super(astNode);
     }
@@ -305,7 +327,7 @@ export namespace Nodes {
       version: 0,
       nextPhase: PhaseFlags.Semantic,
       isTypeAnalysisPassNeeded: true,
-      areTypesResolved: false
+      areTypesResolved: false,
     };
 
     typeNumbers: Map<string, number> = new Map();
@@ -322,7 +344,10 @@ export namespace Nodes {
     parameterType?: TypeNode;
     defaultValue?: ExpressionNode;
 
-    constructor(astNode: ASTNode, public readonly parameterName: NameIdentifierNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly parameterName: NameIdentifierNode,
+    ) {
       super(astNode);
     }
 
@@ -351,14 +376,17 @@ export namespace Nodes {
     private tempF32s: Local[] | null = null;
     private tempF64s: Local[] | null = null;
 
-    constructor(astNode: ASTNode, public readonly functionName: NameIdentifierNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly functionName: NameIdentifierNode,
+    ) {
       super(astNode);
     }
 
     processParameters() {
       let localIndex = 0;
 
-      this.parameters.forEach(parameter => {
+      this.parameters.forEach((parameter) => {
         let local = new Local(localIndex++, parameter.parameterName.name, parameter.parameterName);
         this.localsByIndex[local.index] = local;
         parameter.annotate(new annotations.LocalIdentifier(local));
@@ -372,7 +400,7 @@ export namespace Nodes {
       let local = new Local(
         localIndex,
         declaration ? declaration.internalIdentifier! : 'var$' + localIndex.toString(10),
-        declaration
+        declaration,
       );
 
       local.type = type;
@@ -495,7 +523,7 @@ export namespace Nodes {
     constructor(
       astNode: ASTNode,
       public readonly targetImpl: ReferenceNode,
-      public readonly directives: DirectiveNode[]
+      public readonly directives: DirectiveNode[],
     ) {
       super(astNode);
     }
@@ -505,7 +533,7 @@ export namespace Nodes {
         ...(this.decorators || []),
         this.targetImpl,
         ...(this.baseImpl ? [this.baseImpl] : []),
-        ...(this.directives || [])
+        ...(this.directives || []),
       ];
     }
   }
@@ -514,7 +542,10 @@ export namespace Nodes {
     allItems: boolean = true;
     alias: NameIdentifierNode | null = null;
 
-    constructor(astNode: ASTNode, public readonly module: QNameNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly module: QNameNode,
+    ) {
       super(astNode);
     }
 
@@ -527,7 +558,7 @@ export namespace Nodes {
     constructor(
       astNode: ASTNode,
       public readonly functionNode: FunctionNode,
-      public readonly decorators: DecoratorNode[]
+      public readonly decorators: DecoratorNode[],
     ) {
       super(astNode);
     }
@@ -548,7 +579,10 @@ export namespace Nodes {
   export class OverloadedFunctionNode extends DirectiveNode {
     functions: FunDirectiveNode[] = [];
 
-    constructor(astNode: ASTNode, public readonly functionName: NameIdentifierNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly functionName: NameIdentifierNode,
+    ) {
       super(astNode);
     }
 
@@ -560,7 +594,11 @@ export namespace Nodes {
   export class VarDeclarationNode extends Node {
     variableType?: TypeNode;
 
-    constructor(astNode: ASTNode, public readonly variableName: NameIdentifierNode, public value: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly variableName: NameIdentifierNode,
+      public value: ExpressionNode,
+    ) {
       super(astNode);
     }
 
@@ -570,7 +608,10 @@ export namespace Nodes {
   }
 
   export class VarDirectiveNode extends DirectiveNode {
-    constructor(astNode: ASTNode, public readonly decl: VarDeclarationNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly decl: VarDeclarationNode,
+    ) {
       super(astNode);
     }
 
@@ -580,7 +621,11 @@ export namespace Nodes {
   }
 
   export class AssignmentNode extends Node {
-    constructor(astNode: ASTNode, public readonly lhs: ExpressionNode, public readonly rhs: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly lhs: ExpressionNode,
+      public readonly rhs: ExpressionNode,
+    ) {
       super(astNode);
     }
 
@@ -592,7 +637,10 @@ export namespace Nodes {
   export class TypeDirectiveNode extends DirectiveNode {
     valueType?: TypeNode;
 
-    constructor(astNode: ASTNode, public readonly variableName: NameIdentifierNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly variableName: NameIdentifierNode,
+    ) {
       super(astNode);
     }
 
@@ -605,7 +653,11 @@ export namespace Nodes {
     readonly namespaceNames: Map<string, NameIdentifierNode> = new Map();
     selfTypeName?: NameIdentifierNode;
 
-    constructor(astNode: ASTNode, public readonly traitName: NameIdentifierNode, public directives: DirectiveNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly traitName: NameIdentifierNode,
+      public directives: DirectiveNode[],
+    ) {
       super(astNode);
     }
 
@@ -618,7 +670,7 @@ export namespace Nodes {
     constructor(
       astNode: ASTNode,
       public readonly variableName: NameIdentifierNode,
-      public readonly declarations: StructDeclarationNode[]
+      public readonly declarations: StructDeclarationNode[],
     ) {
       super(astNode);
     }
@@ -629,12 +681,19 @@ export namespace Nodes {
   }
 
   export abstract class LiteralNode<T> extends ExpressionNode {
-    get value(): T {throw new Error('not implemented')}
-    set value(_:T) {throw new Error('not implemented')}
+    get value(): T {
+      throw new Error('not implemented');
+    }
+    set value(_: T) {
+      throw new Error('not implemented');
+    }
     rawValue: string = '';
     resolvedReference?: Reference;
 
-    constructor(astNode: ASTNode, public typeName: string) {
+    constructor(
+      astNode: ASTNode,
+      public typeName: string,
+    ) {
       super(astNode);
       if (astNode) {
         this.rawValue = astNode.text;
@@ -678,7 +737,10 @@ export namespace Nodes {
   }
 
   export class StructTypeNode extends TypeNode {
-    constructor(astNode: ASTNode, public readonly parameters: ParameterNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly parameters: ParameterNode[],
+    ) {
       super(astNode);
     }
 
@@ -702,7 +764,6 @@ export namespace Nodes {
   }
 
   export class HexLiteral extends IntegerLiteral {
-    suffixReference?: ReferenceNode;
     get value(): number {
       return parseInt(this.rawValue, 16);
     }
@@ -763,7 +824,7 @@ export namespace Nodes {
     constructor(
       astNode: ASTNode,
       public functionNode: ExpressionNode,
-      public readonly argumentsNode: ExpressionNode[]
+      public readonly argumentsNode: ExpressionNode[],
     ) {
       super(astNode);
     }
@@ -778,7 +839,7 @@ export namespace Nodes {
       astNode: ASTNode,
       public readonly operator: NameIdentifierNode,
       public lhs: ExpressionNode,
-      public rhs: ExpressionNode
+      public rhs: ExpressionNode,
     ) {
       super(astNode);
     }
@@ -840,7 +901,11 @@ export namespace Nodes {
     }
     argumentsNode: Node[] = [];
 
-    constructor(astNode: ASTNode, public readonly operator: NameIdentifierNode, rhs: TypeNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly operator: NameIdentifierNode,
+      rhs: TypeNode,
+    ) {
       super(astNode);
 
       this.rhs = rhs;
@@ -852,7 +917,11 @@ export namespace Nodes {
   }
 
   export class WasmAtomNode extends Node {
-    constructor(astNode: ASTNode, public readonly symbol: string, public readonly args: ExpressionNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly symbol: string,
+      public readonly args: ExpressionNode[],
+    ) {
       super(astNode);
     }
 
@@ -862,7 +931,10 @@ export namespace Nodes {
   }
 
   export class WasmExpressionNode extends ExpressionNode {
-    constructor(astNode: ASTNode, public readonly atoms: WasmAtomNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly atoms: WasmAtomNode[],
+    ) {
       super(astNode);
     }
 
@@ -873,10 +945,12 @@ export namespace Nodes {
 
   export abstract class MatcherNode extends ExpressionNode {
     declaredName?: NameIdentifierNode;
-    parent?: PatternMatcherNode;
     booleanReference?: Reference;
 
-    constructor(astNode: ASTNode, public readonly rhs: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly rhs: ExpressionNode,
+    ) {
       super(astNode);
     }
 
@@ -892,7 +966,7 @@ export namespace Nodes {
       astNode: ASTNode,
       public readonly condition: ExpressionNode,
       public readonly truePart: ExpressionNode,
-      public readonly falsePart?: ExpressionNode
+      public readonly falsePart?: ExpressionNode,
     ) {
       super(astNode);
     }
@@ -903,7 +977,11 @@ export namespace Nodes {
   }
 
   export class MatchConditionNode extends MatcherNode {
-    constructor(astNode: ASTNode, public readonly condition: ExpressionNode, public readonly rhs: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly condition: ExpressionNode,
+      public readonly rhs: ExpressionNode,
+    ) {
       super(astNode, rhs);
     }
 
@@ -916,7 +994,11 @@ export namespace Nodes {
     deconstructorNames?: NameIdentifierNode[];
     resolvedFunctionType?: FunctionType;
 
-    constructor(astNode: ASTNode, public readonly typeReference: ReferenceNode, public rhs: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly typeReference: ReferenceNode,
+      public rhs: ExpressionNode,
+    ) {
       super(astNode, rhs);
     }
 
@@ -928,7 +1010,11 @@ export namespace Nodes {
   export class MatchLiteralNode extends MatcherNode {
     resolvedFunctionType?: FunctionType;
 
-    constructor(astNode: ASTNode, public readonly literal: LiteralNode<any>, public readonly rhs: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly literal: LiteralNode<any>,
+      public readonly rhs: ExpressionNode,
+    ) {
       super(astNode, rhs);
     }
 
@@ -958,7 +1044,7 @@ export namespace Nodes {
     constructor(
       astNode: ASTNode,
       public readonly declaredName: NameIdentifierNode,
-      public readonly parameters: ParameterNode[]
+      public readonly parameters: ParameterNode[],
     ) {
       super(astNode);
     }
@@ -971,7 +1057,10 @@ export namespace Nodes {
   export class EffectDeclarationNode extends Node {
     elements?: FunctionTypeNode[];
 
-    constructor(astNode: ASTNode, public readonly name: NameIdentifierNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly name: NameIdentifierNode,
+    ) {
       super(astNode);
     }
 
@@ -985,7 +1074,11 @@ export namespace Nodes {
   export class PatternMatcherNode extends ExpressionNode {
     carryType?: Type;
 
-    constructor(astNode: ASTNode, public readonly lhs: ExpressionNode, public readonly matchingSet: MatcherNode[]) {
+    constructor(
+      astNode: ASTNode,
+      public readonly lhs: ExpressionNode,
+      public readonly matchingSet: MatcherNode[],
+    ) {
       super(astNode);
     }
 
@@ -995,7 +1088,10 @@ export namespace Nodes {
   }
 
   export class LoopNode extends ExpressionNode {
-    constructor(astNode: ASTNode, public readonly body: ExpressionNode) {
+    constructor(
+      astNode: ASTNode,
+      public readonly body: ExpressionNode,
+    ) {
       super(astNode);
     }
 
@@ -1020,21 +1116,21 @@ export namespace Nodes {
 export function findNodesByType<T>(
   astRoot: { children: any[] },
   type: { new (...args: any[]): T },
-  list: T[] = []
+  list: T[] = [],
 ): T[] {
   if (astRoot instanceof type) {
     list.push(astRoot);
   }
-  astRoot.children.forEach($ => findNodesByType($, type, list));
+  astRoot.children.forEach(($) => findNodesByType($, type, list));
   return list;
 }
 
 export function findNodesByTypeInChildren<T>(
   astRoot: { children: any[] },
   type: { new (...args: any[]): T },
-  list: T[] = []
+  list: T[] = [],
 ): T[] {
-  astRoot.children.forEach($ => {
+  astRoot.children.forEach(($) => {
     if ($ instanceof type) {
       list.push($);
     }

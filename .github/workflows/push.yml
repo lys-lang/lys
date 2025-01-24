@@ -27,6 +27,29 @@ jobs:
         run: npm install
       - name: make test
         run: make test
+
+  lys-compiler:
+    name: lys-compiler build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22.x
+      - name: npm install
+        run: npm install
+      - name: make build
+        run: make build
+      - name: Checkout lys-compiler
+        uses: actions/checkout@v4
+        with:
+          repository: lys-lang/lys-compiler
+          path: lys-compiler
+      - name: Build and test lys-compiler
+        working-directory: ./lys-compiler
+        run: |
+          make build LYS=../dist/bin.js
   lint:
     runs-on: ubuntu-latest
     steps:
