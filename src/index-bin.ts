@@ -313,7 +313,7 @@ export async function main(cwd: string, argv: string[]) {
     let running = false;
 
     watch(cwd, { recursive: true }, (event, fileName) => {
-      const fqn = parsingContext.getModuleFQNForFile(fileName);
+      const fqn = parsingContext.getModuleFQNForFile(fileName!);
       const inContext = parsingContext.modulesInContext.has(fqn);
 
       if (inContext) {
