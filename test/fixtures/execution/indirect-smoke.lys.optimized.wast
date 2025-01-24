@@ -1,11 +1,12 @@
 (module
- (type $0 (func))
- (type $1 (func (param i32 i32)))
- (type $2 (func (result i32)))
- (type $3 (func (param i32)))
- (type $4 (func (param i64 i32)))
- (type $5 (func (param i32 i32 i64)))
- (type $6 (func (param i64)))
+ (type $0 (func (result i32)))
+ (type $1 (func))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32) (result i32)))
+ (type $4 (func (param i32)))
+ (type $5 (func (param i64 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i64)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
@@ -40,11 +41,13 @@
  (data $24 (i32.const 107) "H\00\00\00T\00e\00s\00t\00 \00i\00n\00d\00i\00r\00e\00c\00t\00 \00c\00a\00l\00l\00 \00w\00i\00t\00h\00 \00o\00n\00e\00 \00a\00r\00g\00u\00m\00e\00n\00t")
  (data $25 (i32.const 184) "\02\00\00\00A")
  (data $26 (i32.const 191) "\02\00\00\00B")
+ (table $0 4 funcref)
+ (elem $0 (i32.const 0) $5 $7 $6 $8)
  (export "memory" (memory $0))
  (export "test_getMaxMemory" (func $1))
  (export "test_getLastErrorMessage" (func $3))
- (export "main" (func $5))
- (start $6)
+ (export "main" (func $9))
+ (start $10)
  (func $0 (param $0 i64) (param $1 i32)
   (call $fimport$3
    (i32.wrap_i64
@@ -118,17 +121,35 @@
    )
   )
  )
- (func $5
+ (func $5 (result i32)
+  (i32.const 1)
+ )
+ (func $6 (param $0 i32) (result i32)
+  (i32.add
+   (local.get $0)
+   (i32.const 1)
+  )
+ )
+ (func $7 (result i32)
+  (i32.const 2)
+ )
+ (func $8 (param $0 i32) (result i32)
+  (i32.add
+   (local.get $0)
+   (i32.const 2)
+  )
+ )
+ (func $9
   (call $4
    (i64.const 12884901904)
   )
   (call $2
-   (i32.const 1)
+   (call $5)
    (i32.const 1)
    (i64.const 12884901981)
   )
   (call $2
-   (i32.const 2)
+   (call $7)
    (i32.const 2)
    (i64.const 12884901988)
   )
@@ -137,18 +158,22 @@
    (i64.const 12884901995)
   )
   (call $2
-   (i32.const 2)
+   (call $6
+    (i32.const 1)
+   )
    (i32.const 2)
    (i64.const 12884902072)
   )
   (call $2
-   (i32.const 3)
+   (call $8
+    (i32.const 1)
+   )
    (i32.const 3)
    (i64.const 12884902079)
   )
   (call $fimport$2)
  )
- (func $6
+ (func $10
   (global.set $global$0
    (i32.const 65536)
   )

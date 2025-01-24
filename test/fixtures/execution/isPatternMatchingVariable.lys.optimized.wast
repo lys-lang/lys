@@ -10,7 +10,8 @@
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
- (global $global$3 (mut i64) (i64.const 0))
+ (global $global$3 (mut i32) (i32.const 0))
+ (global $global$4 (mut i64) (i64.const 0))
  (memory $0 1)
  (data $0 (i32.const 168) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
  (data $1 (i32.const 195) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
@@ -40,7 +41,7 @@
  (export "main" (func $4))
  (start $5)
  (func $0 (result i32)
-  (global.get $global$2)
+  (global.get $global$3)
  )
  (func $1 (result i32)
   (local $0 i64)
@@ -49,7 +50,7 @@
     (i32.wrap_i64
      (i64.shr_u
       (local.tee $0
-       (global.get $global$3)
+       (global.get $global$4)
       )
       (i64.const 32)
      )
@@ -101,7 +102,7 @@
          (global.get $global$0)
          (i32.add
           (local.tee $0
-           (global.get $global$2)
+           (global.get $global$3)
           )
           (i32.const 32)
          )
@@ -148,7 +149,7 @@
       )
      )
     )
-    (global.set $global$2
+    (global.set $global$3
      (local.get $1)
     )
     (local.set $2
@@ -200,7 +201,7 @@
      )
      (i64.const 12884902600)
     )
-    (global.set $global$3
+    (global.set $global$4
      (local.get $4)
     )
     (unreachable)
@@ -343,6 +344,9 @@
    (i32.const 65536)
   )
   (global.set $global$3
+   (i32.const 65536)
+  )
+  (global.set $global$4
    (i64.const 8589934592)
   )
  )

@@ -163,7 +163,7 @@ async function emit(parsingContext: ReturnType<typeof getParsingContext>): Promi
 
   writeFileSync(parsingContext.outFileFullWithoutExtension + '.wasm', codeGen.buffer);
 
-  let src = [];
+  let src: string[] = [];
 
   src.push('Object.defineProperty(exports, "__esModule", { value: true });');
   src.push('const modules = [];');

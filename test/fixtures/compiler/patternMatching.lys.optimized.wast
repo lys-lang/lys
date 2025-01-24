@@ -7,6 +7,10 @@
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
+ (global $global$3 (mut i32) (i32.const 0))
+ (global $global$4 (mut i32) (i32.const 0))
+ (global $global$5 (mut i32) (i32.const 0))
+ (global $global$6 (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 21) "\08\00\00\00t\00r\00u\00e")
  (data $1 (i32.const 34) "\n\00\00\00f\00a\00l\00s\00e")
@@ -20,7 +24,7 @@
  (export "test4" (func $4))
  (start $5)
  (func $0 (result i32)
-  (global.get $global$2)
+  (global.get $global$6)
  )
  (func $1 (param $0 i32) (result i32)
   (i32.eq
@@ -167,156 +171,185 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  (if
-   (i32.ne
-    (local.tee $1
-     (i32.wrap_i64
-      (i64.shr_u
-       (local.get $0)
-       (i64.const 32)
-      )
-     )
-    )
-    (i32.const 2)
-   )
-   (then
-    (block $block
-     (br_if $block
-      (i32.eq
-       (local.get $1)
-       (i32.const 1)
-      )
-     )
-    )
-    (if
-     (i32.lt_u
-      (global.get $global$1)
-      (i32.const 4)
-     )
-     (then
-      (unreachable)
-     )
-    )
-    (if
-     (i32.gt_u
-      (local.tee $2
-       (i32.and
-        (i32.add
-         (global.get $global$0)
-         (i32.add
-          (local.tee $1
-           (global.get $global$2)
-          )
-          (i32.const 32)
-         )
-        )
-        (i32.xor
-         (global.get $global$0)
-         (i32.const -1)
-        )
-       )
-      )
-      (i32.shl
-       (local.tee $3
-        (memory.size)
-       )
-       (i32.const 16)
-      )
-     )
-     (then
-      (drop
-       (memory.grow
-        (select
-         (local.get $3)
-         (local.tee $4
-          (i32.shr_s
-           (i32.and
-            (i32.add
-             (i32.sub
-              (local.get $2)
-              (local.get $1)
-             )
-             (i32.const 65535)
-            )
-            (i32.const -65536)
-           )
-           (i32.const 16)
-          )
-         )
-         (i32.gt_u
-          (local.get $3)
-          (local.get $4)
-         )
-        )
+  (block $block1 (result i64)
+   (if
+    (i32.ne
+     (local.tee $1
+      (i32.wrap_i64
+       (i64.shr_u
+        (local.get $0)
+        (i64.const 32)
        )
       )
      )
+     (i32.const 2)
     )
-    (global.set $global$2
-     (local.get $2)
-    )
-    (local.set $3
-     (i32.add
-      (local.tee $1
-       (local.tee $2
-        (i32.add
-         (local.get $1)
-         (i32.const 16)
-        )
+    (then
+     (block $block
+      (br_if $block
+       (i32.eq
+        (local.get $1)
+        (i32.const 1)
        )
       )
-      (i32.const 4)
      )
-    )
-    (loop $label
      (if
-      (i32.ne
-       (local.get $1)
-       (local.get $3)
+      (i32.lt_u
+       (global.get $global$3)
+       (i32.const 4)
       )
       (then
-       (i32.store8
+       (unreachable)
+      )
+     )
+     (if
+      (i32.gt_u
+       (local.tee $2
+        (i32.and
+         (i32.add
+          (global.get $global$2)
+          (i32.add
+           (local.tee $1
+            (global.get $global$6)
+           )
+           (i32.const 32)
+          )
+         )
+         (i32.xor
+          (global.get $global$2)
+          (i32.const -1)
+         )
+        )
+       )
+       (i32.shl
+        (local.tee $3
+         (memory.size)
+        )
+        (i32.const 16)
+       )
+      )
+      (then
+       (drop
+        (memory.grow
+         (select
+          (local.get $3)
+          (local.tee $4
+           (i32.shr_s
+            (i32.and
+             (i32.add
+              (i32.sub
+               (local.get $2)
+               (local.get $1)
+              )
+              (i32.const 65535)
+             )
+             (i32.const -65536)
+            )
+            (i32.const 16)
+           )
+          )
+          (i32.gt_u
+           (local.get $3)
+           (local.get $4)
+          )
+         )
+        )
+       )
+      )
+     )
+     (global.set $global$6
+      (local.get $2)
+     )
+     (local.set $3
+      (i32.add
+       (local.tee $1
+        (local.tee $2
+         (i32.add
+          (local.get $1)
+          (i32.const 16)
+         )
+        )
+       )
+       (i32.const 4)
+      )
+     )
+     (loop $label
+      (if
+       (i32.ne
         (local.get $1)
-        (i32.load8_u
-         (i32.const 0)
-        )
+        (local.get $3)
        )
-       (local.set $1
-        (i32.add
+       (then
+        (i32.store8
          (local.get $1)
-         (i32.const 1)
+         (i32.load8_u
+          (i32.const 0)
+         )
         )
-       )
-       (br $label)
-      )
-     )
-    )
-    (i32.store
-     (i32.wrap_i64
-      (local.tee $0
-       (i64.or
-        (i64.extend_i32_u
-         (local.get $2)
+        (local.set $1
+         (i32.add
+          (local.get $1)
+          (i32.const 1)
+         )
         )
-        (i64.const 8589934592)
+        (br $label)
        )
       )
      )
-     (i32.const 0)
+     (i32.store
+      (i32.wrap_i64
+       (local.tee $0
+        (i64.or
+         (i64.extend_i32_u
+          (local.get $2)
+         )
+         (i64.const 8589934592)
+        )
+       )
+      )
+      (i32.const 0)
+     )
+     (br $block1
+      (local.get $0)
+     )
     )
    )
+   (local.get $0)
   )
-  (local.get $0)
  )
  (func $5
   (global.set $global$0
-   (i32.const 15)
+   (i32.const 4)
   )
   (global.set $global$1
-   (i32.const 1073741824)
+   (i32.const 16)
   )
   (global.set $global$2
+   (i32.sub
+    (global.get $global$1)
+    (i32.const 1)
+   )
+  )
+  (global.set $global$3
+   (i32.const 1073741824)
+  )
+  (global.set $global$4
    (i32.const 65536)
+  )
+  (global.set $global$5
+   (i32.and
+    (i32.add
+     (global.get $global$2)
+     (i32.const 65536)
+    )
+    (i32.xor
+     (global.get $global$2)
+     (i32.const -1)
+    )
+   )
+  )
+  (global.set $global$6
+   (global.get $global$5)
   )
  )
 )

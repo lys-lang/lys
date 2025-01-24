@@ -15,6 +15,9 @@ function printHexByte(x: number) {
 export default function(getInstance: () => any) {
   return {
     env: {
+      putchar: function() {
+	throw new Error('putchar not implemented')
+      },
       printf: function(offset: number, ...args: number[]) {
         try {
           let str = readString(getInstance().exports.memory.buffer, offset);

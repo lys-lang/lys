@@ -3,7 +3,7 @@
  (type $1 (func (result i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32)))
- (type $4 (func (param i64)))
+ (type $4 (func (param i32 i64)))
  (import "test" "pushTest" (func $fimport$0 (param i32)))
  (import "test" "registerAssertion" (func $fimport$1 (param i32 i32)))
  (import "test" "popTest" (func $fimport$2))
@@ -72,11 +72,11 @@
    )
   )
  )
- (func $2 (param $0 i64)
+ (func $2 (param $0 i32) (param $1 i64)
   (call $fimport$1
-   (i32.const 1)
+   (local.get $0)
    (i32.wrap_i64
-    (local.get $0)
+    (local.get $1)
    )
   )
  )
@@ -85,15 +85,19 @@
    (i32.const 16)
   )
   (call $2
+   (i32.const 1)
    (i64.const 12884901955)
   )
   (call $2
+   (i32.const 1)
    (i64.const 12884901996)
   )
   (call $2
+   (i32.const 1)
    (i64.const 12884902015)
   )
   (call $2
+   (i32.const 1)
    (i64.const 12884902034)
   )
   (call $fimport$2)

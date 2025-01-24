@@ -12,7 +12,11 @@
  (global $global$0 (mut i32) (i32.const 0))
  (global $global$1 (mut i32) (i32.const 0))
  (global $global$2 (mut i32) (i32.const 0))
- (global $global$3 (mut i64) (i64.const 0))
+ (global $global$3 (mut i32) (i32.const 0))
+ (global $global$4 (mut i32) (i32.const 0))
+ (global $global$5 (mut i32) (i32.const 0))
+ (global $global$6 (mut i32) (i32.const 0))
+ (global $global$7 (mut i64) (i64.const 0))
  (memory $0 1)
  (data $0 (i32.const 358) "\16\00\00\00 \00 \00g\00i\00v\00e\00n\00:\00 \00%\00d")
  (data $1 (i32.const 385) "\1c\00\00\00 \00 \00e\00x\00p\00e\00c\00t\00e\00d\00:\00 \00%\00d")
@@ -48,7 +52,7 @@
  (export "main" (func $5))
  (start $6)
  (func $0 (result i32)
-  (global.get $global$2)
+  (global.get $global$6)
  )
  (func $1 (param $0 i32) (param $1 i32) (param $2 i64)
   (call $fimport$1
@@ -72,7 +76,7 @@
     (i32.wrap_i64
      (i64.shr_u
       (local.tee $0
-       (global.get $global$3)
+       (global.get $global$7)
       )
       (i64.const 32)
      )
@@ -101,7 +105,7 @@
   (local $7 i64)
   (if
    (i32.lt_u
-    (global.get $global$1)
+    (global.get $global$3)
     (i32.const 12)
    )
    (then
@@ -113,16 +117,16 @@
     (local.tee $4
      (i32.and
       (i32.add
-       (global.get $global$0)
+       (global.get $global$2)
        (i32.add
         (local.tee $3
-         (global.get $global$2)
+         (global.get $global$6)
         )
         (i32.const 32)
        )
       )
       (i32.xor
-       (global.get $global$0)
+       (global.get $global$2)
        (i32.const -1)
       )
      )
@@ -163,7 +167,7 @@
     )
    )
   )
-  (global.set $global$2
+  (global.set $global$6
    (local.get $4)
   )
   (local.set $5
@@ -359,15 +363,39 @@
  )
  (func $6
   (global.set $global$0
-   (i32.const 15)
+   (i32.const 4)
   )
   (global.set $global$1
-   (i32.const 1073741824)
+   (i32.const 16)
   )
   (global.set $global$2
-   (i32.const 65536)
+   (i32.sub
+    (global.get $global$1)
+    (i32.const 1)
+   )
   )
   (global.set $global$3
+   (i32.const 1073741824)
+  )
+  (global.set $global$4
+   (i32.const 65536)
+  )
+  (global.set $global$5
+   (i32.and
+    (i32.add
+     (global.get $global$2)
+     (i32.const 65536)
+    )
+    (i32.xor
+     (global.get $global$2)
+     (i32.const -1)
+    )
+   )
+  )
+  (global.set $global$6
+   (global.get $global$5)
+  )
+  (global.set $global$7
    (i64.const 8589934592)
   )
  )

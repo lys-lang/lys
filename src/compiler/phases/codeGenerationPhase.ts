@@ -2,9 +2,6 @@ import * as ast from '@webassemblyjs/ast';
 import { print } from '@webassemblyjs/wast-printer';
 const t = ast as any;
 
-declare var globalThis: any;
-
-import _wabt from 'wabt';
 import { annotations } from '../annotations';
 import { flatten } from '../helpers';
 import { Nodes, findNodesByType, PhaseFlags } from '../nodes';
@@ -23,8 +20,6 @@ type CompilationModuleResult = {
   endMemory: number;
   imports: any[];
 };
-
-const wabt = _wabt();
 
 const starterName = t.identifier('%%START%%');
 
@@ -541,55 +536,38 @@ export class CodeGenerationPhaseResult {
   }> {
     const { default: binaryen } = await import('binaryen');
 
-    let text = print(this.programAST);
-
-    const theWabt = await wabt;
-    let wabtModule: ReturnType<typeof theWabt.parseWat>;
-
-    try {
-      wabtModule = theWabt.parseWat(this.document.moduleName, text, {});
-    } catch (e: any) {
-      const invalidFile = this.parsingContext.system.resolvePath(
-        this.parsingContext.system.getCurrentDirectory(),
-        'failed_debug_wat.wat',
-      );
-      this.parsingContext.system.writeFile(invalidFile, text);
-      console.error('Error while parsing generated code. Writing debug WAT to ' + invalidFile);
-      console.error(e);
-      throw e;
-    }
-
-    try {
-      wabtModule.resolveNames();
-      wabtModule.validate();
-    } catch (e: any) {
-      const invalidFile = this.parsingContext.system.resolvePath(
-        this.parsingContext.system.getCurrentDirectory(),
-        'failed_debug_wat.wat',
-      );
-      this.parsingContext.system.writeFile(invalidFile, text);
-
-      console.error('Error while resolving names and validate code. Writing debug WAT to ' + invalidFile);
-      console.error(e);
-
-      this.parsingContext.messageCollector.error(e, this.document.astNode);
-      throw e;
-    }
-
-    const binary = wabtModule.toBinary({ log: false, write_debug_names: debug });
-    wabtModule.destroy();
+    const parseText = (text: string) => {
+      try {
+        return binaryen.parseText(text);
+      } catch (e: any) {
+        const invalidFile = this.parsingContext.system.resolvePath(
+          this.parsingContext.system.getCurrentDirectory(),
+          'failed_debug_wat.wat',
+        );
+        this.parsingContext.system.writeFile(invalidFile, text);
+        console.error('Error while parsing generated code. Writing debug WAT to ' + invalidFile);
+        console.error(e);
+        throw e;
+      }
+    };
 
     try {
       binaryen.setOptimizeLevel(optimizeLevel);
       binaryen.setShrinkLevel(shrinkLevel);
       binaryen.setDebugInfo(debug || !optimize);
 
-      const module = binaryen.readBinary(binary.buffer);
+      let text = print(this.programAST);
+      const module = parseText(text);
 
-      if (!debug) {
-        module.runPasses(['duplicate-function-elimination']);
-      }
+      //  if (!debug) {
+      //    module.runPasses(['duplicate-function-elimination']);
+      //  }
+
       module.runPasses(['remove-unused-module-elements']);
+
+      if (optimize) {
+        module.optimize();
+      }
 
       if (module.validate() === 0) {
         this.parsingContext.messageCollector.error(new LysCompilerError('binaryen validation failed', this.document));
@@ -597,41 +575,10 @@ export class CodeGenerationPhaseResult {
 
       if (debug) {
         let last = module.emitBinary('sourceMap.map');
-
-        if (optimize) {
-          do {
-            module.optimize();
-            let next = module.emitBinary('sourceMap.map');
-            if (next.binary.length >= last.binary.length) {
-              // a if (next.length > last.length) {
-              // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
-              // a }
-              break;
-            }
-            last = next;
-          } while (true);
-        }
-
         this.buffer = last.binary;
         this.sourceMap = last.sourceMap;
       } else {
-        let last = module.emitBinary();
-
-        if (optimize) {
-          do {
-            module.optimize();
-            let next = module.emitBinary();
-            if (next.length >= last.length) {
-              // a if (next.length > last.length) {
-              // a   this.parsingContext.system.write('Last converge was suboptimial.\n');
-              // a }
-              break;
-            }
-            last = next;
-          } while (true);
-        }
-
-        this.buffer = last;
+        this.buffer = module.emitBinary();
       }
 
       module.dispose();
@@ -719,7 +666,8 @@ export class CodeGenerationPhaseResult {
         const numberLiteral = t.numberLiteralFromRaw(offset, 'i32');
         const offsetToken = t.objectInstruction('const', 'i32', [numberLiteral]);
 
-        dataSection.push(t.data(t.memIndexLiteral(0), offsetToken, t.byteArray(bytes)));
+        // dataSection.push(t.data(t.memIndexLiteral(dataCount++), offsetToken, t.byteArray(bytes)));
+        dataSection.push(t.data(t.identifier(`mem_${offset}`), offsetToken, t.byteArray(bytes)));
 
         return offset + size;
       }
@@ -820,7 +768,7 @@ export class CodeGenerationPhaseResult {
     const table = t.table('funcref', t.limit(tableElems.length), t.identifier('lys::internal-functions'));
     const elem = t.elem(
       // table
-      t.indexLiteral(0),
+      t.identifier('elem_table_0'),
       // offset
       [t.objectInstruction('const', 'i32', [t.numberLiteralFromRaw(0)])],
       // elems
