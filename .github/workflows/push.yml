@@ -27,6 +27,16 @@ jobs:
         run: npm install
       - name: make test
         run: make test
+      - name: Checkout lys-compiler
+        uses: actions/checkout@v4
+        with:
+          repository: lys-lang/lys-compiler
+          path: lys-compiler
+      - name: Build and test lys-compiler
+        working-directory: ./lys-compiler
+        run: |
+          make build LYS=../lys/dist/bin.js
+
   lint:
     runs-on: ubuntu-latest
     steps:
